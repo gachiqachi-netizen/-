@@ -1,0 +1,717 @@
+[
+ {
+  "id": "hetao",
+  "name": "文玩核桃",
+  "std": "核桃",
+  "category": "kernel",
+  "aliases": [
+   "文玩核桃",
+   "麻核桃"
+  ],
+  "summary": "把玩用的核桃，主体是麻核桃（河北核桃 Juglans hopeiensis），也有铁核桃等，讲究成对配核，盘久变红发亮。",
+  "look": "核壳坚硬，表面有深浅不一的沟纹。新核浅黄或土黄，盘玩后逐渐变成红褐、枣红，表面起亮光（包浆）。形状有圆扁的狮子头、高耸的官帽、公子帽等。",
+  "identify": [
+   "对核要两只大小、纹路、形状尽量一致",
+   "行家看纹、尖、边、底和皮质",
+   "新核颜色浅、手感涩，盘久色深发亮",
+   "小核桃、楸子多整颗打孔做手串，见山核桃条"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "食用核桃",
+    "how": "壳薄、纹浅，个头和形状不讲究，没有把玩价值"
+   },
+   {
+    "id": "shanhetao",
+    "name": "山核桃",
+    "how": "山核桃个头小、纹浅，多做手串，不讲究配对"
+   },
+   {
+    "id": "",
+    "name": "做色核桃",
+    "how": "用色素、茶水或打蜡快速做红做亮，纹缝颜色不自然"
+   },
+   {
+    "id": "shanhetao",
+    "name": "楸子（核桃楸）",
+    "how": "核桃楸 Juglans mandshurica 的果核，个小、两头尖、沟纹深，多做手串"
+   }
+  ],
+  "dims": {
+   "shape": [
+    "狮子头",
+    "官帽",
+    "公子帽",
+    "鸡心",
+    "虎头"
+   ],
+   "texture": [
+    "皮质细",
+    "皮质粗"
+   ],
+   "age": [
+    "新核",
+    "包浆",
+    "老核"
+   ],
+   "origin": [
+    "河北",
+    "北京",
+    "山西"
+   ],
+   "count": [
+    "对核",
+    "手串"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "配对精品",
+    "desc": "两只几乎一致，纹深边正，皮质细，无残"
+   },
+   {
+    "level": 2,
+    "label": "配对一般",
+    "desc": "大小或纹路有差异，皮质一般"
+   },
+   {
+    "level": 3,
+    "label": "单只或有残",
+    "desc": "无法配对，或有磕、裂、虫眼"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": "对核按边宽（mm）计，常见 38–50mm；核桃手串单颗尺寸差异大（待核）"
+  },
+  "treatments": [
+   {
+    "type": "做色/打蜡",
+    "note": "用色素或打蜡快速出红出亮，纹缝颜色不自然（常见程度待核）"
+   },
+   {
+    "type": "修形",
+    "note": "把普通核桃修尖修边冒充好品种（待核）"
+   },
+   {
+    "type": "粘补/拼接",
+    "note": "补尖、补边、粘裂，补处颜色和纹路不连贯"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "麻核桃不在 2021《国家重点保护野生植物名录》；野生喙核桃、贵州山核桃为国家二级，不能交易。"
+  },
+  "meaning": {
+   "tags": [
+    "和合",
+    "成双"
+   ],
+   "text": "核桃成对把玩，“核”谐音“和”，民间有和和美美、成双成对的说法。"
+  },
+  "story": "",
+  "care": "不要泡水，盘前洗净双手，干燥季节注意防裂。",
+  "price_band": "中",
+  "sources": [
+   "kb/taxonomy.json（品种、别名、备注）",
+   "https://en.wikipedia.org/wiki/Juglans_hopeiensis（麻核桃分布）",
+   "2021《国家重点保护野生植物名录》，转录自 https://zh.wikipedia.org/wiki/国家重点保护野生植物名录（未见麻核桃）",
+   "常识"
+  ],
+  "confidence": {
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "treatments": "low",
+   "meaning": "low",
+   "compliance": "high"
+  }
+ },
+ {
+  "id": "taohe",
+  "name": "桃核",
+  "std": "桃核",
+  "category": "kernel",
+  "aliases": [
+   "桃核雕",
+   "桃核"
+  ],
+  "summary": "桃（Prunus persica，Li 等 2014 记作 Amygdalus persica）的硬核，多雕成罗汉、核舟、花鸟做手串，是核雕的传统材料。",
+  "look": "椭圆形褐色硬核，表面有深沟和小孔。做手串多为整颗雕刻，题材有罗汉、观音、核舟、花鸟等；盘玩后颜色转深、发红发亮。",
+  "identify": [
+   "没雕到的地方能看到天然沟纹和小孔",
+   "颜色从浅褐到红褐",
+   "手工雕刀痕利落，每颗细节略有不同",
+   "机雕整串完全一样，细节发糊"
+  ],
+  "confusables": [
+   {
+    "id": "shuzhi",
+    "name": "树脂压模仿核雕",
+    "how": "整串一模一样，看不到刀痕，手感发塑"
+   },
+   {
+    "id": "ganlan",
+    "name": "橄榄核",
+    "how": "橄榄核两头尖、纺锤形、表面较光滑；桃核坑洼多"
+   }
+  ],
+  "dims": {
+   "color": [
+    "浅褐",
+    "红褐"
+   ],
+   "shape": [
+    "雕件",
+    "原核",
+    "圆珠"
+   ],
+   "age": [
+    "新核",
+    "包浆"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "手工精雕",
+    "desc": "刀工利落，细节清楚，题材完整，无裂"
+   },
+   {
+    "level": 2,
+    "label": "机雕规整",
+    "desc": "机器雕刻，图案统一，细节一般"
+   },
+   {
+    "level": 3,
+    "label": "粗雕或有裂",
+    "desc": "雕工粗糙，或有裂纹、虫眼"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": "按单颗长度计，常见 15–25mm（待核）"
+  },
+  "treatments": [
+   {
+    "type": "做色",
+    "note": "有用色素做红做旧的，颜色浮在表面（待核）"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "长寿",
+    "吉祥"
+   ],
+   "text": "桃在传统文化里象征长寿，“寿桃”的说法流传很广，桃核雕也多取吉祥题材。"
+  },
+  "story": "明代魏学洢《核舟记》写王叔远用一枚桃核雕出苏轼泛舟赤壁，文中说“盖简桃核修狭者为之”，是核雕最有名的记载。",
+  "care": "怕水怕晒，干燥季节防裂；用软毛刷清理缝隙。",
+  "price_band": "中",
+  "sources": [
+   "kb/taxonomy.json（品种、别名、备注）",
+   "《核舟记》（明·魏学洢）",
+   "中国非物质文化遗产网 https://www.ihchina.cn （核雕：广州榄雕、潍坊核雕、光福核雕等国家级项目）",
+   "常识",
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/"
+  ],
+  "confidence": {
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "treatments": "low",
+   "meaning": "mid",
+   "story": "high"
+  }
+ },
+ {
+  "id": "xinghe",
+  "name": "杏核",
+  "std": "杏核",
+  "category": "kernel",
+  "aliases": [
+   "杏核"
+  ],
+  "summary": "杏子的硬核，扁心形、表面较光滑，多原核打孔或简单雕刻做手串。",
+  "look": "扁平心形，一侧有一圈棱线，表面较光滑，浅褐到棕黄；做手串多为原核打孔或简单雕刻，盘玩后颜色加深发亮。",
+  "identify": [
+   "扁平心形，边缘有棱",
+   "比桃核小，表面光滑少坑",
+   "原核串大小会略有差别"
+  ],
+  "confusables": [
+   {
+    "id": "taohe",
+    "name": "桃核",
+    "how": "桃核表面坑洼沟纹多，杏核光滑"
+   },
+   {
+    "id": "shuzhi",
+    "name": "树脂仿品",
+    "how": "大小完全一致，手感发塑"
+   }
+  ],
+  "dims": {
+   "shape": [
+    "原核",
+    "雕件"
+   ],
+   "age": [
+    "新核",
+    "包浆"
+   ],
+   "color": [
+    "浅褐",
+    "棕黄"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "匀净无裂",
+    "desc": "大小均匀，颜色一致，无裂"
+   },
+   {
+    "level": 2,
+    "label": "大小不一",
+    "desc": "大小、颜色不一"
+   },
+   {
+    "level": 3,
+    "label": "有裂有虫眼",
+    "desc": "有裂纹或虫眼"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": "原核按长度计，单颗约 2cm 上下（待核）"
+  },
+  "treatments": [
+   {
+    "type": "做色",
+    "note": "色素做红，纹缝颜色不自然，常见程度待核"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "幸福",
+    "吉祥"
+   ],
+   "text": "“杏”谐音“幸”，民间借这个读音，取幸福、幸运的吉祥说法。"
+  },
+  "story": "",
+  "care": "怕水怕晒，防裂。",
+  "price_band": "低",
+  "sources": [
+   "kb/taxonomy.json（品种、别名、备注）",
+   "常识"
+  ],
+  "confidence": {
+   "look": "low",
+   "identify": "low",
+   "confusables": "mid",
+   "dims": "low",
+   "grades": "low",
+   "meaning": "low",
+   "treatments": "low"
+  }
+ },
+ {
+  "id": "zaohe",
+  "name": "酸枣核",
+  "std": "酸枣核",
+  "category": "kernel",
+  "aliases": [
+   "酸枣核",
+   "小凤眼"
+  ],
+  "summary": "酸枣（Ziziphus jujuba var. spinosa）的硬核，个头小、两端略尖；Li 等（2014）记它做的菩提叫“小凤眼”。",
+  "look": "小而坚硬的椭圆核，两端略尖，表面粗糙有沟纹，棕褐色；多做小雕件或原核串，盘玩后发红发亮。",
+  "identify": [
+   "个头小，约一厘米上下",
+   "两端尖、表面粗糙",
+   "雕件多为微雕，难度高"
+  ],
+  "confusables": [
+   {
+    "id": "ganlan",
+    "name": "橄榄核",
+    "how": "橄榄核更大，纺锤形更明显"
+   },
+   {
+    "id": "taohe",
+    "name": "桃核",
+    "how": "桃核大得多，表面坑洼深"
+   },
+   {
+    "id": "fengyan",
+    "name": "凤眼菩提",
+    "how": "凤眼个大、有一个狭长眼痕；酸枣核小，两端尖"
+   }
+  ],
+  "dims": {
+   "shape": [
+    "原核",
+    "雕件"
+   ],
+   "age": [
+    "新核",
+    "包浆"
+   ],
+   "color": [
+    "棕褐",
+    "红褐"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "匀整精雕",
+    "desc": "大小均匀，雕工细，无裂"
+   },
+   {
+    "level": 2,
+    "label": "普通原核",
+    "desc": "原核或粗雕，大小不一"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": "单颗约 1cm 级（待核）"
+  },
+  "treatments": [
+   {
+    "type": "做色",
+    "note": "色素或茶水做红，常见程度待核"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥",
+    "早成"
+   ],
+   "text": "“枣”谐音“早”，民间有“早生贵子”“早日成功”等吉祥说法。"
+  },
+  "story": "",
+  "care": "怕水怕晒，防裂。",
+  "price_band": "低",
+  "sources": [
+   "kb/taxonomy.json（品种、别名、备注）",
+   "常识",
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/"
+  ],
+  "confidence": {
+   "look": "low",
+   "identify": "low",
+   "confusables": "mid",
+   "dims": "low",
+   "grades": "low",
+   "meaning": "low",
+   "treatments": "low",
+   "summary": "high"
+  }
+ },
+ {
+  "id": "shanhetao",
+  "name": "山核桃",
+  "std": "山核桃",
+  "category": "kernel",
+  "aliases": [
+   "小核桃",
+   "山核桃"
+  ],
+  "summary": "个头小的核桃类果核整颗打孔串成手串，树种有山核桃、核桃楸（楸子）、野核桃等说法，待核。",
+  "look": "比文玩核桃小，圆或略尖，壳面纹路较浅较细，浅黄褐色；多整颗打孔串成手串，盘后变红褐、起亮光。",
+  "identify": [
+   "个头小、纹路浅",
+   "整串使用，不讲究配对",
+   "盘后颜色变深"
+  ],
+  "confusables": [
+   {
+    "id": "hetao",
+    "name": "文玩核桃（麻核桃）",
+    "how": "文玩核桃更大、纹深，讲究配对"
+   },
+   {
+    "id": "",
+    "name": "食用山核桃",
+    "how": "植物学上的山核桃 Carya cathayensis 是浙皖食用种，多经炒制，壳薄易碎，不适合盘玩"
+   }
+  ],
+  "dims": {
+   "shape": [
+    "原核",
+    "手串"
+   ],
+   "age": [
+    "新核",
+    "包浆"
+   ],
+   "color": [
+    "浅黄褐",
+    "红褐"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "大小匀色",
+    "desc": "整串大小、颜色一致，无裂"
+   },
+   {
+    "level": 2,
+    "label": "大小不一",
+    "desc": "大小、颜色差异大，或有裂"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": "单颗约 15–25mm（待核）"
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "和合",
+    "吉祥"
+   ],
+   "text": "和文玩核桃一样，“核”谐音“和”，取和和美美的吉祥说法。"
+  },
+  "story": "",
+  "care": "不要泡水，防裂。",
+  "price_band": "低",
+  "sources": [
+   "kb/taxonomy.json（品种、别名、备注）",
+   "常识"
+  ],
+  "confidence": {
+   "look": "low",
+   "identify": "low",
+   "confusables": "low",
+   "dims": "low",
+   "grades": "low",
+   "meaning": "low"
+  }
+ },
+ {
+  "id": "hulu",
+  "name": "葫芦",
+  "std": "葫芦",
+  "category": "kernel",
+  "aliases": [
+   "小葫芦",
+   "手捻葫芦"
+  ],
+  "summary": "用小葫芦或手捻葫芦做的把件和手串，新皮白黄，盘玩后转红。",
+  "look": "上下两个球、中间有腰的小葫芦，表皮光滑；新皮淡黄白色，盘玩后转橙红、红褐，表面起亮光。常做手捻把件，或用更小的葫芦串成串。",
+  "identify": [
+   "上下两个球、带腰和蒂",
+   "新皮黄白，盘后变红，颜色有层次",
+   "看形状是否端正、皮质是否细"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "木制、树脂仿葫芦",
+    "how": "木质有车削纹和木纹，树脂偏重，没有天然皮质"
+   },
+   {
+    "id": "",
+    "name": "烫色、染色葫芦",
+    "how": "颜色均匀发红，但没有盘玩出来的层次"
+   }
+  ],
+  "dims": {
+   "shape": [
+    "手捻葫芦",
+    "葫芦串",
+    "异形",
+    "草里金"
+   ],
+   "color": [
+    "黄白",
+    "橙红",
+    "红褐"
+   ],
+   "age": [
+    "白皮",
+    "包浆"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "形正皮细",
+    "desc": "形状端正，皮质细腻，无斑无裂"
+   },
+   {
+    "level": 2,
+    "label": "形歪有斑",
+    "desc": "形状歪，或有斑点、裂纹"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": "手捻葫芦按高度计，常见 3–6cm（待核）"
+  },
+  "treatments": [
+   {
+    "type": "烫色/染色",
+    "note": "快速做红做旧，颜色没有层次（待核）"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "福禄",
+    "多子"
+   ],
+   "text": "“葫芦”谐音“福禄”，藤蔓绵长、籽多，传统上寓意福禄绵长、多子多福。"
+  },
+  "story": "",
+  "care": "怕水怕潮，防霉；盘玩前洗手。",
+  "price_band": "低",
+  "sources": [
+   "kb/taxonomy.json（品种、别名、备注）",
+   "常识"
+  ],
+  "confidence": {
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "treatments": "low",
+   "meaning": "mid"
+  }
+ },
+ {
+  "id": "ganlan",
+  "name": "橄榄核",
+  "std": "橄榄核",
+  "category": "kernel",
+  "aliases": [
+   "橄榄核",
+   "橄榄核雕"
+  ],
+  "summary": "乌榄（Canarium pimela）的硬核，纺锤形，多雕成核舟、罗汉等雕件，广州榄雕是国家级非遗。",
+  "look": "两头尖的纺锤形硬核，表面较光滑，棕褐色。多雕成船、罗汉、人物等，单颗做把件或手串，盘玩后发红发亮。",
+  "identify": [
+   "纺锤形，两头尖",
+   "雕件看刀工、细节和题材完整",
+   "手工雕每颗略有不同，机雕整串一样"
+  ],
+  "confusables": [
+   {
+    "id": "taohe",
+    "name": "桃核",
+    "how": "桃核椭圆、表面坑洼多；橄榄核纺锤形、较光滑"
+   },
+   {
+    "id": "shuzhi",
+    "name": "树脂压模",
+    "how": "没有刀痕，细节发糊，手感发塑"
+   }
+  ],
+  "dims": {
+   "shape": [
+    "雕件",
+    "核舟",
+    "圆珠"
+   ],
+   "age": [
+    "新核",
+    "包浆"
+   ],
+   "color": [
+    "棕褐",
+    "红褐"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "手工精雕",
+    "desc": "刀工利落，镂空细致，题材完整，无裂"
+   },
+   {
+    "level": 2,
+    "label": "机雕规整",
+    "desc": "机器雕刻，细节一般"
+   },
+   {
+    "level": 3,
+    "label": "粗雕或有裂",
+    "desc": "雕工粗，或有裂、补"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": "按单颗长度计（待核）"
+  },
+  "treatments": [
+   {
+    "type": "做色",
+    "note": "色素或茶水做红，常见程度待核"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥",
+    "雅致"
+   ],
+   "text": "榄雕多取核舟、罗汉、花鸟题材，寓意随题材而定，整体讲究文人雅趣。"
+  },
+  "story": "台北故宫藏有清代广州工匠陈祖章雕的橄榄核舟，船长约 3.4 厘米，船底刻苏轼《后赤壁赋》全文。核雕（广州榄雕）已列入国家级非遗。",
+  "care": "怕水怕晒，防裂；用软毛刷清理缝隙。",
+  "price_band": "中",
+  "sources": [
+   "kb/taxonomy.json（品种、别名、备注）",
+   "审校 kb/check/factcheck.md",
+   "https://www.thepaper.cn/newsDetail_forward_3865958",
+   "https://en.wikipedia.org/wiki/Boat_Carved_from_an_Olive_Stone",
+   "中国非物质文化遗产网 https://www.ihchina.cn （核雕：广州榄雕、潍坊核雕、光福核雕等国家级项目）",
+   "常识",
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/"
+  ],
+  "confidence": {
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "meaning": "mid",
+   "story": "high",
+   "treatments": "low"
+  }
+ }
+]

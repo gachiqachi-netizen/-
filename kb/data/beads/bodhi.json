@@ -1,0 +1,2783 @@
+[
+ {
+  "id": "xingyue",
+  "name": "星月菩提",
+  "std": "黄藤（今多归入 Calamus jenkinsianus）",
+  "category": "bodhi",
+  "aliases": [
+   "星月",
+   "星月菩提",
+   "星月菩提子"
+  ],
+  "summary": "黄藤的种子车磨成珠，白底布满黑色星点，孔口有一个圆形凹坑像月亮。",
+  "look": "新籽白到米白，表面布满细小黑点（星），穿孔处有一个圆形凹陷（月）；质地硬如骨。盘玩后由白转黄、红褐，出现玉化光泽，有的出现开片细纹。",
+  "identify": [
+   "黑色星点加一个月形凹坑",
+   "新籽白，陈籽或盘后转鸡油黄、红褐",
+   "多为桶珠或苹果圆，尺寸写成“直径×高”"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "老挝籽",
+    "how": "也是星月，密度和星点一般不如海南籽，常被当海南籽卖"
+   },
+   {
+    "id": "",
+    "name": "脱脂漂白籽",
+    "how": "白得发死、没油光，盘后不上色或颜色发花"
+   },
+   {
+    "id": "",
+    "name": "金蝉菩提、摩尼子",
+    "how": "Li 等（2014）记为同一种黄藤籽的不同加工叫法"
+   }
+  ],
+  "dims": {
+   "color": [
+    "顺白",
+    "奶白",
+    "鸡油黄",
+    "粉糯",
+    "灰雾",
+    "石玉料"
+   ],
+   "clarity": [
+    "玉化",
+    "挂瓷",
+    "骨瓷",
+    "微透"
+   ],
+   "pattern": [
+    "正月",
+    "玄月",
+    "新月",
+    "留白",
+    "大留白",
+    "月朗星稀",
+    "细密星点",
+    "针点星",
+    "开片",
+    "龙鳞"
+   ],
+   "texture": [
+    "高密",
+    "低密",
+    "油性",
+    "毛感料"
+   ],
+   "origin": [
+    "海南",
+    "老挝籽"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "年份籽",
+    "原生态",
+    "包浆",
+    "玩透",
+    "开片"
+   ],
+   "shape": [
+    "桶珠",
+    "老型珠",
+    "苹果圆",
+    "直切",
+    "藏切",
+    "元宝籽"
+   ],
+   "treatment": [
+    "干磨",
+    "原生态未脱脂",
+    "脱脂漂白",
+    "水磨"
+   ],
+   "count": [
+    "108颗",
+    "216颗",
+    "单圈",
+    "多圈",
+    "手持",
+    "同枝料"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "高密正月满星",
+    "desc": "月相居中正圆，星点细密均匀，无黑斑疤痕，入手沉"
+   },
+   {
+    "level": 2,
+    "label": "正月少瑕",
+    "desc": "月相较正，星点较匀，有少量黄斑或小坑"
+   },
+   {
+    "level": 3,
+    "label": "偏月有瑕",
+    "desc": "月相偏或残缺，星点疏密不匀，有裂纹或黑斑"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "note": "星月是扁桶形，尺寸写两个数：直径×高，如 8×6、9×7、10×8、12×8（mm）；也有卖家把高写在前（7×9、8×10），下单前看清说明。108 颗多用 6×4 到 10×8，单圈多用 10×8 以上；还有 3×5mm 的 216 颗"
+  },
+  "treatments": [
+   {
+    "type": "脱脂漂白",
+    "note": "用药水或水磨脱脂让籽发白，白得发死、没有油光，盘后不上色或发花；卖家写“干磨”“原生态未脱脂”就是针对这个"
+   },
+   {
+    "type": "染色做旧",
+    "note": "冒充鸡油黄或老籽，颜色浮在表面，星点里也染上色"
+   },
+   {
+    "type": "上油打蜡",
+    "note": "表面亮得发假，擦后有油痕"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "清净",
+    "圆满"
+   ],
+   "text": "星点环绕一轮月，传统上常做念珠，取“众星拱月”的圆满之象。"
+  },
+  "story": "",
+  "care": "新籽先戴手套盘，别让手汗直接浸，以免发黑；不要沾水、避免暴晒，防止开裂。",
+  "price_band": "低",
+  "sources": [
+   "市场调研 kb/market/wenwan.md",
+   "审校 kb/check/factcheck.md",
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "https://phytotaxa.mapress.com/pt/article/view/9426/2426"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "mid",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "jingang",
+  "name": "金刚菩提",
+  "std": "金刚菩提子",
+  "category": "bodhi",
+  "aliases": [
+   "金刚",
+   "大金刚",
+   "小金刚",
+   "金刚菩提子"
+  ],
+  "summary": "杜英属植物的果核（Li 等 2014 记为 Elaeocarpus angustifolius，常称圆果杜英），表面沟壑起伏，按瓣数区分，主要产自尼泊尔和印尼。",
+  "look": "红褐、棕色到黄褐，表面布满深浅不一的沟纹和疙瘩；纵向有清楚的瓣线，分四瓣、五瓣、六瓣等；质地坚硬，盘后凸起处发亮变红。",
+  "identify": [
+   "纵向瓣线清楚，可以数出瓣数",
+   "表面沟壑纹路",
+   "大金刚多为尼泊尔产、单颗大；小金刚多为印尼产、珠子小"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "黑金刚",
+    "how": "多为染色，颜色乌黑均匀，沟底也全黑"
+   },
+   {
+    "id": "",
+    "name": "补肉/粘瓣",
+    "how": "用胶补缺口或粘碎瓣，补处颜色和光泽不同"
+   },
+   {
+    "id": "fengyan",
+    "name": "凤眼菩提",
+    "how": "凤眼表面较平，有一个眼状凹痕，没有金刚那样的深沟"
+   }
+  ],
+  "dims": {
+   "color": [
+    "红皮",
+    "黄皮",
+    "棕褐"
+   ],
+   "pattern": [
+    "四瓣",
+    "五瓣",
+    "六瓣",
+    "沟深",
+    "纹路清"
+   ],
+   "texture": [
+    "肉厚",
+    "满肉"
+   ],
+   "origin": [
+    "尼泊尔",
+    "印尼"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘红"
+   ],
+   "shape": [
+    "原籽",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色",
+    "上油",
+    "补肉"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "满肉纹深",
+    "desc": "肉厚纹深、瓣线正，没有补和破损"
+   },
+   {
+    "level": 2,
+    "label": "少量缺肉",
+    "desc": "有小缺肉或瓣线偏"
+   },
+   {
+    "level": 3,
+    "label": "有破损补肉",
+    "desc": "有破损、虫眼或胶补"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12,
+    15,
+    18,
+    20,
+    22
+   ],
+   "note": "小金刚多为 6–12mm，常做 108 颗；大金刚多为单颗 15–30mm 以上做单圈。原籽不车圆，标约数"
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "黑金刚、红金刚多为染色，颜色均匀发死，沟底也是同色"
+   },
+   {
+    "type": "上油/刷漆",
+    "note": "表面亮得发假，沟里有积油"
+   },
+   {
+    "type": "补肉",
+    "note": "用胶补缺口，补处光泽、颜色不同"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "坚韧",
+    "吉祥"
+   ],
+   "text": "“金刚”取坚固不坏之意，金刚菩提在南亚和藏地传统里常做念珠。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "中",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "https://zhwiki.oracleblog.org/wiki/%E5%9C%86%E6%9E%9C%E6%9D%9C%E8%8B%B1",
+   "审校 kb/check/factcheck.md",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "mid",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "fengyan",
+  "name": "凤眼菩提",
+  "std": "凤眼菩提",
+  "category": "bodhi",
+  "aliases": [
+   "凤眼"
+  ],
+  "summary": "枣属植物的果核，每颗有一个形似凤眼的凹痕；Li 等（2014）记为 Ziziphus abyssinica 的二室果核，市场多说产自尼泊尔。",
+  "look": "黄褐到红褐，表面有细密纹路，有一个狭长的眼状凹痕；质地坚硬，盘后红亮。",
+  "identify": [
+   "一颗上有一个凤眼状凹痕",
+   "颜色黄褐到红褐",
+   "原形果核，大小不一"
+  ],
+  "confusables": [
+   {
+    "id": "longyan",
+    "name": "龙眼菩提",
+    "how": "Li 等（2014）记载同一种枣核，室数不同分别叫凤眼、龙眼、麒麟眼"
+   },
+   {
+    "id": "qilin",
+    "name": "麒麟菩提",
+    "how": "同上，室数更多"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄褐",
+    "红褐"
+   ],
+   "pattern": [
+    "凤眼"
+   ],
+   "origin": [
+    "尼泊尔",
+    "非洲"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然",
+    "上色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "眼正肉满",
+    "desc": "眼形端正、果核完整，无裂"
+   },
+   {
+    "level": 2,
+    "label": "眼偏",
+    "desc": "眼形不正或有小缺"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或虫眼"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "天然籽、果核大小不一，一般标约数或区间（如 12–13mm）；不车圆的按原形穿"
+  },
+  "treatments": [
+   {
+    "type": "上色",
+    "note": "染红或刷油让颜色变深，颜色浮在表面"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥"
+   ],
+   "text": "以凤凰之眼命名，传统上取吉祥之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "low",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "lianhua",
+  "name": "莲花菩提",
+  "std": "莲花菩提",
+  "category": "bodhi",
+  "aliases": [
+   "莲花"
+  ],
+  "summary": "枣核做的珠子，表面纹路像莲花；Li 等（2014）记为枣（Ziziphus jujuba）的果核。",
+  "look": "红褐到深褐，表面凹凸、纹路像层叠的莲瓣；质地坚硬，盘后发亮。",
+  "identify": [
+   "表面有莲瓣状纹路",
+   "红褐色、硬",
+   "原形果核"
+  ],
+  "confusables": [
+   {
+    "id": "fengyan",
+    "name": "凤眼菩提",
+    "how": "凤眼有一个眼状凹痕，没有莲瓣纹"
+   }
+  ],
+  "dims": {
+   "color": [
+    "红褐",
+    "深褐"
+   ],
+   "pattern": [
+    "莲花纹"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然",
+    "上色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "纹清完整",
+    "desc": "纹路清楚、果核完整"
+   },
+   {
+    "level": 2,
+    "label": "纹浅",
+    "desc": "纹路浅或有小缺"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或虫眼"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "天然籽、果核大小不一，一般标约数或区间（如 12–13mm）；不车圆的按原形穿"
+  },
+  "treatments": [
+   {
+    "type": "上色",
+    "note": "染红或刷油，颜色浮在表面"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "清净",
+    "吉祥"
+   ],
+   "text": "莲花在传统文化里象征清净高洁。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "low",
+   "identify": "low",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "longyan",
+  "name": "龙眼菩提",
+  "std": "龙眼菩提",
+  "category": "bodhi",
+  "aliases": [
+   "龙眼"
+  ],
+  "summary": "枣属植物的果核做的珠子；Li 等（2014）记为 Ziziphus abyssinica 的三室果核，和水果龙眼无关。",
+  "look": "黄褐到红褐，表面有多个眼状凹痕，纹路细密；质地坚硬，原形穿孔，盘后红亮。",
+  "identify": [
+   "一颗上有多个眼状凹痕",
+   "黄褐到红褐",
+   "和水果龙眼（桂圆）的核不是一回事"
+  ],
+  "confusables": [
+   {
+    "id": "fengyan",
+    "name": "凤眼菩提",
+    "how": "同一种枣核，眼数和室数不同"
+   },
+   {
+    "id": "",
+    "name": "龙眼（桂圆）核",
+    "how": "桂圆核茶褐光亮、正圆，不是龙眼菩提"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄褐",
+    "红褐"
+   ],
+   "pattern": [
+    "龙眼"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "眼清完整",
+    "desc": "眼形清楚、果核完整"
+   },
+   {
+    "level": 2,
+    "label": "有小缺",
+    "desc": "眼形不正或有小缺"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或虫眼"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "天然籽、果核大小不一，一般标约数或区间（如 12–13mm）；不车圆的按原形穿"
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥"
+   ],
+   "text": "以龙眼命名，传统上取吉祥之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "low",
+   "identify": "low",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "qianyan",
+  "name": "千眼菩提",
+  "std": "千眼菩提",
+  "category": "bodhi",
+  "status": "draft",
+  "aliases": [
+   "千眼"
+  ],
+  "summary": "市场俗称，原植物待核实",
+  "look": "",
+  "identify": [
+   "按卖家标注识别，原植物未明",
+   "向卖家要植物学名或产地说明"
+  ],
+  "confusables": [
+   {
+    "id": "xingyue",
+    "name": "星月菩提",
+    "how": "星月有一个月形凹坑，星点更细；千眼没有“月”"
+   }
+  ],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "",
+  "sources": [
+   "原植物没找到可靠出处（Li 等 2014 的 52 种菩提子名录里没有这个名字）",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "low",
+   "look": "low",
+   "identify": "low",
+   "confusables": "low",
+   "treatments": "low",
+   "compliance": "low",
+   "meaning": "low",
+   "story": "low",
+   "dims": "low",
+   "grades": "low"
+  }
+ },
+ {
+  "id": "baiyu-puti",
+  "name": "白玉菩提",
+  "std": "待核",
+  "category": "bodhi",
+  "aliases": [
+   "白玉菩提"
+  ],
+  "summary": "白色细腻的棕榈类种子珠，原植物待核：Li 等（2014）把“白玉”记为油棕 Elaeis guineensis，市场多说是贝叶棕。",
+  "look": "乳白到米黄色，质地细腻，表面可见细小的棕色小点；盘后转黄，有玉一样的温润光泽。",
+  "identify": [
+   "乳白细腻，像白玉",
+   "表面有零星小点",
+   "盘后转黄"
+  ],
+  "confusables": [
+   {
+    "id": "puti-gen",
+    "name": "菩提根",
+    "how": "Li 等（2014）记菩提根为贝叶棕、“白玉”为油棕；两者常被混称，肉眼没有可靠的区分方法，要看卖家写明的植物来源"
+   },
+   {
+    "id": "xiangyaguo",
+    "name": "象牙果",
+    "how": "象牙果是南美象牙棕的胚乳，更白更细，常染色"
+   },
+   {
+    "id": "",
+    "name": "树脂仿品",
+    "how": "手感轻、温度高，没有天然小点"
+   },
+   {
+    "id": "",
+    "name": "和田白玉",
+    "how": "“白玉”通常指和田玉里的白玉，是玉石，不是植物种子"
+   }
+  ],
+  "dims": {
+   "color": [
+    "乳白",
+    "米黄"
+   ],
+   "clarity": [
+    "玉化"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠"
+   ],
+   "treatment": [
+    "天然",
+    "漂白"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "白净细腻",
+    "desc": "颜色白、质地细，没有裂和黑点"
+   },
+   {
+    "level": 2,
+    "label": "有小点",
+    "desc": "有斑点或色差"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂纹"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    15
+   ],
+   "note": "车圆珠，常见 8–15mm"
+  },
+  "treatments": [
+   {
+    "type": "漂白",
+    "note": "漂白后白得发死，盘后容易发花"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "纯洁",
+    "清净"
+   ],
+   "text": "色白如玉，传统上取洁白清净之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "审校 kb/check/factcheck.md",
+   "https://tw.bid.yahoo.com/item/100232939567/index.md"
+  ],
+  "confidence": {
+   "summary": "low",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "taiyang",
+  "name": "太阳菩提",
+  "std": "太阳菩提",
+  "category": "bodhi",
+  "aliases": [
+   "太阳"
+  ],
+  "summary": "Li 等（2014）记“太阳子”为大托叶云实（Caesalpinia major）的种子，市售是否都是它未核实。",
+  "look": "近球形的坚硬种子，直径约 1.5–2.5cm，种皮黄色到褐色，也有偏灰绿的；表面光滑。",
+  "identify": [
+   "近球形、表面光滑坚硬",
+   "黄到褐色，直径多在 1.5–2.5cm",
+   "按卖家标注识别"
+  ],
+  "confusables": [
+   {
+    "id": "yueliang",
+    "name": "月亮菩提",
+    "how": "Li 等（2014）记“月亮子”为同属的刺果苏木，颜色偏灰"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄",
+    "黄褐"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "天然籽、果核大小不一，一般标约数或区间（如 12–13mm）；不车圆的按原形穿"
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥"
+   ],
+   "text": "以太阳命名，传统上取光明吉祥之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "https://apps.lucidcentral.org/rainforest/text/entities/caesalpinia_major.htm（种子 15–25mm，种皮黄、褐或灰绿）"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "low",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "yueliang",
+  "name": "月亮菩提",
+  "std": "月亮菩提",
+  "category": "bodhi",
+  "status": "draft",
+  "aliases": [
+   "月亮"
+  ],
+  "summary": "市场俗称，原植物待核实",
+  "look": "",
+  "identify": [
+   "按卖家标注识别，原植物未明",
+   "向卖家要植物学名或产地说明"
+  ],
+  "confusables": [
+   {
+    "id": "xingyue",
+    "name": "星月菩提",
+    "how": "星月是黄藤籽，白底黑星点加一个月形凹坑；“月亮菩提”和它的关系未核实"
+   },
+   {
+    "id": "",
+    "name": "月亮子（刺果苏木）",
+    "how": "Li 等（2014）记“月亮子”为刺果苏木 Caesalpinia bonduc，是否就是市售“月亮菩提”未核实"
+   }
+  ],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "审校 kb/check/factcheck.md"
+  ],
+  "confidence": {
+   "summary": "low",
+   "look": "low",
+   "identify": "low",
+   "confusables": "low",
+   "treatments": "low",
+   "compliance": "low",
+   "meaning": "low",
+   "story": "low",
+   "dims": "low",
+   "grades": "low"
+  }
+ },
+ {
+  "id": "yeke",
+  "name": "椰壳",
+  "std": "椰壳",
+  "category": "bodhi",
+  "aliases": [
+   "椰壳珠",
+   "椰壳"
+  ],
+  "summary": "椰子（Cocos nucifera）内果皮即硬壳切片车磨或雕刻成的珠子，轻而坚硬，价格低。",
+  "look": "深褐到黑褐，内侧有纤维纹；质轻坚硬，常雕花纹或做成片状、圆珠。",
+  "identify": [
+   "深褐色、很轻",
+   "背面或断面能看到纤维纹",
+   "常有雕刻花纹"
+  ],
+  "confusables": [
+   {
+    "id": "yedi",
+    "name": "椰蒂",
+    "how": "椰蒂是椰子果蒂部位，中间有放射状花心"
+   }
+  ],
+  "dims": {
+   "color": [
+    "深褐",
+    "黑褐"
+   ],
+   "pattern": [
+    "雕花"
+   ],
+   "age": [
+    "新料",
+    "包浆",
+    "盘玩"
+   ],
+   "shape": [
+    "圆珠",
+    "片珠",
+    "雕刻珠"
+   ],
+   "treatment": [
+    "天然",
+    "染色",
+    "上蜡"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色匀雕精",
+    "desc": "颜色均匀、雕工清楚，无裂"
+   },
+   {
+    "level": 2,
+    "label": "色差",
+    "desc": "颜色不均"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或缺口"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    15
+   ],
+   "note": "圆珠常见 8–15mm；片状珠标直径×厚"
+  },
+  "treatments": [
+   {
+    "type": "染色/上蜡",
+    "note": "染深色、上蜡出光，擦后掉色或有蜡感"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥"
+   ],
+   "text": "椰子是热带常见作物，椰壳珠多雕吉祥纹样，取吉祥之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "xiangsi",
+  "name": "相思豆",
+  "std": "相思子",
+  "category": "bodhi",
+  "aliases": [
+   "相思豆",
+   "相思子",
+   "鸡母珠"
+  ],
+  "summary": "相思子（Abrus precatorius）的种子，红身黑头，鲜艳光亮；种子有毒，不能放进嘴里。",
+  "look": "鲜红色，一端有黑色斑块，表面光亮如漆；椭圆形，约 5–7mm。",
+  "identify": [
+   "红身黑头",
+   "椭圆、个头小",
+   "表面光亮如漆"
+  ],
+  "confusables": [
+   {
+    "id": "haihongdou",
+    "name": "海红豆",
+    "how": "海红豆全身红、扁心形、个头稍大，没有黑头，毒性较弱"
+   },
+   {
+    "id": "",
+    "name": "红豆树种子",
+    "how": "“红豆”也指红豆树种子，颜色暗红、个大，不能一律当相思子"
+   }
+  ],
+  "dims": {
+   "color": [
+    "鲜红",
+    "红黑"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然",
+    "上漆"
+   ],
+   "count": [
+    "单圈",
+    "多圈"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "红亮饱满",
+    "desc": "颜色鲜红、黑头清楚、无破损"
+   },
+   {
+    "level": 2,
+    "label": "有色差",
+    "desc": "颜色暗或大小不一"
+   },
+   {
+    "level": 3,
+    "label": "有破损",
+    "desc": "种皮有裂或缺"
+   }
+  ],
+  "sizes": {
+   "common": [
+    5,
+    6,
+    7
+   ],
+   "note": "天然种子约 5–7mm，不车圆，按粒穿孔"
+  },
+  "treatments": [
+   {
+    "type": "上漆",
+    "note": "刷亮漆增光，表面有漆膜感"
+   }
+  ],
+  "compliance": {
+   "level": "restricted",
+   "note": "种子含相思子毒蛋白（abrin）。完整吞下一般不易中毒，咬破、嚼碎才危险，儿童风险最大；穿孔后种皮已破，要提示不要放进嘴里、远离儿童"
+  },
+  "meaning": {
+   "tags": [
+    "相思",
+    "和合"
+   ],
+   "text": "古诗以红豆寄托思念，“相思豆”传统上寓意相思与情意。"
+  },
+  "story": "唐代王维《相思》写“红豆生南国”，红豆从此成了相思的代称，“相思豆”的叫法也流传开来；诗里的红豆具体是哪种植物，历来有不同说法。",
+  "care": "",
+  "price_band": "低",
+  "sources": [
+   "审校 kb/check/factcheck.md",
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "https://www.thepaper.cn/newsDetail_forward_30534087",
+   "王维《相思》"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "high",
+   "meaning": "mid",
+   "story": "mid"
+  },
+  "safety": {
+   "level": "toxic",
+   "note": "相思子种子含相思子毒蛋白，咬破、嚼碎后毒性很强。不可入口，儿童勿接触。"
+  }
+ },
+ {
+  "id": "puti-gen",
+  "name": "菩提根",
+  "std": "贝叶棕籽",
+  "category": "bodhi",
+  "aliases": [
+   "菩提根",
+   "贝叶棕籽"
+  ],
+  "summary": "贝叶棕（Corypha umbraculifera）的种子车成的珠子，白色细腻，盘玩后由白转黄、红棕；Li 等（2014）记虎斑、蜜瓜也是同种。",
+  "look": "乳白到米黄色，质地细密如骨，表面常有细小的棕色点；盘后转黄、红棕，有的出现红色沁纹。",
+  "identify": [
+   "乳白细腻",
+   "有细小棕点",
+   "盘后颜色变化明显"
+  ],
+  "confusables": [
+   {
+    "id": "baiyu-puti",
+    "name": "白玉菩提",
+    "how": "常和菩提根混称，肉眼难分"
+   },
+   {
+    "id": "xiangyaguo",
+    "name": "象牙果",
+    "how": "象牙果更白、更细，常染色"
+   },
+   {
+    "id": "",
+    "name": "骨珠",
+    "how": "骨质有细小血丝孔，手感更凉、更重"
+   }
+  ],
+  "dims": {
+   "color": [
+    "乳白",
+    "米黄",
+    "红棕"
+   ],
+   "clarity": [
+    "玉化"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "雕刻珠"
+   ],
+   "treatment": [
+    "天然",
+    "漂白",
+    "染色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ],
+   "pattern": [
+    "虎斑",
+    "蜜瓜"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "白净细腻",
+    "desc": "颜色白、质细，无裂无黑点"
+   },
+   {
+    "level": 2,
+    "label": "有斑点",
+    "desc": "有棕点或色差"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂纹"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "车圆珠，常见 8–16mm"
+  },
+  "treatments": [
+   {
+    "type": "漂白",
+    "note": "漂白后白得发死，盘后易发花"
+   },
+   {
+    "type": "染色做旧",
+    "note": "染红冒充盘出的红沁，颜色浮在表面"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "清净",
+    "雅致"
+   ],
+   "text": "洁白细腻，盘玩后颜色渐变，传统上取清净雅致之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low",
+   "dims": "mid"
+  }
+ },
+ {
+  "id": "tianzhu-puti",
+  "name": "天竺菩提",
+  "std": "天竺菩提",
+  "category": "bodhi",
+  "aliases": [
+   "天竺",
+   "天竺菩提"
+  ],
+  "summary": "壳斗科坚果做的珠子；Li 等（2014）把“天竺”记为烟斗柯（Lithocarpus corneus）。",
+  "look": "黄褐到棕褐的坚果，近球形到陀螺形，顶端圆钝或微凹，一端有壳斗留下的痕迹；坚硬，盘后红亮。",
+  "identify": [
+   "形似橡果",
+   "一端有壳斗着生的痕",
+   "黄褐到棕褐"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "天竺黄",
+    "how": "中药“天竺黄”是竹子里的分泌物，和天竺菩提无关"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄褐",
+    "棕褐"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽",
+    "圆珠"
+   ],
+   "treatment": [
+    "天然"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "饱满完整",
+    "desc": "果实饱满、无裂"
+   },
+   {
+    "level": 2,
+    "label": "有小缺",
+    "desc": "有小疤或色差"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或虫眼"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "天然籽、果核大小不一，一般标约数或区间（如 12–13mm）；不车圆的按原形穿"
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥"
+   ],
+   "text": "“天竺”是古代对印度的称呼，名字带有佛教文化色彩。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "常识",
+   "https://www.treesandshrubsonline.org/articles/lithocarpus/lithocarpus-corneus/（烟斗柯坚果形态）"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "low",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "wuyan",
+  "name": "五眼六通",
+  "std": "五眼六通",
+  "category": "bodhi",
+  "aliases": [
+   "五眼菩提",
+   "六通",
+   "五眼六通"
+  ],
+  "summary": "南酸枣的果核，顶端天然有五个小孔，穿孔后合称“五眼六通”。",
+  "look": "黄褐到灰褐，表面粗糙；一端有五个小圆孔（萌发孔），像五只眼睛；坚硬，盘后红亮。",
+  "identify": [
+   "一端有五个小孔",
+   "果核表面粗糙",
+   "黄褐到灰褐色"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "其他果核",
+    "how": "孔数不是五个的，不叫五眼六通"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄褐",
+    "灰褐",
+    "红褐"
+   ],
+   "pattern": [
+    "五眼"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然",
+    "上色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "五眼清楚",
+    "desc": "五个孔清楚均匀，果核完整"
+   },
+   {
+    "level": 2,
+    "label": "眼不匀",
+    "desc": "孔大小不一或有堵"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或缺"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "天然籽、果核大小不一，一般标约数或区间（如 12–13mm）；不车圆的按原形穿"
+  },
+  "treatments": [
+   {
+    "type": "上色",
+    "note": "染深色或刷油，颜色浮在表面"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "智慧",
+    "吉祥"
+   ],
+   "text": "名字取自佛教“五眼”“六通”的说法，作文化寓意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "qiansi",
+  "name": "千丝菩提",
+  "std": "狐尾椰籽",
+  "category": "bodhi",
+  "aliases": [
+   "千丝果",
+   "狐尾椰",
+   "千丝菩提"
+  ],
+  "summary": "狐尾椰（Wodyetia bifurcata）的种子，表面包着网状纤维，像千丝缠绕。",
+  "look": "褐色到深褐，表面布满交织的网状纤维纹，像细丝缠绕；质地坚硬，个头较大，多保留原形。",
+  "identify": [
+   "表面网状纤维纹",
+   "褐色、个大",
+   "原形种子"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "染色千丝",
+    "how": "颜色均匀发深"
+   }
+  ],
+  "dims": {
+   "color": [
+    "褐",
+    "深褐"
+   ],
+   "pattern": [
+    "网纹"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "纹清完整",
+    "desc": "网纹清楚、无破损"
+   },
+   {
+    "level": 2,
+    "label": "纹有缺",
+    "desc": "纤维有脱落"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    12,
+    15,
+    18,
+    20
+   ],
+   "note": "原形种子，标约数"
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "染深色，颜色均匀"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "和合"
+   ],
+   "text": "千丝相连，传统上取情意绵长、缘分相连之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "jinchan",
+  "name": "金蟾菩提",
+  "std": "金蟾菩提",
+  "category": "bodhi",
+  "status": "draft",
+  "aliases": [
+   "金蟾"
+  ],
+  "summary": "市场俗称，原植物待核实",
+  "look": "",
+  "identify": [
+   "按卖家标注识别，原植物未明",
+   "向卖家要植物学名或产地说明"
+  ],
+  "confusables": [
+   {
+    "id": "xingyue",
+    "name": "金蝉菩提",
+    "how": "“金蝉”（蝉）在 Li 等（2014）里是黄藤籽，和“金蟾”（蟾蜍）只差一字，不要混"
+   }
+  ],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "",
+  "sources": [
+   "原植物没找到可靠出处（Li 等 2014 的 52 种菩提子名录里没有这个名字）"
+  ],
+  "confidence": {
+   "summary": "low",
+   "look": "low",
+   "identify": "low",
+   "confusables": "low",
+   "treatments": "low",
+   "compliance": "low",
+   "meaning": "low",
+   "story": "low",
+   "dims": "low",
+   "grades": "low"
+  }
+ },
+ {
+  "id": "fodu",
+  "name": "佛肚菩提",
+  "std": "佛肚菩提",
+  "category": "bodhi",
+  "status": "draft",
+  "aliases": [
+   "佛肚"
+  ],
+  "summary": "市场俗称，原植物待核实",
+  "look": "",
+  "identify": [
+   "按卖家标注识别，原植物未明",
+   "向卖家要植物学名或产地说明"
+  ],
+  "confusables": [],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "",
+  "sources": [
+   "原植物没找到可靠出处（Li 等 2014 的 52 种菩提子名录里没有这个名字）"
+  ],
+  "confidence": {
+   "summary": "low",
+   "look": "low",
+   "identify": "low",
+   "confusables": "low",
+   "treatments": "low",
+   "compliance": "low",
+   "meaning": "low",
+   "story": "low",
+   "dims": "low",
+   "grades": "low"
+  }
+ },
+ {
+  "id": "yuanbao",
+  "name": "元宝菩提",
+  "std": "元宝菩提",
+  "category": "bodhi",
+  "aliases": [
+   "元宝"
+  ],
+  "summary": "形似元宝的果核；Li 等（2014）记“金元宝”为黄花夹竹桃（Thevetia peruviana）果核，种子剧毒。",
+  "look": "黄褐到棕褐，两侧鼓起、中间有棱，形似元宝；质地坚硬，原形穿孔，大小不一。",
+  "identify": [
+   "形似元宝",
+   "黄褐到棕褐",
+   "原形果核",
+   "Li 等（2014）记“金元宝”为黄花夹竹桃果核，按有毒品对待"
+  ],
+  "confusables": [
+   {
+    "id": "xingyue",
+    "name": "元宝籽（星月）",
+    "how": "“元宝籽”是星月菩提的一种籽种叫法，和元宝菩提不是一回事"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄褐",
+    "棕褐"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "天然籽、果核大小不一，一般标约数或区间（如 12–13mm）；不车圆的按原形穿"
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": "不是保护物种；毒性见 safety。"
+  },
+  "meaning": {
+   "tags": [
+    "富贵",
+    "吉祥"
+   ],
+   "text": "元宝是传统的富贵吉祥符号，名字取其吉祥之意。"
+  },
+  "story": "",
+  "care": "不可入口，儿童和宠物勿接触；避免长时间泡水和暴晒。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "https://kmweb.moa.gov.tw/redirect_files.php?id=156938",
+   "https://inchem.org/documents/pims/plant/thevetia.htm（黄花夹竹桃毒性）"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "low",
+   "identify": "low",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "high",
+   "meaning": "mid",
+   "story": "low"
+  },
+  "safety": {
+   "level": "toxic",
+   "note": "市售“金元宝”多为黄花夹竹桃果核，种子含强心苷，剧毒。不可入口，儿童和宠物勿接触（Li 等 2014）。"
+  }
+ },
+ {
+  "id": "mile",
+  "name": "弥勒菩提",
+  "std": "弥勒菩提",
+  "category": "bodhi",
+  "status": "draft",
+  "aliases": [
+   "弥勒"
+  ],
+  "summary": "市场俗称，原植物待核实",
+  "look": "",
+  "identify": [
+   "按卖家标注识别，原植物未明",
+   "向卖家要植物学名或产地说明"
+  ],
+  "confusables": [],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "",
+  "sources": [
+   "原植物没找到可靠出处（Li 等 2014 的 52 种菩提子名录里没有这个名字）"
+  ],
+  "confidence": {
+   "summary": "low",
+   "look": "low",
+   "identify": "low",
+   "confusables": "low",
+   "treatments": "low",
+   "compliance": "low",
+   "meaning": "low",
+   "story": "low",
+   "dims": "low",
+   "grades": "low"
+  }
+ },
+ {
+  "id": "qilin",
+  "name": "麒麟菩提",
+  "std": "麒麟菩提",
+  "category": "bodhi",
+  "aliases": [
+   "麒麟"
+  ],
+  "summary": "枣属植物的果核；Li 等（2014）记“麒麟眼”为埃塞俄比亚枣的四室果核，和凤眼、龙眼同源。",
+  "look": "黄褐到红褐，表面有多个眼状凹痕，纹路细密；质地坚硬，原形穿孔，盘后红亮。",
+  "identify": [
+   "多个眼状凹痕",
+   "黄褐到红褐",
+   "原形果核"
+  ],
+  "confusables": [
+   {
+    "id": "fengyan",
+    "name": "凤眼菩提",
+    "how": "同一种枣核，室数和眼数不同"
+   },
+   {
+    "id": "longyan",
+    "name": "龙眼菩提",
+    "how": "同上"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄褐",
+    "红褐"
+   ],
+   "pattern": [
+    "麒麟眼"
+   ],
+   "age": [
+    "新籽",
+    "陈籽",
+    "包浆",
+    "盘玩",
+    "玩透"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "眼清完整",
+    "desc": "眼形清楚、果核完整，无裂"
+   },
+   {
+    "level": 2,
+    "label": "有小缺",
+    "desc": "眼形不正或有小缺"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或虫眼"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14,
+    16
+   ],
+   "note": "天然籽、果核大小不一，一般标约数或区间（如 12–13mm）；不车圆的按原形穿"
+  },
+  "treatments": [
+   {
+    "type": "上色",
+    "note": "染红或刷油，颜色浮在表面（常见程度待核）"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥"
+   ],
+   "text": "麒麟是传统瑞兽，名字取吉祥之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "low",
+   "identify": "low",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low",
+   "grades": "low"
+  }
+ },
+ {
+  "id": "feidie",
+  "name": "飞碟菩提",
+  "std": "飞碟菩提",
+  "category": "bodhi",
+  "status": "draft",
+  "aliases": [
+   "飞碟"
+  ],
+  "summary": "市场俗称，原植物待核实",
+  "look": "",
+  "identify": [
+   "按卖家标注识别，原植物未明",
+   "向卖家要植物学名或产地说明"
+  ],
+  "confusables": [],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "",
+  "sources": [
+   "原植物没找到可靠出处（Li 等 2014 的 52 种菩提子名录里没有这个名字）"
+  ],
+  "confidence": {
+   "summary": "low",
+   "look": "low",
+   "identify": "low",
+   "confusables": "low",
+   "treatments": "low",
+   "compliance": "low",
+   "meaning": "low",
+   "story": "low",
+   "dims": "low",
+   "grades": "low"
+  }
+ },
+ {
+  "id": "wuhuanzi",
+  "name": "无患子",
+  "std": "无患子",
+  "category": "bodhi",
+  "aliases": [
+   "木患子",
+   "肥皂果",
+   "无患子"
+  ],
+  "summary": "无患子属植物的种子，黑色正圆、坚硬光亮；果皮旧时可当肥皂用，所以又叫肥皂果。Li 等（2014）以俗名“鬼见愁”记为 Sapindus saponaria。",
+  "look": "黑色到黑褐，近正圆，表面光滑坚硬；种脐处有一小撮白色或浅褐色绒毛痕。",
+  "identify": [
+   "黑色正圆、坚硬",
+   "种脐处有一个浅色小点",
+   "天然不需要车圆"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "染黑木珠",
+    "how": "木珠有木纹、质轻，染色擦后掉色"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黑",
+    "黑褐"
+   ],
+   "age": [
+    "新籽",
+    "包浆",
+    "盘玩"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "黑亮正圆",
+    "desc": "颜色黑亮、圆度好、无裂"
+   },
+   {
+    "level": 2,
+    "label": "色暗",
+    "desc": "颜色发灰或不圆"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或缺"
+   }
+  ],
+  "sizes": {
+   "common": [
+    10,
+    12,
+    14
+   ],
+   "note": "天然种子约 10–14mm，标约数"
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "平安",
+    "吉祥"
+   ],
+   "text": "名字取“无忧无患”之意，传统上寓意平安顺遂。"
+  },
+  "story": "《佛说木槵子经》记佛告波流离王“当贯木槵子一百八”，木槵子即无患子，是无患子做念珠最常被引用的出处。",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "常识",
+   "《佛说木槵子经》大正藏 T0786，https://dharmamitra.org/db/zh/ZH_T17_0786/text"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "high"
+  }
+ },
+ {
+  "id": "yedi",
+  "name": "椰蒂",
+  "std": "椰子蒂",
+  "category": "bodhi",
+  "aliases": [
+   "椰蒂",
+   "椰子蒂"
+  ],
+  "summary": "椰子果蒂部位车成的珠子，中间常有放射状的花心纹。",
+  "look": "深褐到黑褐，切面有放射状纤维纹，中间有花心般的图案；质轻坚硬。",
+  "identify": [
+   "有放射状花心纹",
+   "深褐色、轻"
+  ],
+  "confusables": [
+   {
+    "id": "yeke",
+    "name": "椰壳",
+    "how": "椰壳是平整的壳片，没有花心纹"
+   }
+  ],
+  "dims": {
+   "color": [
+    "深褐",
+    "黑褐"
+   ],
+   "pattern": [
+    "花心",
+    "放射纹"
+   ],
+   "age": [
+    "新料",
+    "包浆",
+    "盘玩"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "花心清楚",
+    "desc": "放射纹清楚、无裂"
+   },
+   {
+    "level": 2,
+    "label": "纹弱有裂",
+    "desc": "花心不清或有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    10,
+    12,
+    15
+   ],
+   "note": "车圆或桶珠，标约数"
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "染深色，颜色均匀发死，常见程度待核"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥"
+   ],
+   "text": "花心纹样自然，传统上取吉祥之意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "low",
+   "identify": "low",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "low",
+   "story": "low",
+   "grades": "low"
+  }
+ },
+ {
+  "id": "lianzi",
+  "name": "莲子",
+  "std": "莲子",
+  "category": "bodhi",
+  "aliases": [
+   "老莲子",
+   "莲花子"
+  ],
+  "summary": "莲（Nelumbo nucifera）的老熟种子（老莲子），外壳极硬，可直接穿孔做珠。",
+  "look": "黑褐到灰黑，椭圆形，外壳极硬、表面细腻；一端有一个小凸起；盘后发亮，颜色更黑。",
+  "identify": [
+   "椭圆、黑褐",
+   "一端有小凸起",
+   "外壳极硬"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "染色莲子",
+    "how": "颜色均匀发黑，擦后掉色"
+   },
+   {
+    "id": "",
+    "name": "“千年古莲子”宣传",
+    "how": "古莲子出土极少，市售标“千年古莲”的基本无法证实，按普通老莲子看"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黑褐",
+    "灰黑"
+   ],
+   "age": [
+    "新籽",
+    "老籽",
+    "包浆",
+    "盘玩"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "饱满黑亮",
+    "desc": "颗粒饱满、颜色均匀，无裂"
+   },
+   {
+    "level": 2,
+    "label": "色差",
+    "desc": "颜色深浅不一"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂或缺"
+   }
+  ],
+  "sizes": {
+   "common": [
+    10,
+    12,
+    14
+   ],
+   "note": "天然种子，标长×宽或约数"
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "染黑，颜色均匀、擦后掉色"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "清净",
+    "纯洁"
+   ],
+   "text": "莲在传统文化里象征出淤泥而不染，周敦颐《爱莲说》是最有名的出处。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "常识",
+   "周敦颐《爱莲说》"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "yiyi",
+  "name": "薏苡子",
+  "std": "薏苡",
+  "category": "bodhi",
+  "aliases": [
+   "草珠子",
+   "川谷",
+   "薏米菩提",
+   "薏苡"
+  ],
+  "summary": "薏苡（Coix lacryma-jobi）的硬质总苞，天然带孔，俗称草珠子，自古就被穿成串。",
+  "look": "灰白、灰褐到黑色，卵圆形，表面光亮如瓷；两端天然有孔，可以直接穿。",
+  "identify": [
+   "卵圆、光亮如瓷",
+   "两端天然有孔",
+   "颜色灰白到黑，一串里深浅不一"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "薏米",
+    "how": "食用薏米是去壳的种仁，白色软，不能穿珠"
+   }
+  ],
+  "dims": {
+   "color": [
+    "灰白",
+    "灰褐",
+    "黑"
+   ],
+   "age": [
+    "新籽",
+    "包浆",
+    "盘玩"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "光亮均匀",
+    "desc": "表面光亮、大小均匀、天然孔通畅"
+   },
+   {
+    "level": 2,
+    "label": "色差",
+    "desc": "颜色深浅不一"
+   },
+   {
+    "level": 3,
+    "label": "有破损",
+    "desc": "有裂或缺"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10
+   ],
+   "note": "天然总苞约 8–12mm，标约数"
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "染成彩色或黑色"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "古朴",
+    "平安"
+   ],
+   "text": "草珠子是乡间常见的天然珠子，朴素自然，传统上取平安质朴之意。"
+  },
+  "story": "《后汉书·马援传》记载，马援从交趾带回一车薏苡，被人诬告是明珠，后来就有了“薏苡明珠”这个成语，比喻被人诬陷。",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "《后汉书·马援传》"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "mid"
+  }
+ },
+ {
+  "id": "haihongdou",
+  "name": "海红豆",
+  "std": "海红豆",
+  "category": "bodhi",
+  "aliases": [
+   "孔雀豆",
+   "海红豆",
+   "红心"
+  ],
+  "summary": "海红豆（Adenanthera pavonina）的种子，全身鲜红、扁心形，常和相思子混。",
+  "look": "鲜红或珊瑚红，扁圆偏心形，表面光亮；全身一个颜色，没有黑头；约 7–9mm。",
+  "identify": [
+   "全身红，没有黑头",
+   "扁心形",
+   "比相思子大"
+  ],
+  "confusables": [
+   {
+    "id": "xiangsi",
+    "name": "相思子",
+    "how": "相思子红身黑头、椭圆、个小，有毒，不能混卖"
+   },
+   {
+    "id": "",
+    "name": "红豆树种子",
+    "how": "颜色暗红、个更大"
+   }
+  ],
+  "dims": {
+   "color": [
+    "鲜红",
+    "珊瑚红"
+   ],
+   "shape": [
+    "原籽"
+   ],
+   "treatment": [
+    "天然",
+    "上漆"
+   ],
+   "count": [
+    "单圈",
+    "多圈"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "红亮饱满",
+    "desc": "颜色鲜红、颗粒饱满、无破损"
+   },
+   {
+    "level": 2,
+    "label": "有色差",
+    "desc": "颜色暗或大小不一"
+   },
+   {
+    "level": 3,
+    "label": "有破损",
+    "desc": "种皮有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    7,
+    8,
+    9
+   ],
+   "note": "天然种子约 7–9mm，不车圆"
+  },
+  "treatments": [
+   {
+    "type": "上漆",
+    "note": "刷亮漆增光"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "毒性比相思子弱，但也不宜放进嘴里，儿童要注意"
+  },
+  "meaning": {
+   "tags": [
+    "相思",
+    "吉祥"
+   ],
+   "text": "同样被叫作红豆，传统上寓意相思与情意。"
+  },
+  "story": "",
+  "care": "避免长时间泡水和暴晒；新籽先戴手套盘，手汗多时擦干，防止开裂发黑。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "审校 kb/check/factcheck.md"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "low",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "xiangyaguo",
+  "name": "象牙果",
+  "std": "象牙椰（塔瓜）",
+  "category": "bodhi",
+  "aliases": [
+   "塔瓜",
+   "植物象牙",
+   "象牙椰",
+   "象牙果"
+  ],
+  "summary": "象牙椰（Phytelephas macrocarpa）种子的胚乳，乳白坚硬，被叫作“植物象牙”，不是象牙。",
+  "look": "乳白到象牙色，质地细腻坚硬，表面可能留有褐色外皮；灯下看有细微的同心纹；易上色，常被染成各种颜色。",
+  "identify": [
+   "乳白细腻，常带一点褐色外皮",
+   "没有象牙的交叉网纹",
+   "常见染成彩色"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "象牙",
+    "how": "象牙横截面有交叉网纹（勒兹纹），禁售；象牙果是植物种子，可以正常卖"
+   },
+   {
+    "id": "puti-gen",
+    "name": "菩提根",
+    "how": "菩提根颜色偏米黄，有棕点"
+   },
+   {
+    "id": "",
+    "name": "树脂仿品",
+    "how": "手感轻、温度高，没有天然纹理"
+   }
+  ],
+  "dims": {
+   "color": [
+    "乳白",
+    "象牙白",
+    "染色彩"
+   ],
+   "age": [
+    "新籽",
+    "包浆",
+    "盘玩"
+   ],
+   "shape": [
+    "圆珠",
+    "雕刻珠"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "108颗",
+    "单圈",
+    "多圈",
+    "手持"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "白净无裂",
+    "desc": "颜色白、质细、无裂无黑点"
+   },
+   {
+    "level": 2,
+    "label": "带皮有点",
+    "desc": "带外皮或小黑点"
+   },
+   {
+    "level": 3,
+    "label": "有裂",
+    "desc": "有裂纹"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14
+   ],
+   "note": "车圆珠，常见 8–14mm"
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "很常见，颜色鲜艳均匀，孔里也有色"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "纯洁",
+    "雅致"
+   ],
+   "text": "色白如象牙，被叫作“植物象牙”，传统上取洁白雅致之意。"
+  },
+  "story": "",
+  "care": "遇水易变形开裂，避免泡水；不要暴晒。",
+  "price_band": "低",
+  "sources": [
+   "Li F 等, Seeds used for Bodhi beads in China, J Ethnobiol Ethnomed 2014;10:15, https://pmc.ncbi.nlm.nih.gov/articles/PMC3914368/",
+   "审校 kb/check/factcheck.md",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "treatments": "mid",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ }
+]

@@ -1,0 +1,489 @@
+[
+ {
+  "id": "yueguang-shi",
+  "name": "月光石",
+  "std": "月光石",
+  "category": "feldspar",
+  "aliases": [
+   "月光",
+   "冰长石",
+   "冰长月光"
+  ],
+  "summary": "有月光效应的长石，转动时表面下浮着一层蓝色或白色光晕。",
+  "look": "无色、白、灰、桃色底子，透明到半透明。转动时表面下有一层柔和的蓝光或白光在游动，像月光。常见细小的“蜈蚣纹”解理裂纹。",
+  "identify": [
+   "转动珠子，光晕在表面下游走，不是整颗均匀发白",
+   "放大看常有短小平行的蜈蚣状裂纹",
+   "“彩月光”的光是蓝、黄、绿等多色，多为透明拉长石",
+   "整体乳白、光不会游走的，可能是玻璃仿品"
+  ],
+  "confusables": [
+   {
+    "id": "lachang-shi",
+    "name": "拉长石（“彩月光”多为透明拉长石）",
+    "how": "拉长石的光多彩、只在某个角度出现大片闪光；月光石光色单一、柔和游走"
+   },
+   {
+    "id": "",
+    "name": "乳白玻璃（仿月光石）",
+    "how": "玻璃整体乳浊发蓝，没有游动的光晕，常有气泡"
+   }
+  ],
+  "dims": {
+   "color": [
+    "蓝月光",
+    "白月光",
+    "灰月光",
+    "桃月光",
+    "彩月光"
+   ],
+   "effect": [
+    "月光效应",
+    "猫眼（少见）"
+   ],
+   "clarity": [
+    "玻璃体",
+    "冰透",
+    "半透"
+   ],
+   "inclusion": [
+    "蜈蚣纹"
+   ],
+   "origin": [
+    "斯里兰卡",
+    "印度",
+    "缅甸"
+   ],
+   "shape": [
+    "圆珠",
+    "切面",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "镀膜"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "透体满光",
+    "desc": "通透，转动一圈都有明显光晕，蓝光为上"
+   },
+   {
+    "level": 2,
+    "label": "半透有光",
+    "desc": "半透明，局部有光晕"
+   },
+   {
+    "level": 3,
+    "label": "浑浊光弱",
+    "desc": "发浑或光晕很弱，裂纹多"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    12
+   ],
+   "note": "蓝月光大颗难得，价格随尺寸涨得快"
+  },
+  "treatments": [
+   {
+    "type": "仿品",
+    "note": "乳白玻璃（opalite）常冒充，整体发蓝、没有游动光晕"
+   },
+   {
+    "type": "镀膜",
+    "note": "有表面镀膜做出蓝光的，光色浮在表面、各角度都一样，膜会磨损"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "名称易混：“彩月光”按宝石学多为拉长石，展示时要说明"
+  },
+  "meaning": {
+   "tags": [
+    "温柔",
+    "浪漫"
+   ],
+   "text": "光晕像月光，常用来寓意温柔、浪漫；西方把月光石列为六月生辰石之一。"
+  },
+  "story": "",
+  "care": "有解理，怕磕碰，避免和硬物撞击。",
+  "price_band": "中",
+  "sources": [
+   "https://www.gia.edu/moonstone",
+   "https://www.gia.edu/gia-faq-rainbow-moonstone-really-moonstone",
+   "常识"
+  ],
+  "confidence": {
+   "look": "high",
+   "identify": "mid",
+   "dims": "mid",
+   "confusables": "high",
+   "meaning": "mid",
+   "care": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "lachang-shi",
+  "name": "拉长石",
+  "std": "拉长石",
+  "category": "feldspar",
+  "aliases": [
+   "光谱石",
+   "黑月光"
+  ],
+  "summary": "灰黑底子的长石，在某个角度会闪出大片蓝、绿、金等彩光，也叫光谱石、黑月光。",
+  "look": "底色灰到灰黑，半透明到不透明。转到特定角度时整片闪出蓝、绿、金、橙等金属感彩光，换个角度又变暗。",
+  "identify": [
+   "只在某个角度大片闪光，转开就暗",
+   "光色多为蓝、绿、金，可几种同时出现",
+   "侧面能看到平行的片状结构或解理"
+  ],
+  "confusables": [
+   {
+    "id": "yueguang-shi",
+    "name": "月光石",
+    "how": "月光石光晕柔和单色、会游走；拉长石是大片金属感彩光"
+   },
+   {
+    "id": "heiyao",
+    "name": "彩虹眼黑曜石",
+    "how": "黑曜石的彩光是同心圈状，底子是黑色玻璃质"
+   },
+   {
+    "id": "yueguang-shi",
+    "name": "白色拉长石（“彩月光”）",
+    "how": "透明白底、闪蓝等多彩光的“彩月光”按宝石学是拉长石，不是月光石"
+   }
+  ],
+  "dims": {
+   "color": [
+    "灰底",
+    "黑底",
+    "白底"
+   ],
+   "effect": [
+    "晕彩",
+    "蓝光",
+    "彩光",
+    "金光",
+    "满光"
+   ],
+   "clarity": [
+    "半透",
+    "不透"
+   ],
+   "origin": [
+    "马达加斯加",
+    "芬兰"
+   ],
+   "shape": [
+    "圆珠",
+    "切面",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "上油"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "满光多彩",
+    "desc": "大部分角度都有强光，光色多（蓝金彩）"
+   },
+   {
+    "level": 2,
+    "label": "半光",
+    "desc": "一半左右有光，光色单一"
+   },
+   {
+    "level": 3,
+    "label": "光弱",
+    "desc": "只有零星闪光，底色发灰"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12,
+    14
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "浸油",
+    "note": "有上油提亮的情况，表面发腻"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "名称易混：‘黑月光’‘彩月光’按宝石学是拉长石，不是月光石"
+  },
+  "meaning": {
+   "tags": [
+    "神秘",
+    "多彩"
+   ],
+   "text": "转动时彩光忽隐忽现，像极光，常用来寓意神秘、变化与多彩。"
+  },
+  "story": "英文名 labradorite 来自最早发现地加拿大拉布拉多；芬兰产的色彩丰富品种被称为光谱石（spectrolite）。",
+  "care": "有解理，避免磕碰。",
+  "price_band": "低",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Labradorite",
+   "常识"
+  ],
+  "confidence": {
+   "look": "high",
+   "identify": "mid",
+   "dims": "mid",
+   "meaning": "mid",
+   "story": "mid",
+   "care": "mid"
+  }
+ },
+ {
+  "id": "riguang-shi",
+  "name": "日光石",
+  "std": "日光石",
+  "category": "feldspar",
+  "aliases": [
+   "太阳石",
+   "金太阳"
+  ],
+  "summary": "长石里含片状金属矿物包体，闪出金色或橙红色亮点，也叫太阳石。",
+  "look": "橙黄、橙红到金褐色，半透明到微透，转动时内部片状包体闪出金色亮光，亮点大小和分布不均匀。美国俄勒冈日光石是透明的橙红到红绿色，闪片是铜，和印度产的赤铁矿闪片日光石外观差别大。",
+  "identify": [
+   "闪光来自内部片状包体，大小不一、分布不匀",
+   "转动时闪片一亮一暗，有方向性",
+   "闪点细小、均匀、密集如铜粉的多是金沙石玻璃"
+  ],
+  "confusables": [
+   {
+    "id": "jinsha",
+    "name": "金沙石（玻璃）",
+    "how": "金沙石的闪点是均匀的细小三角或六边形铜晶，密集一致，底子是玻璃"
+   },
+   {
+    "id": "dongling-yu",
+    "name": "东陵玉（砂金石英岩）",
+    "how": "东陵玉多为绿色，闪点是云母片，颗粒感明显"
+   }
+  ],
+  "dims": {
+   "color": [
+    "金橙",
+    "橙红",
+    "金褐"
+   ],
+   "effect": [
+    "砂金",
+    "闪片"
+   ],
+   "clarity": [
+    "半透",
+    "微透"
+   ],
+   "origin": [
+    "印度",
+    "坦桑尼亚",
+    "美国俄勒冈"
+   ],
+   "shape": [
+    "圆珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "扩散"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "闪片满布",
+    "desc": "闪片多而亮，颜色饱和"
+   },
+   {
+    "level": 2,
+    "label": "闪片一般",
+    "desc": "闪光区域较少或颜色偏淡"
+   },
+   {
+    "level": 3,
+    "label": "闪片稀少",
+    "desc": "闪光零星，颜色发灰"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "扩散",
+    "note": "有铜扩散处理的红色中长石（安德森石）冒充，颜色过艳过匀"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "温暖",
+    "光明"
+   ],
+   "text": "金橙色闪光像阳光洒在身上，常用来寓意温暖、光明和积极向上。"
+  },
+  "story": "",
+  "care": "",
+  "price_band": "中",
+  "sources": [
+   "https://www.gia.edu/sunstone",
+   "常识"
+  ],
+  "confidence": {
+   "look": "mid",
+   "identify": "mid",
+   "dims": "mid",
+   "treatments": "mid",
+   "meaning": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "tianhe-shi",
+  "name": "天河石",
+  "std": "天河石",
+  "category": "feldspar",
+  "aliases": [
+   "亚马逊石"
+  ],
+  "summary": "蓝绿色的微斜长石，英文 amazonite，常有白色格子纹，也叫亚马逊石。",
+  "look": "浅蓝绿到翠蓝绿，不透明到微透，玻璃到珍珠光泽，常见白色的格子状或条纹状纹理，解理面会反光。",
+  "identify": [
+   "有白色格子纹或平行条纹",
+   "转动时局部平整面一闪一闪地反光（解理面）",
+   "颜色均匀无纹、发艳的，可能是染色仿品"
+  ],
+  "confusables": [
+   {
+    "id": "lvsong",
+    "name": "绿松石",
+    "how": "绿松石常有铁线、瓷状光泽，没有白色格子纹和解理反光"
+   },
+   {
+    "id": "dongling-yu",
+    "name": "东陵玉",
+    "how": "东陵玉是石英岩，有颗粒感和闪片，没有格子纹"
+   }
+  ],
+  "dims": {
+   "color": [
+    "浅蓝绿",
+    "翠蓝绿",
+    "蓝绿"
+   ],
+   "pattern": [
+    "格子纹",
+    "白纹"
+   ],
+   "clarity": [
+    "不透",
+    "微透"
+   ],
+   "shape": [
+    "圆珠",
+    "随形",
+    "算盘珠"
+   ],
+   "treatment": [
+    "天然",
+    "浸蜡",
+    "染色"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色浓纹少",
+    "desc": "蓝绿色饱和，白纹少，光泽好"
+   },
+   {
+    "level": 2,
+    "label": "色正有纹",
+    "desc": "颜色较正，有明显白纹"
+   },
+   {
+    "level": 3,
+    "label": "色淡多纹",
+    "desc": "颜色淡或发灰，裂纹和白纹多"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "浸蜡",
+    "note": "有浸蜡提升光泽的情况"
+   },
+   {
+    "type": "染色仿品",
+    "note": "染蓝绿色的石英岩、玻璃常冒充，颜色浮在颗粒间"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "清新"
+   ],
+   "text": "蓝绿色清新明快，像湖水一样，常用来寓意清新、希望和新的开始。"
+  },
+  "story": "英文名 amazonite 取自南美亚马逊河，但亚马逊河流域并没有发现这种矿物，名字来源一直有争议。",
+  "care": "有解理，避免磕碰。",
+  "price_band": "低",
+  "sources": [
+   "https://britannica.com/topic/amazonstone",
+   "https://dbpedia.org/page/Amazonite",
+   "审校 kb/check/factcheck.md",
+   "常识"
+  ],
+  "confidence": {
+   "look": "high",
+   "identify": "mid",
+   "dims": "mid",
+   "treatments": "low",
+   "meaning": "mid",
+   "story": "mid"
+  }
+ }
+]

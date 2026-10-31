@@ -1,0 +1,177 @@
+<title>珠子商品结构调研</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* 版式：结论在前；中段六个品种并排对比；末段落到我们的数据模型。沿用串个珠规范的颜色 */
+:root {
+  --ground: #f7f6f4; --surface: #ffffff; --tray: #efece8; --line: #e6e2dd;
+  --ink: #1f1b1a; --ink-2: #5e5753; --ink-3: #736b66;
+  --brand: #c8302e; --brand-ink: #a82522; --brand-tint: #fbecea;
+  --warn: #8a5200; --warn-tint: #fbf0dc;
+  --sans: "PingFang SC", -apple-system, "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --num: "DIN Alternate", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #171514; --surface: #221f1e; --tray: #2c2826; --line: #3a3532;
+  --ink: #f2eeeb; --ink-2: #c4bcb7; --ink-3: #a39a95;
+  --brand: #ef6a5f; --brand-ink: #f39088; --brand-tint: #3a2220; --warn: #e3a64a; --warn-tint: #352a18; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #171514; --surface: #221f1e; --tray: #2c2826; --line: #3a3532;
+  --ink: #f2eeeb; --ink-2: #c4bcb7; --ink-3: #a39a95;
+  --brand: #ef6a5f; --brand-ink: #f39088; --brand-tint: #3a2220; --warn: #e3a64a; --warn-tint: #352a18; color-scheme: dark }
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 400 15px/1.7 var(--sans); }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 28px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1 { font: 600 28px/1.3 var(--sans); margin: 0; text-wrap: balance; }
+h2 { font: 600 20px/1.35 var(--sans); margin: 0 0 10px; text-wrap: balance; }
+h3 { font: 600 16px/1.4 var(--sans); margin: 0 0 6px; }
+p { margin: 0; max-width: 68ch; }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; color: var(--ink-3); }
+.lede { margin-top: 8px; color: var(--ink-2); }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+.meta b { font: 700 18px/1 var(--num); color: var(--ink); margin-right: 3px; font-variant-numeric: tabular-nums; }
+.card { background: var(--surface); border-radius: 12px; padding: 18px; display: grid; gap: 12px; }
+.key { box-shadow: inset 3px 0 0 var(--brand); }
+ol.find { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; }
+ol.find b { font-weight: 600; }
+.tw { overflow-x: auto; background: var(--surface); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 13.5px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+thead th { font-weight: 600; background: var(--tray); position: sticky; top: 0; }
+tbody th { font-weight: 600; white-space: nowrap; color: var(--ink); }
+td .w { display: inline-block; background: var(--tray); border-radius: 5px; padding: 0 6px; margin: 1px 2px 1px 0; font-size: 12.5px; white-space: nowrap; }
+td .w i { font-style: normal; font-family: var(--num); color: var(--ink-3); margin-left: 3px; font-variant-numeric: tabular-nums; }
+.bad { color: var(--warn); }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.mode b { display: block; font-size: 15px; }
+.mode .eg { font-size: 13px; color: var(--ink-3); margin-top: 6px; }
+.layer { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 4px 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+.layer:first-of-type { border-top: 0; padding-top: 0; }
+.layer .lb { font-weight: 600; }
+.layer .lb span { display: block; font-size: 12px; color: var(--ink-3); font-weight: 400; }
+.sku { font: 400 13px/1.6 ui-monospace, Menlo, monospace; background: var(--tray); border-radius: 8px; padding: 12px; overflow-x: auto; white-space: pre; }
+ul.tight { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+a { color: var(--brand-ink); }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 720px) { .grid2, .grid3 { grid-template-columns: 1fr; } .layer { grid-template-columns: 1fr; } h1 { font-size: 23px; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>商家怎么描述和上架珠子</h1>
+    <p class="lede">看了 6 个品种的真实商品：同一个品种，商家怎么写卖点、怎么建商品（SPU）、怎么分规格（SKU）。结论用来设计我们知识库的“属性”和料包的商品结构。</p>
+    <div class="meta"><span><b>6</b>个品种</span><span><b>1,048</b>条台湾标题</span><span><b>727</b>条国内标题</span><span><b>36</b>个规格完整的水晶详情页</span><span><b>64</b>个文玩详情页</span></div>
+    <p class="small" style="margin-top:8px">来源：台湾 Yahoo 拍卖（中文，含不少大陆货源）和速卖通标题；国内平台补了 6 个品种 727 条标题（见文末补充）。刷屏的同款卖家已单独去重。</p>
+  </header>
+
+  <section class="card key">
+    <h2>五个结论</h2>
+    <ol class="find">
+      <li><b>规格的第一层永远是尺寸。</b>有规格选项的详情页几乎都按珠径分，档位多是 2mm 一档。成品手串最小到最大尺寸，价格差 2–4 倍（保山南红 6→22mm 差到 10 倍）。</li>
+      <li><b>真正拉开价格的是品质，不是尺寸。</b>白水晶同样 10mm 散珠，1A 卖 NT$196，收藏级卖 NT$2,724，差 14 倍。星月菩提同尺寸品级每升一档贵 1.5–3 倍。</li>
+      <li><b>每个品种看的“品质”完全不一样。</b>粉晶看星光和种水，黑曜石看彩虹眼、金曜、银曜这些变种，白水晶看通透和净度，南红看颜色、冰飘和矿口，小叶紫檀看金星和油密，星月菩提看正月、密度和盘玩后的颜色。没法用一套通用的“品级”覆盖。</li>
+      <li><b>“AAA”这类品级各家各说各话。</b>7A 在一家是中档，在另一家是“珍藏级”。好一点的供应商会在品级后面直接写瑕疵：“3A（多裂多棉）”“收藏级（几乎无瑕）”。这个写法值得照搬。</li>
+      <li><b>文玩大量“一物一拍”。</b>南红详情页里约 45% 是一件一页、库存为 1，标题写精确尺寸、克重和矿口，靠实拍定价。水晶则以标准品为主。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>商家的三种建品方式</h2>
+    <div class="grid3">
+      <div class="card mode"><b>一个品质，多个尺寸</b><span class="muted">最主流。商品页定死品种和品级，买家只选尺寸。</span><span class="eg">例：马达加斯加冰种粉晶手串，规格 8 / 10 / 12 / 14mm</span></div>
+      <div class="card mode"><b>品质 × 尺寸矩阵</b><span class="muted">供应链铺货常用。一页里放多个品级或变种，再乘尺寸。</span><span class="eg">例：黑曜石散珠，纯黑 / 彩虹眼 / 金曜 / 银曜 × 6–16mm</span></div>
+      <div class="card mode"><b>一物一拍</b><span class="muted">文玩和高端料常用。每件库存 1，实拍图、克重、精确尺寸写在商品上。</span><span class="eg">例：保山南红柿子红满肉 11.2mm 38g（一页一件，或一页挂 1–16 号）</span></div>
+    </div>
+    <p class="small" style="margin-top:10px">常见的乱象：品级、尺寸、款式都被塞进平台默认的“颜色分类”字段；尺寸对比图、广告文案也做成规格选项；“优化”“染色”“合成”和天然的放在同一个商品里当规格选。</p>
+  </section>
+
+  <section>
+    <h2>六个品种：商家靠什么区分</h2>
+    <p class="small" style="margin-bottom:10px">括号里的数字是出现该词的标题条数。功效、宗教类的词单独列出，我们不能用。</p>
+    <div class="tw"><table>
+      <thead><tr><th>品种</th><th>核心品质维度</th><th>高频卖点词</th><th>产地写法</th><th>尺寸写法</th><th>处理和冒充风险</th><th class="bad">不能用的词</th></tr></thead>
+      <tbody>
+        <tr><th>粉晶</th><td>颜色深浅、种水、星光</td><td><span class="w">星光<i>47</i></span><span class="small">（去掉刷屏卖家后 14）</span><span class="w">冰种/冰透</span><span class="w">糯体</span><span class="w">满肉</span><span class="w">粉亮/浓粉/果冻粉</span><span class="w">六芒星</span></td><td>很重要：马达加斯加(20)、莫桑比克(12)</td><td>7–10mm 为主，女款</td><td>优化粉晶、染色石英岩仿粉晶</td><td class="bad">桃花、人缘</td></tr>
+        <tr><th>黑曜石</th><td>变种（本身就是颜色或光效）</td><td><span class="w">彩虹眼</span><span class="w">双彩眼</span><span class="w">带眼</span><span class="w">金曜</span><span class="w">银曜</span><span class="w">乌金/纯黑</span><span class="w">冰种</span><span class="w">貔貅<i>15</i></span></td><td>几乎不写</td><td>4–20mm 最宽，男款大珠多</td><td>基本天然，玻璃仿品少</td><td class="bad">避邪、挡煞、转运、招财</td></tr>
+        <tr><th>白水晶</th><td>透明度、净度、内含物</td><td><span class="w">清透</span><span class="w">晶莹剔透</span><span class="w">净体</span><span class="w">微棉</span><span class="w">包裹体/兔毛/幽灵</span><span class="w">克重</span></td><td>巴西(12)、东海(6)、老料(8)</td><td>8 / 12mm 最多，爱写克重</td><td>合成水晶、压电养晶、玻璃冒充</td><td class="bad">净化、能量</td></tr>
+        <tr><th>南红</th><td>颜色、种水、矿口</td><td><span class="w">冰飘<i>58</i></span><span class="w">柿子红<i>53</i></span><span class="w">锦红<i>52</i></span><span class="w">满肉<i>27</i></span><span class="w">玫瑰红</span><span class="w">荔枝冻</span></td><td>矿口很细：保山(77)、凉山(52)、瓦西(46)、九口、联合</td><td>“卡 10mm”、8.5–8.6mm，常带克重</td><td>注胶、烤色、染色、非洲南红冒充</td><td class="bad">鸿运、本命年、开光</td></tr>
+        <tr><th>小叶紫檀</th><td>纹理、油密、新老料</td><td><span class="w">老料<i>73</i></span><span class="w">金星<i>71</i></span><span class="w">高油密</span><span class="w">牛毛纹</span><span class="w">水波</span><span class="w">瘤疤</span><span class="w">无胶研磨</span></td><td>只写国别（印度）</td><td>mm，或“1.0 / 2.0”（厘米）；108 颗和单圈是两条线</td><td>胶磨、打蜡、染色、铜粉假金星、血檀冒充</td><td class="bad">貔貅招财、本命佛、六字真言</td></tr>
+        <tr><th>星月菩提</th><td>月相、密度、颜色、盘玩状态</td><td><span class="w">正月<i>72</i></span><span class="w">高密<i>56</i></span><span class="w">顺白</span><span class="w">鸡油黄</span><span class="w">开片</span><span class="w">陈籽年份</span><span class="w">干磨</span></td><td>产地加籽种：海南、老挝籽</td><td>直径×高（7×9、10×8），桶珠/苹果圆</td><td>脱脂漂白、老挝籽冒充海南籽</td><td class="bad">开光、修行</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="card">
+    <h2>落到我们的知识库：四层</h2>
+    <p class="muted">上次的分类骨架只是第一层。商家真正卖的是后面三层。</p>
+    <div>
+      <div class="layer"><div class="lb">① 品种<span>已有，200 种</span></div><div>这是什么珠子：粉晶、南红、小叶紫檀。</div></div>
+      <div class="layer"><div class="lb">② 品质维度<span>每个品种自己的</span></div><div>每个品种声明它看哪几个维度，取值写死。粉晶 = 颜色深浅 / 种水 / 光效；南红 = 颜色 / 种水 / 矿口；小叶紫檀 = 纹理 / 油密 / 新老料；星月 = 月相 / 密度 / 颜色 / 盘玩状态。通用维度另有：尺寸（主径＋可选副径）、珠形、处理方式、产地。</div></div>
+      <div class="layer"><div class="lb">③ 品级<span>我们自己定</span></div><div>不用 A 的个数。每档写成看得见的描述，比如水晶“净体 / 微棉 / 有棉有裂”，南红“满肉满色 / 少纹 / 有纹有飘”。用户和 AI 都能对着照片判断。</div></div>
+      <div class="layer"><div class="lb">④ 卖点词词典<span>商家说法 → 标准</span></div><div>把商家五花八门的说法翻译成上面的标准维度：“冰飘”= 种水冰透＋有飘花，“马粉”= 产地马达加斯加，“1.0”= 珠径 10mm。功效、宗教词进禁用表，AI 和文案都过滤。</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>料包里一颗珠子长什么样</h2>
+    <div class="grid2">
+      <div class="card"><h3>标准品（水晶、统货南红、星月）</h3>
+        <div class="sku">商品：粉晶 · 马达加斯加 · 冰透 · 星光
+  品级：微棉（看得见少量絮）
+  处理：天然无优化          ← 商品级必填
+  规格：6mm ¥3 · 8mm ¥5 · 10mm ¥8</div>
+        <p class="small">处理方式写在商品上，不做成规格选项，避免“天然”和“优化”混在一页。</p></div>
+      <div class="card"><h3>单品（高端南红、老料紫檀）</h3>
+        <div class="sku">商品：南红 · 保山 · 柿子红 · 满肉
+  尺寸：11.2mm   克重：38g   库存：1
+  处理：无注胶无优化
+  实拍：正面 / 侧面 / 透光 三张</div>
+        <p class="small">库存为 1，实拍图绑在这一件上，用户买到的就是图里那颗。</p></div>
+    </div>
+    <ul class="tight small" style="margin-top:10px">
+      <li>颗数不单独选：由珠径和手围算出来，现在原型就是这么做的。108 颗佛珠是另一种商品形态，单独处理。</li>
+      <li>星月菩提这类非圆珠，尺寸要存“直径×高”，长度计算用穿孔方向的高度。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>这对现有功能的影响</h2>
+    <ul class="tight">
+      <li><b>拍照做同款</b>：除了认出品种，还能认出照片上看得到的维度（颜色深浅、通透度、星光、彩虹眼），去料包里配同品质的那颗。</li>
+      <li><b>AI 配</b>：用户说“要冰透一点的粉晶”“要有闪光的”，可以按维度筛，而不是只按品种。</li>
+      <li><b>后台上架</b>：珠子表单从“名称、尺寸、价格”变成“品种 → 按该品种的维度选值 → 品级 → 处理 → 尺寸和价格”。</li>
+      <li><b>卡片展示</b>：卖点自动拼出来，例如“马粉 · 冰透 · 星光”，不用运营手写，也不会写出功效词。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>补充：国内平台的说法</h2>
+    <p class="muted">从“什么值得买”拿到京东、天猫、淘宝、拼多多、抖音商城的 727 条商品标题（粉晶 151、黑曜石 175、南红 113、小叶紫檀 67、星月菩提 105、白水晶 116）。括号里是含该词的标题条数。和台湾样本对照，<b>商品结构一致，四层设计不用改</b>；叫法和卖法有这些不同：</p>
+    <div class="tw" style="box-shadow:none"><table>
+      <thead><tr><th>品种</th><th>国内高频说法</th><th>规格写法</th><th>和台湾不同、要注意的</th></tr></thead>
+      <tbody>
+        <tr><th>粉晶</th><td>大品牌写规范名“芙蓉石”，小店写粉水晶、马粉、马岛粉、老矿、果冻粉、冰种、糖果粉、西柚、星光、六芒星光</td><td>8mm、6–14mm、直径约 8mm 单圈、XS 码-推荐手围 13.5–15cm</td><td>规范名和俗称并存；“奥地利水晶”“施华洛世奇”“粉猫眼石”（玻璃）混在搜索结果里</td></tr>
+        <tr><th>黑曜石</th><td>乌金、金曜、银曜、彩虹眼、双彩虹眼、双金眼、金沙、冰种、彩眼、矿心；貔貅、醒狮配件很多</td><td>4–16mm，“12mm（17 颗左右）”“珠径约 9×10mm”，散珠“6mm/10 颗”</td><td>品级出现“8A 收藏级”“曜晶级”等店铺自造词</td></tr>
+        <tr><th>南红</th><td>几乎都写全称“南红玛瑙”；保山(30) 多于 凉山(14)；柿子红(16)、满肉(15)、樱桃红(6)、满色(6)，新见“山椒红”；冰飘只有 3 条</td><td>散珠按颗(31 条含“散珠”)，“7mm/5 颗”“6mm/每颗”；造型有扁南瓜珠、车轮珠、隔片（“4×8mm”）；108 颗、2mm 极细款</td><td><b>“南红色”是坑</b>：有标题写“保山南红色散珠 满肉柿子红 石英岩”，其实是染色石英岩。识别和搜索要把“南红色”和南红分开</td></tr>
+        <tr><th>小叶紫檀</th><td>印度(29)、金星(24)、满金星(5)、老料(9)、包浆、高油密；108 颗(14)、佛珠(35)、念珠</td><td>108 颗多为 6 / 8mm；单圈写“2.0”“1.5×15 颗”；桶珠写“12×11mm”“9×7mm”</td><td>国内几乎不写品级（只见 1 条 3A），靠金星和老料体现；出现“非洲小叶紫檀”这种误导叫法（不是檀香紫檀）</td></tr>
+        <tr><th>星月菩提</th><td>108 颗(46)、海南(21)、原生态(16)、高密(14)、正月(11)、顺白(7)、原籽；品级“精挑级”“毕业级”</td><td>几乎全用“直径×高”：8×10mm、11×10mm、12×8mm、9×8mm</td><td>证实了尺寸要存两个数；“原生态”在国内是主要的信任词（对应台湾的“干磨、无脱脂”）</td></tr>
+        <tr><th>白水晶</th><td>东海(17) 多于 巴西(9)；净体、圆珠、颗颗全晶体；常和发晶、钛晶、海蓝宝做多宝</td><td>6 / 8mm 最多；金店款写链长 17cm、35cm</td><td>“消磁、净化、能量”是国内白水晶的特有话术（碎石“消磁石”），要进禁用词表</td></tr>
+      </tbody>
+    </table></div>
+    <ul class="tight small" style="margin-top:6px">
+      <li><b>两条国内特有的卖法</b>：①金店把“足金/18K 金珠＋晶石”做成手串，价格按金重算（如 0.64g，几百到两千多元）；②散珠按颗或按包卖（“5mm 单颗 ¥0.29”“9mm/20 粒＋3 粒备用”），有的写孔径。</li>
+      <li><b>禁用词</b>：招桃花、转运、招财、能量、净化、消磁、本命年、护身、六字真言、本命佛、情绪稳定，国内和台湾一样多。</li>
+      <li>局限：只有标题，没看商品详情页里的规格选项；以京东、天猫的品牌店为主，小 DIY 店偏少。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>局限和下一步</h2>
+    <ul class="tight muted">
+      <li>国内只看了标题。要看国内商品详情页里的规格选项，需要接上你的 Chrome 用淘宝、1688 再补一轮。</li>
+      <li>6 个品种是样板。其余品种按同一张表让 agent 批量补“品质维度 + 卖点词”，再由审校 agent 核对。</li>
+      <li>原始记录（每个品种的标题原文、词频、规格表）：<a href="crystals.md">水晶组</a>、<a href="wenwan.md">文玩组</a>。</li>
+    </ul>
+  </section>
+</div>

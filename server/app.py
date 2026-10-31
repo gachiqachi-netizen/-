@@ -1,0 +1,321 @@
+"""串个珠本地服务：前台、网页后台、接口、图片上传、AI。只用 Python 标准库，python3 app.py 即可启动。
+
+  http://127.0.0.1:8800/        前台（小程序原型）
+  http://127.0.0.1:8800/admin   网页后台（珠子 / 模板 / 宣传位 / 订单）
+
+可选环境变量：PORT、ADMIN_TOKEN（设置后后台接口需要口令）、AI 相关见 ai/__init__.py。
+"""
+import base64
+import json
+import os
+import re
+import sys
+import time
+import traceback
+import uuid
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import urlparse
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+
+import ai  # noqa: E402
+import kb  # noqa: E402
+import plans  # noqa: E402
+from db import DB  # noqa: E402
+
+PORT = int(os.environ.get("PORT", "8800"))
+ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
+UPLOADS = os.path.join(HERE, "uploads")
+FRONT = os.path.join(HERE, "..", "prototype.html")   # 前台就是原型页面，加上接口地址后直接用
+os.makedirs(UPLOADS, exist_ok=True)
+db = DB(os.path.join(HERE, "data.sqlite3"))
+
+ORDER_STATUS = ["待串制", "串制中", "已发货", "已完成", "已取消"]
+MAX_UPLOAD = 6 * 1024 * 1024
+
+
+def page_skeleton(body, head=""):
+    return ('<!doctype html><html><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
+            '<style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>'
+            f'{head}</head><body>{body}</body></html>')
+
+
+def on_sale_catalog():
+    beads = [kb.enrich(b) for b in db.list("beads") if b.get("onSale", True) and (b.get("mm") or 0) > 0]
+    ids = {b["id"] for b in beads}
+    tpls = [t for t in db.list("templates") if t.get("onSale", True)
+            and all(x in ids for x in (t.get("special") or []) + (t.get("pattern") or []) + (t.get("tail") or []))
+            and t.get("pattern")]
+    tpl_ids = {t["id"] for t in tpls}
+    banners = [b for b in db.list("banners") if b.get("on", True) and (not b.get("tpl") or b["tpl"] in tpl_ids)]
+    return beads, tpls, banners
+
+
+def save_image(data_url):
+    m = re.match(r"data:(image/(png|jpeg|jpg|webp));base64,(.+)$", data_url or "", re.S)
+    if not m:
+        raise ValueError("只支持 png / jpg / webp 图片")
+    raw = base64.b64decode(m.group(3))
+    if len(raw) > MAX_UPLOAD:
+        raise ValueError("图片太大，请小于 6MB")
+    ext = {"png": "png", "jpeg": "jpg", "jpg": "jpg", "webp": "webp"}[m.group(2)]
+    name = f"{int(time.time())}-{uuid.uuid4().hex[:8]}.{ext}"
+    with open(os.path.join(UPLOADS, name), "wb") as f:
+        f.write(raw)
+    return "/uploads/" + name
+
+
+def image_part(data_url):
+    m = re.match(r"data:(image/(?:png|jpeg|webp));base64,(.+)$", data_url or "", re.S)
+    if not m:
+        raise ValueError("图片格式不对")
+    return m.group(1), m.group(2)
+
+
+class Handler(BaseHTTPRequestHandler):
+    server_version = "cgz/1"
+
+    # ---------- 工具 ----------
+    def log_message(self, fmt, *args):
+        sys.stderr.write("%s %s\n" % (self.command, fmt % args))
+
+    def send(self, code, body, ctype="application/json; charset=utf-8"):
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        if isinstance(body, str):
+            body = body.encode()
+        self.send_response(code)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def body(self):
+        n = int(self.headers.get("Content-Length") or 0)
+        if n > MAX_UPLOAD * 2:
+            raise ValueError("请求太大")
+        return json.loads(self.rfile.read(n) or b"{}")
+
+    def admin_ok(self):
+        return not ADMIN_TOKEN or self.headers.get("X-Admin-Token") == ADMIN_TOKEN
+
+    # ---------- 路由 ----------
+    def do_GET(self):
+        path = urlparse(self.path).path
+        try:
+            if path in ("/", "/index.html"):
+                html = open(FRONT, encoding="utf-8").read()
+                return self.send(200, page_skeleton(html, '<script>window.CGZ_API="/api";</script>'), "text/html; charset=utf-8")
+            if path in ("/admin", "/admin/"):
+                return self.send(200, open(os.path.join(HERE, "static", "admin.html"), encoding="utf-8").read(), "text/html; charset=utf-8")
+            if path.startswith("/uploads/"):
+                name = os.path.basename(path)
+                fp = os.path.join(UPLOADS, name)
+                if not os.path.isfile(fp):
+                    return self.send(404, {"error": "not_found"})
+                ext = name.rsplit(".", 1)[-1]
+                return self.send(200, open(fp, "rb").read(), {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp"}.get(ext, "application/octet-stream"))
+            if path == "/api/catalog":
+                beads, tpls, banners = on_sale_catalog()
+                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status()})
+            if path == "/api/kb/status":
+                return self.send(200, kb.status())
+            if path == "/api/kb/index":
+                return self.send(200, kb.index())
+            if path == "/api/kb/rules":
+                return self.send(200, plans.rules())
+            if path == "/api/kb/attributes":
+                return self.send(200, kb.attributes())
+            m = re.match(r"^/api/kb/bead/([\w-]+)$", path)
+            if m:
+                b = kb.public(kb.get(m.group(1)))
+                return self.send(200, b) if b else self.send(404, {"error": "知识库里没有这个品种"})
+            if path == "/api/ai/status":
+                return self.send(200, ai.status())
+            m = re.match(r"^/api/admin/(beads|templates|banners|orders)$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                rows = db.list(m.group(1))
+                if m.group(1) == "orders":
+                    rows.sort(key=lambda o: o.get("createdAt", 0), reverse=True)
+                return self.send(200, rows)
+            return self.send(404, {"error": "not_found"})
+        except Exception as e:
+            traceback.print_exc()
+            return self.send(500, {"error": str(e)})
+
+    def do_POST(self):
+        path = urlparse(self.path).path
+        try:
+            data = self.body()
+            # ----- 前台 -----
+            if path == "/api/plans/match":   # AI 配：先查方案库，再按手围和预算微调
+                beads, _, _ = on_sale_catalog()
+                text = str(data.get("text") or "")[:200]
+                history = [str(h)[:200] for h in data.get("history") or []][-6:]
+                tags, by = None, "rules"
+                if ai.provider():
+                    try:
+                        vocab = {k: sorted({v for p in plans.all_plans() for v in (p.get(k) or [])}) for k in ("audience", "occasion", "meaning", "style")}
+                        t = ai.extract_tags(text, history, vocab)
+                        if t:
+                            local = plans.extract(text, history)
+                            tags = {**local, **{k: v for k, v in t.items() if v}}
+                            by = "ai"
+                    except Exception:
+                        traceback.print_exc()
+                out = plans.match(text, beads, float(data.get("wrist") or 15), history, set(data.get("exclude") or []), tags)
+                out["by"] = by
+                return self.send(200, out)
+            if path == "/api/orders":
+                beads = {b["id"]: b for b in db.list("beads")}
+                ids = data.get("beads") or []
+                if len(ids) < 6 or any(x not in beads for x in ids):
+                    return self.send(400, {"error": "手串里有珠子已下架，请回去调整"})
+                for k in ("person", "phone", "addr"):
+                    if not str(data.get(k) or "").strip():
+                        return self.send(400, {"error": "请填写收货人、手机号和地址"})
+                if not re.match(r"^1\d{10}$", str(data.get("phone"))):
+                    return self.send(400, {"error": "手机号要 11 位数字，以 1 开头"})
+                # 价格以服务端为准：珠子单价 + 手工费 + 选项 + 运费 - 首单立减
+                goods = sum(beads[x]["price"] for x in ids)
+                sub = goods + 15 + (5 if data.get("cord") == 1 else 0) + (10 if data.get("gift") else 0)
+                ship = 0 if sub >= 99 else 8
+                first = not any(o.get("phone") == data["phone"] for o in db.list("orders"))
+                promo = 10 if first else 0
+                no = "CGZ" + time.strftime("%y%m%d") + uuid.uuid4().hex[:4].upper()
+                order = {"no": no, "name": str(data.get("name") or "我的手串")[:20], "beads": ids, "wrist": data.get("wrist"),
+                         "length": data.get("length"), "cord": data.get("cord", 0), "gift": bool(data.get("gift")),
+                         "goods": goods, "ship": ship, "promo": promo, "total": max(0, sub + ship - promo),
+                         "person": data["person"].strip()[:20], "phone": data["phone"], "addr": data["addr"].strip()[:120],
+                         "status": "待串制", "createdAt": int(time.time() * 1000)}
+                db.put("orders", no, order)
+                return self.send(200, order)
+            if path == "/api/upload":
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                return self.send(200, {"url": save_image(data.get("data"))})
+            if path.startswith("/api/ai/"):
+                return self.ai_route(path, data)
+            # ----- 后台：新建 -----
+            m = re.match(r"^/api/admin/(beads|templates|banners)$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                prefix = {"beads": "b", "templates": "t", "banners": "bn"}[m.group(1)]
+                rid = data.get("id") or prefix + uuid.uuid4().hex[:6]
+                err = validate(m.group(1), data)
+                if err:
+                    return self.send(400, {"error": err})
+                return self.send(200, db.put(m.group(1), rid, data))
+            return self.send(404, {"error": "not_found"})
+        except ValueError as e:
+            return self.send(400, {"error": str(e)})
+        except Exception as e:
+            traceback.print_exc()
+            return self.send(500, {"error": str(e)})
+
+    def do_PUT(self):
+        path = urlparse(self.path).path
+        try:
+            m = re.match(r"^/api/admin/(beads|templates|banners|orders)/([\w-]+)$", path)
+            if not m:
+                return self.send(404, {"error": "not_found"})
+            if not self.admin_ok():
+                return self.send(401, {"error": "需要后台口令"})
+            table, rid = m.groups()
+            data = self.body()
+            if table == "orders":   # 订单后台只能改状态
+                o = db.get("orders", rid)
+                if not o:
+                    return self.send(404, {"error": "订单不存在"})
+                if data.get("status") not in ORDER_STATUS:
+                    return self.send(400, {"error": "状态不对"})
+                o["status"] = data["status"]
+                return self.send(200, db.put("orders", rid, o))
+            err = validate(table, data)
+            if err:
+                return self.send(400, {"error": err})
+            return self.send(200, db.put(table, rid, data))
+        except Exception as e:
+            traceback.print_exc()
+            return self.send(500, {"error": str(e)})
+
+    def do_DELETE(self):
+        path = urlparse(self.path).path
+        m = re.match(r"^/api/admin/(beads|templates|banners)/([\w-]+)$", path)
+        if not m:
+            return self.send(404, {"error": "not_found"})
+        if not self.admin_ok():
+            return self.send(401, {"error": "需要后台口令"})
+        db.delete(*m.groups())
+        return self.send(200, {"ok": True})
+
+    # ---------- AI ----------
+    def ai_route(self, path, data):
+        beads, _, _ = on_sale_catalog()
+        wrist = data.get("wrist") or 15
+        try:
+            if path == "/api/ai/design":
+                out = ai.design(beads, str(data.get("text") or "")[:200], [str(h)[:200] for h in data.get("history") or []], wrist)
+            elif path == "/api/ai/photo":
+                out = ai.photo(beads, image_part(data.get("image")))
+            elif path == "/api/ai/review":
+                out = ai.review(beads, [x for x in data.get("beads") or []], wrist, bool(data.get("fitOk")))
+            else:
+                return self.send(404, {"error": "not_found"})
+        except Exception as e:   # AI 出错不让前台报错：返回 502，前台用本地规则
+            traceback.print_exc()
+            return self.send(502, {"error": f"AI 暂时没答上来：{e}"})
+        if out is None:
+            return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
+        return self.send(200, out)
+
+
+def validate(table, d):
+    if table == "beads":
+        if not str(d.get("name") or "").strip():
+            return "请填写珠子名称"
+        if not (isinstance(d.get("mm"), (int, float)) and d["mm"] > 0):
+            return "请填写尺寸（mm），用户要靠它判断合不合手"
+        if not isinstance(d.get("price"), (int, float)) or d["price"] < 0:
+            return "请填写单价"
+        if d.get("mat") not in ai.MATS:
+            return "材质不对"
+        if d.get("kb"):
+            k = kb.get(d["kb"])
+            if not k:
+                return "知识库里没有这个品种，请重新选"
+            level = (k.get("compliance") or {}).get("level")
+            if level == "banned":
+                return f"{k.get('name')}属于禁售材质，不能上架"
+            if level == "restricted" and not str(d.get("legal") or "").strip():
+                return f"{k.get('name')}受保护或有来源要求，请填写合法来源证明（如证书编号、进口许可）"
+        bad = kb.banned_in(" ".join(d.get("tags") or []))
+        if bad:
+            return "寓意里有不能用的词：" + "、".join(bad) + "。只写寓意，不写功效"
+    if table == "templates":
+        if not str(d.get("name") or "").strip():
+            return "请填写模板名称"
+        if not d.get("pattern"):
+            return "循环花型至少要有一颗珠子"
+        ids = {b["id"] for b in db.list("beads")}
+        bad = [x for x in (d.get("special") or []) + d["pattern"] + (d.get("tail") or []) if x not in ids]
+        if bad:
+            return "模板里有不存在的珠子：" + "、".join(bad)
+    if table == "banners":
+        if not str(d.get("title") or "").strip():
+            return "请填写标题"
+        if not d.get("tpl") and d.get("go") not in ("diy", "ai"):
+            return "请选择点击后去哪：某个模板、自己串或 AI 配"
+    return None
+
+
+if __name__ == "__main__":
+    print(f"串个珠本地服务已启动：http://127.0.0.1:{PORT}/   后台：http://127.0.0.1:{PORT}/admin")
+    print("AI：", ai.status())
+    ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

@@ -1,0 +1,7 @@
+{
+  "appid": "touristappid",
+  "projectname": "panzhu",
+  "compileType": "miniprogram",
+  "libVersion": "3.0.0",
+  "setting": { "es6": true, "enhance": true, "minified": true }
+}

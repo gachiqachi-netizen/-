@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="title">{{b.name}}</view>
+  <view class="sub muted">{{b.beads.length}} 颗 · 已盘 {{laps}} 圈</view>
+
+  <view id="ring" class="ring" bindtouchstart="onTouchStart" bindtouchmove="onTouchMove">
+    <bracelet beads="{{b.beads}}" size="{{b.size}}" box="{{640}}" maxScale="{{1.5}}"
+      patina="{{patina}}" rotate="{{rotate}}" animate="{{animate}}" />
+    <view class="center">
+      <view class="num">{{count}}</view>
+      <view class="muted">累计拨珠</view>
+    </view>
+  </view>
+
+  <view class="hint muted">手指沿手串转圈，每拨过一颗计一次</view>
+
+  <view class="card">
+    <view class="row">
+      <text class="lv">{{level.name}}</text>
+      <text class="muted" wx:if="{{level.next}}">再盘 {{level.need}} 次进阶「{{level.next}}」</text>
+      <text class="muted" wx:else>已满级</text>
+    </view>
+    <view class="bar"><view class="fill" style="width:{{level.progress*100}}%"></view></view>
+    <view class="row stats">
+      <text>今日 {{today}}</text>
+      <text>包浆 {{patinaPct}}%</text>
+    </view>
+  </view>
+
+  <view class="btn" bindtap="flick">拨一颗</view>
+</view>

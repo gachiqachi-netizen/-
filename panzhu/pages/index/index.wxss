@@ -1,0 +1,17 @@
+.page { padding: 30rpx 40rpx 60rpx; display: flex; flex-direction: column; align-items: center; }
+.title { font-size: 40rpx; font-weight: 700; color: #f6dfb4; }
+.sub { margin-top: 8rpx; }
+.ring { position: relative; width: 640rpx; height: 640rpx; margin-top: 20rpx; }
+.center {
+  position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+  text-align: center; pointer-events: none;
+}
+.num { font-size: 72rpx; font-weight: 700; color: #f6dfb4; }
+.hint { margin: 10rpx 0 30rpx; font-size: 24rpx; }
+.card { width: 100%; background: rgba(255,255,255,0.05); border-radius: 24rpx; padding: 28rpx; box-sizing: border-box; margin-bottom: 36rpx; }
+.row { display: flex; justify-content: space-between; align-items: center; }
+.lv { font-size: 34rpx; color: #e8b86b; font-weight: 700; }
+.bar { height: 14rpx; background: rgba(255,255,255,0.1); border-radius: 7rpx; margin: 20rpx 0; overflow: hidden; }
+.fill { height: 100%; background: linear-gradient(90deg, #b4733a, #e8b86b); }
+.stats { font-size: 26rpx; }
+.btn { width: 60%; }

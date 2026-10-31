@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>串个珠后台</title>
+<style>
+/* 运营后台：沿用《串个珠设计规范》的颜色和字号；桌面两栏（列表 + 编辑），窄屏单栏 */
+:root {
+  --ground: #f7f6f4; --surface: #ffffff; --tray: #efece8; --tray-deep: #e3ded8; --line: #e6e2dd; --line-strong: #8f8781;
+  --ink: #1f1b1a; --ink-2: #5e5753; --ink-3: #736b66; --brand: #c8302e; --brand-pressed: #a82522; --brand-tint: #fbecea; --on-brand: #fff;
+  --fit-ok: #2b7a4b; --fit-warn: #9a5800; --danger: #b42318;
+  --font-sans: "PingFang SC", -apple-system, "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --font-num: "DIN Alternate", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 14px/20px var(--font-sans); }
+header { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 24px; padding: 0 24px; height: 56px; }
+header h1 { font: 600 16px/24px var(--font-sans); margin: 0; }
+header nav { display: flex; gap: 4px; }
+header nav button { border: 0; background: none; height: 56px; padding: 0 14px; font: 400 14px/20px var(--font-sans); color: var(--ink-2); cursor: pointer; border-bottom: 2px solid transparent; }
+header nav button.on { color: var(--ink); font-weight: 600; border-bottom-color: var(--brand); }
+header .right { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+header a { color: var(--ink-2); font-size: 13px; }
+.ai-state { font-size: 12px; padding: 2px 8px; border-radius: 6px; background: var(--tray); color: var(--ink-2); }
+.ai-state.on { background: #e7f4ec; color: var(--fit-ok); }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 440px; gap: 24px; padding: 24px; max-width: 1280px; margin: 0 auto; align-items: start; }
+main.wide { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } }
+h2 { font: 600 16px/24px var(--font-sans); margin: 0; }
+.bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+.bar .grow { flex: 1; }
+.btn { height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid transparent; background: var(--brand); color: var(--on-brand); font: 600 14px/20px var(--font-sans); cursor: pointer; }
+.btn.ghost { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
+.btn.text { background: none; color: var(--ink-2); padding: 0 8px; font-weight: 400; }
+.btn.danger { background: var(--surface); color: var(--danger); border-color: var(--danger); }
+.btn:disabled { opacity: .45; cursor: default; }
+.chip { height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); font: 400 13px/18px var(--font-sans); cursor: pointer; }
+.chip.on { background: var(--brand-tint); border-color: var(--brand); color: var(--brand-pressed); font-weight: 600; }
+.list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.row { background: var(--surface); border-radius: 12px; padding: 12px; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; cursor: pointer; border: 1.5px solid transparent; text-align: left; font: inherit; color: inherit; }
+.row.on { border-color: var(--brand); }
+.row .nm { font-weight: 600; }
+.row .sub { font-size: 12px; color: var(--ink-3); }
+.row.off { opacity: .55; }
+.swatch { width: 56px; height: 56px; border-radius: 50%; background: var(--tray); overflow: hidden; display: grid; place-items: center; }
+.swatch img { width: 100%; height: 100%; object-fit: cover; }
+.bead { border-radius: 50%; box-shadow: inset -3px -4px 6px rgba(0,0,0,.18), 0 2px 4px rgba(31,27,26,.18); }
+.panel { background: var(--surface); border-radius: 16px; padding: 20px; display: grid; gap: 14px; position: sticky; top: 80px; max-height: calc(100vh - 104px); overflow: auto; }
+.panel .empty { color: var(--ink-3); text-align: center; padding: 40px 0; }
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fields .wide { grid-column: 1 / -1; }
+label.f { display: grid; gap: 4px; font-size: 12px; color: var(--ink-2); }
+label.f.bad input { border-color: var(--danger); }
+input[type=text], input[type=number], select, textarea { width: 100%; height: 36px; border: 1px solid var(--line-strong); border-radius: 6px; padding: 0 10px; font: 400 14px/20px var(--font-sans); background: var(--surface); color: var(--ink); }
+textarea { height: 64px; padding: 8px 10px; resize: vertical; }
+input[type=color] { width: 100%; height: 36px; border: 1px solid var(--line-strong); border-radius: 6px; padding: 2px; background: var(--surface); }
+.check { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--ink); }
+.check input { accent-color: var(--brand); width: 16px; height: 16px; }
+.photo { display: flex; gap: 12px; align-items: center; }
+.photo .ph { width: 72px; height: 72px; border-radius: 12px; background: var(--tray); overflow: hidden; display: grid; place-items: center; color: var(--ink-3); font-size: 12px; flex: none; }
+.photo .ph img { width: 100%; height: 100%; object-fit: cover; }
+.photo .tips { font-size: 12px; color: var(--ink-3); line-height: 18px; }
+.err { color: var(--danger); font-size: 13px; min-height: 18px; }
+.kbcard { grid-column: 1 / -1; background: var(--tray); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; font-size: 13px; line-height: 1.6; }
+.kbcard b { font-size: 14px; }
+.kbcard .muted { color: var(--ink-2); }
+.kbcard .warn { color: var(--danger); font-weight: 600; }
+.points { display: flex; flex-wrap: wrap; gap: 6px; }
+.points span { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 0 8px; font-size: 12.5px; }
+.dimgrid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 720px) { .dimgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ok { color: var(--fit-ok); }
+.preview { background: radial-gradient(circle at 50% 45%, var(--tray), var(--tray-deep)); border-radius: 16px; display: grid; place-items: center; padding: 16px; gap: 8px; }
+.ring { position: relative; width: 220px; height: 220px; }
+.ring .bead { position: absolute; }
+.preview .meta { font: 500 13px/18px var(--font-num); color: var(--ink-2); }
+.seq { display: grid; gap: 6px; }
+.seq .lab { font-size: 12px; color: var(--ink-2); display: flex; justify-content: space-between; }
+.seq .items { display: flex; flex-wrap: wrap; gap: 6px; min-height: 36px; padding: 6px; border: 1px dashed var(--line-strong); border-radius: 8px; }
+.seq .it { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 6px 0 4px; border-radius: 999px; background: var(--tray); font-size: 12px; }
+.seq .it i { width: 16px; height: 16px; border-radius: 50%; display: inline-block; }
+.seq .it button { border: 0; background: none; cursor: pointer; color: var(--ink-3); font-size: 14px; padding: 0 2px; }
+.seq select { height: 30px; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 12px; overflow: hidden; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 13px; }
+th { color: var(--ink-2); font-weight: 600; background: var(--ground); }
+td .num { font-family: var(--font-num); }
+.tag { display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 6px; background: var(--tray); color: var(--ink-2); margin-right: 4px; }
+.toast { position: fixed; left: 50%; top: 80px; transform: translateX(-50%); background: rgba(31,27,26,.9); color: #fff; padding: 8px 16px; border-radius: 10px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>串个珠后台</h1>
+  <nav id="tabs"><button data-t="beads" class="on">珠子</button><button data-t="templates">模板</button><button data-t="banners">宣传位</button><button data-t="orders">订单</button></nav>
+  <div class="right"><span class="ai-state" id="aiState">AI：检查中</span><a href="/" target="_blank">打开前台 ›</a></div>
+</header>
+<main id="main">
+  <section><div class="bar" id="bar"></div><div id="list"></div></section>
+  <aside class="panel" id="panel"><div class="empty">在左边选一条，或者点“新建”</div></aside>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const MATS = { wood: '木质', bodhi: '菩提', stone: '玉石', crystal: '水晶', metal: '金属配件' };
+const STATUS = ['待串制', '串制中', '已发货', '已完成', '已取消'];
+let tab = 'beads', data = { beads: [], templates: [], banners: [], orders: [] }, editing = null, filter = 'all';
+let token = ''; try { token = localStorage.getItem('cgz_admin_token') || ''; } catch {}
+let toastT; const toast = t => { $('toast').textContent = t; $('toast').classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => $('toast').classList.remove('show'), 1800); };
+
+async function api(method, url, body) {
+  const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token }, body: body ? JSON.stringify(body) : undefined });
+  if (r.status === 401) {
+    const t = window.prompt ? window.prompt('请输入后台口令（启动服务时设置的 ADMIN_TOKEN）') : '';
+    if (t) { token = t; try { localStorage.setItem('cgz_admin_token', t); } catch {} return api(method, url, body); }
+  }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || ('请求失败 ' + r.status));
+  return j;
+}
+async function load(t) { data[t] = await api('GET', '/api/admin/' + t); }
+const BEAD = id => data.beads.find(b => b.id === id);
+// ---------- 珠子知识库 ----------
+let KB = [], KBA = { dims: [] }; const kbCache = {};
+const DIMN = k => (KBA.dims.find(d => d.key === k) || {}).name || k;
+const POINT_ORDER = ['origin', 'color', 'clarity', 'purity', 'effect', 'pattern', 'inclusion', 'texture', 'age'];
+async function kbRec(id) { if (!id) return null; if (!kbCache[id]) { try { kbCache[id] = await api('GET', '/api/kb/bead/' + id); } catch { kbCache[id] = null; } } return kbCache[id]; }
+function kbFind(text) { const t = String(text || '').trim(); if (!t) return null;
+  return KB.find(k => k.name === t || t.startsWith(k.name + ' ') || k.std === t) || KB.find(k => (k.aliases || []).includes(t)) || null; }
+function beadPoints(e, rec) { const a = e.attrs || {}, out = POINT_ORDER.filter(k => a[k]).map(k => a[k]);
+  if (a.treatment === '天然') out.push('天然');
+  const g = rec && (rec.grades || []).find(g => g.level === e.grade); if (g && !out.includes(g.label)) out.push(g.label);
+  return out.slice(0, 4); }
+
+// ---------- 珠子外观 ----------
+function beadBg(b) {
+  if (!b) return '#ddd';
+  if (b.mat === 'metal') return `linear-gradient(135deg, ${b.c[0]} 0%, ${b.c[1]} 55%, ${b.c[0]} 100%)`;
+  return `radial-gradient(circle at 32% 28%, rgba(255,255,255,.7) 0, rgba(255,255,255,0) 30%), radial-gradient(circle at 40% 35%, ${b.c[0]}, ${b.c[1]})`;
+}
+// 尺寸规则和前台一致：总长 = 手围 + 余量（6mm +10，8mm +15，10mm +20，12mm +25）
+const margin = d => Math.max(8, 2.5 * d - 5);
+const lengthOf = ids => ids.reduce((s, id) => s + (BEAD(id)?.mm || 0), 0);
+function mainSize(ids) {
+  const cnt = {}; ids.forEach(id => { const b = BEAD(id); if (b && !b.spacer && b.mm >= 6) cnt[b.mm] = (cnt[b.mm] || 0) + 1; });
+  const k = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0]; return k ? +k : 8;
+}
+function fill(special, pattern, tail, wrist = 15) {
+  if (!pattern.length) return special.concat(tail);
+  const beads = [...special], target = Math.round(wrist * 10 + margin(mainSize(special.concat(pattern, tail)))) - lengthOf(tail);
+  let i = 0; while (lengthOf(beads) + (BEAD(pattern[i % pattern.length])?.mm || 8) / 2 < target && beads.length < 80) beads.push(pattern[i++ % pattern.length]);
+  return beads.concat(tail);
+}
+function ringHtml(ids, size = 220) {
+  const total = lengthOf(ids); if (!total) return `<div class="ring" style="width:${size}px;height:${size}px"></div>`;
+  const R = size / 2 - 14, k = (2 * Math.PI * R) / total; let cur = -Math.PI / 2;
+  return `<div class="ring" style="width:${size}px;height:${size}px">` + ids.map(id => {
+    const b = BEAD(id), d = (b?.mm || 8) * k, a = cur + d / 2 / R; cur += d / R;
+    const w = b?.spacer ? d : d, h = b?.spacer ? d * 3 : d;
+    return `<span class="bead" style="left:${size / 2 + R * Math.cos(a) - w / 2}px;top:${size / 2 + R * Math.sin(a) - h / 2}px;width:${w}px;height:${h}px;background:${beadBg(b)};${b?.spacer ? `border-radius:30%;transform:rotate(${a + Math.PI / 2}rad)` : ''}"></span>`;
+  }).join('') + '</div>';
+}
+
+// 单颗珠子串满 15cm 手围的样子（编辑珠子时的预览，珠子还没保存也能看）
+function ringSame(e, size = 160) {
+  const n = Math.round((150 + margin(e.mm)) / e.mm), R = size / 2 - 12, d = Math.min(2 * Math.PI * R / n, 24);
+  return `<div class="ring" style="width:${size}px;height:${size}px">` + Array.from({ length: n }, (_, i) => { const a = i / n * 2 * Math.PI - Math.PI / 2;
+    return `<span class="bead" style="left:${size / 2 + R * Math.cos(a) - d / 2}px;top:${size / 2 + R * Math.sin(a) - d / 2}px;width:${d}px;height:${d}px;background:${beadBg(e)}"></span>`; }).join('') + '</div>';
+}
+
+// ---------- 图片：压缩上传 + 从实拍图取色 ----------
+function readImage(file) {
+  return new Promise((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = URL.createObjectURL(file); });
+}
+function toDataUrl(img, max = 1000) {
+  const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+  c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', .88);
+}
+// 取色：只看画面中间的圆形区域（珠子），按亮度排序，最亮 15% 的平均色当“亮色”，最暗 15% 当“暗色”
+function extractBeadColors(img) {
+  const n = 80, c = document.createElement('canvas'); c.width = c.height = n; const x = c.getContext('2d');
+  const s = Math.min(img.naturalWidth, img.naturalHeight); x.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, n, n);
+  const d = x.getImageData(0, 0, n, n).data, px = [];
+  for (let y = 0; y < n; y++) for (let xx = 0; xx < n; xx++) {
+    if ((xx - n / 2) ** 2 + (y - n / 2) ** 2 > (n * .3) ** 2) continue;
+    const i = (y * n + xx) * 4; px.push([d[i], d[i + 1], d[i + 2], .3 * d[i] + .59 * d[i + 1] + .11 * d[i + 2]]);
+  }
+  px.sort((a, b) => a[3] - b[3]);
+  const avg = arr => '#' + [0, 1, 2].map(k => Math.round(arr.reduce((s, p) => s + p[k], 0) / arr.length).toString(16).padStart(2, '0')).join('');
+  const q = Math.max(1, Math.round(px.length * .15));
+  return [avg(px.slice(-q * 2, -Math.round(q / 3) || undefined)), avg(px.slice(Math.round(q / 3), q * 2))];
+}
+async function upload(img) { return (await api('POST', '/api/upload', { data: toDataUrl(img) })).url; }
+
+// ---------- 渲染 ----------
+function render() {
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
+  $('main').classList.toggle('wide', tab === 'orders');
+  $('panel').hidden = tab === 'orders';
+  ({ beads: renderBeads, templates: renderTemplates, banners: renderBanners, orders: renderOrders })[tab]();
+}
+
+function renderBeads() {
+  const cats = Object.keys(MATS).filter(m => data.beads.some(b => b.mat === m));
+  $('bar').innerHTML = `<h2 class="grow">珠子（${data.beads.length}）</h2>` + [['all', '全部']].concat(cats.map(m => [m, MATS[m]])).map(([v, n]) => `<button class="chip ${filter === v ? 'on' : ''}" data-f="${v}">${n}</button>`).join('') + `<button class="btn" id="new">上架新珠子</button>`;
+  $('list').innerHTML = `<div class="list">` + data.beads.filter(b => filter === 'all' || b.mat === filter).map(b => `
+    <button class="row ${editing?.id === b.id ? 'on' : ''} ${b.onSale === false ? 'off' : ''}" data-id="${b.id}">
+      <span class="swatch">${b.photo ? `<img src="${esc(b.photo)}" alt="">` : `<span class="bead" style="width:44px;height:44px;background:${beadBg(b)}"></span>`}</span>
+      <span><div class="nm">${esc(b.name)} <span class="num">${b.mm}mm</span>${b.onSale === false ? ' <span class="tag">已下架</span>' : ''}</div>
+      <div class="sub">${MATS[b.mat] || ''}${b.spacer ? ' · 隔片' : ''} · ¥${b.price}/颗${b.photo ? ' · 有实拍' : ''}${b.texture ? ' · 有纹理' : ''}</div>
+      <div class="sub">${esc((b.tags || []).join('、'))}</div></span></button>`).join('') + `</div>`;
+  $('bar').onclick = e => { if (e.target.dataset.f) { filter = e.target.dataset.f; renderBeads(); } if (e.target.id === 'new') editBead(null); };
+  $('list').onclick = e => { const r = e.target.closest('[data-id]'); if (r) editBead(data.beads.find(b => b.id === r.dataset.id)); };
+}
+
+function editBead(b) {
+  editing = b ? JSON.parse(JSON.stringify(b)) : { name: '', mm: null, price: null, mat: 'stone', c: ['#d8c3a5', '#6e5236'], tags: [], onSale: true, order: (data.beads.length + 1) * 10 };
+  renderBeads(); drawBeadForm();
+}
+function drawBeadForm() {
+  const e = editing;
+  $('panel').innerHTML = `
+    <div class="bar" style="margin:0"><h2 class="grow">${e.id ? '编辑珠子' : '上架新珠子'}</h2></div>
+    <div class="preview"><span class="bead" style="width:96px;height:${e.spacer ? 32 : 96}px;background:${beadBg(e)};${e.spacer ? 'border-radius:30%' : ''}"></span>
+      ${e.mm > 0 && !e.spacer ? ringSame(e) : ''}
+      <div class="meta" id="bMeta"></div></div>
+    <div class="photo"><span class="ph">${e.photo ? `<img src="${esc(e.photo)}" alt="">` : '实拍图'}</span>
+      <div class="tips">上传白底实拍图：用户在选珠时看到的就是它，系统会自动取主色填到下面。<br>
+      <label class="btn ghost" style="display:inline-flex;align-items:center;margin-top:6px">${e.photo ? '换实拍图' : '上传实拍图'}<input type="file" accept="image/*" id="bPhoto" hidden></label>
+      ${e.photo ? '<button class="btn text" id="bNoPhoto">去掉</button>' : ''}</div></div>
+    <div class="fields">
+      <label class="f wide">品种（从知识库选，卖点和讲解会自动带出）<input type="text" id="bKb" list="kbList" value="${esc(kbLabel(e.kb))}" placeholder="输入名称或别名，如 南红、马粉、小叶紫檀"><datalist id="kbList">${KB.map(k => `<option value="${esc(k.name + (k.std && k.std !== k.name ? ' ' + k.std : ''))}">`).join('')}</datalist></label>
+      <div id="kbBox" class="wide" style="display:contents"></div>
+      <label class="f wide">名称<input type="text" id="bName" maxlength="12" value="${esc(e.name)}" placeholder="例：小叶紫檀"></label>
+      <label class="f ${e.mm > 0 ? '' : 'bad'}">${e.spacer ? '厚度' : '直径'} mm（必填）<input type="number" id="bMm" min="1" max="30" step="0.5" value="${e.mm ?? ''}"></label>
+      <label class="f ${e.price === null ? 'bad' : ''}">单价 ¥（必填）<input type="number" id="bPrice" min="0" step="0.5" value="${e.price ?? ''}"></label>
+      <label class="f">材质<select id="bMat">${Object.entries(MATS).map(([v, n]) => `<option value="${v}" ${e.mat === v ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+      <label class="f">排序（小的在前）<input type="number" id="bOrder" value="${e.order ?? ''}"></label>
+      <label class="f">亮色<input type="color" id="bC0" value="${e.c[0]}"></label>
+      <label class="f">暗色<input type="color" id="bC1" value="${e.c[1]}"></label>
+      <label class="f wide">寓意（逗号隔开，只写寓意不写功效；选了品种会自动带出）<input type="text" id="bTags" value="${esc((e.tags || []).join('，'))}" placeholder="例：平安，温润"></label>
+      <label class="check wide"><input type="checkbox" id="bSpacer" ${e.spacer ? 'checked' : ''}>这是隔片（扁片，尺寸填厚度）</label>
+      <label class="check wide"><input type="checkbox" id="bOn" ${e.onSale !== false ? 'checked' : ''}>上架（取消后用户看不到，用到它的模板也会自动下架）</label>
+      <div class="photo wide"><span class="ph" style="width:48px;height:48px">${e.texture ? `<img src="${esc(e.texture)}" alt="">` : '纹理'}</span>
+        <div class="tips">花纹特殊的珠子（南红柿子红、绿松石铁线）可以上传纹理图：正方形、平光、无反光。普通珠子不用传。<br>
+        <label class="btn text" style="padding:0">${e.texture ? '换纹理图' : '上传纹理图'}<input type="file" accept="image/*" id="bTex" hidden></label>${e.texture ? ' <button class="btn text" id="bNoTex">去掉</button>' : ''}</div></div>
+    </div>
+    <div class="err" id="bErr"></div>
+    <div class="bar" style="margin:0">${e.id ? '<button class="btn danger" id="bDel">删除</button>' : ''}<span class="grow"></span><button class="btn" id="bSave">保存</button></div>`;
+  const total = e.mm > 0 ? Math.round((15 * 10 + margin(e.mm)) / e.mm) : 0;
+  $('bMeta').textContent = e.mm > 0 ? (e.spacer ? `隔片 ${e.mm}mm 厚` : `直径 ${e.mm}mm · 15cm 手围一圈约 ${total} 颗 · 整圈约 ¥${(total * (e.price || 0)).toFixed(0)}`) : '先填尺寸';
+  drawKbBox(e);
+  const sync = () => { readKbBox(e); e.name = $('bName').value.trim(); e.mm = $('bMm').value === '' ? null : +$('bMm').value; e.price = $('bPrice').value === '' ? null : +$('bPrice').value;
+    e.mat = $('bMat').value; e.order = +$('bOrder').value || 0; e.c = [$('bC0').value, $('bC1').value]; e.tags = $('bTags').value.split(/[,，、\s]+/).filter(Boolean).slice(0, 6);
+    e.spacer = $('bSpacer').checked; e.onSale = $('bOn').checked; };
+  $('panel').onchange = async ev => {
+    if (ev.target.id === 'bKb') {
+      sync(); const k = kbFind(ev.target.value);
+      if (!k) { e.kb = ''; toast('知识库里没找到，换个叫法试试'); return drawBeadForm(); }
+      const rec = await kbRec(k.id); const first = e.kb !== k.id; e.kb = k.id; if (first) e.attrs = {}, e.grade = null;
+      if (!e.name) e.name = k.name;
+      if (!e.id) e.mat = k.mat;
+      if (rec && rec.meaning && (rec.meaning.tags || []).length && (!e.tags || !e.tags.length)) e.tags = rec.meaning.tags.slice(0, 3);
+      return drawBeadForm();
+    }
+    if (ev.target.id === 'bPhoto' || ev.target.id === 'bTex') {
+      const f = ev.target.files[0]; if (!f) return; sync();
+      try { const img = await readImage(f); const url = await upload(img);
+        if (ev.target.id === 'bPhoto') { e.photo = url; e.c = extractBeadColors(img); toast('已上传，并从照片里取了颜色'); } else { e.texture = url; toast('纹理图已上传'); }
+      } catch (err) { toast('上传失败：' + err.message); }
+      return drawBeadForm();
+    }
+    sync(); drawBeadForm();
+  };
+  $('panel').onclick = async ev => {
+    if (ev.target.id === 'bNoPhoto') { sync(); delete e.photo; drawBeadForm(); }
+    if (ev.target.id === 'bNoTex') { sync(); delete e.texture; drawBeadForm(); }
+    if (ev.target.id === 'bSave') { sync(); await save('beads', e, 'bErr'); }
+    if (ev.target.id === 'bDel') await remove('beads', e, ev.target);
+  };
+}
+
+function kbLabel(id) { const k = KB.find(k => k.id === id); return k ? k.name + (k.std && k.std !== k.name ? ' ' + k.std : '') : ''; }
+async function drawKbBox(e) {
+  const box = $('kbBox'); if (!box) return;
+  if (!e.kb) { box.innerHTML = ''; return; }
+  const rec = await kbRec(e.kb); if (!rec || editing !== e) return;
+  const a = e.attrs || {}, dims = Object.keys(rec.dims || {}).filter(k => (rec.dims[k] || []).length);
+  if (!dims.includes('treatment')) dims.push('treatment');
+  const opts = k => { const own = rec.dims[k] || [], gen = ((KBA.dims.find(d => d.key === k) || {}).values || []).filter(v => !own.includes(v));
+    return `<option value="">不填</option>` + own.map(v => `<option ${a[k] === v ? 'selected' : ''}>${esc(v)}</option>`).join('') +
+      (gen.length ? `<optgroup label="通用">${gen.map(v => `<option ${a[k] === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}</optgroup>` : '') +
+      (a[k] && !own.includes(a[k]) && !gen.includes(a[k]) ? `<option selected>${esc(a[k])}</option>` : ''); };
+  const comp = (rec.compliance || {}).level;
+  const pts = beadPoints(e, rec);
+  box.innerHTML = `<div class="kbcard"><b>${esc(rec.name)}${rec.std && rec.std !== rec.name ? `<span class="muted">（规范名：${esc(rec.std)}）</span>` : ''}</b>
+      ${rec.summary ? `<div>${esc(rec.summary)}</div>` : ''}
+      ${comp === 'restricted' ? `<div class="warn">受保护或有来源要求：${esc((rec.compliance || {}).note || '')}</div>` : ''}
+      ${comp === 'banned' ? `<div class="warn">禁售材质，不能上架</div>` : ''}
+      ${(rec.safety || {}).note ? `<div class="warn">安全提示：${esc(rec.safety.note)}</div>` : ''}
+      ${rec.status === 'draft' ? `<div class="warn">这个品种来源还没核实，寓意和讲解暂不展示</div>` : ''}
+      ${(rec.confusables || []).length ? `<div class="muted">容易混：${rec.confusables.slice(0, 3).map(c => esc(c.name + '（' + c.how + '）')).join('；')}</div>` : ''}
+      <div class="points">卖点预览：${pts.length ? pts.map(p => `<span>${esc(p)}</span>`).join('') : '<span class="muted" style="border:0;background:none">选下面的属性后自动生成</span>'}</div></div>
+    <div class="dimgrid">${dims.map(k => `<label class="f">${esc(DIMN(k))}<select data-dim="${k}">${opts(k)}</select></label>`).join('')}
+      ${(rec.grades || []).length ? `<label class="f">品级<select id="bGrade"><option value="">不填</option>${rec.grades.map(g => `<option value="${g.level}" ${e.grade === g.level ? 'selected' : ''}>${esc(g.label)}</option>`).join('')}</select></label>` : ''}</div>
+    ${comp === 'restricted' ? `<label class="f wide bad">合法来源证明（必填：证书编号、进口许可或供应商说明）<input type="text" id="bLegal" value="${esc(e.legal || '')}"></label>` : ''}`;
+}
+function readKbBox(e) {
+  if (!$('kbBox')) return;
+  e.attrs = e.attrs || {};
+  document.querySelectorAll('#kbBox [data-dim]').forEach(s => { if (s.value) e.attrs[s.dataset.dim] = s.value; else delete e.attrs[s.dataset.dim]; });
+  if ($('bGrade')) e.grade = $('bGrade').value ? +$('bGrade').value : null;
+  if ($('bLegal')) e.legal = $('bLegal').value.trim();
+}
+
+function renderTemplates() {
+  $('bar').innerHTML = `<h2 class="grow">模板 · 热门款（${data.templates.length}）</h2><button class="btn" id="new">新建模板</button>`;
+  $('list').innerHTML = `<div class="list">` + data.templates.map(t => { const ids = fill(t.special || [], t.pattern || [], t.tail || []);
+    return `<button class="row ${editing?.id === t.id ? 'on' : ''} ${t.onSale === false ? 'off' : ''}" data-id="${t.id}">
+      <span class="swatch" style="border-radius:12px">${t.cover ? `<img src="${esc(t.cover)}" alt="">` : ringHtml(ids, 56)}</span>
+      <span><div class="nm">${esc(t.name)}${t.onSale === false ? ' <span class="tag">已下架</span>' : ''}</div>
+      <div class="sub">15cm 手围 ${ids.length} 颗 · ¥${ids.reduce((s, id) => s + (BEAD(id)?.price || 0), 0) + 15}${t.cover ? ' · 有实拍封面' : ''}</div>
+      <div class="sub">${esc((t.meaning || '').slice(0, 24))}</div></span></button>`; }).join('') + `</div>`;
+  $('bar').onclick = e => { if (e.target.id === 'new') editTemplate(null); };
+  $('list').onclick = e => { const r = e.target.closest('[data-id]'); if (r) editTemplate(data.templates.find(t => t.id === r.dataset.id)); };
+}
+function editTemplate(t) {
+  editing = t ? JSON.parse(JSON.stringify(t)) : { name: '', meaning: '', special: [], pattern: [], tail: [], onSale: true, cover: '', order: (data.templates.length + 1) * 10 };
+  renderTemplates(); drawTemplateForm();
+}
+function drawTemplateForm() {
+  const e = editing, ids = fill(e.special, e.pattern, e.tail), price = ids.reduce((s, id) => s + (BEAD(id)?.price || 0), 0) + 15;
+  const opts = Object.entries(MATS).map(([m, n]) => `<optgroup label="${n}">` + data.beads.filter(b => b.mat === m && b.onSale !== false).map(b => `<option value="${b.id}">${esc(b.name)} ${b.mm}mm · ¥${b.price}</option>`).join('') + `</optgroup>`).join('');
+  const seq = (key, label, hint) => `<div class="seq"><div class="lab"><span>${label}</span><span>${hint}</span></div>
+    <div class="items">${e[key].map((id, i) => { const b = BEAD(id); return `<span class="it"><i class="bead" style="background:${beadBg(b)}"></i>${esc(b ? b.name + ' ' + b.mm + 'mm' : id + '（已删除）')}<button data-rm="${key}.${i}" title="去掉">×</button></span>`; }).join('')}
+      <select data-add="${key}"><option value="">+ 加一颗</option>${opts}</select></div></div>`;
+  $('panel').innerHTML = `
+    <div class="bar" style="margin:0"><h2 class="grow">${e.id ? '编辑模板' : '新建模板'}</h2></div>
+    <div class="preview">${ringHtml(ids)}<div class="meta">按 15cm 手围：${ids.length} 颗 · ${lengthOf(ids)}mm · ¥${price}（含手工费）</div></div>
+    <div class="fields">
+      <label class="f wide">名称<input type="text" id="tName" maxlength="10" value="${esc(e.name)}" placeholder="例：桃花朵朵"></label>
+      <label class="f wide">寓意说明（用户在卡片和编辑页看到）<textarea id="tMeaning" maxlength="80">${esc(e.meaning)}</textarea></label>
+      <div class="wide">${seq('special', '开头珠', '只出现一次，比如佛头、主题珠，可不填')}</div>
+      <div class="wide">${seq('pattern', '循环花型（必填）', '按顺序循环，铺满整圈')}</div>
+      <div class="wide">${seq('tail', '结尾珠', '只出现一次，可不填')}</div>
+      <label class="f">排序（小的在前）<input type="number" id="tOrder" value="${e.order ?? ''}"></label>
+      <label class="check" style="align-self:end"><input type="checkbox" id="tOn" ${e.onSale !== false ? 'checked' : ''}>上架</label>
+      <div class="photo wide"><span class="ph">${e.cover ? `<img src="${esc(e.cover)}" alt="">` : '封面'}</span>
+        <div class="tips">成品实拍封面（可选）：有就在首页卡片上用实拍，没有用 3D 图。<br>
+        <label class="btn ghost" style="display:inline-flex;align-items:center;margin-top:6px">${e.cover ? '换封面' : '上传封面'}<input type="file" accept="image/*" id="tCover" hidden></label>${e.cover ? ' <button class="btn text" id="tNoCover">去掉</button>' : ''}</div></div>
+    </div>
+    <div class="err" id="tErr"></div>
+    <div class="bar" style="margin:0">${e.id ? '<button class="btn danger" id="tDel">删除</button>' : ''}<span class="grow"></span><button class="btn" id="tSave">保存</button></div>`;
+  const sync = () => { e.name = $('tName').value.trim(); e.meaning = $('tMeaning').value.trim(); e.order = +$('tOrder').value || 0; e.onSale = $('tOn').checked; };
+  $('panel').onchange = async ev => {
+    const add = ev.target.dataset.add;
+    if (add && ev.target.value) { sync(); e[add].push(ev.target.value); return drawTemplateForm(); }
+    if (ev.target.id === 'tCover') { const f = ev.target.files[0]; if (!f) return; sync();
+      try { e.cover = await upload(await readImage(f)); toast('封面已上传'); } catch (err) { toast('上传失败：' + err.message); } return drawTemplateForm(); }
+  };
+  $('panel').onclick = async ev => {
+    const rm = ev.target.dataset.rm;
+    if (rm) { sync(); const [k, i] = rm.split('.'); e[k].splice(+i, 1); return drawTemplateForm(); }
+    if (ev.target.id === 'tNoCover') { sync(); e.cover = ''; drawTemplateForm(); }
+    if (ev.target.id === 'tSave') { sync(); await save('templates', e, 'tErr'); }
+    if (ev.target.id === 'tDel') await remove('templates', e, ev.target);
+  };
+}
+
+function renderBanners() {
+  $('bar').innerHTML = `<h2 class="grow">宣传位（${data.banners.length}）</h2><button class="btn" id="new">新建宣传位</button>`;
+  const tname = id => data.templates.find(t => t.id === id)?.name || '（模板已删除）';
+  $('list').innerHTML = `<div class="list">` + data.banners.map(b => `
+    <button class="row ${editing?.id === b.id ? 'on' : ''} ${b.on === false ? 'off' : ''}" data-id="${b.id}" style="grid-template-columns:minmax(0,1fr)">
+      <span><div class="nm"><span class="tag">${esc(b.tag)}</span>${esc(b.title)}${b.on === false ? ' <span class="tag">已关闭</span>' : ''}</div>
+      <div class="sub">${esc(b.sub)}</div><div class="sub">点击去：${b.tpl ? '模板「' + esc(tname(b.tpl)) + '」' : b.go === 'ai' ? 'AI 配' : '自己串'}${b.newUser ? ' · 只给没下过单的人看' : ''}</div></span></button>`).join('') + `</div>`;
+  $('bar').onclick = e => { if (e.target.id === 'new') editBanner(null); };
+  $('list').onclick = e => { const r = e.target.closest('[data-id]'); if (r) editBanner(data.banners.find(b => b.id === r.dataset.id)); };
+}
+function editBanner(b) {
+  editing = b ? JSON.parse(JSON.stringify(b)) : { tag: '', title: '', sub: '', tpl: '', go: 'diy', newUser: false, on: true, order: (data.banners.length + 1) * 10 };
+  renderBanners();
+  const e = editing, link = e.tpl ? 'tpl:' + e.tpl : 'go:' + (e.go || 'diy');
+  $('panel').innerHTML = `
+    <div class="bar" style="margin:0"><h2 class="grow">${e.id ? '编辑宣传位' : '新建宣传位'}</h2></div>
+    <div class="fields">
+      <label class="f">角标<input type="text" id="nTag" maxlength="6" value="${esc(e.tag)}" placeholder="例：考试季"></label>
+      <label class="f">排序<input type="number" id="nOrder" value="${e.order ?? ''}"></label>
+      <label class="f wide">标题<input type="text" id="nTitle" maxlength="12" value="${esc(e.title)}" placeholder="例：金榜题名手串"></label>
+      <label class="f wide">一句说明<input type="text" id="nSub" maxlength="24" value="${esc(e.sub)}"></label>
+      <label class="f wide">点击后去哪<select id="nLink"><option value="go:diy" ${link === 'go:diy' ? 'selected' : ''}>自己串</option><option value="go:ai" ${link === 'go:ai' ? 'selected' : ''}>AI 配</option>
+        ${data.templates.map(t => `<option value="tpl:${t.id}" ${link === 'tpl:' + t.id ? 'selected' : ''}>模板：${esc(t.name)}</option>`).join('')}</select></label>
+      <label class="check wide"><input type="checkbox" id="nNew" ${e.newUser ? 'checked' : ''}>新人活动：只给没下过单的人看</label>
+      <label class="check wide"><input type="checkbox" id="nOn" ${e.on !== false ? 'checked' : ''}>显示</label>
+    </div>
+    <div class="err" id="nErr"></div>
+    <div class="bar" style="margin:0">${e.id ? '<button class="btn danger" id="nDel">删除</button>' : ''}<span class="grow"></span><button class="btn" id="nSave">保存</button></div>`;
+  $('panel').onclick = async ev => {
+    if (ev.target.id === 'nSave') {
+      const l = $('nLink').value.split(':');
+      Object.assign(e, { tag: $('nTag').value.trim(), title: $('nTitle').value.trim(), sub: $('nSub').value.trim(), order: +$('nOrder').value || 0,
+        newUser: $('nNew').checked, on: $('nOn').checked, tpl: l[0] === 'tpl' ? l[1] : '', go: l[0] === 'go' ? l[1] : '' });
+      await save('banners', e, 'nErr');
+    }
+    if (ev.target.id === 'nDel') await remove('banners', e, ev.target);
+  };
+}
+
+function renderOrders() {
+  $('bar').innerHTML = `<h2 class="grow">订单（${data.orders.length}）</h2><button class="btn ghost" id="reload">刷新</button>`;
+  $('bar').onclick = async e => { if (e.target.id === 'reload') { await load('orders'); renderOrders(); toast('已刷新'); } };
+  if (!data.orders.length) { $('list').innerHTML = '<div class="panel"><div class="empty">还没有订单。用户在前台下单后会出现在这里。</div></div>'; return; }
+  $('list').innerHTML = `<div style="overflow-x:auto"><table><thead><tr><th>订单</th><th>手串</th><th>尺寸</th><th>金额</th><th>收货</th><th>状态</th></tr></thead><tbody>` +
+    data.orders.map(o => { const cnt = {}; o.beads.forEach(id => cnt[id] = (cnt[id] || 0) + 1);
+      return `<tr><td><div class="num">${o.no}</div><div class="sub" style="color:var(--ink-3)">${new Date(o.createdAt).toLocaleString('zh-CN')}</div></td>
+      <td><div style="display:flex;gap:10px;align-items:center">${ringHtml(o.beads, 64)}<div><b>${esc(o.name)}</b><div style="color:var(--ink-2)">${Object.keys(cnt).map(id => esc((BEAD(id)?.name || id) + ' ' + (BEAD(id)?.mm || '') + 'mm×' + cnt[id])).join('<br>')}</div></div></div></td>
+      <td class="num">手围 ${o.wrist}cm<br>总长 ${o.length || lengthOf(o.beads)}mm<br>${o.beads.length} 颗 · ${o.cord ? '编织绳' : '弹力线'}${o.gift ? ' · 礼盒' : ''}</td>
+      <td class="num">¥${o.total}<div style="color:var(--ink-3)">珠子 ¥${o.goods} · 运费 ¥${o.ship}${o.promo ? ' · 立减 ¥' + o.promo : ''}</div></td>
+      <td>${esc(o.person)} <span class="num">${esc(o.phone)}</span><br><span style="color:var(--ink-2)">${esc(o.addr)}</span></td>
+      <td><select data-no="${o.no}">${STATUS.map(s => `<option ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td></tr>`; }).join('') + `</tbody></table></div>`;
+  $('list').onchange = async e => { const no = e.target.dataset.no; if (!no) return;
+    try { await api('PUT', '/api/admin/orders/' + no, { status: e.target.value }); toast('状态已改为「' + e.target.value + '」'); await load('orders'); } catch (err) { toast(err.message); } };
+}
+
+// ---------- 保存 / 删除 ----------
+async function save(t, e, errId) {
+  $(errId).textContent = '';
+  try {
+    const saved = e.id ? await api('PUT', `/api/admin/${t}/${e.id}`, e) : await api('POST', `/api/admin/${t}`, e);
+    editing = saved; await load(t); if (t === 'beads') await load('templates');
+    toast('已保存，前台刷新后生效'); render();
+    if (t === 'beads') drawBeadForm(); else if (t === 'templates') drawTemplateForm(); else editBanner(saved);
+  } catch (err) { $(errId).textContent = err.message; }
+}
+let armed = null;
+async function remove(t, e, btn) {
+  if (armed !== e.id) { armed = e.id; btn.textContent = '再点一次确认删除'; setTimeout(() => { if (armed === e.id) { armed = null; btn.textContent = '删除'; } }, 3000); return; }
+  armed = null;
+  try { await api('DELETE', `/api/admin/${t}/${e.id}`); editing = null; await load(t); toast('已删除'); $('panel').innerHTML = '<div class="empty">已删除</div>'; render(); } catch (err) { toast(err.message); }
+}
+
+$('tabs').onclick = async e => { const t = e.target.dataset.t; if (!t) return; tab = t; editing = null; $('panel').innerHTML = '<div class="empty">在左边选一条，或者点“新建”</div>'; await load(t); render(); };
+(async () => {
+  try {
+    await Promise.all(['beads', 'templates', 'banners', 'orders'].map(load));
+    try { [KB, KBA] = await Promise.all([api('GET', '/api/kb/index'), api('GET', '/api/kb/attributes')]); } catch {}
+    const s = await (await fetch('/api/ai/status')).json();
+    $('aiState').textContent = s.enabled ? `AI：${s.provider} · ${s.model}` : 'AI：未配置（用本地规则）';
+    $('aiState').classList.toggle('on', !!s.enabled);
+    render();
+  } catch (err) { $('list').innerHTML = `<div class="err">加载失败：${esc(err.message)}</div>`; }
+})();
+</script>
+</body>
+</html>

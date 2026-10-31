@@ -1,0 +1,3809 @@
+{
+ "dims": [
+  {
+   "key": "color",
+   "name": "颜色",
+   "desc": "主色和深浅、色调。品种特有的颜色叫法（柿子红、乌金）写在珠子表里。",
+   "values": [
+    "无色",
+    "白",
+    "奶白",
+    "黑",
+    "纯黑",
+    "红",
+    "正红",
+    "深红",
+    "粉",
+    "浅粉",
+    "浓粉",
+    "橘粉",
+    "紫",
+    "浅紫",
+    "深紫",
+    "黄",
+    "金黄",
+    "柠檬黄",
+    "茶色",
+    "褐",
+    "橙",
+    "绿",
+    "浅绿",
+    "蓝",
+    "天蓝",
+    "灰",
+    "金色",
+    "银色",
+    "双色",
+    "多色",
+    "渐变",
+    "满色",
+    "色正",
+    "色匀"
+   ]
+  },
+  {
+   "key": "clarity",
+   "name": "种水 / 透明度",
+   "desc": "透光程度和质地观感，从透明到不透。",
+   "values": [
+    "透明",
+    "高透",
+    "冰透",
+    "通透",
+    "晶透",
+    "清透",
+    "净透",
+    "玻璃体",
+    "冰种",
+    "果冻",
+    "半透",
+    "微透",
+    "糯种",
+    "奶油体",
+    "不透",
+    "满肉",
+    "冰飘",
+    "荔枝冻",
+    "水润",
+    "玉质感"
+   ]
+  },
+  {
+   "key": "purity",
+   "name": "净度",
+   "desc": "看得见的棉、裂、杂质多少。",
+   "values": [
+    "净体",
+    "近净",
+    "微棉",
+    "有棉",
+    "棉絮",
+    "微裂",
+    "有裂",
+    "冰裂",
+    "少纹裂",
+    "有纹裂",
+    "微瑕",
+    "有瑕疵",
+    "有杂质",
+    "结构纹"
+   ]
+  },
+  {
+   "key": "effect",
+   "name": "光学效应",
+   "desc": "转动或打光时出现的光学现象。",
+   "values": [
+    "星光",
+    "六芒星光",
+    "猫眼",
+    "月光（游彩）",
+    "晕彩",
+    "彩虹眼",
+    "双彩眼",
+    "金眼",
+    "银眼",
+    "双金眼",
+    "砂金效应",
+    "金沙",
+    "变彩",
+    "变色",
+    "彩虹光",
+    "闪光",
+    "火彩",
+    "金光"
+   ]
+  },
+  {
+   "key": "pattern",
+   "name": "纹理图案",
+   "desc": "材料自带的纹、斑、点、月相等图案。",
+   "values": [
+    "金星",
+    "细金星",
+    "牛毛纹",
+    "水波纹",
+    "火焰纹",
+    "缠丝",
+    "水草纹",
+    "开片",
+    "正月",
+    "玄月",
+    "留白",
+    "星点",
+    "飘花",
+    "千层纹",
+    "条纹",
+    "鱼鳞纹",
+    "瘤疤",
+    "顺纹",
+    "乱纹",
+    "雪花",
+    "豹纹",
+    "风景图案",
+    "收缩纹",
+    "鸡翅纹"
+   ]
+  },
+  {
+   "key": "inclusion",
+   "name": "内含物",
+   "desc": "晶体或宝石里包着的其他矿物、气泡、生物等，很多本身就是卖点。",
+   "values": [
+    "发丝",
+    "兔毛",
+    "钛晶（板状金红石）",
+    "幽灵",
+    "草莓点",
+    "胶花",
+    "包裹体",
+    "绿泥石",
+    "云母片",
+    "气泡",
+    "水胆",
+    "虫珀",
+    "黄铁矿金星",
+    "铁线",
+    "朱砂点",
+    "黑点"
+   ]
+  },
+  {
+   "key": "texture",
+   "name": "料性 / 密度",
+   "desc": "密度、油性、瓷度、玉化等手感和料子的整体质地。",
+   "values": [
+    "高密",
+    "低密",
+    "高油",
+    "油性",
+    "高油密",
+    "满金星",
+    "沉水",
+    "半沉",
+    "浮水",
+    "玉化",
+    "高瓷",
+    "中瓷",
+    "泡松",
+    "骨瓷",
+    "细腻",
+    "温润",
+    "毛感",
+    "石玉料",
+    "细导管",
+    "矿心料"
+   ]
+  },
+  {
+   "key": "origin",
+   "name": "产地 / 矿口 / 籽种",
+   "desc": "国家、产区、矿口或籽种。商家常用简称（马粉、川料）。",
+   "values": [
+    "马达加斯加",
+    "莫桑比克",
+    "巴西",
+    "乌拉圭",
+    "赞比亚",
+    "东海",
+    "喜马拉雅",
+    "保山",
+    "凉山",
+    "瓦西",
+    "九口",
+    "联合",
+    "美姑",
+    "甘肃",
+    "非洲",
+    "印度",
+    "印尼",
+    "海南",
+    "老挝",
+    "尼泊尔",
+    "波罗的海",
+    "缅甸",
+    "多米尼加",
+    "阿富汗",
+    "湖北十堰",
+    "杨柳",
+    "官坡",
+    "大山包",
+    "元宝籽",
+    "同枝",
+    "老矿",
+    "新矿",
+    "原矿"
+   ]
+  },
+  {
+   "key": "age",
+   "name": "新老 / 盘玩状态",
+   "desc": "料子新老、采收年份，以及佩戴盘玩后的状态。",
+   "values": [
+    "全新",
+    "新料",
+    "老料",
+    "双老料",
+    "陈化料",
+    "陈籽",
+    "年份籽",
+    "老件",
+    "包浆",
+    "已盘玩",
+    "玩透",
+    "风化",
+    "二手"
+   ]
+  },
+  {
+   "key": "shape",
+   "name": "珠形",
+   "desc": "珠子形状、切工和表面工艺。",
+   "values": [
+    "圆珠",
+    "苹果圆",
+    "桶珠",
+    "老型珠",
+    "算盘珠",
+    "南瓜珠",
+    "扁珠",
+    "药片",
+    "直切",
+    "切面",
+    "钻石切割",
+    "随形",
+    "六方",
+    "车轮珠",
+    "隔片",
+    "雕刻珠",
+    "无相",
+    "心形",
+    "排片",
+    "椭圆",
+    "龙蛋",
+    "手工珠",
+    "藏式",
+    "喇叭孔",
+    "磨砂",
+    "亚光",
+    "高抛"
+   ]
+  },
+  {
+   "key": "treatment",
+   "name": "处理",
+   "desc": "是否经过人工处理，以及处理方式。商家必须如实标注。",
+   "values": [
+    "天然",
+    "无优化",
+    "优化",
+    "加热",
+    "烤色",
+    "染色",
+    "注胶",
+    "充填",
+    "压制",
+    "合成",
+    "再造",
+    "人造",
+    "镀膜",
+    "脱脂",
+    "漂白",
+    "打蜡",
+    "上油",
+    "胶磨",
+    "未脱脂",
+    "干磨",
+    "无胶研磨",
+    "拼合",
+    "辐照"
+   ]
+  },
+  {
+   "key": "count",
+   "name": "颗数形态",
+   "desc": "成串的颗数和圈数形态；具体手围、珠径不放这里。",
+   "values": [
+    "单圈",
+    "双圈",
+    "三圈",
+    "多圈",
+    "18 颗",
+    "21 颗",
+    "27 颗",
+    "36 颗",
+    "54 颗",
+    "108 颗",
+    "114 颗",
+    "120 颗",
+    "216 颗",
+    "手持",
+    "长串",
+    "项链两用",
+    "单珠",
+    "散珠"
+   ]
+  }
+ ],
+ "grade_families": [
+  {
+   "family": "crystal",
+   "applies": [
+    "crystal",
+    "feldspar",
+    "colored"
+   ],
+   "levels": [
+    "净体",
+    "微棉微裂",
+    "有棉有裂",
+    "多棉多裂"
+   ],
+   "desc": "看净度：肉眼找不到棉裂为净体；转动才看到少量棉絮为微棉；明显有棉有裂往下排。带包体的品种（发晶、幽灵）以包体清晰为好。"
+  },
+  {
+   "family": "agate_jade_gem",
+   "applies": [
+    "agate",
+    "jade",
+    "gem"
+   ],
+   "levels": [
+    "满色满肉",
+    "少纹少瑕",
+    "有纹有瑕",
+    "色杂多裂"
+   ],
+   "desc": "看颜色是否满、匀，质地是否细，纹裂杂质多少。以图案取胜的（缠丝、水草、天珠）以图案清晰完整为好。"
+  },
+  {
+   "family": "organic",
+   "applies": [
+    "organic"
+   ],
+   "levels": [
+    "色正光好无瑕",
+    "微瑕",
+    "瑕疵明显"
+   ],
+   "desc": "看颜色、光泽和表面：琥珀蜜蜡看净度和蜡感，珍珠看光泽、圆度和表面瑕疵，砗磲珊瑚看颜色和裂纹。"
+  },
+  {
+   "family": "wood",
+   "applies": [
+    "wood",
+    "incense"
+   ],
+   "levels": [
+    "高油高密纹理清晰",
+    "油密一般少瑕",
+    "有白皮裂纹虫眼"
+   ],
+   "desc": "看油性、密度、纹理（金星、牛毛纹等）是否清晰，以及有没有白皮、裂纹、虫眼、拼补。香木另看沉水程度。"
+  },
+  {
+   "family": "seed",
+   "applies": [
+    "bodhi",
+    "kernel"
+   ],
+   "levels": [
+    "高密籽型规整无裂",
+    "密度一般少瑕",
+    "有裂有虫眼色杂"
+   ],
+   "desc": "看密度、颜色是否均匀、籽型是否规整，有无裂纹、虫眼、黑点。星月菩提另看正月和星点分布。"
+  },
+  {
+   "family": "manmade",
+   "applies": [
+    "manmade"
+   ],
+   "levels": [
+    "色匀无气泡",
+    "少量气泡划痕",
+    "气泡色差明显"
+   ],
+   "desc": "人工材料不分天然品级，只看做工：颜色是否均匀，有无气泡、划痕、孔口崩边。"
+  }
+ ],
+ "meaning_tags": [
+  "平安",
+  "吉祥",
+  "如意",
+  "圆满",
+  "红火",
+  "喜庆",
+  "福气",
+  "富贵",
+  "富足",
+  "福禄",
+  "长寿",
+  "团圆",
+  "和合",
+  "美满",
+  "爱情",
+  "甜蜜",
+  "相思",
+  "温柔",
+  "浪漫",
+  "少女感",
+  "优雅",
+  "端庄",
+  "沉稳",
+  "内敛",
+  "稳重",
+  "大气",
+  "坚韧",
+  "坚定",
+  "清透",
+  "纯净",
+  "清新",
+  "灵动",
+  "自在",
+  "宁静",
+  "淡泊",
+  "古朴",
+  "雅致",
+  "清雅",
+  "素雅",
+  "温润",
+  "书卷气",
+  "高洁",
+  "热烈",
+  "明亮",
+  "阳光",
+  "活力",
+  "自然",
+  "生机",
+  "好人缘",
+  "友谊",
+  "祝福",
+  "传承",
+  "恒久",
+  "谦和",
+  "包容",
+  "勇气",
+  "华贵",
+  "神秘",
+  "梦幻",
+  "质朴"
+ ],
+ "terms": [
+  {
+   "term": "粉亮",
+   "dim": "color",
+   "value": "粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "颜色鲜亮，偏营销",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "粉色",
+   "dim": "color",
+   "value": "粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "很粉",
+   "dim": "color",
+   "value": "浓粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "也写“粉粉”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "玫瑰粉",
+   "dim": "color",
+   "value": "粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "也写“玫瑰”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "少女粉",
+   "dim": "color",
+   "value": "浅粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "橘粉",
+   "dim": "color",
+   "value": "橘粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "淡粉",
+   "dim": "color",
+   "value": "浅粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "也写“淡淡”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "浓粉",
+   "dim": "color",
+   "value": "浓粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "西瓜红",
+   "dim": "color",
+   "value": "浓粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "粉晶里指偏红的深粉",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "糖果粉",
+   "dim": "color",
+   "value": "浅粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "国内说法",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "西柚",
+   "dim": "color",
+   "value": "橘粉",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "国内说法，偏橘的粉",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "果冻粉",
+   "dim": "clarity",
+   "value": "果冻",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "国内说法，半透明带水感的粉晶",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "冰种",
+   "dim": "clarity",
+   "value": "冰种",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "粉晶里指透明度高、像冰",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "清透",
+   "dim": "clarity",
+   "value": "清透",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "透体",
+   "dim": "clarity",
+   "value": "透明",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "冰透",
+   "dim": "clarity",
+   "value": "冰透",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "果冻",
+   "dim": "clarity",
+   "value": "果冻",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "糯体",
+   "dim": "clarity",
+   "value": "糯种",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "半透到微透，像糯米",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "高透",
+   "dim": "clarity",
+   "value": "高透",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "冰泡",
+   "dim": "clarity",
+   "value": "冰种",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "含义接近冰种，用得少",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "半透",
+   "dim": "clarity",
+   "value": "半透",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "奶油体",
+   "dim": "clarity",
+   "value": "奶油体",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "微透、柔和不通透",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "晶透",
+   "dim": "clarity",
+   "value": "晶透",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "油润",
+   "dim": "texture",
+   "value": "油性",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "粉晶标题里指表面光泽油润",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "净透",
+   "dim": "clarity",
+   "value": "净透",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "白水体",
+   "dim": "clarity",
+   "value": "透明",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "颜色很淡、近无色的透明料",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "透亮",
+   "dim": "clarity",
+   "value": "通透",
+   "beads": [
+    "fen-jing",
+    "heiyao"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "满肉",
+   "dim": "clarity",
+   "value": "不透",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "粉晶里指不透明的粉色料，和南红的“满肉”不同",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "微棉",
+   "dim": "purity",
+   "value": "微棉",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing",
+    "zi-jing",
+    "huang-shuijing",
+    "cha-jing"
+   ],
+   "note": "仔细看才见少量棉絮",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "棉絮",
+   "dim": "purity",
+   "value": "棉絮",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "也写“棉”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "棉裂",
+   "dim": "purity",
+   "value": "有裂",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "净体",
+   "dim": "purity",
+   "value": "净体",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing",
+    "zi-jing",
+    "huang-shuijing",
+    "cha-jing",
+    "hailanbao"
+   ],
+   "note": "肉眼看不到棉裂，也写“全净体/凈体”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "全美",
+   "dim": "purity",
+   "value": "净体",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "也写“近全美”（对应近净）",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "冰纹",
+   "dim": "purity",
+   "value": "冰裂",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "也写“冰片”，内部有片状裂纹",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "裂",
+   "dim": "purity",
+   "value": "有裂",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "99净",
+   "dim": "purity",
+   "value": "近净",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "晶体干净",
+   "dim": "purity",
+   "value": "净体",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "结构",
+   "dim": "purity",
+   "value": "结构纹",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "晶体生长形成的纹路，不是裂",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "星光",
+   "dim": "effect",
+   "value": "星光",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "打点光源可见星线",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "六芒星",
+   "dim": "effect",
+   "value": "六芒星光",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "国内也写“六芒星光”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "金沙",
+   "dim": "effect",
+   "value": "金沙",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "粉晶里指内部细小闪片反光",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "彩虹",
+   "dim": "effect",
+   "value": "彩虹光",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "透明水晶内部细裂反射出的彩光，和黑曜石的彩虹眼不同",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "闪",
+   "dim": "effect",
+   "value": "闪光",
+   "beads": [
+    "fen-jing",
+    "heiyao"
+   ],
+   "note": "也写“闪亮/闪耀”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "钻石切割",
+   "dim": "shape",
+   "value": "钻石切割",
+   "beads": [
+    "fen-jing",
+    "heiyao"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "雕件",
+   "dim": "shape",
+   "value": "雕刻珠",
+   "beads": [
+    "fen-jing",
+    "heiyao",
+    "bai-shuijing"
+   ],
+   "note": "猪、狐狸、猫等造型",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "排片",
+   "dim": "shape",
+   "value": "排片",
+   "beads": [
+    "fen-jing",
+    "heiyao"
+   ],
+   "note": "也写“手排/宽版”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "心形",
+   "dim": "shape",
+   "value": "心形",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "也写“爱心”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "圆珠",
+   "dim": "shape",
+   "value": "圆珠",
+   "beads": [],
+   "note": "通用",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "四叶草",
+   "dim": "shape",
+   "value": "雕刻珠",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "也有五角星、菠萝造型",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "隔珠",
+   "dim": "shape",
+   "value": "隔片",
+   "beads": [],
+   "note": "也写“顶珠/配珠”，配饰用",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "切面",
+   "dim": "shape",
+   "value": "切面",
+   "beads": [],
+   "note": "也写“多切面/刻面/128切面”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "椭圆",
+   "dim": "shape",
+   "value": "椭圆",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "算盘珠",
+   "dim": "shape",
+   "value": "算盘珠",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing",
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "菱形",
+   "dim": "shape",
+   "value": "切面",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "马达加斯加",
+   "dim": "origin",
+   "value": "马达加斯加",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "马粉",
+   "dim": "origin",
+   "value": "马达加斯加",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "马达加斯加产粉晶的简称",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "马岛粉",
+   "dim": "origin",
+   "value": "马达加斯加",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "国内说法，同马粉",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "莫粉",
+   "dim": "origin",
+   "value": "莫桑比克",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "也写“莫三比克”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "巴西",
+   "dim": "origin",
+   "value": "巴西",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing",
+    "zi-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "老矿",
+   "dim": "origin",
+   "value": "老矿",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "商家说的老矿口出产，无法核实",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "新矿",
+   "dim": "origin",
+   "value": "新矿",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "原矿",
+   "dim": "origin",
+   "value": "原矿",
+   "beads": [
+    "fen-jing",
+    "bai-shuijing"
+   ],
+   "note": "水晶里多指原石出产，不代表处理与否",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "天然",
+   "dim": "treatment",
+   "value": "天然",
+   "beads": [],
+   "note": "几乎每个标题都写，区分度低",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "优化",
+   "dim": "treatment",
+   "value": "优化",
+   "beads": [
+    "fen-jing"
+   ],
+   "note": "粉晶里常指染色或充填",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "石英岩",
+   "dim": "treatment",
+   "value": "染色",
+   "beads": [
+    "fen-jing",
+    "caomei-jing",
+    "nanhong"
+   ],
+   "note": "染色石英岩冒充粉晶、草莓晶、南红，要标处理",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "仿",
+   "dim": "treatment",
+   "value": "人造",
+   "beads": [],
+   "note": "仿品，要写清实际材质",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "单圈",
+   "dim": "count",
+   "value": "单圈",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "双圈",
+   "dim": "count",
+   "value": "双圈",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "三圈",
+   "dim": "count",
+   "value": "三圈",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "多圈",
+   "dim": "count",
+   "value": "多圈",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "单珠",
+   "dim": "count",
+   "value": "单珠",
+   "beads": [],
+   "note": "也写“单颗”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "散珠",
+   "dim": "count",
+   "value": "散珠",
+   "beads": [],
+   "note": "按条或按颗卖的未穿珠子",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "奥地利水晶",
+   "dim": "treatment",
+   "value": "人造",
+   "beads": [
+    "boli"
+   ],
+   "note": "国内搜索混入的玻璃仿水晶，不是天然水晶",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "粉猫眼石",
+   "dim": "treatment",
+   "value": "人造",
+   "beads": [
+    "boli-maoyan"
+   ],
+   "note": "国内说法，实为玻璃猫眼",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "金曜石",
+   "dim": "effect",
+   "value": "金眼",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "金色光泽的黑曜石变种，也写“金曜”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "银曜石",
+   "dim": "effect",
+   "value": "银眼",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "银色光泽的变种，也写“银耀”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "乌金",
+   "dim": "color",
+   "value": "纯黑",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "纯黑无眼的黑曜石",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "纯黑",
+   "dim": "color",
+   "value": "纯黑",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "也写“全黑”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "带绿",
+   "dim": "color",
+   "value": "黑",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "黑底在光下泛绿或紫，也写“带紫/紫绿”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "红曜石",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "红褐色调的黑曜石",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "冰种",
+   "dim": "clarity",
+   "value": "冰种",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "黑曜石里指半透明、透光发灰的料，冰种黑曜石",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "雪花",
+   "dim": "pattern",
+   "value": "雪花",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "雪花黑曜石的白色斑块",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "带眼",
+   "dim": "effect",
+   "value": "彩虹眼",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "也写“有眼/眼”，泛指有晕彩圈",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "彩虹眼",
+   "dim": "effect",
+   "value": "彩虹眼",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "转动时出现同心彩色光圈",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "彩眼",
+   "dim": "effect",
+   "value": "彩虹眼",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "国内常用",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "双彩眼",
+   "dim": "effect",
+   "value": "双彩眼",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "两面都有彩虹眼",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "双彩虹眼",
+   "dim": "effect",
+   "value": "双彩眼",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "国内说法",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "双金眼",
+   "dim": "effect",
+   "value": "双金眼",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "两面都有金色光圈",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "彩光",
+   "dim": "effect",
+   "value": "彩虹光",
+   "beads": [
+    "heiyao",
+    "lachang-shi"
+   ],
+   "note": "也写“幻彩”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "金沙",
+   "dim": "effect",
+   "value": "金沙",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "黑曜石里指满布金色细闪点",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "矿心",
+   "dim": "texture",
+   "value": "矿心料",
+   "beads": [
+    "heiyao"
+   ],
+   "note": "国内说法，商家称取自矿体中心的料，含义待核",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "随形",
+   "dim": "shape",
+   "value": "随形",
+   "beads": [],
+   "note": "也写“不规则”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "纯天然",
+   "dim": "treatment",
+   "value": "天然",
+   "beads": [],
+   "note": "也写“无优化/保真”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "无优化",
+   "dim": "treatment",
+   "value": "无优化",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "白色",
+   "dim": "color",
+   "value": "无色",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "透明",
+   "dim": "clarity",
+   "value": "透明",
+   "beads": [
+    "bai-shuijing",
+    "fen-jing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "颜色正",
+   "dim": "color",
+   "value": "色正",
+   "beads": [],
+   "note": "也写“很正”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "晶莹剔透",
+   "dim": "clarity",
+   "value": "高透",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "也写“晶莹”",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "清料",
+   "dim": "clarity",
+   "value": "透明",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "透明干净的料子",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "通透",
+   "dim": "clarity",
+   "value": "通透",
+   "beads": [
+    "bai-shuijing",
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "玻璃体",
+   "dim": "clarity",
+   "value": "玻璃体",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "像玻璃一样透",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "颗颗全晶体",
+   "dim": "purity",
+   "value": "净体",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "国内说法，每颗都通透无棉；含义待核",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "兔毛",
+   "dim": "inclusion",
+   "value": "兔毛",
+   "beads": [
+    "fa-jing",
+    "bai-shuijing"
+   ],
+   "note": "细软如毛的针状包体",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "钛晶",
+   "dim": "inclusion",
+   "value": "钛晶（板状金红石）",
+   "beads": [
+    "fa-jing"
+   ],
+   "note": "国内说法，金红石呈宽板状的发晶",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "发晶",
+   "dim": "inclusion",
+   "value": "发丝",
+   "beads": [
+    "fa-jing"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "包裹体",
+   "dim": "inclusion",
+   "value": "包裹体",
+   "beads": [
+    "bai-shuijing",
+    "yixiang"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "幽灵",
+   "dim": "inclusion",
+   "value": "幽灵",
+   "beads": [
+    "youling",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "胶花",
+   "dim": "inclusion",
+   "value": "胶花",
+   "beads": [
+    "jiaohua",
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "激光",
+   "dim": "effect",
+   "value": "闪光",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "内部反光点",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "烟花",
+   "dim": "inclusion",
+   "value": "包裹体",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "放射状包体，含义待核",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "磨砂",
+   "dim": "shape",
+   "value": "磨砂",
+   "beads": [],
+   "note": "表面工艺",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "东海",
+   "dim": "origin",
+   "value": "东海",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "江苏东海，国内白水晶写得最多",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "喜马拉雅",
+   "dim": "origin",
+   "value": "喜马拉雅",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "老料",
+   "dim": "age",
+   "value": "老料",
+   "beads": [
+    "bai-shuijing",
+    "fen-jing"
+   ],
+   "note": "水晶里指早年库存料，无法核实",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "压电",
+   "dim": "treatment",
+   "value": "合成",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "“压电白水晶”是人工培育的合成水晶",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "养晶",
+   "dim": "treatment",
+   "value": "合成",
+   "beads": [
+    "bai-shuijing"
+   ],
+   "note": "人工培育水晶，必须标合成",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "合成",
+   "dim": "treatment",
+   "value": "合成",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "老型珠",
+   "dim": "shape",
+   "value": "老型珠",
+   "beads": [
+    "bai-shuijing",
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/crystals.md"
+  },
+  {
+   "term": "108颗",
+   "dim": "count",
+   "value": "108 颗",
+   "beads": [],
+   "note": "也写“百八”，佛珠形态",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "柿子红",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "南红颜色名：橙红如熟柿",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "锦红",
+   "dim": "color",
+   "value": "正红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "南红颜色名：浓正红，行家排序靠前",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "柿子锦红",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“柿锦”，介于柿子红和锦红之间",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "玫瑰红",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“玫红”，偏紫的红",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "樱桃红",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "南红颜色名，鲜红偏透",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "牛血红",
+   "dim": "color",
+   "value": "深红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“血锦红”，深浓的红",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "火焰红",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "冰红",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "透明度较高的红",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "朱砂红",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "朱砂点",
+   "dim": "inclusion",
+   "value": "朱砂点",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "红色由密集红点聚成",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "橘红",
+   "dim": "color",
+   "value": "橙",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“冰橘”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "山椒红",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "国内新见说法，含义待核",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "红白料",
+   "dim": "color",
+   "value": "双色",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“双色/多宝色”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "满色",
+   "dim": "color",
+   "value": "满色",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "颜色布满整颗",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "满红",
+   "dim": "color",
+   "value": "满色",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "红润",
+   "dim": "color",
+   "value": "红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "黑红",
+   "dim": "color",
+   "value": "深红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "黑洞",
+   "dim": "inclusion",
+   "value": "黑点",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "黑色杂质，瑕疵描述",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "正红",
+   "dim": "color",
+   "value": "正红",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“中国红”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "南红色",
+   "dim": "color",
+   "value": "红",
+   "beads": [],
+   "note": "只说颜色，不代表是南红；常见染色石英岩冒充",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "冰飘",
+   "dim": "clarity",
+   "value": "冰飘",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "冰底飘红花，和满色料是两条价格线",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "冰底",
+   "dim": "clarity",
+   "value": "冰种",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“高冰/冰种”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "满肉",
+   "dim": "clarity",
+   "value": "满肉",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "南红里指不透、质地饱满，常和满色连用",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "荔枝冻",
+   "dim": "clarity",
+   "value": "荔枝冻",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "半透、像荔枝肉",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "水润",
+   "dim": "clarity",
+   "value": "水润",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“晶腻”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "温润",
+   "dim": "texture",
+   "value": "温润",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“细腻”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "玉质感",
+   "dim": "clarity",
+   "value": "玉质感",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "纹裂",
+   "dim": "purity",
+   "value": "有纹裂",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“冰裂”，瑕疵描述",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "少纹裂",
+   "dim": "purity",
+   "value": "少纹裂",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "火焰纹",
+   "dim": "pattern",
+   "value": "火焰纹",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "南红里指红白交错如火苗",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "飘花",
+   "dim": "pattern",
+   "value": "飘花",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“散花”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "千层糕纹",
+   "dim": "pattern",
+   "value": "千层纹",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“流纹”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "回纹",
+   "dim": "shape",
+   "value": "雕刻珠",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "雕刻纹样，也有团寿纹",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "景色",
+   "dim": "pattern",
+   "value": "风景图案",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“聚宝盆纹”，指天然图案",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "油性",
+   "dim": "texture",
+   "value": "油性",
+   "beads": [
+    "nanhong",
+    "xiaoye-zitan",
+    "xingyue"
+   ],
+   "note": "也写“油润”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "哑光",
+   "dim": "shape",
+   "value": "亚光",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“柔光”，表面工艺",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "高抛",
+   "dim": "shape",
+   "value": "高抛",
+   "beads": [
+    "nanhong",
+    "xingyue"
+   ],
+   "note": "也写“亮面/镜面”，表面工艺",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "老型",
+   "dim": "shape",
+   "value": "老型珠",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "仿老珠的鼓形，南红特有高频词",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "老南红",
+   "dim": "age",
+   "value": "老件",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“千年老/清代/古珠”，商家自述，难核实",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "包浆",
+   "dim": "age",
+   "value": "包浆",
+   "beads": [
+    "nanhong",
+    "xiaoye-zitan",
+    "xingyue"
+   ],
+   "note": "佩戴盘玩形成的表面光泽",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "旧藏",
+   "dim": "age",
+   "value": "二手",
+   "beads": [],
+   "note": "也写“二手”；台湾平台常作标签，不代表成色",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "全新",
+   "dim": "age",
+   "value": "全新",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "桶珠",
+   "dim": "shape",
+   "value": "桶珠",
+   "beads": [
+    "nanhong",
+    "xiaoye-zitan",
+    "xingyue"
+   ],
+   "note": "也写“筒珠”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "直切",
+   "dim": "shape",
+   "value": "直切",
+   "beads": [
+    "nanhong",
+    "xiaoye-zitan",
+    "xingyue"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "南瓜珠",
+   "dim": "shape",
+   "value": "南瓜珠",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“瓜珠/南瓜型/扁南瓜珠”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "药片",
+   "dim": "shape",
+   "value": "药片",
+   "beads": [
+    "nanhong",
+    "xiaoye-zitan"
+   ],
+   "note": "扁圆片形珠",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "六方",
+   "dim": "shape",
+   "value": "六方",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "刻面",
+   "dim": "shape",
+   "value": "切面",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "手工珠",
+   "dim": "shape",
+   "value": "手工珠",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "车轮珠",
+   "dim": "shape",
+   "value": "车轮珠",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "国内说法",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "隔片",
+   "dim": "shape",
+   "value": "隔片",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "国内说法，如 4×8mm",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "保山",
+   "dim": "origin",
+   "value": "保山",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "云南保山",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "凉山",
+   "dim": "origin",
+   "value": "凉山",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "四川凉山",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "川料",
+   "dim": "origin",
+   "value": "凉山",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“四川”，多指凉山料",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "瓦西",
+   "dim": "origin",
+   "value": "瓦西",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "凉山矿口",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "九口",
+   "dim": "origin",
+   "value": "九口",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "凉山矿口",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "联合矿",
+   "dim": "origin",
+   "value": "联合",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "凉山矿口",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "杨柳",
+   "dim": "origin",
+   "value": "杨柳",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "矿口名",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "官坡",
+   "dim": "origin",
+   "value": "官坡",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "矿口名",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "甘南红",
+   "dim": "origin",
+   "value": "甘肃",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "甘肃产南红",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "美姑",
+   "dim": "origin",
+   "value": "美姑",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "凉山矿口",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "大山包",
+   "dim": "origin",
+   "value": "大山包",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "矿口名",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "非洲南红",
+   "dim": "origin",
+   "value": "非洲",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“非红”，低价替代品，要明确标出",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "藏传",
+   "dim": "shape",
+   "value": "藏式",
+   "beads": [
+    "nanhong",
+    "xingyue"
+   ],
+   "note": "也写“西藏/藏式”，风格词，不代表产地",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "原矿",
+   "dim": "treatment",
+   "value": "天然",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "南红标题里当作“未处理”的信任词",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "无注胶",
+   "dim": "treatment",
+   "value": "无优化",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "也写“无胶/无优化”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "充填",
+   "dim": "treatment",
+   "value": "充填",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "要如实披露",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "注胶",
+   "dim": "treatment",
+   "value": "注胶",
+   "beads": [
+    "nanhong",
+    "lvsong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "烤色",
+   "dim": "treatment",
+   "value": "烤色",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "加热改色",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "多圈",
+   "dim": "count",
+   "value": "多圈",
+   "beads": [
+    "nanhong"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "项链两用",
+   "dim": "count",
+   "value": "项链两用",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "透紫",
+   "dim": "color",
+   "value": "紫",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“紫葡萄”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "鸡血紫",
+   "dim": "color",
+   "value": "深红",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“鸡红”，偏红的紫檀",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "黑紫",
+   "dim": "color",
+   "value": "黑",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“黑红/黑珍珠”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "金光",
+   "dim": "effect",
+   "value": "金光",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“闪光/自带光”，木材表面的光泽",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "金星",
+   "dim": "pattern",
+   "value": "金星",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "导管里的金色闪点",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "满金星",
+   "dim": "texture",
+   "value": "满金星",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "金星布满整颗，也写“满星/多星/爆星”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "细金星",
+   "dim": "pattern",
+   "value": "细金星",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“螺旋金星”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "牛毛纹",
+   "dim": "pattern",
+   "value": "牛毛纹",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "细密卷曲如牛毛的纹理",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "水波纹",
+   "dim": "pattern",
+   "value": "水波纹",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "火焰纹",
+   "dim": "pattern",
+   "value": "火焰纹",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "紫檀里指纹理像火苗，和南红不同",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "瘤疤",
+   "dim": "pattern",
+   "value": "瘤疤",
+   "beads": [
+    "xiaoye-zitan",
+    "yabai"
+   ],
+   "note": "树瘤形成的花纹",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "鱼鳞底",
+   "dim": "pattern",
+   "value": "鱼鳞纹",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“龙鳞/鳞底”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "玻璃底",
+   "dim": "pattern",
+   "value": "鱼鳞纹",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "底子光亮如玻璃，含义待核",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "虎纹",
+   "dim": "pattern",
+   "value": "乱纹",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“凤尾纹/乱纹”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "顺纹",
+   "dim": "pattern",
+   "value": "顺纹",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "高油密",
+   "dim": "texture",
+   "value": "高油密",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“高油高密”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "高密",
+   "dim": "texture",
+   "value": "高密",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "紫檀里指木质密度高，入水下沉",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "高油",
+   "dim": "texture",
+   "value": "高油",
+   "beads": [
+    "xiaoye-zitan",
+    "xingyue"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "沉水",
+   "dim": "texture",
+   "value": "沉水",
+   "beads": [
+    "xiaoye-zitan",
+    "chenxiang"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "细导管",
+   "dim": "texture",
+   "value": "细导管",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "老料",
+   "dim": "age",
+   "value": "老料",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "砍伐存放年久的料，紫檀高频词",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "泥料",
+   "dim": "age",
+   "value": "老料",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "埋在泥里年久的老料",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "琴料",
+   "dim": "age",
+   "value": "老料",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "原为做琴用的料",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "树头料",
+   "dim": "texture",
+   "value": "高密",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "树根部位的料，含义待核",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "二膘",
+   "dim": "pattern",
+   "value": "条纹",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“漆皮”，边材与心材交界",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "白皮",
+   "dim": "purity",
+   "value": "有瑕疵",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "边材，算瑕疵",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "双老料",
+   "dim": "age",
+   "value": "双老料",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“山野老料”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "风化",
+   "dim": "age",
+   "value": "风化",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "苹果圆",
+   "dim": "shape",
+   "value": "苹果圆",
+   "beads": [
+    "xiaoye-zitan",
+    "xingyue"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "雕刻珠",
+   "dim": "shape",
+   "value": "雕刻珠",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "手工",
+   "dim": "shape",
+   "value": "手工珠",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“精工”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "干磨",
+   "dim": "treatment",
+   "value": "无胶研磨",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "紫檀里指打磨不用胶，也写“无胶研磨”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "手持",
+   "dim": "count",
+   "value": "手持",
+   "beads": [],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "印度",
+   "dim": "origin",
+   "value": "印度",
+   "beads": [
+    "xiaoye-zitan",
+    "tanxiang"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "印尼",
+   "dim": "origin",
+   "value": "印尼",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "檀香紫檀",
+   "dim": "origin",
+   "value": "印度",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "小叶紫檀的学名",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "赞比亚",
+   "dim": "origin",
+   "value": "非洲",
+   "beads": [
+    "xue-tan"
+   ],
+   "note": "赞比亚血檀，常被当紫檀替代",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "非洲小叶紫檀",
+   "dim": "origin",
+   "value": "非洲",
+   "beads": [
+    "xue-tan"
+   ],
+   "note": "国内误导叫法，不是檀香紫檀",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "无油无蜡",
+   "dim": "treatment",
+   "value": "天然",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "也写“无胶/无科技/未上油打蜡”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "打蜡",
+   "dim": "treatment",
+   "value": "打蜡",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "胶磨",
+   "dim": "treatment",
+   "value": "胶磨",
+   "beads": [
+    "xiaoye-zitan"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "顺白",
+   "dim": "color",
+   "value": "白",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "颜色均匀的白，也写“白”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "奶白",
+   "dim": "color",
+   "value": "奶白",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "鸡油黄",
+   "dim": "color",
+   "value": "黄",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "星月里指盘玩后变黄，也写“金籽”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "鸡油黄",
+   "dim": "color",
+   "value": "黄",
+   "beads": [
+    "mila"
+   ],
+   "note": "蜜蜡里指浓黄色",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "幽灵绿",
+   "dim": "color",
+   "value": "绿",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“绿/满绿”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "粉糯",
+   "dim": "color",
+   "value": "粉",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "奶奶灰",
+   "dim": "color",
+   "value": "灰",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“灰雾”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "原色",
+   "dim": "color",
+   "value": "色匀",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“顺色”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "玉化",
+   "dim": "texture",
+   "value": "玉化",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "盘玩后半透有玉感",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "骨瓷",
+   "dim": "texture",
+   "value": "骨瓷",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“挂瓷/高瓷”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "石玉料",
+   "dim": "texture",
+   "value": "石玉料",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "微透",
+   "dim": "clarity",
+   "value": "微透",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“冰”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "正月",
+   "dim": "pattern",
+   "value": "正月",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "月眼位置居中、端正",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "玄月",
+   "dim": "pattern",
+   "value": "玄月",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“新月”，月眼偏",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "留白",
+   "dim": "pattern",
+   "value": "留白",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“大留白/双留白”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "月朗星稀",
+   "dim": "pattern",
+   "value": "星点",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "星点稀疏",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "满天星",
+   "dim": "pattern",
+   "value": "星点",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "星点密布",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "针点星",
+   "dim": "pattern",
+   "value": "星点",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“细密星点/星点自然”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "开片",
+   "dim": "pattern",
+   "value": "开片",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "盘玩后表面出现细裂纹，是卖点",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "收缩纹",
+   "dim": "pattern",
+   "value": "收缩纹",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“龙鳞/龙脊”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "高密",
+   "dim": "texture",
+   "value": "高密",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "星月里指籽质硬实、星点细",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "低密",
+   "dim": "texture",
+   "value": "低密",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "陈籽",
+   "dim": "age",
+   "value": "陈籽",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "存放多年的籽，也写“年份籽”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "老星月",
+   "dim": "age",
+   "value": "老件",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“老件/古玩”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "玩透",
+   "dim": "age",
+   "value": "玩透",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“盘玩/手盘”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "原生态",
+   "dim": "treatment",
+   "value": "未脱脂",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "国内主要信任词，指未脱脂漂白",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "原籽",
+   "dim": "treatment",
+   "value": "未脱脂",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "国内说法，同原生态",
+   "source": "市场调研 kb/market/report.html（国内平台补充）"
+  },
+  {
+   "term": "干磨",
+   "dim": "treatment",
+   "value": "干磨",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "星月里指不水磨漂白",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "脱脂",
+   "dim": "treatment",
+   "value": "脱脂",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也指水磨漂白，要披露",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "龙蛋",
+   "dim": "shape",
+   "value": "龙蛋",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "藏切",
+   "dim": "shape",
+   "value": "直切",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“薄切”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "无相",
+   "dim": "shape",
+   "value": "无相",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "表面不打磨出月眼的切法，含义待核",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "喇叭孔",
+   "dim": "shape",
+   "value": "喇叭孔",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“对孔”，孔道工艺",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "长串",
+   "dim": "count",
+   "value": "长串",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“脖挂”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "216颗",
+   "dim": "count",
+   "value": "216 颗",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "其他足数也有 114/120/36",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "海南",
+   "dim": "origin",
+   "value": "海南",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "元宝籽",
+   "dim": "origin",
+   "value": "元宝籽",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "籽种",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "老挝籽",
+   "dim": "origin",
+   "value": "老挝",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "常被冒充海南籽",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "同枝果",
+   "dim": "origin",
+   "value": "同枝",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "也写“同枝料”",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "毛感料",
+   "dim": "texture",
+   "value": "毛感",
+   "beads": [
+    "xingyue"
+   ],
+   "note": "表面带毛感的籽种",
+   "source": "市场调研 kb/market/wenwan.md"
+  },
+  {
+   "term": "金发晶",
+   "dim": "inclusion",
+   "value": "发丝",
+   "beads": [
+    "fa-jing"
+   ],
+   "note": "金色发丝",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "绿幽灵",
+   "dim": "inclusion",
+   "value": "幽灵",
+   "beads": [
+    "youling"
+   ],
+   "note": "绿色幽灵包体",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "千层幽灵",
+   "dim": "inclusion",
+   "value": "幽灵",
+   "beads": [
+    "youling"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "聚宝盆",
+   "dim": "inclusion",
+   "value": "幽灵",
+   "beads": [
+    "youling"
+   ],
+   "note": "幽灵堆积成盆状，商家说法，不接招财",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "草莓点",
+   "dim": "inclusion",
+   "value": "草莓点",
+   "beads": [
+    "caomei-jing"
+   ],
+   "note": "",
+   "source": "常识"
+  },
+  {
+   "term": "蓝月光",
+   "dim": "effect",
+   "value": "月光（游彩）",
+   "beads": [
+    "yueguang-shi"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "拉长石蓝光",
+   "dim": "effect",
+   "value": "晕彩",
+   "beads": [
+    "lachang-shi"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "虎眼",
+   "dim": "effect",
+   "value": "猫眼",
+   "beads": [
+    "huyan-shi"
+   ],
+   "note": "",
+   "source": "常识"
+  },
+  {
+   "term": "高瓷",
+   "dim": "texture",
+   "value": "高瓷",
+   "beads": [
+    "lvsong"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "泡松",
+   "dim": "texture",
+   "value": "泡松",
+   "beads": [
+    "lvsong"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "铁线",
+   "dim": "inclusion",
+   "value": "铁线",
+   "beads": [
+    "lvsong"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "含金星",
+   "dim": "inclusion",
+   "value": "黄铁矿金星",
+   "beads": [
+    "qingjin"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "金珀",
+   "dim": "color",
+   "value": "金黄",
+   "beads": [
+    "hupo"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "蓝珀",
+   "dim": "effect",
+   "value": "变色",
+   "beads": [
+    "hupo"
+   ],
+   "note": "多米尼加蓝珀在光下泛蓝，含义待核",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "虫珀",
+   "dim": "inclusion",
+   "value": "虫珀",
+   "beads": [
+    "hupo"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "陈化料",
+   "dim": "age",
+   "value": "陈化料",
+   "beads": [
+    "yabai"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "沉香沉水",
+   "dim": "texture",
+   "value": "沉水",
+   "beads": [
+    "chenxiang"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "半沉",
+   "dim": "texture",
+   "value": "半沉",
+   "beads": [
+    "chenxiang"
+   ],
+   "note": "",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "十八籽",
+   "dim": "count",
+   "value": "18 颗",
+   "beads": [
+    "shibazi"
+   ],
+   "note": "文化说法，不能接保佑、护身",
+   "source": "kb/taxonomy.json"
+  },
+  {
+   "term": "染色",
+   "dim": "treatment",
+   "value": "染色",
+   "beads": [],
+   "note": "",
+   "source": "常识"
+  },
+  {
+   "term": "加热",
+   "dim": "treatment",
+   "value": "加热",
+   "beads": [
+    "huang-shuijing",
+    "gangyu",
+    "tuopa"
+   ],
+   "note": "",
+   "source": "常识"
+  },
+  {
+   "term": "压制",
+   "dim": "treatment",
+   "value": "压制",
+   "beads": [
+    "zhusha",
+    "hupo"
+   ],
+   "note": "",
+   "source": "常识"
+  },
+  {
+   "term": "再造",
+   "dim": "treatment",
+   "value": "再造",
+   "beads": [
+    "hecheng",
+    "hupo"
+   ],
+   "note": "",
+   "source": "常识"
+  }
+ ],
+ "banned": [
+  {
+   "word": "招财",
+   "type": "功效",
+   "instead": "传统上寓意财源广进（文化说法）"
+  },
+  {
+   "word": "聚财",
+   "type": "功效",
+   "instead": "传统上寓意富足（文化说法）"
+  },
+  {
+   "word": "进财",
+   "type": "功效",
+   "instead": "传统上寓意富足（文化说法）"
+  },
+  {
+   "word": "财运",
+   "type": "功效",
+   "instead": "传统上寓意富足（文化说法）"
+  },
+  {
+   "word": "旺财",
+   "type": "功效",
+   "instead": "传统上寓意富足（文化说法）"
+  },
+  {
+   "word": "财神",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "旺事业",
+   "type": "功效",
+   "instead": "颜色沉稳大气，适合通勤佩戴"
+  },
+  {
+   "word": "旺运",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "转运",
+   "type": "玄学",
+   "instead": "传统上寓意吉祥如意（文化说法）"
+  },
+  {
+   "word": "开运",
+   "type": "玄学",
+   "instead": "传统上寓意吉祥如意（文化说法）"
+  },
+  {
+   "word": "运势",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "时来运转",
+   "type": "玄学",
+   "instead": "寓意吉祥如意"
+  },
+  {
+   "word": "鸿运",
+   "type": "玄学",
+   "instead": "寓意红火吉祥"
+  },
+  {
+   "word": "招桃花",
+   "type": "玄学",
+   "instead": "粉色温柔，常作表达心意的礼物"
+  },
+  {
+   "word": "桃花运",
+   "type": "玄学",
+   "instead": "粉色温柔，常作表达心意的礼物"
+  },
+  {
+   "word": "桃花",
+   "type": "玄学",
+   "instead": "粉色温柔，常作表达心意的礼物"
+  },
+  {
+   "word": "爱情之石",
+   "type": "玄学",
+   "instead": "常作情侣、闺蜜之间的礼物"
+  },
+  {
+   "word": "招人缘",
+   "type": "功效",
+   "instead": "颜色柔和亲切，寓意好人缘（文化说法）"
+  },
+  {
+   "word": "旺人缘",
+   "type": "功效",
+   "instead": "颜色柔和亲切，寓意好人缘（文化说法）"
+  },
+  {
+   "word": "招贵人",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "防小人",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "避邪",
+   "type": "玄学",
+   "instead": "传统上寓意平安吉祥（文化说法）"
+  },
+  {
+   "word": "辟邪",
+   "type": "玄学",
+   "instead": "传统上寓意平安吉祥（文化说法）"
+  },
+  {
+   "word": "挡煞",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "化煞",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "镇宅",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "风水",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "净化",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "消磁",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "消磁石",
+   "type": "玄学",
+   "instead": "白水晶碎石（写实描述）"
+  },
+  {
+   "word": "能量",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "能量石",
+   "type": "玄学",
+   "instead": "天然晶石（写实描述）"
+  },
+  {
+   "word": "负能量",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "气场",
+   "type": "玄学",
+   "instead": "气质沉稳"
+  },
+  {
+   "word": "磁场",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "脉轮",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "五行补",
+   "type": "玄学",
+   "instead": ""
+  },
+  {
+   "word": "水晶之王",
+   "type": "玄学",
+   "instead": "常见、百搭的透明水晶"
+  },
+  {
+   "word": "保平安",
+   "type": "宗教",
+   "instead": "传统上寓意平安（文化说法）"
+  },
+  {
+   "word": "保佑",
+   "type": "宗教",
+   "instead": "寓意平安吉祥"
+  },
+  {
+   "word": "护身",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "护身符",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "守护神",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "本命佛",
+   "type": "宗教",
+   "instead": "生肖款式（只写生肖属相）"
+  },
+  {
+   "word": "开光",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "加持",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "修法",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "灌顶",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "持咒",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "六字真言",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "修行",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "消业",
+   "type": "宗教",
+   "instead": ""
+  },
+  {
+   "word": "安神",
+   "type": "医疗",
+   "instead": "颜色柔和，看着舒服"
+  },
+  {
+   "word": "助眠",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "情绪稳定",
+   "type": "医疗",
+   "instead": "气质沉稳"
+  },
+  {
+   "word": "疗愈",
+   "type": "医疗",
+   "instead": "颜色温柔，寓意温柔（文化说法）"
+  },
+  {
+   "word": "治愈",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "释压",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "减压",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "增记忆",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "助专心",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "防辐射",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "免疫",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "保健康",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "养生",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "治疗",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "降血压",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "活血",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "养颜",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "排毒",
+   "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "七大功效",
+   "type": "医疗",
+   "instead": ""
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+.page { padding: 24rpx 32rpx 60rpx; }
+.item {
+  display: flex; align-items: center; background: rgba(255,255,255,0.05);
+  border-radius: 24rpx; padding: 16rpx 24rpx; margin-bottom: 20rpx; border: 2rpx solid transparent;
+}
+.item.on { border-color: #e8b86b; }
+.info { margin-left: 24rpx; flex: 1; }
+.nm { font-size: 32rpx; color: #f6dfb4; margin-bottom: 10rpx; }
+.tag { font-size: 20rpx; background: #e8b86b; color: #2a1a10; padding: 2rpx 12rpx; border-radius: 16rpx; margin-left: 10rpx; }
+.tip { text-align: center; font-size: 24rpx; margin-top: 20rpx; }

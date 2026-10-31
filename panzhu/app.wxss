@@ -1,0 +1,21 @@
+page {
+  background: radial-gradient(circle at 50% 30%, #3a2a20 0%, #1c1512 70%);
+  color: #f1e6d6;
+  font-size: 28rpx;
+  min-height: 100%;
+}
+.btn {
+  background: #e8b86b;
+  color: #2a1a10;
+  border-radius: 48rpx;
+  padding: 20rpx 40rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+}
+.btn.ghost {
+  background: transparent;
+  color: #e8b86b;
+  border: 2rpx solid #e8b86b;
+}
+.muted { color: #9a8a7a; }

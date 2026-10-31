@@ -1,0 +1,283 @@
+[
+ {
+  "id": "xiangya",
+  "name": "象牙",
+  "std": "象牙",
+  "category": "banned",
+  "aliases": [
+   "象牙"
+  ],
+  "summary": "大象的牙。国内已全面停止象牙及制品的商业性加工和销售，禁售。",
+  "look": "乳白到淡黄色，油脂光泽，质地细腻温润。截面有交叉的弧线网纹，纵切面有平行波浪纹，老件泛黄并有细裂。",
+  "identify": [
+   "截面可见交叉的弧线网纹（勒兹纹）",
+   "纵切面有平行的波浪状细纹",
+   "乳白到淡黄，油脂光泽，细腻温润"
+  ],
+  "confusables": [
+   {
+    "id": "xiangyaguo",
+    "name": "象牙果",
+    "how": "棕榈科植物种子，有细胞状小点，没有勒兹纹；合法商品，不能当象牙拦截"
+   },
+   {
+    "id": "",
+    "name": "“象牙白”",
+    "how": "颜色名，菩提、陶瓷、贝壳、树脂都常用，不能当象牙拦截"
+   },
+   {
+    "id": "mangma",
+    "name": "猛犸牙",
+    "how": "化石牙，带埋藏皮色，交易需来源证明；和象牙肉眼难分，需证书"
+   },
+   {
+    "id": "gu-zhu",
+    "name": "骨珠",
+    "how": "骨头有细小黑色孔点，没有交叉网纹"
+   },
+   {
+    "id": "shuzhi",
+    "name": "树脂仿象牙",
+    "how": "轻，没有网纹或网纹呆板"
+   },
+   {
+    "id": "",
+    "name": "河马牙、海象牙",
+    "how": "截面没有勒兹纹，有同心层，同样受管控需拦截"
+   }
+  ],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "banned",
+   "note": "国务院办公厅《关于有序停止商业性加工销售象牙及制品活动的通知》（国办发〔2016〕103号），2017 年底前全面停止象牙及制品商业性加工销售；亚洲象是国家一级保护动物。只用于识别和拒绝，不进料包，AI 不推荐。注意“象牙白”“象牙果”不能拦截"
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "",
+  "price_band": "",
+  "sources": [
+   "国办发〔2016〕103号",
+   "2021《国家重点保护野生动物名录》（国家林草局、农业农村部 2021 年第 3 号公告，https://www.xinhuanet.com/politics/2021-02/05/c_1127067901.htm）",
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "compliance": "high"
+  }
+ },
+ {
+  "id": "xijiao",
+  "name": "犀角",
+  "std": "犀角",
+  "category": "banned",
+  "aliases": [
+   "犀牛角"
+  ],
+  "summary": "犀牛的角。犀牛角贸易在国内被明令禁止，禁售。",
+  "look": "黑褐到灰褐、黄褐色，半透明到不透明。纵向有粗细不一的丝状纹，截面有密集的小点。多见雕件、杯碗，珠子少见。",
+  "identify": [
+   "截面可见密集的小点（俗称鱼子纹）",
+   "纵切面有平行的丝状纹（竹丝纹）",
+   "部分犀角颜色由中心向外变浅，不是每只都有，只能作辅助"
+  ],
+  "confusables": [
+   {
+    "id": "jiao",
+    "name": "牦牛角、水牛角",
+    "how": "牛角截面没有密集小点，多呈层状或中空"
+   },
+   {
+    "id": "shuzhi",
+    "name": "树脂仿品",
+    "how": "没有鱼子纹，有气泡"
+   },
+   {
+    "id": "",
+    "name": "羚羊角",
+    "how": "半透明、有纵向纹，赛加羚羊为国家一级，同样拒绝"
+   }
+  ],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "banned",
+   "note": "国务院 1993 年《关于禁止犀牛角和虎骨贸易的通知》禁止犀牛角的出售、收购、运输、携带、邮寄；犀牛列入 CITES 附录 I（个别种群附录 II 也有严格限制）。只用于识别和拒绝，不进料包，AI 不推荐"
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "",
+  "price_band": "",
+  "sources": [
+   "国务院《关于禁止犀牛角和虎骨贸易的通知》（1993）",
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "compliance": "high"
+  }
+ },
+ {
+  "id": "daimao",
+  "name": "玳瑁",
+  "std": "玳瑁",
+  "category": "banned",
+  "aliases": [
+   "玳瑁"
+  ],
+  "summary": "玳瑁（海龟）的背甲，国家一级保护动物，禁售。",
+  "look": "黄色底上分布褐色、黑色斑块，半透明，油脂到蜡状光泽。透光看，深色斑块由很多小色点聚成，边缘模糊。",
+  "identify": [
+   "透光看深色斑块由密集的小色点组成",
+   "斑块边缘过渡模糊、自然",
+   "黄底半透明，有层状结构"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "“玳瑁色”“玳瑁纹”",
+    "how": "眼镜、发饰常用的颜色或花纹名称，多为塑料板材，不能当玳瑁拦截"
+   },
+   {
+    "id": "shuzhi",
+    "name": "树脂、塑料仿玳瑁",
+    "how": "斑块是均匀色块、边缘清晰，常有气泡和流纹"
+   },
+   {
+    "id": "jiao",
+    "name": "染色牛角",
+    "how": "牛角有纵向纤维纹，斑块是染上去的"
+   },
+   {
+    "id": "",
+    "name": "其他海龟龟甲",
+    "how": "海龟科全部 CITES 附录 I，一律拒绝"
+   }
+  ],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "banned",
+   "note": "玳瑁是国家一级保护野生动物，并列入 CITES 附录 I。只用于识别和拒绝，不进料包，AI 不推荐"
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "",
+  "price_band": "",
+  "sources": [
+   "2021《国家重点保护野生动物名录》（国家林草局、农业农村部 2021 年第 3 号公告，https://www.xinhuanet.com/politics/2021-02/05/c_1127067901.htm）",
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "compliance": "high"
+  }
+ },
+ {
+  "id": "heding",
+  "name": "鹤顶红",
+  "std": "盔犀鸟头胄",
+  "category": "banned",
+  "aliases": [
+   "鹤顶红",
+   "盔犀鸟"
+  ],
+  "summary": "盔犀鸟头顶的实心盔突，文玩里叫鹤顶红，禁售。",
+  "look": "内部乳黄色、像象牙一样细腻，外缘有一圈橙红色皮。油脂光泽，质地致密，多做雕件、挂件。",
+  "identify": [
+   "截面外缘一圈橙红色，内部乳黄色，红黄分界清楚",
+   "质地细腻致密，油脂光泽",
+   "多见薄片雕件、挂件和小珠"
+  ],
+  "confusables": [
+   {
+    "id": "shuzhi",
+    "name": "树脂仿鹤顶红",
+    "how": "红色是染上去的，过渡呆板，常有气泡"
+   },
+   {
+    "id": "gu-zhu",
+    "name": "染色骨",
+    "how": "骨头有细小黑色孔点"
+   },
+   {
+    "id": "shanhu",
+    "name": "红珊瑚",
+    "how": "珊瑚整体红色、有平行生长纹，没有红皮黄心的结构"
+   },
+   {
+    "id": "",
+    "name": "“鹤顶红”其他含义",
+    "how": "也是古代毒药的别称和一些花卉、金鱼品种名，拦截时要看上下文"
+   }
+  ],
+  "dims": {},
+  "grades": [],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [],
+  "compliance": {
+   "level": "banned",
+   "note": "盔犀鸟是国家一级保护野生动物，并列入 CITES 附录 I。只用于识别和拒绝，不进料包，AI 不推荐"
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "",
+  "price_band": "",
+  "sources": [
+   "凤凰网报道 https://news.ifeng.com/c/8Q4sBpEgFIj",
+   "TRAFFIC 报道 https://traffic.org/news/huge-seizure-of-helmeted-hornbill-casques-and-other-wildlife-parts-in-indonesia",
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json",
+   "2021《国家重点保护野生动物名录》（国家林草局、农业农村部 2021 年第 3 号公告，https://www.xinhuanet.com/politics/2021-02/05/c_1127067901.htm）"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "compliance": "high"
+  }
+ }
+]

@@ -1,0 +1,170 @@
+<title>珠子知识库骨架</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* 版式：顶部摘要 + 筛选条（吸顶）+ 按大类分段的品种清单；沿用串个珠设计规范的颜色和字体 */
+:root {
+  --ground: #f7f6f4; --surface: #ffffff; --tray: #efece8; --line: #e6e2dd;
+  --ink: #1f1b1a; --ink-2: #5e5753; --ink-3: #736b66;
+  --brand: #c8302e; --brand-ink: #a82522; --brand-tint: #fbecea;
+  --warn: #8a5200; --warn-tint: #fbf0dc; --legal: #b42318; --legal-tint: #fde8e6;
+  --mix: #2a55a0; --mix-tint: #e6eef9; --check: #5a4a9a; --check-tint: #eeeaf8;
+  --sans: "PingFang SC", -apple-system, "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --num: "DIN Alternate", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #171514; --surface: #221f1e; --tray: #2c2826; --line: #3a3532;
+  --ink: #f2eeeb; --ink-2: #c4bcb7; --ink-3: #a39a95;
+  --brand: #ef6a5f; --brand-ink: #f39088; --brand-tint: #3a2220;
+  --warn: #e3a64a; --warn-tint: #352a18; --legal: #f2877c; --legal-tint: #3a1f1c;
+  --mix: #8fb1ea; --mix-tint: #1f2a3c; --check: #b7a8ee; --check-tint: #2a2540; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #171514; --surface: #221f1e; --tray: #2c2826; --line: #3a3532;
+  --ink: #f2eeeb; --ink-2: #c4bcb7; --ink-3: #a39a95;
+  --brand: #ef6a5f; --brand-ink: #f39088; --brand-tint: #3a2220;
+  --warn: #e3a64a; --warn-tint: #352a18; --legal: #f2877c; --legal-tint: #3a1f1c;
+  --mix: #8fb1ea; --mix-tint: #1f2a3c; --check: #b7a8ee; --check-tint: #2a2540; color-scheme: dark }
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 400 14px/1.6 var(--sans); }
+.wrap { max-width: 960px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; }
+h1 { font: 600 26px/1.3 var(--sans); margin: 0; text-wrap: balance; }
+.lede { margin: 6px 0 0; color: var(--ink-2); max-width: 62ch; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 14px; }
+.stat b { font: 700 24px/1 var(--num); font-variant-numeric: tabular-nums; margin-right: 4px; }
+.stat span { color: var(--ink-2); font-size: 13px; }
+.ask { background: var(--surface); border-radius: 12px; padding: 16px; display: grid; gap: 8px; }
+.ask h2 { font: 600 15px/1.4 var(--sans); margin: 0; }
+.ask ol { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; color: var(--ink-2); }
+.ask ol b { color: var(--ink); font-weight: 600; }
+.ask p { margin: 0; color: var(--ink-2); max-width: 70ch; }
+.ask p b { color: var(--ink); }
+.decide { box-shadow: inset 3px 0 0 var(--brand); }
+.pending summary { cursor: pointer; }
+.pending pre { margin: 8px 0 0; white-space: pre-wrap; font: 400 13px/1.7 var(--sans); color: var(--ink-2); max-height: 420px; overflow: auto; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); padding-block: 10px; display: grid; gap: 10px; border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--ground); }
+#q { width: 100%; height: 40px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); padding: 0 16px; font: 400 15px/1 var(--sans); }
+#q:focus { outline: 2px solid var(--ink); outline-offset: 0; }
+.filters, .jump { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.filters::-webkit-scrollbar, .jump::-webkit-scrollbar { display: none; }
+.f { flex: none; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 400 13px/1 var(--sans); cursor: pointer; }
+.f[aria-pressed="true"] { background: var(--brand-tint); border-color: var(--brand); color: var(--brand-ink); font-weight: 600; }
+.f:focus-visible, .jump a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.f .n { font-family: var(--num); margin-left: 4px; color: var(--ink-3); }
+.jump a { flex: none; font-size: 13px; color: var(--ink-2); text-decoration: none; padding: 2px 4px; white-space: nowrap; }
+.jump a:hover { color: var(--ink); }
+.cat { display: grid; gap: 10px; scroll-margin-top: 140px; }
+.cat-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cat-h h2 { font: 600 20px/1.3 var(--sans); margin: 0; }
+.cat-h .cnt { font: 400 13px/1 var(--num); color: var(--ink-3); }
+.cat-h p { margin: 0; width: 100%; color: var(--ink-2); font-size: 13px; }
+.list { background: var(--surface); border-radius: 12px; overflow: hidden; }
+.it { display: grid; grid-template-columns: minmax(0, 200px) minmax(0, 1fr); gap: 4px 20px; padding: 14px 16px; }
+.it + .it { border-top: 1px solid var(--line); }
+.nm b { font: 600 16px/1.4 var(--sans); }
+.nm .std { display: block; font-size: 12px; color: var(--ink-3); }
+.nm .id { display: block; font: 400 11px/1.4 ui-monospace, Menlo, monospace; color: var(--ink-3); }
+.body { display: grid; gap: 6px; min-width: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: baseline; }
+.lbl { font-size: 12px; color: var(--ink-3); min-width: 3.5em; }
+.al { font-size: 13px; color: var(--ink-2); }
+.al + .al::before { content: "·"; margin-right: 6px; color: var(--ink-3); }
+.sv { font-size: 12px; background: var(--tray); border-radius: 6px; padding: 1px 7px; color: var(--ink); }
+.note { margin: 0; font-size: 13px; color: var(--ink-2); }
+.flag { font-size: 12px; font-weight: 600; border-radius: 6px; padding: 1px 7px; }
+.flag.名称易混 { color: var(--mix); background: var(--mix-tint); }
+.flag.常见处理 { color: var(--warn); background: var(--warn-tint); }
+.flag.合规 { color: var(--legal); background: var(--legal-tint); }
+.flag.待核 { color: var(--check); background: var(--check-tint); }
+.cat.banned .list { box-shadow: inset 3px 0 0 var(--legal); }
+.empty { color: var(--ink-3); padding: 24px 0; text-align: center; }
+mark { background: var(--brand-tint); color: inherit; border-radius: 3px; }
+@media (max-width: 600px) { .it { grid-template-columns: 1fr; } h1 { font-size: 22px; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>珠子知识库 · 分类骨架</h1>
+    <p class="lede">市面上常见手串珠子的全品类骨架：大类 → 品种 → 常见叫法，以及品种下面的颜色、产地、品相细分。玉石类按国标《珠宝玉石 名称》定名，木和植物籽用通用名。这是第 1 层“认识它”的底子，已经过盲测对照和独立审校两轮核查。</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section class="ask">
+    <h2>怎么核查的</h2>
+    <ol>
+      <li><b>查漏：盲测对照。</b>另起一个 agent，不给它看这份骨架，让它从零列出市面上做手串的所有材质，共 425 种。程序自动比对：第一版只对上 41%，补上漏掉的品种后对上 76%。剩下没对上的大多是它自己也拿不准的冷门叫法，放在页面底部的待核实清单里。</li>
+      <li><b>改错：独立审校。</b>再起一个 agent 专门挑错，对照国标、红木标准、国家重点保护动植物名录和 CITES 附录，逐条给出处。改了 22 条：保护物种漏标（红珊瑚、砗磲、沉香、黄花梨、楠木等）、规范名写错（珍珠、玻璃）、会误伤的叫法（“象牙白”是颜色名）。</li>
+      <li><b>调大类：</b>按审校意见把沉香、檀香并进香珠，橄榄核并进果核，“其他宝石”拆成彩色宝石和天然石两类，新增“组合款式”（十八籽、多宝）。</li>
+      <li><b>还没定的 10 条标了“待核”</b>，原因是标准原文要付费，或者网上只有卖家说法。不影响先用，后面拿到资料再补。</li>
+    </ol>
+  </section>
+
+  <section class="ask decide">
+    <h2>只有一件事要你拍板</h2>
+    <p>标了“合规”的 25 种（红珊瑚、砗磲、黄花梨、沉香、小叶紫檀、酸枝、金丝楠、崖柏等）卖不卖？我的建议：<b>知识库照样收录</b>，用户问到能讲清楚；<b>料包里先不上</b>，等供应商能出示合法来源证明再上。禁售的象牙、犀角、玳瑁、鹤顶红、麝香只用来识别，永远不进料包。</p>
+  </section>
+
+  <div class="bar">
+    <input id="q" type="search" placeholder="搜品种或叫法，比如：柿子红、澳玉、黄晶" aria-label="搜索品种或叫法">
+    <div class="filters" id="filters" role="group" aria-label="按标记筛选"></div>
+    <nav class="jump" id="jump" aria-label="跳到大类"></nav>
+  </div>
+
+  <main id="cats"></main>
+
+  <details class="ask pending">
+    <summary><b>待核实清单（盲测里出现、还没收录的 /*PENDING_N*/ 个叫法）</b></summary>
+    <p class="note">大多是冷门菩提子、地方玉和商家花名，有些可能根本不存在。用户真问到或拍到时再查证收录。</p>
+    <pre id="pending">/*PENDING*/</pre>
+  </details>
+</div>
+
+<script>
+const KB = /*KB_JSON*/null;
+const FLAG_DESC = { '名称易混': '名称易混', '常见处理': '常见处理/仿品', '合规': '合规风险', '待核': '待核' };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let q = '', flag = '';
+try { flag = sessionStorage.getItem('kbFlag') || ''; } catch (e) {}
+
+const all = KB.categories.flatMap(c => c.items);
+const subCount = all.reduce((s, i) => s + i.sub.reduce((t, g) => t + g.values.length, 0), 0);
+const aliasCount = all.reduce((s, i) => s + i.aliases.length, 0);
+document.getElementById('stats').innerHTML = [[KB.categories.length, '个大类'], [all.length, '个品种'], [subCount, '个细分'], [aliasCount, '个常见叫法']]
+  .map(([n, t]) => `<span class="stat"><b>${n}</b><span>${t}</span></span>`).join('');
+
+function hl(s) {
+  s = esc(s); if (!q) return s;
+  const i = s.toLowerCase().indexOf(esc(q).toLowerCase());
+  return i < 0 ? s : s.slice(0, i) + '<mark>' + s.slice(i, i + esc(q).length) + '</mark>' + s.slice(i + esc(q).length);
+}
+function hit(it) {
+  if (flag && !it.flags.includes(flag)) return false;
+  if (!q) return true;
+  const hay = [it.name, it.std, it.note, ...it.aliases, ...it.sub.flatMap(g => [g.name, ...g.values])].join(' ').toLowerCase();
+  return hay.includes(q.toLowerCase());
+}
+function render() {
+  const flags = Object.keys(FLAG_DESC);
+  document.getElementById('filters').innerHTML = `<button class="f" type="button" data-flag="" aria-pressed="${!flag}">全部<span class="n">${all.length}</span></button>` +
+    flags.map(f => `<button class="f" type="button" data-flag="${f}" aria-pressed="${flag === f}">${FLAG_DESC[f]}<span class="n">${all.filter(i => i.flags.includes(f)).length}</span></button>`).join('');
+  let shown = 0;
+  const html = KB.categories.map(c => {
+    const items = c.items.filter(hit); shown += items.length; if (!items.length) return '';
+    return `<section class="cat${c.id === 'banned' ? ' banned' : ''}" id="${c.id}"><div class="cat-h"><h2>${esc(c.name)}</h2><span class="cnt">${items.length}${items.length !== c.items.length ? ' / ' + c.items.length : ''} 种</span><p>${esc(c.desc)}</p></div><div class="list">` +
+      items.map(it => `<article class="it"><div class="nm"><b>${hl(it.name)}</b>${it.std && it.std !== it.name ? `<span class="std">规范名：${hl(it.std)}</span>` : ''}<span class="id">${it.id}</span></div><div class="body">` +
+        (it.aliases.length ? `<div class="row"><span class="lbl">叫法</span>${it.aliases.map(a => `<span class="al">${hl(a)}</span>`).join('')}</div>` : '') +
+        it.sub.map(g => `<div class="row"><span class="lbl">${esc(g.name)}</span>${g.values.map(v => `<span class="sv">${hl(v)}</span>`).join('')}</div>`).join('') +
+        (it.note || it.flags.length ? `<div class="row">${it.flags.map(f => `<span class="flag ${f}">${FLAG_DESC[f]}</span>`).join('')}${it.note ? `<p class="note">${hl(it.note)}</p>` : ''}</div>` : '') +
+        `</div></article>`).join('') + '</div></section>';
+  }).join('');
+  document.getElementById('cats').innerHTML = html || `<p class="empty">没有找到“${esc(q)}”。如果这是你常见的珠子，说明骨架漏了，告诉我加上。</p>`;
+  document.getElementById('jump').innerHTML = KB.categories.filter(c => c.items.some(hit)).map(c => `<a href="#${c.id}">${esc(c.name)}</a>`).join('');
+}
+document.getElementById('q').addEventListener('input', e => { q = e.target.value.trim(); render(); });
+document.getElementById('filters').addEventListener('click', e => {
+  const b = e.target.closest('[data-flag]'); if (!b) return; flag = b.dataset.flag;
+  try { sessionStorage.setItem('kbFlag', flag); } catch (err) {}
+  render();
+});
+render();
+if (location.hash) { const el = document.getElementById(location.hash.slice(1)); el && el.scrollIntoView(); }
+</script>

@@ -1,0 +1,2679 @@
+{
+ "bai-shuijing": {
+  "score": 82,
+  "parts": {
+   "name": 17,
+   "identify": 16,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "别名里“雪花水晶/白雪花/星光白晶”是带包体或特殊效应的细分款，不是白水晶的同义名，搜索“星光白晶”会误命中",
+   "dims.inclusion 放了“兔毛、幽灵”，这两个分别是发晶、幽灵水晶的独立品种词，放在白水晶下会让程序把幽灵/发晶误归白水晶",
+   "dims.purity 里的“雪花”是包体形态，应进 inclusion；“冰裂”与 treatments 的淬火爆裂冲突，没说明天然冰裂和人工爆花的区别",
+   "identify“摸起来比玻璃凉”只对同温度刚上手有效，且是热导率差异，不能作为可靠判据",
+   "confidence.look=high 但来源里只有常识和市场调研，没有权威出处"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“星光白晶”，“雪花水晶/白雪花”改放 dims.inclusion 或 dims.pattern"
+   },
+   {
+    "field": "dims.inclusion",
+    "suggest": "改为[\"雪花\",\"冰裂\",\"包裹体\"]，删“兔毛”“幽灵”"
+   },
+   {
+    "field": "dims.purity",
+    "suggest": "删“雪花”“冰裂”，保留[\"全净体\",\"净体\",\"微棉\",\"棉絮\",\"有裂\"]"
+   },
+   {
+    "field": "identify",
+    "suggest": "第2条改为“上手凉、升温慢，可作辅助，不能单凭这一点判断”"
+   },
+   {
+    "field": "confidence.look",
+    "suggest": "改为 mid"
+   }
+  ]
+ },
+ "fen-jing": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "dims.shape 混入“钻石切割、心形、排片、雕件”，后三者不是珠形，手串小程序用不上",
+   "dims.color 的“西瓜红”通常指碧玺/南红色名，用在粉晶上不是市场常见叫法",
+   "confusables 中紫锂辉“转动颜色有深浅变化”成立，但粉晶与紫锂辉实际混淆很少；漏了最常见的仿品——粉色玻璃和染色玻璃",
+   "treatments 没写玻璃仿品，只写了染色和含义不明的“优化”"
+  ],
+  "fixes": [
+   {
+    "field": "dims.shape",
+    "suggest": "改为[\"圆珠\",\"切面\",\"算盘珠\",\"随形\"]"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "删“西瓜红”"
+   },
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"boli\",\"name\":\"粉色玻璃\",\"how\":\"玻璃颜色均匀无雾感，常见圆气泡\"}"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"玻璃仿品\",\"note\":\"低价“粉晶”有用粉色玻璃冒充，颜色过匀、有气泡\"}"
+   }
+  ]
+ },
+ "zi-jing": {
+  "score": 90,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 的“加热”写的是加热后变黄水晶，跟紫晶商品本身无关；紫晶真正需关注的是合成紫晶，以及有色带被加热减淡的情况",
+   "confusables 锂云母与紫晶外观差别大（不透明、片状），实际很少混淆；更常见的混淆是紫色萤石",
+   "dims.origin 缺国内市场常说的“乌拉圭紫”等色名用法（乌拉圭多作为颜色等级卖点）"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "加热条改为{\"type\":\"加热\",\"note\":\"紫晶加热会转黄，所以市售紫晶一般不加热；主要注意合成紫晶\"}"
+   },
+   {
+    "field": "confusables",
+    "suggest": "把锂云母换成{\"id\":\"ying-shi\",\"name\":\"紫色萤石\",\"how\":\"萤石更软易磨花，常有色带和解理面闪光，上手略沉\"}"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "增加“乌拉圭紫”"
+   }
+  ]
+ },
+ "huang-shuijing": {
+  "score": 81,
+  "parts": {
+   "name": 16,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "别名“黄晶”是托帕石旧称，factcheck 已提醒易混，留在别名里会被程序把“黄晶”搜成黄水晶；“茶黄晶”又和茶晶混",
+   "identify“根部或一端颜色更深”描述的是晶簇/晶尖的加热特征，对已磨圆的珠子几乎用不上",
+   "treatments 只写加热，漏了合成黄水晶和柠檬黄的辐照处理",
+   "confidence.look=mid、identify=mid 合理；但 treatments=high 只有 GIA 一句支持“多数加热”，对“偏橙红多为加热”这一判据没有出处"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“黄晶”“茶黄晶”，保留“柠檬晶”"
+   },
+   {
+    "field": "identify",
+    "suggest": "第1条改为“颜色偏橙、偏红褐，且一颗珠里颜色分布不均的，多为紫晶加热料”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"合成\",\"note\":\"有合成黄水晶，颜色均匀极净\"}和{\"type\":\"辐照\",\"note\":\"柠檬黄色部分由辐照得到，肉眼难辨\"}"
+   },
+   {
+    "field": "confidence.treatments",
+    "suggest": "改为 mid"
+   }
+  ]
+ },
+ "cha-jing": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 只写辐照，漏了合成茶晶和茶色玻璃",
+   "identify“颜色深浅一致、价格很低的可能是辐照”——天然烟晶本身也是天然辐射致色，市售多数茶晶经人工辐照，这条容易让用户以为辐照料罕见",
+   "sources 只有“常识”，look 标 high 偏高"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第3条改为“市售茶晶多数经过人工辐照，肉眼和天然色分不开，属行业常规”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"合成\",\"note\":\"有合成茶晶，颜色均匀极净\"}"
+   },
+   {
+    "field": "confidence.look",
+    "suggest": "改为 mid"
+   }
+  ]
+ },
+ "zihuang-jing": {
+  "score": 82,
+  "parts": {
+   "name": 19,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 12,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 只写“有合成紫黄晶”，没说明市售低价紫黄晶大量是合成料（俄罗斯水热法），这才是最主要风险",
+   "identify“天然料交界处常呈直线或有角度”和“合成分界规整”互相矛盾，用户没法据此区分",
+   "meaning“相融、两全”无出处，confidence 已标 low，可接受，但 tags“和谐”不在常见寓意词中",
+   "sources 只有常识，look 标 high 偏高"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "删第2、3条，改为“天然和合成紫黄晶肉眼很难分，价格明显低于同尺寸紫晶的要问清是否合成”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "合成条改为{\"type\":\"合成\",\"note\":\"市售低价紫黄晶很多是合成料，需检测\"}"
+   },
+   {
+    "field": "confidence.look",
+    "suggest": "改为 mid"
+   }
+  ]
+ },
+ "fa-jing": {
+  "score": 75,
+  "parts": {
+   "name": 16,
+   "identify": 13,
+   "quality": 15,
+   "compliance": 12,
+   "meaning": 12,
+   "confidence": 7
+  },
+  "issues": [
+   "identify 写“绿发常为阳光石类针状包体”有误：绿发晶的绿色针状包体主要是阳起石，“阳光石”是长石（日光石），不是同一种东西",
+   "别名“兔毛”是指细软发丝的细分卖点，不等于发晶；dims.color 和 dims.inclusion 的取值几乎完全重复",
+   "treatments 只写了玻璃仿，漏了钛晶染色（把发丝染金/加深）和铜丝嵌入玻璃",
+   "meaning“丝丝入扣”与发晶没有关系，是生拼的说法",
+   "treatments 置信 low，但“玻璃仿品”属于常识，可标 mid；look 标 high 但没出处"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第3条改为“黑发多为电气石针，绿发多为阳起石针”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "改为[\"金\",\"红\",\"银\",\"铜\",\"绿\",\"黑\",\"彩\"]，品种名只留在 dims.inclusion"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有把发丝染成更金更亮冒充钛晶的，颜色浮在发丝周围\"}"
+   },
+   {
+    "field": "meaning.text",
+    "suggest": "删“也有‘丝丝入扣’的说法”"
+   },
+   {
+    "field": "confidence.look",
+    "suggest": "改为 mid"
+   }
+  ]
+ },
+ "youling": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 12,
+   "confidence": 8
+  },
+  "issues": [
+   "别名“聚宝盆”是幽灵包体的一种山形形态，当别名会让程序把所有“聚宝盆”款都映射成幽灵",
+   "meaning 以“聚宝盆”为核心，聚宝盆本身是招财符号，tags“丰盈”贴近“招财”的边界，容易被商家借题发挥",
+   "treatments 写“染色少见”，没提常见的玻璃仿幽灵和拼合",
+   "sources 只有常识，look 标 mid 合理"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“聚宝盆”，放到 dims.inclusion 即可"
+   },
+   {
+    "field": "meaning",
+    "suggest": "tags 改为[\"层叠\",\"自然\"]，text 改为“包体一层层像山峦叠起，常用来寓意层层积累、厚积薄发”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"有在玻璃里压入绿色层状图案的仿品，图案过于规整\"}"
+   }
+  ]
+ },
+ "caomei-jing": {
+  "score": 82,
+  "parts": {
+   "name": 17,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "dims.color 的“黄草莓”在市场上较少见，应注明是黄色针铁矿包体，不是独立颜色",
+   "identify 没说清天然草莓晶包体是赤铁矿/纤铁矿片，转动反光呈金属闪光，这是比“分布不均”更可靠的判据",
+   "confidence 合理，但 look 只凭常识写了“黄色小点”"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第1条改为“天然料的红点是细小的赤铁矿或纤铁矿薄片，转动时有金属样闪光，分布不均”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "“黄草莓”改为“金草莓”并在 note 说明为针铁矿包体，或删除"
+   }
+  ]
+ },
+ "shanling-zuan": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 14,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 第2条“硬度和水晶一样，划不动玻璃以外的硬物”表述错乱：水晶硬度 7，能划玻璃，这句话会误导用户",
+   "treatments 为空，漏了最常见的问题：其他产地（如巴基斯坦、中国）的双尖水晶冒充赫基蒙",
+   "identify 第1条“晶面是天然的，不是打磨出来的”需要提示：也有磨出来的双尖水晶，要看晶面上有无天然生长纹"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "删第2条，改为“晶面上能看到天然生长纹或蚀像，磨出来的尖面很平且有抛光痕”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"产地冒充\",\"note\":\"其他产地的双尖水晶常冒充赫基蒙，肉眼难分，看产地来源\"}"
+   }
+  ]
+ },
+ "huyan-shi": {
+  "score": 85,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "“鹰眼石”是蓝色品种的名称，直接当整个虎眼石的别名会把蓝虎眼和黄虎眼混为一谈",
+   "dims.color 混入了“斑马虎眼”“金虎眼”这类商品名，“鹰眼石”与“蓝虎眼”重复",
+   "treatments 加热条写“待核”，但红虎眼由黄虎眼加热而来是宝石学常识（针铁矿受热变赤铁矿），可去掉“待核”标 mid",
+   "confidence 里 std=mid 合理（factcheck 未核实原文）"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "“鹰眼石”改写进 dims.color 并注明“蓝色品种”，别名只留“虎眼”“虎睛石”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "改为[\"黄\",\"金黄\",\"蓝（鹰眼）\",\"红\",\"多色（斑马）\"]"
+   },
+   {
+    "field": "treatments",
+    "suggest": "加热条 note 改为“红虎眼多为黄虎眼加热所得，颜色均匀的偏红褐料要注意”"
+   }
+  ]
+ },
+ "chao-qi": {
+  "score": 72,
+  "parts": {
+   "name": 15,
+   "identify": 13,
+   "quality": 14,
+   "compliance": 12,
+   "meaning": 10,
+   "confidence": 8
+  },
+  "issues": [
+   "meaning.text 写了“商家宣传多带功效说法，我们只讲材质和颜色”，这是编辑说明，不应出现在给用户看的寓意里",
+   "“黑金超七”在市场上多指含大量针铁矿、纤铁矿的深色水晶，和紫底的超七不是一回事，放在 color 里会误导",
+   "summary 说“常说含七种矿物”，应说明原产地巴西圣埃斯皮里图州（Espírito Santo）的 Melody stone 来历，便于用户辨别",
+   "treatments 为空，漏了染色紫晶冒充、拼合等风险",
+   "sources 只有一个论坛帖，dims 标 low 合理"
+  ],
+  "fixes": [
+   {
+    "field": "meaning.text",
+    "suggest": "改为“以紫色为主，紫色在传统里是尊贵之色，常用来寓意尊贵、雅致。”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "删“黑金超七”，改为[\"紫\",\"紫夹茶\",\"紫夹红\"]"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"普通紫晶或含少量包体的紫晶常冒充超七，“七种矿物”无法肉眼确认\"}"
+   }
+  ]
+ },
+ "jiaohua": {
+  "score": 69,
+  "parts": {
+   "name": 12,
+   "identify": 10,
+   "quality": 12,
+   "compliance": 12,
+   "meaning": 13,
+   "confidence": 10
+  },
+  "issues": [
+   "整个条目几乎全部 low，std“具体矿物成分待核”，用户能看到的内容很少，实用价值低",
+   "identify 只说“成团边缘模糊”，没有给出与染色、玻璃内嵌图案的可靠区分",
+   "dims 的“绿胶花”没出处",
+   "meaning 用“花开富贵”可以接受，但 confidence 都标 low 后不会展示，等于空条目",
+   "把握标注诚实，不扣分"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "查实后再写；查不到建议和 yixiang（异象水晶）合并，“胶花”作为 dims.inclusion 取值"
+   },
+   {
+    "field": "identify",
+    "suggest": "增加“图案过于规整对称、像压进去的花朵的，可能是玻璃工艺品”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "删“绿胶花”，没有出处前只留“红胶花”“粉胶花”"
+   }
+  ]
+ },
+ "yixiang": {
+  "score": 78,
+  "parts": {
+   "name": 14,
+   "identify": 15,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“极光23”指加拿大雷湾的 Auralite-23，是以紫晶为底、宣称含 23 种矿物的水晶，更接近超七，放在异象水晶下是张冠李戴",
+   "别名“绿泥石水晶”和 youling（绿幽灵，包体也是绿泥石）冲突，搜索会撞车",
+   "treatments 为空，漏了玻璃仿景观和染色",
+   "dims.inclusion 的“苔藓”“花园”是图案描述，应放 pattern"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“极光23”（建议并到 chao-qi 或单列），删“绿泥石水晶”"
+   },
+   {
+    "field": "dims",
+    "suggest": "inclusion 改为[\"绿泥石\",\"包裹体\"]，新增 pattern:[\"花园\",\"盆景\",\"苔藓\"]"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"有玻璃内嵌图案的仿品，图案平面感强、常有气泡\"}"
+   }
+  ]
+ },
+ "lan-shuijing": {
+  "score": 80,
+  "parts": {
+   "name": 16,
+   "identify": 16,
+   "quality": 13,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "别名“海蓝晶”与海蓝宝几乎同名，会让程序把海蓝宝搜成蓝水晶",
+   "summary 说天然蓝色水晶极少，但漏了真实存在的天然蓝石英（含蓝线石、钠闪石包体的“蓝针水晶”），用户拿到时会被误判为假",
+   "grades 为空，作为多为仿品的条目可以接受，但应在 note 说明原因",
+   "sources 只有常识"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“海蓝晶”"
+   },
+   {
+    "field": "summary",
+    "suggest": "改为“透明的天然蓝色水晶极少，市售‘蓝水晶’多为玻璃、染色或合成；天然蓝石英多为含蓝色包体的半透明料”"
+   },
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"\",\"name\":\"天然蓝石英（蓝线石/钠闪石包体）\",\"how\":\"半透明、灰蓝，颜色来自内部细针包体\"}"
+   }
+  ]
+ },
+ "liyunmu": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "dims.effect 的“闪片”不是光学效应，是云母解理面反光，应放 texture 或 inclusion",
+   "treatments 漏了常见的压制锂云母（碎料加胶压制）",
+   "identify 没说锂云母常与石英、粉色电气石共生，后者是市场“锂云母+碧玺”款的卖点"
+  ],
+  "fixes": [
+   {
+    "field": "dims",
+    "suggest": "effect 删“闪片”，texture 增加“鳞片闪光”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"压制\",\"note\":\"有碎料加胶压制的，颜色均匀、闪片分布过匀，表面有胶感\"}"
+   },
+   {
+    "field": "identify",
+    "suggest": "增加“有的带粉红、黑色柱状晶体，是共生的电气石”"
+   }
+  ]
+ },
+ "yueguang-shi": {
+  "score": 90,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 为空，漏了市场最常见的仿品——乳白玻璃（俗称“猫眼石/月光玻璃 opalite”）和镀膜月光",
+   "dims.effect 的“蓝光”“白光”是颜色，与 color 重复；“猫眼”在月光石里少见，应注明",
+   "origin 缺市场常说的“印度彩月光”与“斯里兰卡蓝月光”的对应关系"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"乳白玻璃（opalite）常冒充，整体发蓝、没有游动光晕\"}"
+   },
+   {
+    "field": "dims.effect",
+    "suggest": "改为[\"月光效应\",\"猫眼（少见）\"]"
+   }
+  ]
+ },
+ "lachang-shi": {
+  "score": 87,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“黑月光”是商家叫法，容易让人以为是月光石，应在 compliance.note 写明它是拉长石",
+   "treatments 为空，漏了表面上油/打蜡和染色底色的情况",
+   "confusables 漏了“白色拉长石”（彩月光）和月光石的对应关系，这正是 yueguang-shi 写到的易混点，两条应交叉"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "写“名称易混：‘黑月光’‘彩月光’按宝石学是拉长石，不是月光石”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"浸油\",\"note\":\"有上油提亮的情况，表面发腻\"}"
+   }
+  ]
+ },
+ "riguang-shi": {
+  "score": 86,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 写“铜扩散处理的红色长石”待核——业内公认的是“中长石（安德森石）铜扩散”，应写实名称",
+   "dims.origin 的“美国俄勒冈”产的是铜致色的拉长石日光石，与印度产的赤铁矿闪片日光石外观差别大，应在 note 说明",
+   "look 标 mid 合理"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "note 改为“有铜扩散处理的红色中长石（安德森石）冒充，颜色过艳过匀”"
+   },
+   {
+    "field": "look",
+    "suggest": "增加“俄勒冈日光石是透明的橙红到红绿色，闪片是铜”"
+   }
+  ]
+ },
+ "tianhe-shi": {
+  "score": 88,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 漏了染色仿品（染色石英岩或玻璃），identify 第3条提了，treatments 没写",
+   "story 关于亚马逊河的说法基本可信但写成“名字来源一直有争议”太泛，应写成文中已有出处支持的版本"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色仿品\",\"note\":\"染蓝绿色的石英岩、玻璃常冒充，颜色浮在颗粒间\"}"
+   }
+  ]
+ },
+ "bixi": {
+  "score": 90,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 漏了染色和玻璃仿品，这是低价碧玺珠最常见的问题",
+   "identify“颜色鲜艳又极干净便宜的可能是玻璃”合理；但没有提二色性对小圆珠不易观察",
+   "dims.purity 的“多裂”不在词典里，可用“有裂”"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"浅色碧玺有染色加深的，颜色集中在裂里\"}"
+   },
+   {
+    "field": "dims.purity",
+    "suggest": "“多裂”改为“有裂”"
+   }
+  ]
+ },
+ "shiliu": {
+  "score": 86,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "dims.color 的“桂榴石色”不是市场常见颜色名，应删；缺“紫牙乌”这一最常见的市场色名",
+   "treatments 为空，漏了玻璃仿品和填充",
+   "factcheck 指出市售酒红多为铁铝榴石，条目没写，应补上，便于用户理解“酒红/紫牙乌”"
+  ],
+  "fixes": [
+   {
+    "field": "dims.color",
+    "suggest": "删“桂榴石色”，增加“紫牙乌”"
+   },
+   {
+    "field": "look",
+    "suggest": "补“市售酒红色串珠多为铁铝榴石”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"红色玻璃冒充，有气泡、上手轻\"}"
+   }
+  ]
+ },
+ "hailanbao": {
+  "score": 90,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 只写加热，漏了染色石英、玻璃冒充以及辐照（马克西克斯深蓝绿柱石会褪色）",
+   "dims.clarity 的“奶蓝”是颜色+质地混合词，放 color 更合适"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"蓝色玻璃、合成尖晶石冒充，颜色过匀\"}"
+   },
+   {
+    "field": "dims",
+    "suggest": "“奶蓝”移到 color"
+   }
+  ]
+ },
+ "tuopa": {
+  "score": 89,
+  "parts": {
+   "name": 17,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“黄玉”“黄晶”是易混名，留在 aliases 里会让搜索“黄玉”的人命中托帕石，应移到 compliance.note 说明而非当别名",
+   "dims.color 漏了托帕石的黄色、雪梨色等市场色名"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“黄晶”，“黄玉”在 compliance.note 说明"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "增加“雪梨色”“黄”"
+   }
+  ]
+ },
+ "tansang": {
+  "score": 88,
+  "parts": {
+   "name": 18,
+   "identify": 18,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 只写加热，漏了镀膜坦桑石（表面钴镀膜）和玻璃仿品",
+   "identify 第2条“颜色浓郁、通透，内部较干净”是品质描述不是识别特征",
+   "meaning 和 story 合理，story 出处 GIA 可靠"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"镀膜\",\"note\":\"有表面镀膜加深颜色的，膜会磨损\"}"
+   },
+   {
+    "field": "identify",
+    "suggest": "第2条改为“上手和普通玻璃差不多重，转动看颜色在蓝、紫之间变化是关键”"
+   }
+  ]
+ },
+ "jinqing": {
+  "score": 87,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 第3条“价格比蓝宝石、坦桑石低得多”是价格不是识别特征",
+   "meaning“方向感”源自维京人用堇青石导航的传说，没有写出处，容易被理解成功效",
+   "treatments 为空，漏了玻璃仿品"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "删第3条，改为“常有细小平行包体，颜色偏灰蓝”"
+   },
+   {
+    "field": "meaning.text",
+    "suggest": "删“方向感”，改为“蓝紫色沉静内敛，常用来寓意宁静、沉着”"
+   }
+  ]
+ },
+ "linhui": {
+  "score": 85,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 只写加热待核，漏了染色和玻璃仿品",
+   "identify“有荧光感”不精确，只是颜色鲜艳，不等于荧光",
+   "sources 只有常识，look 标 mid 合理"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第1条改为“蓝绿色鲜亮，像霓虹灯的颜色”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有染色加深颜色的，颜色集中在裂纹\"}"
+   }
+  ]
+ },
+ "zilihui": {
+  "score": 88,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 写辐照“待核”，对紫锂辉辐照后褪色风险应写清",
+   "dims.origin 缺巴基斯坦、马达加斯加，这两个是市场主要来源"
+  ],
+  "fixes": [
+   {
+    "field": "dims.origin",
+    "suggest": "增加“巴基斯坦”“马达加斯加”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "note 改为“有辐照加深颜色的，见光容易褪色”"
+   }
+  ]
+ },
+ "ganlan-shi": {
+  "score": 89,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 17,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 第2条“切面珠看底部棱线重影”只对刻面宝石有效，圆珠用不上，应注明",
+   "treatments 为空，漏了玻璃仿品（绿色玻璃最常见）"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第2条加“（只对切面珠有效）”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"绿色玻璃冒充，有气泡、无重影\"}"
+   }
+  ]
+ },
+ "jianjing": {
+  "score": 89,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 17,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 为空，但 dims.treatment 有“合成”，应在 treatments 写出合成尖晶石和偶见的加热",
+   "confusables 石榴石“颜色偏暗沉”不是可靠的区分方法"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"合成\",\"note\":\"合成尖晶石常见，颜色均匀极净\"}"
+   },
+   {
+    "field": "confusables",
+    "suggest": "石榴石条 how 改为“需检测，肉眼看石榴石多偏紫红或棕红”"
+   }
+  ]
+ },
+ "gangyu": {
+  "score": 87,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "look 和 identify 把“红宝石黝帘石（红绿宝）”混进来，那是黝帘石岩里含红宝石晶体，定名应单独说明，不能当刚玉看",
+   "dims.color 的“帕帕拉恰”是刻面宝石级颜色，珠子极少，放在珠子维度里会误导",
+   "confusables 漏了红色玻璃和染色石英"
+  ],
+  "fixes": [
+   {
+    "field": "look",
+    "suggest": "删“红宝石黝帘石…”这句，单独加一条说明“红绿宝是黝帘石和红宝石的集合体，按混合物定名”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "删“帕帕拉恰”"
+   }
+  ]
+ },
+ "lvzhu": {
+  "score": 86,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "identify“比同尺寸水晶略沉”不成立：绿柱石密度约 2.7，水晶 2.65，上手分不出",
+   "treatments 漏了摩根石的辐照处理",
+   "confusables 金绿柱与黄水晶“需检测”是对的"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "删第3条，改为“摩根石二色性弱，粉色均匀清透，价格明显高于粉晶”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"辐照\",\"note\":\"部分摩根石经辐照加热改善颜色\"}"
+   }
+  ]
+ },
+ "oubo": {
+  "score": 91,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 的“染色”条把糖酸处理、烟熏写在一起，烟熏主要用于埃塞俄比亚欧泊，应分开写",
+   "dims.color 的“火欧泊”是品种，“粉蛋白石/蓝蛋白石”不是变彩欧泊，放 color 会混"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "拆成{\"type\":\"染色\",\"note\":\"糖酸处理把底色变深冒充黑欧泊\"}和{\"type\":\"烟熏\",\"note\":\"埃塞俄比亚欧泊烟熏变黑\"}"
+   }
+  ]
+ },
+ "jinlv": {
+  "score": 88,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "dims.color 缺变石的颜色描述（日光绿/灯光红），只写了猫眼的蜜黄",
+   "treatments 为空，漏了辐照加深猫眼颜色的情况",
+   "compliance.note 的“待核原文”，但 GB/T 16552“猫眼”专指金绿宝石猫眼是行业共识，confidence 可标 mid"
+  ],
+  "fixes": [
+   {
+    "field": "dims.color",
+    "suggest": "增加“日光绿/灯光红（变石）”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"辐照\",\"note\":\"有辐照加深猫眼颜色的情况\"}"
+   }
+  ]
+ },
+ "liuli": {
+  "score": 84,
+  "parts": {
+   "name": 19,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 第3条“颜色鲜艳、几色交融的天然石很少见”不是识别特征，天然的多色碧玺、萤石都有",
+   "treatments 为空，漏了模压/灯工料冒充“古法脱蜡”和树脂仿琉璃，这是琉璃市场最大的问题",
+   "dims.treatment 的“脱蜡铸造、灯工”是工艺，不是处理，放 texture 或 shape 下更合适",
+   "meaning 提佛经七宝已注明古今所指不同，处理得当"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第3条改为“脱蜡铸造的表面有细小砂眼和打磨痕，模压的有合模线”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿古法\",\"note\":\"模压或灯工料冒充古法脱蜡，表面过于光滑、有合模线\"}和{\"type\":\"树脂仿\",\"note\":\"树脂上手轻、温，硬度低易划\"}"
+   }
+  ]
+ },
+ "boli": {
+  "score": 89,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 13,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "“奥地利水晶”是品牌联想名，compliance.note 应点明也不能用“施华洛世奇水晶”等品牌暗示天然",
+   "grades 为空可以接受，但可按切工（机切/手工、AB 镀膜）给 2 档，方便商品筛选",
+   "confusables 漏了 gaoshi 以外的“水晶玻璃”与真水晶的价格差提示"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "补“品牌名（如施华洛世奇）只能作工艺说明，展示名仍写‘玻璃’”"
+   }
+  ]
+ },
+ "jinsha": {
+  "score": 88,
+  "parts": {
+   "name": 18,
+   "identify": 18,
+   "quality": 14,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“金星石”在市场上也指含金星的黑曜石或其他天然石，搜索会撞车",
+   "grades 为空，金沙石有闪点密度和底色均匀度的品级说法",
+   "meaning.text 的“梦想”没有文化出处，confidence 已标 low"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“金星石”"
+   },
+   {
+    "field": "grades",
+    "suggest": "增加[{\"level\":1,\"label\":\"闪点密匀\",\"desc\":\"闪点细密均匀，底色纯\"},{\"level\":2,\"label\":\"闪点稀\",\"desc\":\"闪点稀疏或有色斑\"}]"
+   }
+  ]
+ },
+ "taoci": {
+  "score": 87,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 17,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 为空，漏了贴花冒充手绘（grades 提了但 treatments 没写）",
+   "confusables 白玉条说“玉是油脂光泽”，但白瓷仿玉的更常见对象是砗磲、贝壳，可补",
+   "sources 只有常识，look 标 high 偏高"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"贴花\",\"note\":\"贴花冒充手绘，线条粗细一致、边缘有贴纸痕\"}"
+   },
+   {
+    "field": "confidence.look",
+    "suggest": "改为 mid"
+   }
+  ]
+ },
+ "jingtailan": {
+  "score": 87,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "dims.treatment 的“烧蓝”是另一种工艺（银胎烧蓝，多不用掐丝），把它当景泰蓝的取值会混淆",
+   "identify“上手比玻璃、石头珠更沉”不成立：景泰蓝珠多为空心铜胎，常比同尺寸石珠轻",
+   "treatments 为空，漏了“镀金掉色”和“滴胶仿景泰蓝”（grades 提了但 treatments 没写）"
+  ],
+  "fixes": [
+   {
+    "field": "dims.treatment",
+    "suggest": "删“烧蓝”，改为[\"掐丝\",\"点蓝\",\"镀金\"]"
+   },
+   {
+    "field": "identify",
+    "suggest": "第3条改为“铜胎有金属感，敲击声清脆，孔口能看到铜色”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"滴胶仿品\",\"note\":\"树脂滴胶冒充，没有凸起铜丝，上手轻\"}"
+   }
+  ]
+ },
+ "shuzhi": {
+  "score": 85,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 13,
+   "compliance": 13,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "identify“饱和盐水中多会下沉，琥珀会浮起”不准确：常见树脂密度 1.05–1.20，相当一部分在饱和盐水里也会浮起，这个方法只能排除一部分",
+   "confusables 漏了柯巴树脂（未石化的天然树脂），这是琥珀蜜蜡市场最常见的仿品之一，和合成树脂要分开",
+   "confusables 的 hecheng 条把压制琥珀放在树脂下面，区分方法写的是压制琥珀的特征，对象搞反了",
+   "grades 为空可以接受"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第4条改为“饱和盐水里下沉的一定不是琥珀，浮起的也不一定是琥珀”"
+   },
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"\",\"name\":\"柯巴树脂\",\"how\":\"柯巴树脂表面滴乙醚或酒精会发黏，琥珀不会\"}"
+   }
+  ]
+ },
+ "hecheng": {
+  "score": 79,
+  "parts": {
+   "name": 14,
+   "identify": 15,
+   "quality": 13,
+   "compliance": 13,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“优化石”不是合成或再造：按 GB/T 16552，“优化”是加热等可接受处理，混进合成条目会让程序把优化品误判为合成",
+   "本条把合成、再造、压制混在一个品种里，factcheck 第 4 节已建议改为通用处理标记；作为品种条目，识别和品级都无法落地",
+   "compliance.note 只写加“合成”“再造”，漏了“拼合”也要标注",
+   "dims.treatment 的“优化”同样要删"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“优化石”"
+   },
+   {
+    "field": "dims.treatment",
+    "suggest": "改为[\"合成\",\"再造\",\"压制\"]"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "补“拼合宝石要标‘拼合’”"
+   }
+  ]
+ },
+ "qiqi": {
+  "score": 82,
+  "parts": {
+   "name": 17,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 12,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "std 写“大漆”是材料名，规范展示应是“漆器（雕漆）”",
+   "treatments 为空，漏了市场主流的化学漆/腰果漆和树脂模压冒充大漆雕漆",
+   "care 没提新大漆可能引起漆过敏，手串贴身佩戴应提示",
+   "sources 只有常识"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "改为“漆器（雕漆）”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"化学漆\",\"note\":\"腰果漆或化学漆冒充大漆，颜色更艳、气味刺鼻\"}"
+   },
+   {
+    "field": "care",
+    "suggest": "补“新做的大漆可能引起漆过敏，皮肤敏感者先试戴”"
+   }
+  ]
+ },
+ "zisha": {
+  "score": 86,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 为空，漏了化工泥/添加色料，这在 grades 已提到",
+   "identify 第3条“颜色过艳或掉色的可能添加了色料”合理，但应补泡水掉色这个简单方法"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"添加色料\",\"note\":\"化工泥或加色料的颜色过艳，泡水可能掉色\"}"
+   }
+  ]
+ },
+ "mosang": {
+  "score": 89,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 13,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "别名漏了市场常见的“莫桑钻”，这个叫法暗示钻石，应列出并在 compliance 标为禁止展示",
+   "grades 为空可以接受，但可按颜色（D–F 无色、微黄）区分",
+   "identify 第3条“价格远低于钻石”不是识别特征"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "增加“莫桑钻”"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "补“不能用‘莫桑钻’展示”"
+   },
+   {
+    "field": "identify",
+    "suggest": "第3条改为“导热测试笔会把它测成钻石，需用莫桑石专用仪器区分”"
+   }
+  ]
+ },
+ "gaoshi": {
+  "score": 87,
+  "parts": {
+   "name": 17,
+   "identify": 18,
+   "quality": 13,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“锆石(合成)”和 compliance 的“不能简称锆石”自相矛盾，会让程序把天然锆石搜成合成立方氧化锆",
+   "别名漏了市场最常见的叫法“锆石”“CZ”“锆钻”",
+   "grades 为空可以接受"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“锆石(合成)”，增加“CZ”“锆钻”（标为易混名）"
+   }
+  ]
+ },
+ "boli-maoyan": {
+  "score": 90,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 14,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“猫眼珠”易与 jinlv 的“猫眼”冲突，按 GB/T 16552 单写“猫眼”专指金绿宝石猫眼，应注明",
+   "confusables 漏了石英猫眼"
+  ],
+  "fixes": [
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"\",\"name\":\"石英猫眼\",\"how\":\"石英猫眼颜色多为灰绿、褐黄，光带较宽较柔\"}"
+   }
+  ]
+ },
+ "liaoqi": {
+  "score": 83,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 7
+  },
+  "issues": [
+   "treatments 为空，漏了做旧（酸蚀、土沁）新料冒充老料器，这是料器市场的主要风险",
+   "grades 把新老和品质混在一起，“新仿”放第 3 档不准确，新料器也有好工艺",
+   "dims 标 low，但“黄料、白料”是行内常用叫法，可标 mid"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"做旧\",\"note\":\"酸蚀、土沁做旧，痕迹均匀、无磨损层次\"}"
+   },
+   {
+    "field": "grades",
+    "suggest": "第3档改为{\"level\":3,\"label\":\"工粗有损\",\"desc\":\"气泡多、颜色浑或磕缺明显\"}，新老放 dims.age"
+   }
+  ]
+ },
+ "yeguang": {
+  "score": 83,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "std“人造发光材料”过泛，市售夜光珠多为稀土铝酸盐蓄光材料加树脂或玻璃，应写清",
+   "meaning“古代夜明珠的传说由此而来”因果写反了，传说早于人造蓄光材料",
+   "grades 为空，可按发光亮度和余辉时长分档"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "改为“人造蓄光材料（稀土铝酸盐等）”"
+   },
+   {
+    "field": "meaning.text",
+    "suggest": "改为“暗处也能发光，常用来寓意光明、希望，也让人联想到古代夜明珠的传说。”"
+   }
+  ]
+ },
+ "taihezi": {
+  "score": 76,
+  "parts": {
+   "name": 13,
+   "identify": 13,
+   "quality": 12,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 10
+  },
+  "issues": [
+   "std“人工熔炼硅料”只有一个卖家页面出处，成分没核实，整条可信度低",
+   "summary 写“商家常附带功效宣传，我们只介绍材质”，这是编辑口吻，不应给用户看",
+   "identify“上手比赤铁矿明显轻”成立（硅密度约 2.3），但没有其他可靠判据",
+   "把握全部标 low，诚实"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "改为“人工熔炼的硅质材料，银灰色金属光泽，‘太赫兹’是商品名，不是矿物名。”"
+   },
+   {
+    "field": "std",
+    "suggest": "核实后再定；暂写“人工熔炼材料（成分待核）”"
+   }
+  ]
+ },
+ "cishi": {
+  "score": 88,
+  "parts": {
+   "name": 18,
+   "identify": 18,
+   "quality": 13,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 的条痕测试会损坏珠子，不建议让用户在商品上操作，应注明“仅限破损珠或孔口”",
+   "grades 为空可以接受"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第2条加“（会留划痕，只在孔口或不显眼处试）”"
+   }
+  ]
+ },
+ "nanhong": {
+  "score": 92,
+  "parts": {
+   "name": 19,
+   "identify": 19,
+   "quality": 19,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "story 里“清代宫廷已有南红器物传世”只有网易号软文支撑，story 标 mid 偏高",
+   "price_band 标“中”，但满肉柿子红、锦红大珠已到高价档，单一价位会误导",
+   "treatments 漏了“非红冒充南红”这一最常见的名称欺诈（confusables 写了，treatments 没写）",
+   "confidence.compliance 标 mid，但 compliance 为 none 且无争议，可以 high；dims 标 high 依据市场调研，合理"
+  ],
+  "fixes": [
+   {
+    "field": "price_band",
+    "suggest": "改为“中到很高（看矿口和满色程度）”"
+   },
+   {
+    "field": "confidence.story",
+    "suggest": "改为 low，或换成博物馆/学术出处后再标 mid"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"产地冒充\",\"note\":\"非洲红玛瑙冒充南红，标“非洲南红”“非红”的不是南红\"}"
+   }
+  ]
+ },
+ "zhanguo-hong": {
+  "score": 86,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 12,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "dims.origin 同时列“北票”和“朝阳”，北票是朝阳市下辖县级市，重复",
+   "treatments 只写注胶，漏了染色和加热增色（战国红黄色部分有烤色提鲜的说法）",
+   "price_band 标 low 把握，但战国红高端料价位高，应写区间"
+  ],
+  "fixes": [
+   {
+    "field": "dims.origin",
+    "suggest": "改为[\"辽宁北票\",\"河北宣化\"]"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"颜色过艳、条带边缘晕开的要警惕\"}"
+   }
+  ]
+ },
+ "yanyuan": {
+  "score": 76,
+  "parts": {
+   "name": 17,
+   "identify": 13,
+   "quality": 13,
+   "compliance": 12,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "look、identify、dims、grades 全部 low，只有 taxonomy 和常识做出处，用户能看到的内容很少",
+   "漏了盐源玛瑙最大的市场问题：盐源红料常被当作凉山南红出售，confusables 只说透明度高，没说名称冒充",
+   "treatments 为空，盐源冻料常见加热增红和染色",
+   "meaning“五彩之石”没有出处"
+  ],
+  "fixes": [
+   {
+    "field": "confusables",
+    "suggest": "南红条 how 改为“盐源红料颜色偏浅偏橙、透明度高，常被当凉山南红卖，看不到南红的点状红”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"加热/染色\",\"note\":\"红色过艳均匀的可能加热或染色\"}"
+   },
+   {
+    "field": "sources",
+    "suggest": "补一个产地或市场出处后再提升 look/identify 把握"
+   }
+  ]
+ },
+ "chansi": {
+  "score": 84,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“缟玛瑙”是所有带条带玛瑙的统称，战国红也叫“战国红缟玛瑙”，当缠丝的别名会撞车",
+   "treatments 只写染色，漏了黑白缠丝（onyx）多为糖酸法染黑这一具体工艺",
+   "meaning tags 有“圆满”，text 只讲长久，两者不对应"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“缟玛瑙”"
+   },
+   {
+    "field": "meaning",
+    "suggest": "tags 改为[\"长久\"]，或在 text 补“同心圈纹也取圆满之意”"
+   }
+  ]
+ },
+ "shuicao": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "look/identify 没说“水草”的成分（铁锰氧化物或绿泥石树枝状包体），而这是和画上去、染进去的区分依据",
+   "treatments 为空，漏了染色和人工植入/描画仿品",
+   "grades 标 low，但“底净草清”是行内通行标准，可标 mid"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "增加“水草多为黑褐色铁锰氧化物或绿色绿泥石，边缘有自然分叉”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有染绿底色冒充绿水草的，颜色浮在裂隙里\"}"
+   }
+  ]
+ },
+ "putong-manao": {
+  "score": 85,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 只写染色，漏了红玛瑙最常见的加热增红（“烤色”），这是天然红玛瑙普遍做法",
+   "confusables 黑曜石条“有金色或彩虹光泽”只对金曜石、彩虹眼适用，普通黑曜石没有",
+   "dims.color 的“冰”不是颜色，应放 clarity"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"加热\",\"note\":\"红玛瑙多经加热增红，颜色稳定，肉眼难辨\"}"
+   },
+   {
+    "field": "confusables",
+    "suggest": "黑曜石条 how 改为“黑曜石是火山玻璃，玻璃光泽、贝壳状断口；黑玛瑙蜡状光泽”"
+   },
+   {
+    "field": "dims",
+    "suggest": "color 删“冰”，clarity 加“冰”"
+   }
+  ]
+ },
+ "tianzhu": {
+  "score": 84,
+  "parts": {
+   "name": 15,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“至纯天珠”是带鉴定意味的营销词，“九眼天珠”是纹样，均不宜当别名",
+   "dims.shape 的“长桶珠”不在常用值中，可用“桶珠”",
+   "confusables 漏了“老天珠”与新蚀花天珠的区分，只在 identify 一句带过",
+   "meaning 只说吉祥纹饰，处理得当，没有宗教承诺"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“至纯天珠”“九眼天珠”，眼数放 dims.pattern"
+   },
+   {
+    "field": "dims.shape",
+    "suggest": "“长桶珠”改为“桶珠”"
+   }
+  ]
+ },
+ "lan-yusui": {
+  "score": 78,
+  "parts": {
+   "name": 14,
+   "identify": 15,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“蓝宝玉髓”“台湾蓝宝”含“蓝宝”二字，易被理解为蓝宝石，应只作易混俗称并在 compliance 说明",
+   "summary 没说清“台湾蓝宝”是含硅孔雀石的玉髓，与普通淡蓝玉髓价位差很大，price_band 一律“中”不准确",
+   "漏了天然淡蓝玉髓（纳米比亚、土耳其等产，偏薰衣草蓝），identify 只讲“蓝里带绿”会把它误判",
+   "look 标 low 诚实"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“蓝宝玉髓”"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "写“名称易混：‘台湾蓝宝’是玉髓，不是蓝宝石”"
+   },
+   {
+    "field": "look",
+    "suggest": "补“台湾蓝宝是含硅孔雀石的玉髓，天蓝到蓝绿；另有淡蓝偏紫的普通蓝玉髓”"
+   },
+   {
+    "field": "price_band",
+    "suggest": "改为“中到高（台湾蓝宝高）”"
+   }
+  ]
+ },
+ "lv-yusui": {
+  "score": 87,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "look 没说澳玉绿色由镍致色，这是与染色玛瑙区分的根本",
+   "care 写“暴晒变浅”标 low 合理，但也应提醒受热会变色",
+   "summary 标 high 只依据 factcheck 的“没问题”清单，可接受"
+  ],
+  "fixes": [
+   {
+    "field": "look",
+    "suggest": "补“颜色由镍致色，均匀而柔和”"
+   },
+   {
+    "field": "care",
+    "suggest": "改为“避免长时间暴晒和高温，颜色可能变浅”"
+   }
+  ]
+ },
+ "zi-yusui": {
+  "score": 80,
+  "parts": {
+   "name": 18,
+   "identify": 14,
+   "quality": 14,
+   "compliance": 12,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "look、identify 全部 low，展示内容少",
+   "treatments 只写“可能染色”，实际市售紫玉髓珠子大量是染色玛瑙，应写清",
+   "dims.origin 只写印尼（葡萄玛瑙产地），珠子料多来自其他产地，会误导"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "note 改为“市售浓紫玉髓珠多为染色，颜色均匀艳丽的应按染色看”"
+   },
+   {
+    "field": "dims.origin",
+    "suggest": "改为[\"印度尼西亚（葡萄玛瑙）\"]并注明珠料产地多样"
+   }
+  ]
+ },
+ "bi-shi": {
+  "score": 88,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "别名里“碧玉”“红碧玉”“大红碧玉”等旧名与和田碧玉冲突，compliance 有说明，但别名会让搜索“碧玉”命中碧石",
+   "别名“海洋碧玉”在新规范下应作“海洋碧石”，现在两种写法都没统一",
+   "treatments 只写染色，漏了“帝王石”染色碧石/菱镁矿这一重点仿品（confusables 有，treatments 没有）"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "把“碧玉”标为旧称，展示名统一为“红碧石、海洋碧石、斑马碧石、豹纹碧石”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"“帝王石”多为染色碧石或菱镁矿，颜色鲜艳不自然\"}"
+   }
+  ]
+ },
+ "huo-manao": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 12,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "dims.treatment 和 confusables 都写了镀膜，但 treatments 为空，自相矛盾",
+   "look 没说彩光来源是褐铁矿/针铁矿薄层，用户难理解为什么彩光只在表层",
+   "grades 标 low 合理"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"镀膜\",\"note\":\"有镀膜玛瑙冒充火玛瑙，彩色均匀如油膜，边缘磨损露底\"}"
+   },
+   {
+    "field": "look",
+    "suggest": "补“彩光来自表层极薄的氧化铁层”"
+   }
+  ]
+ },
+ "alashan": {
+  "score": 76,
+  "parts": {
+   "name": 14,
+   "identify": 14,
+   "quality": 13,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“苏尼特玛瑙”指锡林郭勒盟苏尼特旗所产，不是阿拉善，混为一谈；“戈壁玛瑙”也是更大的统称",
+   "look、identify 全部 low，展示内容少",
+   "treatments 为空，戈壁料常见打蜡、上油"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“苏尼特玛瑙”，“戈壁玛瑙”改为上位类说明"
+   },
+   {
+    "field": "dims.origin",
+    "suggest": "删“苏尼特”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"打蜡/上油\",\"note\":\"有上油增亮显色的，表面发腻\"}"
+   }
+  ]
+ },
+ "yuhua": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 15,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 为空，漏了染色、打蜡和普通卵石冒充（confusables 写了染色，treatments 没有）",
+   "identify“沾水后颜色更鲜”对所有卵石都成立，不是雨花石特有",
+   "story 只有景点介绍和报纸做出处，标 mid 可以接受"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色/打蜡\",\"note\":\"有染色和打蜡增亮的，颜色过艳\"}"
+   },
+   {
+    "field": "identify",
+    "suggest": "第3条改为“常见同心圈纹，玛瑙质的透光看有冻感”"
+   }
+  ]
+ },
+ "shuidan": {
+  "score": 83,
+  "parts": {
+   "name": 17,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 第3条“水胆完整未被打孔”是品质条件，不是识别特征",
+   "grades 和尺寸说明都写多为挂件，作为手串珠子条目价值有限",
+   "confusables 的人工注水胆写得好"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第3条改为“打孔时要避开水胆，孔道附近有胶封的可能是注水”"
+   }
+  ]
+ },
+ "hetian-yu": {
+  "score": 91,
+  "parts": {
+   "name": 18,
+   "identify": 18,
+   "quality": 18,
+   "compliance": 13,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“俄碧”“俄罗斯碧玉”只是和田玉中碧玉的一个产地品种，当整个和田玉的别名会让程序把搜“俄碧”的用户导向所有和田玉",
+   "dims.color 的“黄玉”与托帕石的矿物名“黄玉”冲突，应写“黄口料/和田黄玉”以示区分",
+   "treatments 漏了“滚料/磨光籽”（山料机器滚磨冒充籽料）和产地冒充（俄料、青海料当新疆料卖），这是和田玉手串最大的问题",
+   "dims.origin 把“籽料、山料、山流水、戈壁料”这类产状和国家地名混在一起，前者更适合放 age 或单独说明"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“俄碧”“俄罗斯碧玉”，放到 dims.origin/color 说明"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "“黄玉”改为“和田黄玉”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"滚料冒充籽料\",\"note\":\"山料滚磨后染皮冒充籽料，毛孔浅而均匀、皮色浮\"}"
+   }
+  ]
+ },
+ "feicui": {
+  "score": 90,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 漏了红翡、黄翡的加热“焗色”，以及镀膜、注胶冒充高色翡翠",
+   "compliance.note 应写明按 GB/T 16552 处理翡翠的规范写法是“翡翠（处理）”，而不只是“B 货 C 货”这种俗称",
+   "dims.color 的“飘花”是图案，应放 pattern",
+   "meaning 标 low 偏保守，属于常识可标 mid；story 引《说文》可靠"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"加热（焗色）\",\"note\":\"黄褐色料加热变红翡，颜色发干\"}"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "改为“B 货、C 货属处理翡翠，按 GB/T 16552 应标为‘翡翠（处理）’”"
+   },
+   {
+    "field": "dims",
+    "suggest": "“飘花”移到 pattern"
+   }
+  ]
+ },
+ "xiu-yu": {
+  "score": 76,
+  "parts": {
+   "name": 11,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 12,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "别名里有“河磨玉”，但 confusables 又明确说河磨玉是透闪石软玉、和蛇纹石岫玉不是一种料，自相矛盾，属张冠李戴",
+   "treatments 只写浸蜡（low），漏了染色和仿古做旧（岫玉常被做成“老玉”“高古玉”）",
+   "identify“手掂比和田玉略轻”成立（2.57 对 2.95），但比重差小，单手很难感受"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“河磨玉”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"做旧/染色\",\"note\":\"岫玉常被染色、酸蚀做旧冒充老玉，颜色浮、沁色不自然\"}"
+   },
+   {
+    "field": "identify",
+    "suggest": "第4条改为“同大小比和田玉略轻，可用电子秤称重对比”"
+   }
+  ]
+ },
+ "dushan-yu": {
+  "score": 84,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "grades 第1档“颜色纯正单一”与独山玉多色交错的特点不一致，市场上优质独玉也看“色正”而非单一",
+   "treatments 为空，漏了染色独玉和注胶",
+   "identify 没给出与独山玉常见仿品（染色石英岩）的区分"
+  ],
+  "fixes": [
+   {
+    "field": "grades",
+    "suggest": "第1档 desc 改为“颜色正、色块分明，质地细腻，无裂”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有染绿冒充绿独玉的，颜色浮在颗粒间\"}"
+   }
+  ]
+ },
+ "dongling-yu": {
+  "score": 85,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“砂金石英岩”与 jinsha 的“砂金”说法撞车，compliance 已提示，但别名本身仍会被搜索命中",
+   "treatments 标 low，但蓝东陵、红东陵大多是染色这一点没写清",
+   "std 规范写法尚未核实，compliance 已诚实标注"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "note 改为“绿东陵多为天然；蓝、红东陵和颜色特别艳的多经染色”"
+   }
+  ]
+ },
+ "shiyingyan-yu": {
+  "score": 86,
+  "parts": {
+   "name": 17,
+   "identify": 18,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "别名“马来玉”是染色石英岩的商业名，当成石英岩玉别名会让天然京白玉也被打上马来玉标签",
+   "compliance 写“标染色石英岩”，按 GB/T 16552 处理品写法应为“石英岩（染色）”或“石英岩玉（染色）”",
+   "summary 标 high 只依据 factcheck 列入“没问题”，可以接受"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "“马来玉”移到 treatments 说明"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "改为“马来玉等染色料应标‘石英岩玉（染色）’，不能以翡翠、南红名义出售”"
+   }
+  ]
+ },
+ "huanglong-yu": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 只写染色，漏了黄龙玉红色料常见的加热烤色",
+   "confusables 蜜蜡条“黄龙玉重、凉手”是好判据",
+   "meaning 只套“黄色尊贵”，和品种本身关系弱"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"加热\",\"note\":\"红色黄龙玉多由黄色料加热而来，颜色发干\"}"
+   }
+  ]
+ },
+ "jinsi-yu": {
+  "score": 82,
+  "parts": {
+   "name": 16,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "别名“戈壁玉”是泛称，新疆戈壁碧玉、阿拉善玛瑙都被这样叫，作为金丝玉别名会撞车",
+   "dims.treatment 有“染色”，但 treatments 为空",
+   "名字里的“金丝”指什么（石英质玉中的丝状纹理）没讲，用户不知道为何叫金丝玉"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“戈壁玉”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有染黄、染红的，颜色浮在裂纹里\"}"
+   },
+   {
+    "field": "look",
+    "suggest": "补“部分料内部有丝状纹理，因此叫金丝玉”"
+   }
+  ]
+ },
+ "lantian-yu": {
+  "score": 85,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 为空，漏了蓝田玉常见的染色和浸蜡",
+   "identify 太泛，没提酸性（含方解石，滴稀盐酸起泡）这种专业判据，虽不建议用户操作，但可写“怕酸”"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色/浸蜡\",\"note\":\"有染色增艳和浸蜡增亮的\"}"
+   },
+   {
+    "field": "care",
+    "suggest": "补“含大理岩成分，怕酸”"
+   }
+  ]
+ },
+ "afuhan-yu": {
+  "score": 81,
+  "parts": {
+   "name": 15,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "别名“汉白玉”是北京房山等地的白色大理石建筑石材，和阿富汗玉同属大理石但不是同一种料，当别名会张冠李戴",
+   "“雅安玉”成分未核实（factcheck 第 3 节），不应先放进别名",
+   "identify 第4条“价格远低于和田玉”不是识别特征",
+   "treatments 为空，阿富汗玉常被染色仿糖玉、黄玉，还常浸蜡"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“汉白玉”“雅安玉”，在 compliance.note 写“汉白玉也是大理石”"
+   },
+   {
+    "field": "identify",
+    "suggest": "第4条改为“上手比和田玉轻凉，表面用钢针能划出痕（硬度约 3）”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"染成糖色、黄色冒充和田玉\"}"
+   }
+  ]
+ },
+ "shuhua": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 为空，漏了树化玉常见的注胶、染色和打蜡",
+   "confusables 阴沉木“可被指甲压出痕”不对，阴沉木很硬，指甲压不动，应改为“轻、有木香、能浮/沉看木种”"
+  ],
+  "fixes": [
+   {
+    "field": "confusables",
+    "suggest": "阴沉木条 how 改为“阴沉木仍是木头，比树化玉轻得多，有木质手感和气味”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"注胶/染色\",\"note\":\"裂多的料常注胶，颜色艳的可能染色\"}"
+   }
+  ]
+ },
+ "taishan-yu": {
+  "score": 60,
+  "parts": {
+   "name": 11,
+   "identify": 9,
+   "quality": 8,
+   "compliance": 12,
+   "meaning": 10,
+   "confidence": 10
+  },
+  "issues": [
+   "std 写“石英质玉/蛇纹石玉”，但 summary 引研究说主要矿物是石英和高岭石/地开石，与“蛇纹石玉”矛盾",
+   "identify 只有两条泛泛描述，grades、meaning、price_band 全空，条目基本不可用",
+   "把握标注诚实（look、identify 都是 low）",
+   "sources 有两篇学术出处，但没被用来写出具体外观特征"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "按所引研究改为“石英质玉（含高岭石/地开石）”，删“蛇纹石玉”"
+   },
+   {
+    "field": "look",
+    "suggest": "根据 jogg.cug.edu.cn 那篇研究补具体颜色和质地"
+   },
+   {
+    "field": "grades",
+    "suggest": "补两档：色浓质细 / 色杂有裂"
+   }
+  ]
+ },
+ "qilian": {
+  "score": 87,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 为空，漏了染色和仿古做旧",
+   "confusables 泰山玉条“外观相近，产地不同”无法用来区分"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有染黑、染深绿的，颜色浮在表面\"}"
+   }
+  ]
+ },
+ "meihua": {
+  "score": 85,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "别名“汝州梅花玉”与 dims.origin“河南汝阳”的主产地说法不一，需核实",
+   "treatments 为空，漏了树脂仿品（confusables 写了，treatments 没写）和打蜡",
+   "sources 只有头条科普一篇"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"树脂或染色石仿梅花玉，斑点呆板\"}"
+   },
+   {
+    "field": "aliases",
+    "suggest": "核实后统一为“汝阳梅花玉”"
+   }
+  ]
+ },
+ "shuimo": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 为空，漏了水沫玉注胶和染色飘花",
+   "identify“敲声偏闷”对小珠子不实用",
+   "price_band 标 low 把握，可接受"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有染蓝绿色飘花的，颜色浮在絮团旁\"}"
+   },
+   {
+    "field": "identify",
+    "suggest": "删“敲声偏闷”"
+   }
+  ]
+ },
+ "yinzhang": {
+  "score": 83,
+  "parts": {
+   "name": 16,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "别名把巴林石、青田石、寿山石、昌化石、鸡血石都当成“印章石”的别名，它们是不同的品种，至少应放 dims.origin 而不是 aliases",
+   "dims.color 的“冻”是质地，应放 clarity",
+   "鸡血石含辰砂（汞）这一安全提醒写在 care 里，应同时写在 compliance.note，方便程序提示"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "改为[\"印石\"]，品种名放 dims.origin"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "删“冻”"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "写“鸡血石的红色是辰砂（含汞），贴身佩戴要提示”"
+   }
+  ]
+ },
+ "huaillian": {
+  "score": 78,
+  "parts": {
+   "name": 17,
+   "identify": 14,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 12,
+   "confidence": 8
+  },
+  "issues": [
+   "look、identify、dims 全部 low，用户几乎看不到内容",
+   "漏了花莲玉最有名的品种“台湾猫眼玉”（猫眼软玉），这是市场主要卖点",
+   "treatments 为空；花莲玉矿已基本停采，市售多为老料或他产地冒充，没提",
+   "meaning 只有一句“取玉的温润之意”，过于空泛"
+  ],
+  "fixes": [
+   {
+    "field": "dims",
+    "suggest": "effect 增加“猫眼”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"产地冒充\",\"note\":\"花莲矿已基本停采，市售“台湾玉”不少是其他产地软玉\"}"
+   }
+  ]
+ },
+ "taishan": {
+  "score": 85,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 为空，漏了染色和仿古",
+   "identify 与祁连玉几乎一样，区分写成“产地不同”无法使用"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有染深绿的，颜色浮在裂纹\"}"
+   }
+  ]
+ },
+ "hupo": {
+  "score": 91,
+  "parts": {
+   "name": 20,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 第3条“蓝珀在阳光下侧看泛蓝光”不够准：蓝珀的蓝是荧光，要在黑色背景下、阳光或紫外灯照射才明显",
+   "confusables 把柯巴脂放在 shuzhi（合成树脂）id 下，柯巴脂是天然树脂，应单列，鉴别方法（滴酒精/乙醚发黏）也没写",
+   "meaning 只写“长久、珍藏”，tags“温润”与 text 不对应"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第3条改为“蓝珀放在黑色背景上，阳光或紫外灯下泛蓝色荧光”"
+   },
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"\",\"name\":\"柯巴脂\",\"how\":\"在不显眼处滴一滴酒精，柯巴脂会发黏，琥珀不会\"}"
+   }
+  ]
+ },
+ "mila": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 15,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "identify 第3条“老蜜蜡颜色由外往里变深”说反了：老蜜蜡氧化是外层变深、内部较浅，和烤色的判据相同，写错会让用户把真老蜜蜡判成假",
+   "dims.color 和 dims.clarity 都放了“金绞蜜”，重复",
+   "treatments 漏了“注胶”“覆膜”和“二代蜜蜡”这一市场俗称（即压制蜜蜡）"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "第3条改为“老蜜蜡外层氧化变深、内部颜色较浅，表面有细密风化纹；烤色做旧也是这样，要看风化纹是否自然”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "删“金绞蜜”，只放在 clarity"
+   },
+   {
+    "field": "treatments",
+    "suggest": "压制条 note 补“市场俗称‘二代蜜蜡’”"
+   }
+  ]
+ },
+ "zhenzhu": {
+  "score": 93,
+  "parts": {
+   "name": 20,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 漏了黑色淡水珠和 Akoya 常见的辐照改色，以及抛光上蜡",
+   "dims.origin 的“淡水”是水域类型不是产地，可补“浙江诸暨”这一主要产地",
+   "identify 第2条互擦有涩感可靠，但应提醒擦后检查表面"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"辐照\",\"note\":\"部分黑色、灰色珍珠经辐照改色，需检测\"}"
+   },
+   {
+    "field": "dims.origin",
+    "suggest": "增加“浙江诸暨（淡水）”"
+   }
+  ]
+ },
+ "beike": {
+  "score": 81,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 10,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "compliance 为 none，但贝壳类里鹦鹉螺是国家一级保护动物，唐冠螺、夜光蝾螺等也在名录内，贝壳珠条目应提示“只收养殖或非保护种”",
+   "鲍鱼贝珠多为拼合片或染色，treatments 只写彩贝染色，漏了拼合",
+   "grades 标 low 合理"
+  ],
+  "fixes": [
+   {
+    "field": "compliance",
+    "suggest": "改为{\"level\":\"none\",\"note\":\"常见贝母、鲍鱼贝可正常售卖；鹦鹉螺（国家一级）、唐冠螺等保护物种的壳不能使用\"}"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"拼合\",\"note\":\"鲍鱼贝珠常是薄片贴在其他材料上，侧面可见粘合线\"}"
+   }
+  ]
+ },
+ "cheqv": {
+  "score": 88,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 15,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "meaning 以“佛教七宝”为依据，属于文化说法可以接受，但只说宗教典籍、没给出具体典籍出处，confidence 标 mid 偏高",
+   "treatments 只写染色，漏了“玉化砗磲”多为化石砗磲或树脂、“白砗磲”有碳酸钙粉压制仿品",
+   "identify“手掂较沉、凉手”与树脂仿品区分有用，但与白色大理石、白玉菩提混淆时不够"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"碳酸钙粉压制、树脂冒充白砗磲，生长纹呆板、上手轻\"}"
+   },
+   {
+    "field": "confidence.meaning",
+    "suggest": "改为 low，或补典籍出处（如《般若经》七宝的说法）后保留 mid"
+   }
+  ]
+ },
+ "shanhu": {
+  "score": 92,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 17,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "CITES 附录 III 现状未核实，compliance 已如实写明",
+   "dims.color 混入“阿卡”“沙丁”“MOMO”这类品种名，与颜色不是同一维度",
+   "confusables 漏了染色海绵珊瑚（海绵状结构、孔洞多），这也是常见冒充品"
+  ],
+  "fixes": [
+   {
+    "field": "dims",
+    "suggest": "“阿卡、沙丁、MOMO”移到 origin 或单列品种，color 改为[\"牛血红\",\"正红\",\"橘红\",\"粉\",\"白\"]"
+   },
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"\",\"name\":\"染色海绵珊瑚\",\"how\":\"表面有细小孔洞，常注胶，颜色均匀\"}"
+   }
+  ]
+ },
+ "meijing": {
+  "score": 85,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 为空，漏了上油上蜡和塑料、黑色玻璃仿品",
+   "identify 没给出与黑色塑料区分的简单方法（热针接触有煤烟味，不建议用户操作，但可说明）",
+   "confidence 多为 mid，sources 只有常识"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"仿品\",\"note\":\"塑料、黑色玻璃冒充，玻璃凉而重，塑料有模线\"}"
+   }
+  ]
+ },
+ "gu-zhu": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 12,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "compliance 只提野牦牛，漏了藏式骨珠里最敏感的“鹰骨”（猛禽全部是国家一级或二级保护动物）",
+   "dims.inclusion“血丝孔”是骨头哈弗斯管，应在 identify 里解释，方便用户对照"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "补“鹰骨等猛禽骨属保护动物制品，一律不收”"
+   },
+   {
+    "field": "identify",
+    "suggest": "第1条补“（骨头的血管孔，俗称血丝孔）”"
+   }
+  ]
+ },
+ "jiao": {
+  "score": 87,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "别名里有“鹿角”，但梅花鹿、马鹿野外种群分别是国家一级、二级，compliance 写了“人工养殖”，别名层面没有提示，程序可能无条件放行",
+   "treatments 标 low，但白牛角漂白、黑牛角染黑是常识，可以 mid"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "补“鹿角须能说明是人工养殖鹿自然脱落或合法来源”"
+   },
+   {
+    "field": "confidence.treatments",
+    "suggest": "改为 mid"
+   }
+  ]
+ },
+ "hailiu": {
+  "score": 86,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 15,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "std“黑珊瑚类”而 summary 又说归属待核，市场“海柳”有相当比例是海藤（柳珊瑚等），confusables 写了，但 std 写死“黑珊瑚类”会让程序把所有海柳当保护物种拦截",
+   "treatments 为空，漏了烤色、上油",
+   "meaning“坚韧”无出处，已标 low"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "改为“黑珊瑚或海藤（市场俗称）”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"上油/烤色\",\"note\":\"有上油、加热让颜色变金黄的\"}"
+   }
+  ]
+ },
+ "mangma": {
+  "score": 87,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 15,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "dims.treatment 有“染色”，但 treatments 为空；猛犸牙“蓝皮”常有染色仿",
+   "sources 只有常识，identify 的“交角比象牙小”是专业判据，标 mid 合理但应补出处（施雷格角：猛犸约 90° 以下，象牙约 115° 以上）"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "增加{\"type\":\"染色\",\"note\":\"有染色仿蓝皮、褐皮的，颜色浮\"}"
+   },
+   {
+    "field": "identify",
+    "suggest": "第1条补具体数字“猛犸约 90° 以下，象牙约 115° 以上”"
+   }
+  ]
+ },
+ "jushi": {
+  "score": 82,
+  "parts": {
+   "name": 16,
+   "identify": 17,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "std“斑彩石（菊石化石）”的规范写法未核实，市场与国内教材常用“斑彩螺”，应和 aliases 统一",
+   "dims.effect 的“变彩”用词有争议，斑彩螺的彩光一般称晕彩，和欧泊变彩混用会误导",
+   "sizes 为空、shape 只有随形弧面，作为手串珠子条目可用性低"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "核实 GB/T 16552 后再定；暂写“斑彩螺（菊石化石）”"
+   },
+   {
+    "field": "dims.effect",
+    "suggest": "改为[\"晕彩\"]"
+   }
+  ]
+ },
+ "xiangya": {
+  "score": 95,
+  "parts": {
+   "name": 20,
+   "identify": 18,
+   "quality": 18,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "confusables 漏了海象牙、河马牙、抹香鲸牙，这些也受 CITES 或国内法规管控，同样要拦截",
+   "identify 第4条“常见雕刻珠、老件”不是识别特征"
+  ],
+  "fixes": [
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"\",\"name\":\"河马牙、海象牙\",\"how\":\"截面没有勒兹纹，有同心层，同样受管控需拦截\"}"
+   },
+   {
+    "field": "identify",
+    "suggest": "删第4条"
+   }
+  ]
+ },
+ "xijiao": {
+  "score": 94,
+  "parts": {
+   "name": 20,
+   "identify": 17,
+   "quality": 18,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 第3条“颜色由中心向外变浅”只对部分犀角成立，作为识别依据不够可靠",
+   "confusables 漏了羚羊角（也禁售），jiao 条目里有，这里应交叉"
+  ],
+  "fixes": [
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"\",\"name\":\"羚羊角\",\"how\":\"半透明、有纵向纹，赛加羚羊为国家一级，同样拒绝\"}"
+   }
+  ]
+ },
+ "daimao": {
+  "score": 95,
+  "parts": {
+   "name": 20,
+   "identify": 18,
+   "quality": 18,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "confusables 漏了“染色牛角”以外的天然仿品“龟甲（其他海龟）”，所有海龟科都在 CITES 附录 I，应统一拦截"
+  ],
+  "fixes": [
+   {
+    "field": "confusables",
+    "suggest": "增加{\"id\":\"\",\"name\":\"其他海龟龟甲\",\"how\":\"海龟科全部 CITES 附录 I，一律拒绝\"}"
+   }
+  ]
+ },
+ "heding": {
+  "score": 93,
+  "parts": {
+   "name": 20,
+   "identify": 17,
+   "quality": 18,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 8
+  },
+  "issues": [
+   "confidence.compliance 标 mid，但盔犀鸟国家一级、CITES 附录 I 都有名录出处，可标 high",
+   "sources 用的是新闻报道，没引名录本身"
+  ],
+  "fixes": [
+   {
+    "field": "sources",
+    "suggest": "补“2021《国家重点保护野生动物名录》”"
+   },
+   {
+    "field": "confidence.compliance",
+    "suggest": "改为 high"
+   }
+  ]
+ }
+}

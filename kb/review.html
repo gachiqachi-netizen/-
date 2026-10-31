@@ -1,0 +1,301 @@
+<title>珠子知识库骨架</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* 版式：顶部摘要 + 筛选条（吸顶）+ 按大类分段的品种清单；沿用串个珠设计规范的颜色和字体 */
+:root {
+  --ground: #f7f6f4; --surface: #ffffff; --tray: #efece8; --line: #e6e2dd;
+  --ink: #1f1b1a; --ink-2: #5e5753; --ink-3: #736b66;
+  --brand: #c8302e; --brand-ink: #a82522; --brand-tint: #fbecea;
+  --warn: #8a5200; --warn-tint: #fbf0dc; --legal: #b42318; --legal-tint: #fde8e6;
+  --mix: #2a55a0; --mix-tint: #e6eef9; --check: #5a4a9a; --check-tint: #eeeaf8;
+  --sans: "PingFang SC", -apple-system, "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --num: "DIN Alternate", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #171514; --surface: #221f1e; --tray: #2c2826; --line: #3a3532;
+  --ink: #f2eeeb; --ink-2: #c4bcb7; --ink-3: #a39a95;
+  --brand: #ef6a5f; --brand-ink: #f39088; --brand-tint: #3a2220;
+  --warn: #e3a64a; --warn-tint: #352a18; --legal: #f2877c; --legal-tint: #3a1f1c;
+  --mix: #8fb1ea; --mix-tint: #1f2a3c; --check: #b7a8ee; --check-tint: #2a2540; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #171514; --surface: #221f1e; --tray: #2c2826; --line: #3a3532;
+  --ink: #f2eeeb; --ink-2: #c4bcb7; --ink-3: #a39a95;
+  --brand: #ef6a5f; --brand-ink: #f39088; --brand-tint: #3a2220;
+  --warn: #e3a64a; --warn-tint: #352a18; --legal: #f2877c; --legal-tint: #3a1f1c;
+  --mix: #8fb1ea; --mix-tint: #1f2a3c; --check: #b7a8ee; --check-tint: #2a2540; color-scheme: dark }
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 400 14px/1.6 var(--sans); }
+.wrap { max-width: 960px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; }
+h1 { font: 600 26px/1.3 var(--sans); margin: 0; text-wrap: balance; }
+.lede { margin: 6px 0 0; color: var(--ink-2); max-width: 62ch; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 14px; }
+.stat b { font: 700 24px/1 var(--num); font-variant-numeric: tabular-nums; margin-right: 4px; }
+.stat span { color: var(--ink-2); font-size: 13px; }
+.ask { background: var(--surface); border-radius: 12px; padding: 16px; display: grid; gap: 8px; }
+.ask h2 { font: 600 15px/1.4 var(--sans); margin: 0; }
+.ask ol { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; color: var(--ink-2); }
+.ask ol b { color: var(--ink); font-weight: 600; }
+.ask p { margin: 0; color: var(--ink-2); max-width: 70ch; }
+.ask p b { color: var(--ink); }
+.decide { box-shadow: inset 3px 0 0 var(--brand); }
+.pending summary { cursor: pointer; }
+.pending pre { margin: 8px 0 0; white-space: pre-wrap; font: 400 13px/1.7 var(--sans); color: var(--ink-2); max-height: 420px; overflow: auto; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); padding-block: 10px; display: grid; gap: 10px; border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--ground); }
+#q { width: 100%; height: 40px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); padding: 0 16px; font: 400 15px/1 var(--sans); }
+#q:focus { outline: 2px solid var(--ink); outline-offset: 0; }
+.filters, .jump { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.filters::-webkit-scrollbar, .jump::-webkit-scrollbar { display: none; }
+.f { flex: none; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 400 13px/1 var(--sans); cursor: pointer; }
+.f[aria-pressed="true"] { background: var(--brand-tint); border-color: var(--brand); color: var(--brand-ink); font-weight: 600; }
+.f:focus-visible, .jump a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.f .n { font-family: var(--num); margin-left: 4px; color: var(--ink-3); }
+.jump a { flex: none; font-size: 13px; color: var(--ink-2); text-decoration: none; padding: 2px 4px; white-space: nowrap; }
+.jump a:hover { color: var(--ink); }
+.cat { display: grid; gap: 10px; scroll-margin-top: 140px; }
+.cat-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cat-h h2 { font: 600 20px/1.3 var(--sans); margin: 0; }
+.cat-h .cnt { font: 400 13px/1 var(--num); color: var(--ink-3); }
+.cat-h p { margin: 0; width: 100%; color: var(--ink-2); font-size: 13px; }
+.list { background: var(--surface); border-radius: 12px; overflow: hidden; }
+.it { display: grid; grid-template-columns: minmax(0, 200px) minmax(0, 1fr); gap: 4px 20px; padding: 14px 16px; }
+.it + .it { border-top: 1px solid var(--line); }
+.nm b { font: 600 16px/1.4 var(--sans); }
+.nm .std { display: block; font-size: 12px; color: var(--ink-3); }
+.nm .id { display: block; font: 400 11px/1.4 ui-monospace, Menlo, monospace; color: var(--ink-3); }
+.body { display: grid; gap: 6px; min-width: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: baseline; }
+.lbl { font-size: 12px; color: var(--ink-3); min-width: 3.5em; }
+.al { font-size: 13px; color: var(--ink-2); }
+.al + .al::before { content: "·"; margin-right: 6px; color: var(--ink-3); }
+.sv { font-size: 12px; background: var(--tray); border-radius: 6px; padding: 1px 7px; color: var(--ink); }
+.note { margin: 0; font-size: 13px; color: var(--ink-2); }
+.flag { font-size: 12px; font-weight: 600; border-radius: 6px; padding: 1px 7px; }
+.flag.名称易混 { color: var(--mix); background: var(--mix-tint); }
+.flag.常见处理 { color: var(--warn); background: var(--warn-tint); }
+.flag.合规 { color: var(--legal); background: var(--legal-tint); }
+.flag.待核 { color: var(--check); background: var(--check-tint); }
+.cat.banned .list { box-shadow: inset 3px 0 0 var(--legal); }
+.empty { color: var(--ink-3); padding: 24px 0; text-align: center; }
+mark { background: var(--brand-tint); color: inherit; border-radius: 3px; }
+@media (max-width: 600px) { .it { grid-template-columns: 1fr; } h1 { font-size: 22px; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>珠子知识库 · 分类骨架</h1>
+    <p class="lede">市面上常见手串珠子的全品类骨架：大类 → 品种 → 常见叫法，以及品种下面的颜色、产地、品相细分。玉石类按国标《珠宝玉石 名称》定名，木和植物籽用通用名。这是第 1 层“认识它”的底子，已经过盲测对照和独立审校两轮核查。</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section class="ask">
+    <h2>怎么核查的</h2>
+    <ol>
+      <li><b>查漏：盲测对照。</b>另起一个 agent，不给它看这份骨架，让它从零列出市面上做手串的所有材质，共 425 种。程序自动比对：第一版只对上 41%，补上漏掉的品种后对上 76%。剩下没对上的大多是它自己也拿不准的冷门叫法，放在页面底部的待核实清单里。</li>
+      <li><b>改错：独立审校。</b>再起一个 agent 专门挑错，对照国标、红木标准、国家重点保护动植物名录和 CITES 附录，逐条给出处。改了 22 条：保护物种漏标（红珊瑚、砗磲、沉香、黄花梨、楠木等）、规范名写错（珍珠、玻璃）、会误伤的叫法（“象牙白”是颜色名）。</li>
+      <li><b>调大类：</b>按审校意见把沉香、檀香并进香珠，橄榄核并进果核，“其他宝石”拆成彩色宝石和天然石两类，新增“组合款式”（十八籽、多宝）。</li>
+      <li><b>还没定的 10 条标了“待核”</b>，原因是标准原文要付费，或者网上只有卖家说法。不影响先用，后面拿到资料再补。</li>
+    </ol>
+  </section>
+
+  <section class="ask decide">
+    <h2>只有一件事要你拍板</h2>
+    <p>标了“合规”的 25 种（红珊瑚、砗磲、黄花梨、沉香、小叶紫檀、酸枝、金丝楠、崖柏等）卖不卖？我的建议：<b>知识库照样收录</b>，用户问到能讲清楚；<b>料包里先不上</b>，等供应商能出示合法来源证明再上。禁售的象牙、犀角、玳瑁、鹤顶红、麝香只用来识别，永远不进料包。</p>
+  </section>
+
+  <div class="bar">
+    <input id="q" type="search" placeholder="搜品种或叫法，比如：柿子红、澳玉、黄晶" aria-label="搜索品种或叫法">
+    <div class="filters" id="filters" role="group" aria-label="按标记筛选"></div>
+    <nav class="jump" id="jump" aria-label="跳到大类"></nav>
+  </div>
+
+  <main id="cats"></main>
+
+  <details class="ask pending">
+    <summary><b>待核实清单（盲测里出现、还没收录的 103 个叫法）</b></summary>
+    <p class="note">大多是冷门菩提子、地方玉和商家花名，有些可能根本不存在。用户真问到或拍到时再查证收录。</p>
+    <pre id="pending">水晶（5）
+晶簇珠(?)（晶簇）
+紫晶洞珠(?)（紫晶洞）
+月光白晶(?)（月光石英）
+天使水晶(?)（天使石英、天使包体）
+千层水晶(?)（层状水晶）
+
+长石（1）
+钾长石(?)（正长石）
+
+玛瑙玉髓（2）
+萤石玛瑙(?)
+西瓜玛瑙(?)
+
+石英质玉（1）
+龙鳞石(?)（龙鳞）
+
+玉石（4）
+青海翠(?)
+天山翠(?)
+塔青(?)
+萨尔瓦多玉(?)
+
+地方玉（3）
+西峡玉(?)
+贺兰石(?)
+吉林玉(?)
+
+有机宝石（3）
+金珊瑚(?)（黄金珊瑚）
+海竹(?)（竹节珊瑚）
+蜡籽(?)
+
+宝石（19）
+透辉石(?)（铬透辉石）
+菱锌矿(?)
+闪锌矿(?)
+辉锑矿(?)
+蓝纹石（蓝线石、蓝色条纹石）
+异极矿(?)
+黄铜矿(?)
+金红石（钛晶包体）
+蓝针水晶(?)（蓝线石包体水晶、蓝针）
+蓝线石（蓝线石石英）
+绿泥石（苔藓绿泥）
+阿塞拜疆石(?)
+紫苏辉石(?)
+斜长石(?)
+绿玛瑙
+绿金石(?)
+石膏(?)（沙漠玫瑰）
+赛黄晶(?)
+蓝柱石(?)
+
+文玩木（10）
+铁木(?)
+鸡血藤(?)
+巴西花梨(?)
+蛇纹木
+紫心苏木（紫心木）
+菩提木(?)
+榆木(?)
+黄金樟(?)
+龙涎木(?)
+桦木瘤（瘤疤）
+
+菩提子（25）
+雨花菩提(?)
+八宝菩提(?)
+摩尼菩提(?)
+蛇眼菩提(?)
+老挝菩提(?)
+拳果菩提(?)
+花菩提(?)
+苦楝子(?)
+龙鳞菩提(?)
+老挝木纹菩提(?)
+川菩提(?)
+白菩提(?)
+红菩提(?)
+铁菩提(?)
+棕榈籽(?)
+乌金菩提(?)
+皮老虎(?)
+马尾菩提(?)
+紫丁菩提(?)
+天梯菩提(?)
+阿拉伯紫丁香(?)
+罗汉菩提(?)
+龙鳞果(?)
+黑金菩提(?)
+鸡血菩提(?)
+
+植物籽（12）
+沙漠驼铃(?)
+银杏果(?)
+蛇皮果(?)
+鸡心果(?)
+红木籽(?)
+蓖麻籽(?)
+皂荚籽(?)
+红豆杉籽(?)
+油棕籽(?)
+紫藤籽(?)
+荔枝核(?)
+香榧籽(?)
+
+果核（9）
+樱桃核(?)
+李子核(?)
+龙眼核(?)
+荔枝核
+苹果核(?)
+椰子核(?)
+铁核桃(?)
+黄连木(?)
+梨核(?)
+
+香珠（1）
+安息香(?)
+
+人工材质（7）
+合成绿松石
+合成萤石(?)
+蛋壳(?)
+硅胶
+仿古铜珠(?)
+八宝砂(?)
+无烧琉璃(?)
+
+金属配件（1）
+景泰蓝隔珠</pre>
+  </details>
+</div>
+
+<script>
+const KB = {"version": "0.1", "standard": "GB/T 16552-2017《珠宝玉石 名称》（玉石类）；木、植物籽用通用中文名", "categories": [{"id": "crystal", "name": "水晶", "desc": "石英单晶，透明到半透明，按颜色和里面的包体细分。用户量最大的一类", "items": [{"id": "bai-shuijing", "name": "白水晶", "std": "水晶", "aliases": ["白晶", "无色水晶", "净体白水晶", "雪花水晶", "白雪花", "星光白晶"], "sub": [{"name": "净度", "values": ["净体", "雪花", "冰裂"]}], "note": "百搭配珠，也常做佛头和隔珠", "flags": []}, {"id": "fen-jing", "name": "粉晶", "std": "芙蓉石", "aliases": ["粉水晶", "芙蓉晶", "玫瑰石英"], "sub": [{"name": "品相", "values": ["冰种", "星光粉晶"]}, {"name": "产地", "values": ["马达加斯加", "巴西", "莫桑比克"]}], "note": "规范名是“芙蓉石”，用户几乎只说粉晶", "flags": []}, {"id": "zi-jing", "name": "紫水晶", "std": "紫晶", "aliases": ["紫晶", "紫水晶"], "sub": [{"name": "颜色", "values": ["深紫", "浅紫", "薰衣草紫"]}, {"name": "产地", "values": ["乌拉圭", "巴西", "赞比亚"]}], "note": "浅色紫晶常被叫成“薰衣草紫晶”", "flags": []}, {"id": "huang-shuijing", "name": "黄水晶", "std": "黄水晶", "aliases": ["黄晶", "柠檬晶", "茶黄晶"], "sub": [{"name": "颜色", "values": ["柠檬黄", "金黄", "茶黄"]}], "note": "商家常叫“黄晶”，但“黄晶”旧时也指托帕石，容易混；不少黄水晶由紫晶加热而来（待核）", "flags": ["名称易混", "常见处理"]}, {"id": "cha-jing", "name": "茶晶", "std": "烟晶", "aliases": ["茶水晶", "烟水晶", "墨晶"], "sub": [{"name": "颜色", "values": ["浅茶", "深茶", "墨晶"]}], "note": "墨晶是颜色最深的茶晶", "flags": []}, {"id": "zihuang-jing", "name": "紫黄晶", "std": "紫黄晶", "aliases": ["双色晶", "紫黄水晶"], "sub": [], "note": "", "flags": []}, {"id": "fa-jing", "name": "发晶", "std": "水晶（含金红石等针状包体）", "aliases": ["发丝水晶", "兔毛", "彩发晶", "黄兔毛", "红兔毛", "白兔毛"], "sub": [{"name": "种类", "values": ["金发晶", "钛晶", "铜发晶", "银发晶", "红发晶", "绿发晶", "黑发晶", "兔毛水晶"]}], "note": "钛晶价格远高于普通金发晶，要单独标价", "flags": []}, {"id": "youling", "name": "幽灵水晶", "std": "水晶（含绿泥石等包体）", "aliases": ["幽灵", "聚宝盆", "千层幽灵"], "sub": [{"name": "颜色", "values": ["绿幽灵", "红幽灵", "白幽灵", "紫幽灵", "黄幽灵"]}], "note": "“聚宝盆”指包体呈山形堆叠的绿幽灵", "flags": []}, {"id": "caomei-jing", "name": "草莓晶", "std": "水晶（含红色片状包体）", "aliases": ["草莓水晶"], "sub": [{"name": "颜色", "values": ["红草莓", "黄草莓"]}], "note": "市面有染色和玻璃仿品", "flags": ["常见处理"]}, {"id": "shanling-zuan", "name": "闪灵钻", "std": "水晶", "aliases": ["赫基蒙水晶", "闪灵钻"], "sub": [], "note": "不是钻石，名字容易让人误会，介绍时要说清", "flags": ["名称易混"]}, {"id": "huyan-shi", "name": "虎眼石", "std": "虎睛石", "aliases": ["虎眼", "虎睛石", "鹰眼石"], "sub": [{"name": "颜色", "values": ["黄虎眼", "蓝虎眼(鹰眼石)", "红虎眼", "斑马虎眼"]}], "note": "属石英质玉，市场上常跟水晶放在一起卖", "flags": ["名称易混"]}, {"id": "chao-qi", "name": "超七", "std": "水晶（多种包体）", "aliases": ["超级七", "超7", "紫超七", "黑金超七"], "sub": [], "note": "商家名，实际包体成分说法不一", "flags": ["待核"]}, {"id": "jiaohua", "name": "胶花水晶", "std": "水晶（含包体）", "aliases": ["胶花", "红胶花", "粉胶花", "发财树"], "sub": [{"name": "颜色", "values": ["红胶花", "粉胶花", "绿胶花"]}], "note": "“发财树”是否就是绿胶花待核", "flags": ["待核"]}, {"id": "yixiang", "name": "异象水晶", "std": "水晶（含绿泥石等包体）", "aliases": ["花园水晶", "盆景水晶", "风景水晶", "苔藓水晶", "绿泥石水晶", "包体水晶", "极光23"], "sub": [], "note": "“极光23”是商家名，所指待核", "flags": ["待核"]}, {"id": "lan-shuijing", "name": "蓝水晶", "std": "多为玻璃或染色", "aliases": ["蓝晶", "海蓝晶"], "sub": [], "note": "天然蓝色水晶极少，市售多为熔炼或染色，要标清", "flags": ["名称易混", "常见处理"]}, {"id": "liyunmu", "name": "锂云母", "std": "锂云母", "aliases": ["紫锂云母", "紫云母", "鳞云母"], "sub": [], "note": "", "flags": []}]}, {"id": "feldspar", "name": "长石", "desc": "带蓝光、彩光、闪光效果的长石，近两年在小红书很热", "items": [{"id": "yueguang-shi", "name": "月光石", "std": "月光石", "aliases": ["月光", "冰长石", "冰长月光"], "sub": [{"name": "颜色", "values": ["蓝月光", "白月光", "灰月光", "桃月光", "彩月光"]}], "note": "“彩月光”多为白色拉长石", "flags": ["名称易混"]}, {"id": "lachang-shi", "name": "拉长石", "std": "拉长石", "aliases": ["光谱石", "黑月光"], "sub": [{"name": "光色", "values": ["蓝光", "彩光", "金光"]}], "note": "", "flags": []}, {"id": "riguang-shi", "name": "日光石", "std": "日光石", "aliases": ["太阳石", "金太阳"], "sub": [], "note": "", "flags": []}, {"id": "tianhe-shi", "name": "天河石", "std": "天河石", "aliases": ["亚马逊石"], "sub": [], "note": "", "flags": []}]}, {"id": "agate", "name": "玛瑙玉髓", "desc": "隐晶质石英，微透明到不透明，色彩和纹路多。红色题材主力", "items": [{"id": "nanhong", "name": "南红", "std": "南红玛瑙", "aliases": ["南红", "南红玛瑙"], "sub": [{"name": "颜色", "values": ["柿子红", "锦红", "玫瑰红", "朱砂红", "樱桃红", "山椒红", "红白料", "冰飘", "火焰纹"]}, {"name": "产地", "values": ["保山", "凉山", "甘肃"]}, {"name": "凉山矿口", "values": ["瓦西", "九口", "联合", "美姑"]}], "note": "本命年、红运题材主力。颜色和矿口直接决定价格。注意“南红色”不是南红，国内常见染色石英岩写成“南红色散珠”", "flags": ["名称易混"]}, {"id": "zhanguo-hong", "name": "战国红", "std": "玛瑙", "aliases": ["战国红玛瑙"], "sub": [{"name": "产地", "values": ["北票", "宣化", "朝阳"]}], "note": "", "flags": []}, {"id": "yanyuan", "name": "盐源玛瑙", "std": "玛瑙", "aliases": ["盐源", "盐源玛瑙", "盐源彩玛瑙"], "sub": [], "note": "", "flags": []}, {"id": "chansi", "name": "缠丝玛瑙", "std": "玛瑙", "aliases": ["缠丝", "盘丝", "盘丝玛瑙"], "sub": [{"name": "颜色", "values": ["红缠丝", "黑缠丝"]}], "note": "", "flags": []}, {"id": "shuicao", "name": "水草玛瑙", "std": "玛瑙", "aliases": ["水草", "水草玛瑙"], "sub": [], "note": "", "flags": []}, {"id": "putong-manao", "name": "普通玛瑙", "std": "玛瑙", "aliases": ["红玛瑙", "黑玛瑙", "白玛瑙", "冰玛瑙", "彩玛瑙"], "sub": [{"name": "颜色", "values": ["红", "黑", "白", "绿", "蓝"]}], "note": "颜色鲜艳均匀的大多是染色，染色的必须标“染色”", "flags": ["常见处理"]}, {"id": "tianzhu", "name": "天珠", "std": "玛瑙", "aliases": ["天珠", "九眼天珠", "至纯天珠", "龙纹天珠", "龙纹玛瑙"], "sub": [{"name": "种类", "values": ["老天珠", "新天珠"]}], "note": "市售几乎都是蚀花或染色玛瑙，只能说“天珠款式”", "flags": ["常见处理"]}, {"id": "lan-yusui", "name": "蓝玉髓", "std": "玉髓", "aliases": ["台湾蓝宝", "蓝玛瑙", "蓝玉髓", "蓝宝玉髓", "海水蓝玉髓"], "sub": [], "note": "市面“蓝玛瑙”多是染色", "flags": ["常见处理"]}, {"id": "lv-yusui", "name": "绿玉髓", "std": "玉髓", "aliases": ["澳玉", "澳洲玉", "澳洲绿玉髓", "绿玉髓"], "sub": [], "note": "叫“玉”但其实是玉髓", "flags": ["名称易混"]}, {"id": "zi-yusui", "name": "紫玉髓", "std": "玉髓", "aliases": ["紫玉髓", "葡萄玛瑙"], "sub": [], "note": "", "flags": []}, {"id": "bi-shi", "name": "碧石", "std": "碧石", "aliases": ["碧玉", "红碧玉", "海洋碧玉", "斑马碧玉", "大红碧玉", "图画碧石", "豹纹碧玉", "豹纹石", "图画石"], "sub": [{"name": "种类", "values": ["红碧石", "海洋碧石", "斑马碧石", "图画碧石"]}], "note": "“碧玉”改称“碧石”出自 GB/T 34098-2017《石英质玉 分类与鉴定》；和田玉里的“碧玉”是另一种东西", "flags": ["名称易混"]}, {"id": "huo-manao", "name": "火玛瑙", "std": "玛瑙", "aliases": ["火焰玛瑙", "彩虹玛瑙", "闪光玛瑙"], "sub": [], "note": "", "flags": []}, {"id": "alashan", "name": "阿拉善玛瑙", "std": "玛瑙", "aliases": ["阿拉善", "戈壁玛瑙", "苏尼特玛瑙", "阿拉善风景"], "sub": [{"name": "产地", "values": ["内蒙古阿拉善", "苏尼特"]}], "note": "", "flags": []}, {"id": "yuhua", "name": "雨花石", "std": "玛瑙（多为）", "aliases": ["雨花石", "南京雨花石"], "sub": [], "note": "", "flags": []}, {"id": "shuidan", "name": "水胆玛瑙", "std": "玛瑙", "aliases": ["水胆"], "sub": [], "note": "", "flags": []}]}, {"id": "jade", "name": "玉石", "desc": "多晶集合体的玉石，价格跨度最大，最需要说清名称", "items": [{"id": "hetian-yu", "name": "和田玉", "std": "软玉（和田玉）", "aliases": ["和田玉", "软玉", "俄碧", "俄罗斯碧玉"], "sub": [{"name": "颜色", "values": ["羊脂白玉", "白玉", "青白玉", "青玉", "碧玉", "墨玉", "糖玉", "黄玉", "烟青", "翠青"]}, {"name": "产状", "values": ["籽料", "山料", "山流水", "戈壁料"]}, {"name": "产地", "values": ["新疆", "青海", "俄罗斯", "韩国", "阿富汗"]}], "note": "规范里“和田玉”不表示产地，产地要另外标", "flags": []}, {"id": "feicui", "name": "翡翠", "std": "翡翠", "aliases": ["缅甸玉", "硬玉", "危料", "危地马拉翡翠"], "sub": [{"name": "颜色", "values": ["阳绿", "帝王绿", "飘花", "晴水", "紫罗兰", "黄翡", "红翡", "墨翠", "白冰"]}, {"name": "种水", "values": ["玻璃种", "冰种", "糯种", "豆种"]}], "note": "B 货（酸洗注胶）、C 货（染色）必须标出", "flags": ["常见处理"]}, {"id": "xiu-yu", "name": "岫玉", "std": "蛇纹石玉", "aliases": ["岫岩玉", "岫玉", "河磨玉", "蛇纹石", "蛇纹玉"], "sub": [{"name": "颜色", "values": ["黄绿", "碧绿", "白"]}], "note": "", "flags": []}, {"id": "dushan-yu", "name": "独山玉", "std": "独山玉", "aliases": ["南阳玉", "独玉"], "sub": [], "note": "", "flags": []}, {"id": "dongling-yu", "name": "东陵玉", "std": "石英岩玉", "aliases": ["东陵石", "印度玉", "砂金石英岩"], "sub": [{"name": "颜色", "values": ["绿东陵", "蓝东陵", "红东陵"]}], "note": "", "flags": []}, {"id": "shiyingyan-yu", "name": "石英岩玉", "std": "石英岩玉", "aliases": ["京白玉", "密玉", "贵翠", "马来玉"], "sub": [{"name": "种类", "values": ["京白玉", "密玉", "贵翠", "马来玉"]}], "note": "“马来玉”是染色石英岩，常被当翡翠卖", "flags": ["名称易混", "常见处理"]}, {"id": "huanglong-yu", "name": "黄龙玉", "std": "石英质玉", "aliases": ["黄龙玉", "龙陵黄龙玉"], "sub": [{"name": "产地", "values": ["云南龙陵"]}], "note": "", "flags": []}, {"id": "jinsi-yu", "name": "金丝玉", "std": "石英质玉", "aliases": ["金丝玉", "新疆金丝玉", "戈壁玉"], "sub": [], "note": "不是和田玉", "flags": ["名称易混"]}, {"id": "lantian-yu", "name": "蓝田玉", "std": "蓝田玉", "aliases": ["蓝田玉"], "sub": [], "note": "规范名就是“蓝田玉”", "flags": []}, {"id": "afuhan-yu", "name": "阿富汗玉", "std": "大理石", "aliases": ["阿富汗玉", "汉白玉", "雅安玉"], "sub": [], "note": "不是玉，是大理石", "flags": ["名称易混"]}, {"id": "shuhua", "name": "树化玉", "std": "硅化木", "aliases": ["硅化木", "木化石", "玉化木"], "sub": [], "note": "", "flags": []}, {"id": "taishan-yu", "name": "台山玉", "std": "石英质玉（含高岭石/地开石）", "aliases": ["广东台山玉", "台山玉"], "sub": [], "note": "规范归属待核", "flags": ["待核"]}, {"id": "qilian", "name": "祁连玉", "std": "蛇纹石玉", "aliases": ["酒泉玉", "夜光杯玉", "祁连玉"], "sub": [], "note": "", "flags": []}, {"id": "meihua", "name": "梅花玉", "std": "梅花玉", "aliases": ["河南梅花玉", "汝州梅花玉"], "sub": [], "note": "", "flags": []}, {"id": "shuimo", "name": "水沫玉", "std": "钠长石玉", "aliases": ["水沫子", "钠长石玉"], "sub": [], "note": "常被当翡翠冰种卖", "flags": ["名称易混"]}, {"id": "yinzhang", "name": "印章石", "std": "叶蜡石/地开石等", "aliases": ["鸡血石", "巴林石", "青田石", "寿山石", "昌化石"], "sub": [{"name": "种类", "values": ["昌化鸡血石", "巴林鸡血石", "巴林冻石", "青田石", "寿山石"]}], "note": "硬度低，做珠子少见", "flags": []}, {"id": "huaillian", "name": "花莲玉", "std": "软玉", "aliases": ["台湾玉", "台湾翠", "花莲玉"], "sub": [], "note": "", "flags": []}, {"id": "taishan", "name": "泰山玉", "std": "蛇纹石玉", "aliases": ["泰山碧玉", "泰山玉"], "sub": [], "note": "", "flags": []}]}, {"id": "organic", "name": "有机宝石", "desc": "生物形成的材料。有几种受法律保护，要特别标出", "items": [{"id": "hupo", "name": "琥珀", "std": "琥珀", "aliases": ["琥珀"], "sub": [{"name": "种类", "values": ["金珀", "血珀", "蓝珀", "绿珀", "花珀", "根珀", "虫珀", "翳珀"]}, {"name": "产地", "values": ["波罗的海", "缅甸", "多米尼加", "墨西哥"]}], "note": "压制琥珀（再造）、烤色要标出", "flags": ["常见处理"]}, {"id": "mila", "name": "蜜蜡", "std": "琥珀", "aliases": ["蜜蜡", "老蜜蜡"], "sub": [{"name": "颜色", "values": ["鸡油黄", "白花蜜", "金绞蜜"]}], "note": "规范里蜜蜡属于琥珀，指不透明的那类", "flags": []}, {"id": "zhenzhu", "name": "珍珠", "std": "珍珠", "aliases": ["珍珠"], "sub": [{"name": "种类", "values": ["淡水珍珠", "Akoya 海水珍珠", "南洋金珠", "大溪地黑珍珠", "巴洛克珍珠"]}], "note": "市售基本是养殖珍珠，按规范可以直接叫珍珠；只有天然珍珠才要写“天然”。南洋珠母贝野外种群是国家二级，养殖的不受影响", "flags": []}, {"id": "beike", "name": "贝壳珠", "std": "贝壳", "aliases": ["贝珠", "贝母", "母贝"], "sub": [{"name": "种类", "values": ["白贝", "彩贝", "鲍鱼贝"]}], "note": "", "flags": []}, {"id": "cheqv", "name": "砗磲", "std": "砗磲", "aliases": ["砗磲", "白砗磲", "金丝砗磲", "玉化砗磲"], "sub": [], "note": "大砗磲是国家一级保护动物，另外五种砗磲是国家二级，砗磲科全部列入 CITES 附录 II。只收能出示合法来源（人工繁育或合规库存）的货", "flags": ["合规"]}, {"id": "shanhu", "name": "珊瑚", "std": "珊瑚", "aliases": ["红珊瑚", "阿卡", "沙丁", "MOMO"], "sub": [{"name": "颜色", "values": ["阿卡", "沙丁", "MOMO", "粉珊瑚", "白珊瑚"]}], "note": "红珊瑚科所有种都是国家一级保护动物；黑珊瑚是国家二级。只收有合法来源证明的货。染色竹珊瑚常冒充红珊瑚", "flags": ["合规", "常见处理"]}, {"id": "meijing", "name": "煤精", "std": "煤精", "aliases": ["煤玉", "煤精"], "sub": [], "note": "", "flags": []}, {"id": "gu-zhu", "name": "骨珠", "std": "骨", "aliases": ["牦牛骨", "骆驼骨"], "sub": [], "note": "", "flags": []}, {"id": "jiao", "name": "角类珠", "std": "角", "aliases": ["牦牛角", "牛角", "黑牛角", "白牛角", "羊角", "鹿角"], "sub": [], "note": "犀牛角、羚羊角等保护动物的角禁售", "flags": ["合规"]}, {"id": "hailiu", "name": "海柳", "std": "多为黑珊瑚，也有海藤冒充（市场俗称）", "aliases": ["海柳", "海柳珠"], "sub": [], "note": "黑珊瑚受 CITES 管控，来源要合法", "flags": ["合规", "待核"]}, {"id": "mangma", "name": "猛犸牙", "std": "猛犸象牙", "aliases": ["猛犸象牙", "猛犸牙"], "sub": [], "note": "外观和象牙相近，要能出示来源证明", "flags": ["合规"]}, {"id": "jushi", "name": "斑彩螺", "std": "斑彩螺（菊石化石）", "aliases": ["菊石", "斑彩螺", "彩斑菊石"], "sub": [], "note": "", "flags": []}]}, {"id": "gem", "name": "天然石与矿物", "desc": "不透明或半透明的天然石和矿物，颜色丰富，水晶店里的主力", "items": [{"id": "lvsong", "name": "绿松石", "std": "绿松石", "aliases": ["松石", "TQ"], "sub": [{"name": "瓷度", "values": ["高瓷", "中瓷", "泡松"]}, {"name": "颜色", "values": ["天蓝", "蓝绿", "乌兰花", "铁线"]}, {"name": "产地", "values": ["湖北十堰", "美国", "伊朗"]}], "note": "注胶、染色、再造（粉末压制）很常见；常被染色菱镁矿、白松石冒充", "flags": ["常见处理"]}, {"id": "qingjin", "name": "青金石", "std": "青金石", "aliases": ["青金"], "sub": [{"name": "品相", "values": ["含金星", "无金星"]}, {"name": "产地", "values": ["阿富汗", "智利", "俄罗斯"]}], "note": "常被染色方钠石冒充。（“金精石”在中药里指蛭石，不当别名）", "flags": ["常见处理"]}, {"id": "kongque", "name": "孔雀石", "std": "孔雀石", "aliases": ["孔雀石"], "sub": [], "note": "", "flags": []}, {"id": "heiyao", "name": "黑曜石", "std": "黑曜岩", "aliases": ["黑曜石"], "sub": [{"name": "种类", "values": ["金曜石", "银曜石", "彩虹眼", "冰种黑曜石", "雪花黑曜石"]}], "note": "规范名是“黑曜岩”", "flags": []}, {"id": "shujulai", "name": "舒俱来", "std": "舒俱来石", "aliases": ["苏纪石", "舒俱来"], "sub": [], "note": "染色仿品多", "flags": ["常见处理"]}, {"id": "ying-shi", "name": "萤石", "std": "萤石", "aliases": ["彩虹萤石", "夜明珠"], "sub": [{"name": "颜色", "values": ["绿萤石", "紫萤石", "彩虹萤石"]}], "note": "", "flags": []}, {"id": "putao-shi", "name": "葡萄石", "std": "葡萄石", "aliases": ["葡萄石"], "sub": [], "note": "", "flags": []}, {"id": "hongwen", "name": "红纹石", "std": "菱锰矿", "aliases": ["红纹石", "菱锰矿"], "sub": [], "note": "", "flags": []}, {"id": "lalima", "name": "拉利玛", "std": "针钠钙石", "aliases": ["拉利玛", "海纹石"], "sub": [], "note": "", "flags": []}, {"id": "tianqing", "name": "天青石", "std": "天青石", "aliases": ["天青石"], "sub": [], "note": "", "flags": []}, {"id": "fangna", "name": "方钠石", "std": "方钠石", "aliases": ["方钠石"], "sub": [], "note": "", "flags": []}, {"id": "baisong", "name": "白松石", "std": "菱镁矿/硅硼钙石", "aliases": ["白松", "白松石", "菱镁矿"], "sub": [], "note": "市售“白松石”有菱镁矿和硅硼钙石两种，都常被染色冒充绿松石、青金石。“白松石”本身不是规范名", "flags": ["名称易混", "常见处理"]}, {"id": "huoshan", "name": "火山石", "std": "火山岩", "aliases": ["火山石", "熔岩石"], "sub": [{"name": "颜色", "values": ["黑", "红"]}], "note": "常做扩香石", "flags": []}, {"id": "zhusha", "name": "朱砂", "std": "辰砂", "aliases": ["朱砂", "辰砂"], "sub": [{"name": "种类", "values": ["原矿朱砂", "朱砂粉压制"]}], "note": "天然朱砂含汞，不适合贴身长期戴；市售多为粉末压制", "flags": ["合规", "常见处理"]}, {"id": "huangtie", "name": "黄铁矿", "std": "黄铁矿", "aliases": ["愚人金", "黄金矿"], "sub": [], "note": "", "flags": []}, {"id": "chaluo", "name": "紫龙晶", "std": "查罗石", "aliases": ["紫龙晶", "查罗石", "紫龙石", "紫硅碱钙石"], "sub": [], "note": "", "flags": []}, {"id": "lanjing", "name": "蓝晶石", "std": "蓝晶石", "aliases": ["蓝晶", "晶刃石"], "sub": [], "note": "", "flags": []}, {"id": "guikongque", "name": "硅孔雀石", "std": "硅孔雀石", "aliases": ["蓝硅孔雀", "硅孔雀"], "sub": [], "note": "", "flags": []}, {"id": "lantong", "name": "蓝铜矿", "std": "蓝铜矿", "aliases": ["石青", "蓝铜矿"], "sub": [], "note": "", "flags": []}, {"id": "bantong", "name": "斑铜矿", "std": "斑铜矿", "aliases": ["孔雀铜", "斑铜"], "sub": [], "note": "", "flags": []}, {"id": "juhua", "name": "菊花石", "std": "菊花石", "aliases": ["浏阳菊花石"], "sub": [], "note": "", "flags": []}, {"id": "yunshi", "name": "陨石", "std": "陨石/玻璃陨石", "aliases": ["陨石", "天铁", "铁陨石", "吉本陨石", "捷克陨石", "利比亚陨石", "绿玻陨石", "莫尔道玻璃"], "sub": [{"name": "种类", "values": ["铁陨石(天铁)", "捷克陨石", "利比亚黄玻璃"]}], "note": "仿品很多", "flags": ["常见处理", "合规"]}, {"id": "dimang", "name": "帝王石", "std": "碧石（染色）", "aliases": ["帝王石", "印象石", "皇帝石"], "sub": [], "note": "市售颜色鲜艳的多为染色", "flags": ["常见处理"]}, {"id": "fangjie", "name": "方解石", "std": "方解石", "aliases": ["冰洲石", "蜂蜜方解石", "橙方解石"], "sub": [], "note": "常被染色冒充其他宝石", "flags": ["常见处理"]}, {"id": "lvlian", "name": "绿帘石", "std": "绿帘石", "aliases": ["帘石", "绿帘"], "sub": [], "note": "", "flags": []}, {"id": "chitie", "name": "赤铁矿", "std": "赤铁矿", "aliases": ["黑胆石", "赤铁"], "sub": [], "note": "", "flags": []}]}, {"id": "colored", "name": "彩色宝石", "desc": "透明或半透明、颜色鲜亮的宝石级材料，单价高，常做点缀", "items": [{"id": "bixi", "name": "碧玺", "std": "碧玺", "aliases": ["电气石", "托玛琳"], "sub": [{"name": "颜色", "values": ["红碧玺", "粉碧玺", "绿碧玺", "蓝碧玺", "西瓜碧玺", "多色碧玺", "黑碧玺"]}], "note": "", "flags": []}, {"id": "shiliu", "name": "石榴石", "std": "石榴石", "aliases": ["紫牙乌", "石榴石"], "sub": [{"name": "种类", "values": ["镁铝榴石", "铁铝榴石", "锰铝榴石(芬达)", "钙铝榴石(沙弗莱", "桂榴石)"]}], "note": "酒红色的多为铁铝榴石或镁铝榴石（待核）", "flags": []}, {"id": "hailanbao", "name": "海蓝宝", "std": "海蓝宝石", "aliases": ["海蓝宝", "海蓝"], "sub": [], "note": "偏深蓝的有加热处理", "flags": []}, {"id": "tuopa", "name": "托帕石", "std": "托帕石", "aliases": ["黄玉", "黄晶", "托帕", "帝王托帕"], "sub": [{"name": "颜色", "values": ["蓝托帕", "帝王托帕", "白托帕"]}], "note": "商家叫“黄玉”会和和田黄玉混；蓝色多为辐照", "flags": ["名称易混", "常见处理"]}, {"id": "tansang", "name": "坦桑石", "std": "黝帘石", "aliases": ["坦桑石", "坦桑蓝"], "sub": [], "note": "", "flags": []}, {"id": "jinqing", "name": "堇青石", "std": "堇青石", "aliases": ["堇青石", "水蓝宝石"], "sub": [], "note": "“水蓝宝石”不是蓝宝石", "flags": ["名称易混"]}, {"id": "linhui", "name": "磷灰石", "std": "磷灰石", "aliases": ["磷灰石"], "sub": [], "note": "", "flags": []}, {"id": "zilihui", "name": "紫锂辉", "std": "锂辉石", "aliases": ["紫锂辉", "孔赛石"], "sub": [], "note": "", "flags": []}, {"id": "ganlan-shi", "name": "橄榄石", "std": "橄榄石", "aliases": ["贵橄榄石", "橄榄石"], "sub": [], "note": "", "flags": []}, {"id": "jianjing", "name": "尖晶石", "std": "尖晶石", "aliases": ["红尖晶", "黑尖晶", "尖晶"], "sub": [], "note": "", "flags": []}, {"id": "gangyu", "name": "红宝石和蓝宝石", "std": "刚玉", "aliases": ["红宝石", "蓝宝石", "刚玉"], "sub": [{"name": "种类", "values": ["红宝石", "蓝宝石", "红宝石黝帘石(红绿宝)"]}], "note": "珠子多为低品质原料，常见充填和染色", "flags": ["常见处理"]}, {"id": "lvzhu", "name": "绿柱石", "std": "绿柱石", "aliases": ["摩根石", "金绿柱", "粉绿柱", "绿柱石"], "sub": [{"name": "种类", "values": ["摩根石", "金绿柱石"]}], "note": "海蓝宝也是绿柱石，单独列", "flags": []}, {"id": "oubo", "name": "欧泊", "std": "欧泊", "aliases": ["蛋白石", "澳宝", "火欧泊", "黑欧泊", "粉蛋白石", "蓝蛋白石", "粉欧泊"], "sub": [{"name": "种类", "values": ["白欧泊", "黑欧泊", "火欧泊", "粉蛋白石", "蓝蛋白石"]}], "note": "粉蛋白石、蓝蛋白石是普通蛋白石，不变彩", "flags": []}, {"id": "jinlv", "name": "金绿宝石", "std": "金绿宝石", "aliases": ["猫眼", "金绿猫眼", "亚历山大变石", "变石"], "sub": [], "note": "“猫眼”也常指其他有猫眼效应的石头", "flags": ["名称易混"]}]}, {"id": "wood", "name": "文玩木", "desc": "木质珠子，男性用户和文玩爱好者为主，名称混乱最严重", "items": [{"id": "xiaoye-zitan", "name": "小叶紫檀", "std": "檀香紫檀", "aliases": ["小叶紫檀", "紫檀"], "sub": [{"name": "纹理", "values": ["金星", "牛毛纹", "鸡血紫"]}, {"name": "新老", "values": ["老料", "新料"]}, {"name": "产地", "values": ["印度"]}], "note": "檀香紫檀在 CITES 附录 II（主要管原木、木片、粉末）。常被血檀、大叶紫檀冒充。“非洲小叶紫檀”不是檀香紫檀", "flags": ["合规", "名称易混"]}, {"id": "daye-zitan", "name": "大叶紫檀", "std": "卢氏黑黄檀", "aliases": ["大叶紫檀"], "sub": [], "note": "不是紫檀，属黑酸枝木类。黄檀属在 CITES 附录 II", "flags": ["名称易混", "合规"]}, {"id": "xue-tan", "name": "血檀", "std": "染料紫檀", "aliases": ["血檀", "非洲血檀"], "sub": [], "note": "不在 GB/T 18107 红木名录里，不能叫红木或紫檀。非洲紫檀属列入 CITES 附录 II（主要管原木、板材）", "flags": ["名称易混", "合规"]}, {"id": "huanghuali", "name": "黄花梨", "std": "降香黄檀", "aliases": ["海南黄花梨", "海黄"], "sub": [{"name": "产地", "values": ["海南"]}], "note": "降香黄檀是国家二级保护植物，也在 CITES 附录 II。“越南黄花梨”一般不是降香黄檀，单独列；“草花梨”不是黄花梨", "flags": ["名称易混", "合规"]}, {"id": "yuehuang", "name": "越南黄花梨", "std": "东京黄檀（多认为）", "aliases": ["越黄", "越南黄花梨"], "sub": [], "note": "一般不是降香黄檀，价格也差很多", "flags": ["名称易混", "合规"]}, {"id": "yabai", "name": "崖柏", "std": "侧柏（市售绝大多数）", "aliases": ["崖柏", "太行崖柏"], "sub": [{"name": "种类", "values": ["陈化料", "新料"]}], "note": "真崖柏是国家一级保护植物，不能交易；所谓“太行崖柏”就是侧柏，侧柏不受保护", "flags": ["合规", "名称易混"]}, {"id": "heitan", "name": "黑檀", "std": "柿属乌木类、条纹乌木类", "aliases": ["黑檀", "乌木", "印尼黑檀"], "sub": [{"name": "种类", "values": ["苏拉威西乌木(条纹)", "乌木", "厚瓣乌木(非洲黑檀)"]}], "note": "", "flags": ["合规"]}, {"id": "yinchen", "name": "阴沉木", "std": "阴沉木", "aliases": ["阴沉木", "乌木"], "sub": [], "note": "“乌木”既指黑檀也指阴沉木", "flags": ["名称易混", "合规"]}, {"id": "lvtan", "name": "绿檀", "std": "维腊木属（少数为愈疮木属）", "aliases": ["绿檀"], "sub": [], "note": "不是红木，也不是檀香。愈疮木属和萨米维腊木在 CITES 附录 II", "flags": ["合规"]}, {"id": "suanzhi", "name": "酸枝", "std": "黄檀属多种", "aliases": ["红酸枝", "老挝大红酸枝", "白酸枝", "黑酸枝"], "sub": [{"name": "类别", "values": ["红酸枝木类", "黑酸枝木类"]}], "note": "黄檀属所有种都在 CITES 附录 II，巴西黑黄檀在附录 I；小件工艺品是否豁免要单独确认。“白酸枝”不是标准用语", "flags": ["合规"]}, {"id": "jinsinan", "name": "金丝楠", "std": "楠属木材（桢楠、闽楠、浙江楠）", "aliases": ["金丝楠", "阴沉金丝楠"], "sub": [], "note": "三种都是国家二级保护植物；常有人拿润楠冒充；不属于红木", "flags": ["合规"]}, {"id": "ziguang-tan", "name": "紫光檀", "std": "东非黑黄檀", "aliases": ["紫光檀"], "sub": [], "note": "属黑酸枝木类，黄檀属在 CITES 附录 II。“非洲黑檀”也指厚瓣乌木，容易混", "flags": ["合规", "名称易混"]}, {"id": "huangyang", "name": "黄杨木", "std": "黄杨", "aliases": ["小叶黄杨", "黄杨木"], "sub": [], "note": "", "flags": []}, {"id": "tao-mu", "name": "桃木", "std": "桃木", "aliases": ["桃木"], "sub": [], "note": "辟邪题材常用", "flags": []}, {"id": "jichi-mu", "name": "鸡翅木", "std": "鸡翅木", "aliases": ["鸡翅木"], "sub": [], "note": "", "flags": []}, {"id": "huali", "name": "花梨木", "std": "大果紫檀等", "aliases": ["花梨木", "缅甸花梨", "缅花", "大果紫檀", "草花梨"], "sub": [], "note": "不是黄花梨", "flags": ["名称易混", "合规"]}, {"id": "leiji", "name": "雷击木", "std": "多为枣木/桃木", "aliases": ["雷击木", "雷击枣木", "雷击桃木"], "sub": [], "note": "真伪难辨，只说题材不保证“雷击”", "flags": ["待核"]}, {"id": "hongdoushan", "name": "红豆杉", "std": "红豆杉", "aliases": ["红豆杉", "紫杉"], "sub": [], "note": "野生红豆杉是国家一级保护植物，只能用人工培育来源", "flags": ["合规"]}, {"id": "baimu", "name": "柏木", "std": "柏木", "aliases": ["香柏", "沉柏", "柏木"], "sub": [], "note": "", "flags": []}, {"id": "zhangmu", "name": "樟木", "std": "樟木", "aliases": ["香樟", "樟木"], "sub": [], "note": "", "flags": []}, {"id": "zhugen", "name": "竹根", "std": "竹", "aliases": ["竹根", "竹节"], "sub": [], "note": "", "flags": []}, {"id": "jiangzhen", "name": "降真香", "std": "降真香", "aliases": ["降香", "降真"], "sub": [], "note": "植物来源说法不一", "flags": ["待核", "合规"]}, {"id": "xuelong", "name": "血龙木", "std": "血龙木", "aliases": ["血龙木", "龙血木"], "sub": [], "note": "", "flags": ["合规", "待核"]}, {"id": "youmu", "name": "柚木", "std": "柚木", "aliases": ["柚木"], "sub": [], "note": "", "flags": []}]}, {"id": "bodhi", "name": "菩提与植物籽", "desc": "植物种子和果核，盘玩会变色，“越盘越好看”是卖点", "items": [{"id": "xingyue", "name": "星月菩提", "std": "黄藤（今多归入 Calamus jenkinsianus）", "aliases": ["星月", "星月菩提"], "sub": [{"name": "品相", "values": ["低密顺白", "高密", "正月", "满天星"]}], "note": "", "flags": []}, {"id": "jingang", "name": "金刚菩提", "std": "金刚菩提子", "aliases": ["金刚", "大金刚", "小金刚"], "sub": [{"name": "瓣数", "values": ["四瓣", "五瓣", "六瓣"]}, {"name": "产地", "values": ["尼泊尔", "印尼"]}], "note": "“黑金刚”多为染色", "flags": ["常见处理"]}, {"id": "fengyan", "name": "凤眼菩提", "std": "凤眼菩提", "aliases": ["凤眼"], "sub": [], "note": "", "flags": []}, {"id": "lianhua", "name": "莲花菩提", "std": "莲花菩提", "aliases": ["莲花"], "sub": [], "note": "", "flags": []}, {"id": "longyan", "name": "龙眼菩提", "std": "龙眼菩提", "aliases": ["龙眼"], "sub": [], "note": "", "flags": []}, {"id": "qianyan", "name": "千眼菩提", "std": "千眼菩提", "aliases": ["千眼"], "sub": [], "note": "", "flags": ["待核"]}, {"id": "baiyu-puti", "name": "白玉菩提", "std": "待核", "aliases": ["白玉菩提", "玉化菩提"], "sub": [], "note": "市场上多说是贝叶棕种子，可能和菩提根是同一种；只有卖家说法，没有植物学出处。“象牙果”是另一种，已单独列", "flags": ["待核"]}, {"id": "taiyang", "name": "太阳菩提", "std": "太阳菩提", "aliases": ["太阳"], "sub": [], "note": "", "flags": []}, {"id": "yueliang", "name": "月亮菩提", "std": "月亮菩提", "aliases": ["月亮"], "sub": [], "note": "市场俗称，原植物还没找到可靠出处", "flags": ["待核"]}, {"id": "yeke", "name": "椰壳", "std": "椰壳", "aliases": ["椰壳珠", "椰壳"], "sub": [], "note": "", "flags": []}, {"id": "xiangsi", "name": "相思豆", "std": "相思子", "aliases": ["红豆", "相思豆", "相思子"], "sub": [], "note": "相思子（Abrus precatorius）种子有毒，咬破、嚼碎才危险，儿童风险最大。“红豆”也指无毒或低毒的海红豆、红豆树，不能一律当相思子", "flags": ["合规"]}, {"id": "puti-gen", "name": "菩提根", "std": "贝叶棕籽", "aliases": ["菩提根", "白玉菩提根", "贝叶棕"], "sub": [], "note": "", "flags": []}, {"id": "tianzhu-puti", "name": "天竺菩提", "std": "天竺菩提", "aliases": ["天竺", "天竺黄"], "sub": [], "note": "", "flags": []}, {"id": "wuyan", "name": "五眼六通", "std": "五眼六通", "aliases": ["五眼菩提", "六通", "五眼六通"], "sub": [], "note": "", "flags": []}, {"id": "qiansi", "name": "千丝菩提", "std": "狐尾椰籽", "aliases": ["千丝果", "狐尾椰", "千丝菩提"], "sub": [], "note": "", "flags": []}, {"id": "jinchan", "name": "金蟾菩提", "std": "金蟾菩提", "aliases": ["金蟾"], "sub": [], "note": "", "flags": ["待核"]}, {"id": "fodu", "name": "佛肚菩提", "std": "佛肚菩提", "aliases": ["佛肚"], "sub": [], "note": "", "flags": ["待核"]}, {"id": "yuanbao", "name": "元宝菩提", "std": "元宝菩提", "aliases": ["元宝"], "sub": [], "note": "", "flags": []}, {"id": "mile", "name": "弥勒菩提", "std": "弥勒菩提", "aliases": ["弥勒"], "sub": [], "note": "", "flags": ["待核"]}, {"id": "qilin", "name": "麒麟菩提", "std": "麒麟菩提", "aliases": ["麒麟"], "sub": [], "note": "", "flags": []}, {"id": "feidie", "name": "飞碟菩提", "std": "飞碟菩提", "aliases": ["飞碟"], "sub": [], "note": "", "flags": ["待核"]}, {"id": "wuhuanzi", "name": "无患子", "std": "无患子", "aliases": ["木患子", "肥皂果", "无患子"], "sub": [], "note": "", "flags": []}, {"id": "yedi", "name": "椰蒂", "std": "椰子蒂", "aliases": ["椰蒂", "椰子蒂"], "sub": [], "note": "", "flags": []}, {"id": "lianzi", "name": "莲子", "std": "莲子", "aliases": ["老莲子", "莲花子"], "sub": [], "note": "", "flags": []}, {"id": "yiyi", "name": "薏苡子", "std": "薏苡", "aliases": ["草珠子", "川谷", "薏米菩提"], "sub": [], "note": "", "flags": []}, {"id": "haihongdou", "name": "海红豆", "std": "海红豆", "aliases": ["孔雀豆", "海红豆"], "sub": [], "note": "和相思子外观相近，相思子有毒", "flags": ["名称易混"]}, {"id": "xiangyaguo", "name": "象牙果", "std": "象牙椰（塔瓜）", "aliases": ["塔瓜", "植物象牙", "象牙椰", "象牙果"], "sub": [], "note": "", "flags": []}]}, {"id": "kernel", "name": "果核与核雕", "desc": "果核和文玩核桃，盘玩为主，常做雕刻", "items": [{"id": "hetao", "name": "文玩核桃", "std": "核桃", "aliases": ["狮子头", "官帽", "公子帽", "文玩核桃", "麻核桃", "楸子"], "sub": [], "note": "多为对核把玩，小核桃也做手串", "flags": []}, {"id": "taohe", "name": "桃核", "std": "桃核", "aliases": ["桃核雕", "桃核"], "sub": [], "note": "", "flags": []}, {"id": "xinghe", "name": "杏核", "std": "杏核", "aliases": ["杏核"], "sub": [], "note": "", "flags": []}, {"id": "zaohe", "name": "酸枣核", "std": "酸枣核", "aliases": ["枣核", "酸枣核"], "sub": [], "note": "", "flags": []}, {"id": "shanhetao", "name": "山核桃", "std": "山核桃", "aliases": ["小核桃", "山核桃"], "sub": [], "note": "", "flags": []}, {"id": "hulu", "name": "葫芦", "std": "葫芦", "aliases": ["小葫芦", "葫芦籽"], "sub": [], "note": "", "flags": []}, {"id": "ganlan", "name": "橄榄核", "std": "橄榄核", "aliases": ["橄榄核", "橄榄核雕"], "sub": [], "note": "多为雕件", "flags": []}]}, {"id": "incense", "name": "香木与香珠", "desc": "有香味的木头和香料珠：沉香、檀香，以及香粉压制的香珠。用户冲着“香”来买", "items": [{"id": "hexiang", "name": "合香珠", "std": "合香", "aliases": ["香珠", "古法合香", "中药香珠"], "sub": [{"name": "配方", "values": ["沉香", "檀香", "龙脑", "玫瑰", "桂花", "艾草"]}], "note": "配方要列清楚；不能说“安神”“助眠”这类功效", "flags": []}, {"id": "chenxiang-fen", "name": "沉香粉珠", "std": "沉香（压制）", "aliases": ["沉香香珠", "沉香粉压珠"], "sub": [], "note": "是粉末压制，不是沉香木，要和沉香木珠分开标", "flags": ["名称易混", "合规"]}, {"id": "tanxiang-fen", "name": "檀香粉珠", "std": "檀香（压制）", "aliases": ["檀香香珠"], "sub": [], "note": "同上", "flags": ["名称易混"]}, {"id": "xianghui", "name": "香灰珠", "std": "香灰", "aliases": ["香灰", "寺庙香灰"], "sub": [], "note": "", "flags": []}, {"id": "zangxiang", "name": "藏香珠", "std": "藏香", "aliases": ["藏香", "药香珠", "中药香"], "sub": [], "note": "不能说治病、安神", "flags": []}, {"id": "longxian", "name": "龙涎香珠", "std": "龙涎香", "aliases": ["龙涎香"], "sub": [], "note": "天然龙涎香极少，市售多为调香；抹香鲸相关管控待核", "flags": ["合规", "待核"]}, {"id": "shexiang", "name": "麝香珠", "std": "麝香", "aliases": ["麝香"], "sub": [], "note": "麝是国家一级保护动物，天然麝香禁止用于饰品", "flags": ["合规"]}, {"id": "chenxiang", "name": "沉香", "std": "沉香", "aliases": ["沉水香", "沉香木"], "sub": [{"name": "产区", "values": ["惠安系", "星洲系"]}, {"name": "等级", "values": ["沉水", "半沉", "浮水"]}, {"name": "特殊", "values": ["奇楠"]}], "note": "土沉香、云南沉香是国家二级保护植物，沉香属全部在 CITES 附录 II。注油、合成沉香很多", "flags": ["常见处理", "合规"]}, {"id": "tanxiang", "name": "檀香", "std": "檀香", "aliases": ["老山檀", "白檀", "檀木"], "sub": [{"name": "产地", "values": ["印度老山檀", "澳洲檀", "印尼新山檀"]}], "note": "", "flags": []}]}, {"id": "manmade", "name": "人工与工艺珠", "desc": "人工制作或合成的珠子。价格友好，但必须和天然材质分开说", "items": [{"id": "liuli", "name": "琉璃", "std": "玻璃", "aliases": ["古法琉璃", "脱蜡琉璃", "琉璃"], "sub": [], "note": "按规范是玻璃，“琉璃”是传统叫法", "flags": []}, {"id": "boli", "name": "人造水晶", "std": "玻璃", "aliases": ["K9 水晶", "人造水晶", "奥地利水晶", "水晶玻璃"], "sub": [], "note": "规范名是“玻璃”，不能叫“人造水晶”或“水晶”。展示时写“玻璃（仿水晶）”", "flags": ["名称易混"]}, {"id": "jinsha", "name": "金沙石", "std": "玻璃", "aliases": ["金沙石", "金星石", "蓝砂石", "蓝金沙", "夜空石", "紫金沙", "绿金沙"], "sub": [], "note": "人造玻璃，名字像天然石。“砂金石”也指天然的东陵玉，不要混用", "flags": ["名称易混"]}, {"id": "taoci", "name": "陶瓷珠", "std": "陶瓷", "aliases": ["陶瓷珠", "景德镇陶瓷"], "sub": [], "note": "", "flags": []}, {"id": "jingtailan", "name": "景泰蓝", "std": "掐丝珐琅", "aliases": ["景泰蓝", "珐琅珠", "珐琅"], "sub": [], "note": "", "flags": []}, {"id": "shuzhi", "name": "树脂", "std": "树脂", "aliases": ["树脂", "亚克力"], "sub": [], "note": "常用来仿琥珀、蜜蜡", "flags": ["名称易混"]}, {"id": "hecheng", "name": "合成与再造", "std": "合成宝石/再造宝石", "aliases": ["合成水晶", "再造绿松石", "再造琥珀", "优化石", "压制琥珀", "二代琥珀", "再生琥珀", "合成欧泊", "合成孔雀石"], "sub": [], "note": "按规范必须标“合成”“再造”", "flags": ["常见处理"]}, {"id": "qiqi", "name": "漆器珠", "std": "大漆", "aliases": ["漆器", "雕漆", "剔红"], "sub": [], "note": "", "flags": []}, {"id": "zisha", "name": "紫砂珠", "std": "紫砂", "aliases": ["紫砂"], "sub": [], "note": "", "flags": []}, {"id": "mosang", "name": "莫桑石", "std": "合成碳硅石", "aliases": ["莫桑石", "碳硅石"], "sub": [], "note": "合成材料，不是钻石", "flags": ["名称易混"]}, {"id": "gaoshi", "name": "合成立方氧化锆", "std": "合成立方氧化锆", "aliases": ["方锆石", "锆石(合成)", "苏联钻"], "sub": [], "note": "天然锆石是另一种宝石", "flags": ["名称易混"]}, {"id": "boli-maoyan", "name": "玻璃猫眼", "std": "玻璃", "aliases": ["猫眼珠", "玻璃猫眼"], "sub": [], "note": "", "flags": []}, {"id": "liaoqi", "name": "料器", "std": "玻璃", "aliases": ["料器", "老料器"], "sub": [], "note": "", "flags": []}, {"id": "yeguang", "name": "夜光石", "std": "人造发光材料", "aliases": ["夜光石", "夜光珠"], "sub": [], "note": "“夜明珠”多为萤石或人造夜光材料", "flags": ["名称易混"]}, {"id": "taihezi", "name": "太赫兹", "std": "人工熔炼材料（成分待核）", "aliases": ["太赫兹", "太赫兹石", "太赫兹能量石"], "sub": [], "note": "人工材料；商家常宣传功效，我们只说材质", "flags": ["名称易混"]}, {"id": "cishi", "name": "磁性材料珠", "std": "合成磁性材料", "aliases": ["磁石", "磁铁珠", "磁疗珠", "合成磁石"], "sub": [], "note": "常被说成天然赤铁矿；不能说“磁疗”功效", "flags": ["名称易混"]}]}, {"id": "fitting", "name": "金属与配件", "desc": "不单独成串，但几乎每条手串都会用到", "items": [{"id": "zhuanyun", "name": "转运珠", "std": "贵金属/铜", "aliases": ["转运珠", "路路通", "足银", "14K包金", "钛钢", "不锈钢", "铂金", "藏银"], "sub": [{"name": "材质", "values": ["足金", "18K 金", "925 银", "铜镀金", "合金"]}], "note": "材质和成色要写清楚", "flags": []}, {"id": "gezhu", "name": "隔珠隔片", "std": "贵金属/铜/宝玉石", "aliases": ["隔珠", "隔片", "垫片", "隔圈"], "sub": [{"name": "材质", "values": ["金", "银", "铜", "水晶", "玛瑙"]}], "note": "", "flags": []}, {"id": "fotou", "name": "佛头三通", "std": "多种材质", "aliases": ["佛头", "三通", "佛塔", "顶珠"], "sub": [{"name": "材质", "values": ["南红", "蜜蜡", "水晶", "文玩木"]}], "note": "", "flags": []}, {"id": "beiyun", "name": "背云挂件", "std": "多种材质", "aliases": ["背云", "吊坠", "挂件", "流苏"], "sub": [], "note": "", "flags": []}, {"id": "xiancai", "name": "线材", "std": "线材", "aliases": ["弹力线", "编织绳", "钢丝线", "蜡绳"], "sub": [], "note": "不是珠子，但影响尺寸和耐用", "flags": []}]}, {"id": "combo", "name": "组合款式", "desc": "不是材质，是常见的成串叫法。用户会直接这么问", "items": [{"id": "shibazi", "name": "十八籽", "std": "多种材质组合", "aliases": ["十八子", "十八籽料"], "sub": [], "note": "由多种菩提和宝石组合，用于识别用户说法", "flags": []}, {"id": "duobao", "name": "多宝手串", "std": "多种材质组合", "aliases": ["多宝串", "多宝"], "sub": [], "note": "", "flags": []}, {"id": "foz108", "name": "108 佛珠", "std": "多种材质", "aliases": ["108 子", "一百零八颗", "念珠"], "sub": [], "note": "颗数固定，尺寸算法和手串不同", "flags": []}]}, {"id": "banned", "name": "禁售材质", "desc": "法律禁止买卖的材质。只用来识别和拒绝，不进料包，AI 不推荐", "items": [{"id": "xiangya", "name": "象牙", "std": "象牙", "aliases": ["象牙"], "sub": [], "note": "“象牙白”是颜色名，“象牙果”是植物种子，都不能当象牙拦截", "flags": ["合规"]}, {"id": "xijiao", "name": "犀角", "std": "犀角", "aliases": ["犀牛角"], "sub": [], "note": "", "flags": ["合规"]}, {"id": "daimao", "name": "玳瑁", "std": "玳瑁", "aliases": ["玳瑁"], "sub": [], "note": "", "flags": ["合规"]}, {"id": "heding", "name": "鹤顶红", "std": "盔犀鸟头胄", "aliases": ["鹤顶红", "盔犀鸟"], "sub": [], "note": "盔犀鸟受 CITES 附录 I 保护", "flags": ["合规"]}]}]};
+const FLAG_DESC = { '名称易混': '名称易混', '常见处理': '常见处理/仿品', '合规': '合规风险', '待核': '待核' };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let q = '', flag = '';
+try { flag = sessionStorage.getItem('kbFlag') || ''; } catch (e) {}
+
+const all = KB.categories.flatMap(c => c.items);
+const subCount = all.reduce((s, i) => s + i.sub.reduce((t, g) => t + g.values.length, 0), 0);
+const aliasCount = all.reduce((s, i) => s + i.aliases.length, 0);
+document.getElementById('stats').innerHTML = [[KB.categories.length, '个大类'], [all.length, '个品种'], [subCount, '个细分'], [aliasCount, '个常见叫法']]
+  .map(([n, t]) => `<span class="stat"><b>${n}</b><span>${t}</span></span>`).join('');
+
+function hl(s) {
+  s = esc(s); if (!q) return s;
+  const i = s.toLowerCase().indexOf(esc(q).toLowerCase());
+  return i < 0 ? s : s.slice(0, i) + '<mark>' + s.slice(i, i + esc(q).length) + '</mark>' + s.slice(i + esc(q).length);
+}
+function hit(it) {
+  if (flag && !it.flags.includes(flag)) return false;
+  if (!q) return true;
+  const hay = [it.name, it.std, it.note, ...it.aliases, ...it.sub.flatMap(g => [g.name, ...g.values])].join(' ').toLowerCase();
+  return hay.includes(q.toLowerCase());
+}
+function render() {
+  const flags = Object.keys(FLAG_DESC);
+  document.getElementById('filters').innerHTML = `<button class="f" type="button" data-flag="" aria-pressed="${!flag}">全部<span class="n">${all.length}</span></button>` +
+    flags.map(f => `<button class="f" type="button" data-flag="${f}" aria-pressed="${flag === f}">${FLAG_DESC[f]}<span class="n">${all.filter(i => i.flags.includes(f)).length}</span></button>`).join('');
+  let shown = 0;
+  const html = KB.categories.map(c => {
+    const items = c.items.filter(hit); shown += items.length; if (!items.length) return '';
+    return `<section class="cat${c.id === 'banned' ? ' banned' : ''}" id="${c.id}"><div class="cat-h"><h2>${esc(c.name)}</h2><span class="cnt">${items.length}${items.length !== c.items.length ? ' / ' + c.items.length : ''} 种</span><p>${esc(c.desc)}</p></div><div class="list">` +
+      items.map(it => `<article class="it"><div class="nm"><b>${hl(it.name)}</b>${it.std && it.std !== it.name ? `<span class="std">规范名：${hl(it.std)}</span>` : ''}<span class="id">${it.id}</span></div><div class="body">` +
+        (it.aliases.length ? `<div class="row"><span class="lbl">叫法</span>${it.aliases.map(a => `<span class="al">${hl(a)}</span>`).join('')}</div>` : '') +
+        it.sub.map(g => `<div class="row"><span class="lbl">${esc(g.name)}</span>${g.values.map(v => `<span class="sv">${hl(v)}</span>`).join('')}</div>`).join('') +
+        (it.note || it.flags.length ? `<div class="row">${it.flags.map(f => `<span class="flag ${f}">${FLAG_DESC[f]}</span>`).join('')}${it.note ? `<p class="note">${hl(it.note)}</p>` : ''}</div>` : '') +
+        `</div></article>`).join('') + '</div></section>';
+  }).join('');
+  document.getElementById('cats').innerHTML = html || `<p class="empty">没有找到“${esc(q)}”。如果这是你常见的珠子，说明骨架漏了，告诉我加上。</p>`;
+  document.getElementById('jump').innerHTML = KB.categories.filter(c => c.items.some(hit)).map(c => `<a href="#${c.id}">${esc(c.name)}</a>`).join('');
+}
+document.getElementById('q').addEventListener('input', e => { q = e.target.value.trim(); render(); });
+document.getElementById('filters').addEventListener('click', e => {
+  const b = e.target.closest('[data-flag]'); if (!b) return; flag = b.dataset.flag;
+  try { sessionStorage.setItem('kbFlag', flag); } catch (err) {}
+  render();
+});
+render();
+if (location.hash) { const el = document.getElementById(location.hash.slice(1)); el && el.scrollIntoView(); }
+</script>

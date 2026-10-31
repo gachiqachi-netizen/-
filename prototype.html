@@ -1,0 +1,1972 @@
+<title>串个珠</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* 按《串个珠设计规范》：白瓷底、绒布托盘展示珠子、红绳红只用于主按钮/选中/价格；系统字体 + DIN 数字；375 宽手机单栏 */
+:root {
+  --ground: #f7f6f4; --surface: #ffffff; --tray: #efece8; --tray-deep: #e3ded8; --line: #e6e2dd; --line-strong: #8f8781;
+  --ink: #1f1b1a; --ink-2: #5e5753; --ink-3: #736b66;
+  --brand: #c8302e; --brand-pressed: #a82522; --brand-tint: #fbecea; --on-brand: #ffffff;
+  --wealth: #7d5a12; --wealth-tint: #f8f0dc; --love: #b23565; --love-tint: #fbe9f0; --study: #6a45a8; --study-tint: #f0eaf8;
+  --safe: #22705a; --safe-tint: #e4f3ec; --career: #2a55a0; --career-tint: #e6eef9; --guard: #3b3634; --guard-tint: #eceae8;
+  --fit-ok: #2b7a4b; --fit-warn: #9a5800; --danger: #b42318;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
+  --radius-sm: 6px; --radius-md: 12px; --radius-lg: 20px; --radius-pill: 999px;
+  --shadow-bar: 0 -4px 16px rgba(31,27,26,0.06); --shadow-sheet: 0 -8px 32px rgba(31,27,26,0.12);
+  --font-sans: "PingFang SC", -apple-system, "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --font-num: "DIN Alternate", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+html, body { height: 100%; }
+body { background: var(--ground); color: var(--ink); font: 400 15px/22px var(--font-sans); -webkit-font-smoothing: antialiased;
+  padding-left: max(0px, env(safe-area-inset-left, 0px)); padding-right: max(0px, env(safe-area-inset-right, 0px)); }
+.app { max-width: 430px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; background: var(--ground); }
+button, input, select, textarea { font-family: var(--font-sans); }
+button { color: inherit; }
+
+/* 字号：只用规范里的十种 */
+.display { font: 600 24px/32px var(--font-sans); }
+.title { font: 600 18px/26px var(--font-sans); }
+.subtitle, h2 { font: 600 16px/24px var(--font-sans); margin: 0; color: var(--ink); }
+.caption, .small { font: 400 13px/18px var(--font-sans); }
+.micro { font: 500 11px/16px var(--font-sans); }
+.muted { color: var(--ink-3); }
+.ink2 { color: var(--ink-2); }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+/* 顶部导航（模拟小程序导航栏：标题居中） */
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: grid; grid-template-columns: 88px 1fr 88px; align-items: center; height: 48px;
+  padding-inline: max(var(--space-4), env(safe-area-inset-left, 0px)); background: var(--surface); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+header h1 { grid-column: 2; margin: 0; text-align: center; font: 600 16px/24px var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.back { grid-column: 1; justify-self: start; width: 36px; height: 36px; border: 0; background: none; font-size: 24px; line-height: 1; cursor: pointer; color: var(--ink); }
+.wristpill { grid-column: 3; justify-self: end; height: 28px; padding: 0 var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface);
+  font: 500 12px/16px var(--font-num); color: var(--ink); cursor: pointer; white-space: nowrap; }
+
+main { flex: 1; padding: var(--space-4) max(var(--space-4), env(safe-area-inset-right, 0px)) var(--space-6) max(var(--space-4), env(safe-area-inset-left, 0px)); }
+.view { display: grid; gap: var(--space-4); align-content: start; }
+.section-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); margin-top: var(--space-2); }
+
+/* 按钮 */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); height: 44px; padding: 0 var(--space-6); border-radius: var(--radius-pill);
+  border: 1px solid transparent; background: var(--brand); color: var(--on-brand); font: 600 15px/22px var(--font-sans); cursor: pointer; white-space: nowrap; }
+.btn:active { background: var(--brand-pressed); }
+.btn.ghost { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
+.btn.ghost:active { background: var(--tray); }
+.btn.text { background: none; color: var(--ink-2); height: 32px; padding: 0 var(--space-2); font-weight: 400; }
+.btn.sm { height: 32px; padding: 0 var(--space-4); font-size: 13px; }
+.btn.block { width: 100%; box-sizing: border-box; }
+.btn:disabled { opacity: .4; cursor: default; }
+.chip { height: 32px; padding: 0 var(--space-3); border-radius: var(--radius-pill); border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  font: 400 13px/18px var(--font-sans); cursor: pointer; white-space: nowrap; flex: none; }
+.chip.on, .chip.is-on { background: var(--brand-tint); border-color: var(--brand); color: var(--brand-pressed); font-weight: 600; }
+.chip.danger { color: var(--danger); }
+.chips { display: flex; gap: var(--space-2); overflow-x: auto; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+:is(.btn, .chip, .cell, .entry, .tpl, .item, nav button, .back, .wristpill, .skin, .step):focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* 卡片：surface 底，不加阴影 */
+.card { background: var(--surface); border-radius: var(--radius-md); padding: var(--space-4); display: grid; gap: var(--space-3); }
+.row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+/* 寓意标签 */
+.tag { display: inline-flex; align-items: center; height: 20px; padding: 0 var(--space-2); border-radius: var(--radius-sm); font: 500 11px/16px var(--font-sans); white-space: nowrap; }
+.tag.wealth { background: var(--wealth-tint); color: var(--wealth); } .tag.love { background: var(--love-tint); color: var(--love); }
+.tag.study { background: var(--study-tint); color: var(--study); } .tag.safe { background: var(--safe-tint); color: var(--safe); }
+.tag.career { background: var(--career-tint); color: var(--career); } .tag.guard { background: var(--guard-tint); color: var(--guard); }
+.tags { display: flex; gap: var(--space-1); flex-wrap: wrap; }
+
+/* 首页 */
+.hero { display: grid; gap: var(--space-1); padding-top: var(--space-2); }
+.hero p { margin: 0; color: var(--ink-2); }
+.entries { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.entry { background: var(--surface); border: 0; border-radius: var(--radius-md); padding: var(--space-3); text-align: left; cursor: pointer; display: grid; gap: var(--space-1); align-content: start; }
+.entry b { font: 600 16px/24px var(--font-sans); }
+.entry span { font: 400 12px/17px var(--font-sans); color: var(--ink-3); }
+.entry .badge { justify-self: start; font: 500 11px/16px var(--font-sans); color: var(--brand-pressed); background: var(--brand-tint); padding: 0 var(--space-2); border-radius: var(--radius-sm); }
+/* 首页入口：AI 大卡（唯一主按钮）+ 模板 / DIY 两张图卡 */
+.wristlink { border: 0; background: none; padding: 0; font: 600 15px/22px var(--font-sans); color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; cursor: pointer; }
+.entry-ai { margin: 0; background: var(--surface); border-radius: var(--radius-lg); padding: var(--space-4); display: grid; gap: var(--space-3); border: 1.5px solid var(--brand-tint); }
+.entry-ai__head { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: var(--space-3); align-items: center; }
+.entry-ai__text { display: grid; gap: var(--space-1); justify-items: start; }
+.entry-ai__text b { font: 600 18px/26px var(--font-sans); }
+.entry-ai__text > span:last-child { font: 400 13px/18px var(--font-sans); color: var(--ink-2); }
+.entry-ai .traybox, .entry-tile .traybox { aspect-ratio: 1; border-radius: var(--radius-md); background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.entry-ai .traybox img, .entry-tile .traybox img { width: 94%; }
+.wishbox { display: flex; gap: var(--space-2); align-items: center; }
+.wishbox input { flex: 1; min-width: 0; height: 40px; padding: 0 var(--space-3); }
+.wishbox .btn { height: 40px; flex: none; }
+.entry-ai .chips .chip { height: 28px; font-size: 12px; }
+.entry-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.entry-tile { background: var(--surface); border: 0; border-radius: var(--radius-lg); padding: var(--space-3); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2) var(--space-1); text-align: left; cursor: pointer; align-items: end; }
+.entry-tile .traybox { grid-column: 1 / -1; }
+.entry-tile__text { display: grid; gap: 2px; min-width: 0; }
+.entry-tile__text b { font: 600 16px/24px var(--font-sans); }
+.entry-tile__text span { font: 400 12px/17px var(--font-sans); color: var(--ink-3); }
+.entry-tile .chev, .item .chev { color: var(--ink-3); font-size: 20px; line-height: 24px; }
+.entry-tile:active, .entry-ai:active { background: var(--surface); }
+:is(.entry-tile, .wristlink):focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+/* 首页宣传位 */
+.banner { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: var(--space-3); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: var(--radius-lg); }
+.banner::-webkit-scrollbar { display: none; }
+.slide { scroll-snap-align: start; border: 0; cursor: pointer; text-align: left; border-radius: var(--radius-lg); padding: var(--space-4); min-height: 148px; box-sizing: border-box;
+  display: grid; grid-template-columns: minmax(0, 1fr) 124px; gap: var(--space-2); align-items: center; background: radial-gradient(circle at 80% 45%, var(--tray), var(--tray-deep)); color: var(--ink); }
+.slide .txt { display: grid; gap: var(--space-1); justify-items: start; }
+.slide b { font: 600 20px/28px var(--font-sans); }
+.slide .sub { font: 400 13px/18px var(--font-sans); color: var(--ink-2); }
+.slide .go { font: 600 13px/18px var(--font-sans); color: var(--ink); margin-top: var(--space-1); }
+.slide img { width: 124px; }
+.dots { display: flex; justify-content: center; gap: 6px; margin-top: calc(-1 * var(--space-2)); }
+.dots i { width: 6px; height: 6px; border-radius: 3px; background: var(--line); transition: width .2s ease-out; }
+.dots i.on { width: 16px; background: var(--ink-2); }
+/* 首页四个入口 */
+.quick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); background: var(--surface); border-radius: var(--radius-md); padding: var(--space-3) var(--space-2); }
+.qk { border: 0; background: none; display: grid; justify-items: center; gap: var(--space-1); cursor: pointer; font: 400 13px/18px var(--font-sans); color: var(--ink); padding: 0; }
+.qi { width: 44px; height: 44px; border-radius: 50%; background: var(--tray); display: grid; place-items: center; }
+.qi svg { width: 22px; height: 22px; stroke: var(--ink); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.qk[data-quick="blank"] .qi { background: var(--brand-tint); }
+.qk[data-quick="blank"] .qi svg { stroke: var(--brand-pressed); }
+.qk[data-quick="blank"] { font-weight: 600; }
+/* 热门款卡上的两个快捷按钮 */
+.tpl { cursor: default; }
+.tpl .traybox, .tpl .nm { cursor: pointer; }
+.cardacts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); margin-top: var(--space-2); }
+.cardacts .btn { padding: 0; height: 32px; font-size: 13px; }
+/* AI DIY：选方式 */
+.mode { margin: 0; border: 0; background: var(--surface); border-radius: var(--radius-lg); padding: var(--space-4); display: grid; gap: var(--space-3); text-align: left; color: var(--ink); }
+.mode-head { display: grid; gap: var(--space-1); justify-items: start; }
+.mode-head b { font: 600 18px/26px var(--font-sans); }
+.mode-head > span:last-child { font: 400 13px/18px var(--font-sans); color: var(--ink-2); }
+.mode-row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; cursor: pointer; }
+.mode.resume { background: var(--brand-tint); color: var(--brand-pressed); cursor: pointer; font: 400 15px/22px var(--font-sans); padding: var(--space-3) var(--space-4); }
+.mode-diy { cursor: pointer; border: 1.5px solid var(--brand-tint); }
+.mode-diy__main { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: var(--space-3); align-items: center; }
+.mode-diy .traybox { aspect-ratio: 1; border-radius: var(--radius-md); background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.mode-diy .traybox img { width: 94%; }
+.mode-diy .btn { pointer-events: none; }
+#aiPanel .chips .chip { height: 28px; font-size: 12px; }
+nav button.center .ci { width: 36px; height: 28px; border-radius: var(--radius-pill); background: var(--brand-tint); display: grid; place-items: center; }
+nav button.center .ci svg { stroke: var(--brand-pressed); width: 20px; height: 20px; }
+nav button.center.on .ci { background: var(--brand); }
+nav button.center.on .ci svg { stroke: var(--on-brand); }
+/* 自己串：起点网格 */
+.starts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.start { border: 0; padding: 0; background: var(--surface); border-radius: var(--radius-md); overflow: hidden; text-align: left; cursor: pointer; display: grid; color: var(--ink); }
+.start .traybox { aspect-ratio: 1; background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.start .traybox img { width: 92%; }
+.start .body { padding: var(--space-3); display: grid; gap: var(--space-1); }
+.start .nm { font: 600 16px/24px var(--font-sans); }
+.start .go { font: 500 13px/18px var(--font-sans); color: var(--ink-2); }
+.start.blank { box-shadow: inset 0 0 0 1.5px var(--brand); }
+.start.blank .traybox svg { width: 44px; height: 44px; stroke: var(--brand-pressed); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+.start.blank .nm { color: var(--brand-pressed); }
+/* AI 配：对话 */
+.chat { display: grid; gap: var(--space-4); padding-bottom: var(--space-2); }
+.msg { display: grid; gap: var(--space-3); max-width: 100%; }
+.msg .bubble { padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); font: 400 15px/22px var(--font-sans); max-width: 85%; }
+.msg.ai .bubble { background: var(--surface); justify-self: start; border-top-left-radius: var(--radius-sm); }
+.msg.me .bubble { background: var(--ink); color: var(--surface); justify-self: end; border-top-right-radius: var(--radius-sm); }
+.msg .bubble.wait { color: var(--ink-2); }
+.cands { display: grid; grid-auto-flow: column; grid-auto-columns: 220px; gap: var(--space-3); overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--space-4)); padding-inline: var(--space-4); }
+.cands::-webkit-scrollbar { display: none; }
+.start .traybox > svg { width: 44px; height: 44px; stroke: var(--ink-2); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.same-drop { display: grid; justify-items: center; gap: var(--space-2); padding: 32px var(--space-4); border-radius: var(--radius-lg); background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); text-align: center; cursor: pointer; }
+.same-drop svg { width: 48px; height: 48px; stroke: var(--ink); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.same-drop b { font: 600 20px/28px var(--font-sans); }
+.same-drop span { font: 400 13px/20px var(--font-sans); color: var(--ink-2); }
+.same-steps { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; counter-reset: st; }
+.same-steps li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: var(--space-2); font: 400 14px/20px var(--font-sans); counter-increment: st; }
+.same-steps li::before { content: counter(st); width: 24px; height: 24px; border-radius: 50%; background: var(--tray); display: grid; place-items: center; font: 600 12px/1 var(--font-num); }
+.same-steps li span { color: var(--ink-2); display: block; font-size: 13px; }
+.same-tips { font: 400 12px/18px var(--font-sans); color: var(--ink-3); margin: 0; }
+.same-top { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-3); align-items: center; }
+.same-top img { width: 96px; height: 96px; object-fit: cover; border-radius: var(--radius-md); background: var(--tray); }
+.same-top .seen { font: 400 14px/20px var(--font-sans); margin: 2px 0 0; overflow-wrap: anywhere; }
+.same-top .by { font: 400 12px/17px var(--font-sans); color: var(--ink-3); }
+.same-ring { height: 180px; border-radius: var(--radius-lg); background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; overflow: hidden; }
+.same-ring img { width: 176px; height: 176px; }
+.role { display: grid; gap: var(--space-2); min-width: 0; }
+.role + .role { border-top: 1px solid var(--line); padding-top: var(--space-3); }
+.role .rh { display: flex; align-items: center; gap: var(--space-2); font: 600 15px/22px var(--font-sans); }
+.role .rh .sw { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); flex: none; }
+.role .rh .caption { font-weight: 400; color: var(--ink-3); }
+.opts { display: flex; gap: var(--space-2); overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * var(--space-4)); padding: 0 var(--space-4); }
+.opts::-webkit-scrollbar { display: none; }
+.bopt { flex: none; width: 76px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius-md); padding: var(--space-2) var(--space-1); display: grid; justify-items: center; gap: 2px; cursor: pointer; color: var(--ink); font: 400 12px/16px var(--font-sans); }
+.bopt img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+.bopt .p { color: var(--ink-3); font-family: var(--font-num); white-space: nowrap; }
+.bopt.on { background: var(--brand-tint); border-color: var(--brand); color: var(--brand-pressed); font-weight: 600; }
+.bopt.none { color: var(--ink-2); align-content: center; min-height: 92px; }
+.same-wait { display: grid; justify-items: center; gap: var(--space-3); padding: var(--space-6) 0; color: var(--ink-2); font: 400 14px/20px var(--font-sans); text-align: center; }
+#v-same { min-height: calc(100dvh - 72px); grid-template-rows: 1fr auto; }
+#v-same > .bottombar { align-self: end; }
+.same-wait img { width: 160px; height: 160px; object-fit: cover; border-radius: var(--radius-md); }
+
+.cand { background: var(--surface); border-radius: var(--radius-md); overflow: hidden; display: grid; }
+.cand .traybox { height: 148px; aspect-ratio: auto; overflow: hidden; background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.cand .traybox img { width: 144px; height: 144px; max-width: none; }
+.cand, .cand .body { min-width: 0; }
+.cand .foot .btn { flex: none; }
+.cand .body { padding: var(--space-3); display: grid; gap: var(--space-1); }
+.cand .nm { font: 600 15px/22px var(--font-sans); display: flex; align-items: center; gap: var(--space-1); }
+.cand .mean { font: 400 12px/17px var(--font-sans); color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 34px; }
+.cand .foot { display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-1); }
+#v-ai { padding-bottom: 88px; }
+#v-ai.has-chips { padding-bottom: 128px; }
+.composer { position: fixed; z-index: 4; left: 50%; transform: translateX(-50%); width: min(430px, 100%); box-sizing: border-box; margin: 0;
+  bottom: calc(52px + env(safe-area-inset-bottom, 0px)); padding: var(--space-3) max(var(--space-4), env(safe-area-inset-right, 0px)) var(--space-3) max(var(--space-4), env(safe-area-inset-left, 0px));
+  background: var(--surface); box-shadow: var(--shadow-bar); display: grid; gap: var(--space-2); }
+.composer[hidden] { display: none; }
+.composer .chips .chip { height: 28px; font-size: 12px; }
+.askbox { position: relative; }
+.askbox input[type=text] { width: 100%; height: 44px; box-sizing: border-box; border: 0; border-radius: var(--radius-pill); background: var(--tray); padding: 0 52px 0 var(--space-4); font: 400 15px/22px var(--font-sans); color: var(--ink); }
+.askbox input[type=text]::placeholder { color: var(--ink-2); }
+.askbox input[type=text]:focus { outline: 2px solid var(--ink); outline-offset: 0; }
+.send { position: absolute; right: 4px; top: 4px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--ink); display: grid; place-items: center; cursor: pointer; }
+.send svg { width: 20px; height: 20px; stroke: var(--surface); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* 拍照做同款 */
+  gap: var(--space-3); align-items: center; text-align: left; cursor: pointer; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--brand-tint); }
+.msg.me .photo { justify-self: end; width: 140px; height: 140px; object-fit: cover; border-radius: var(--radius-lg); border-top-right-radius: var(--radius-sm); }
+.msg .seen { justify-self: start; max-width: 85%; font: 400 12px/17px var(--font-sans); color: var(--ink-2); background: var(--tray); padding: var(--space-1) var(--space-3); border-radius: var(--radius-sm); }
+/* AI 配空状态：手串画面 + 示例 */
+.ai-hero { display: grid; justify-items: center; text-align: center; gap: var(--space-2); padding: var(--space-4) var(--space-2) var(--space-2);
+  background: radial-gradient(circle at 50% 38%, var(--tray), var(--tray-deep)); border-radius: var(--radius-lg); }
+.ai-hero__art { position: relative; width: 260px; height: 150px; }
+.ai-hero__art img { position: absolute; width: 132px; top: 8px; filter: drop-shadow(0 6px 10px rgba(31,27,26,.12)); }
+.ai-hero__art img:nth-child(1) { left: 0; transform: rotate(-10deg); }
+.ai-hero__art img:nth-child(2) { left: 64px; top: 0; z-index: 1; width: 140px; }
+.ai-hero__art img:nth-child(3) { right: 0; transform: rotate(10deg); }
+.ai-hero h2 { font: 600 20px/28px var(--font-sans); margin: 0; }
+.ai-hero p { margin: 0 0 var(--space-2); font: 400 13px/20px var(--font-sans); color: var(--ink-2); max-width: 280px; }
+.examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.example { border: 0; padding: 0; background: var(--surface); border-radius: var(--radius-md); overflow: hidden; text-align: left; cursor: pointer; display: grid; color: var(--ink); }
+.example .traybox { height: 112px; aspect-ratio: auto; background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.example .traybox { overflow: hidden; }
+.example .traybox img { width: 108px; height: 108px; max-width: none; }
+.example .body { padding: var(--space-3); display: grid; gap: var(--space-1); }
+.example q { display: block; white-space: normal; overflow-wrap: anywhere; font: 500 14px/20px var(--font-sans); quotes: "“" "”"; }
+.example .go { font: 400 12px/17px var(--font-sans); color: var(--ink-2); }
+.send:disabled { opacity: .4; }
+/* AI 点评 */
+.review { border: 1.5px solid var(--brand-tint); }
+.review-body { display: grid; gap: var(--space-3); }
+.review-body .praise { margin: 0; font: 400 15px/22px var(--font-sans); color: var(--ink); }
+.review-body .mean { margin: 0; font: 400 13px/20px var(--font-sans); color: var(--ink-2); }
+.review-body .mean b { color: var(--ink); font-weight: 600; }
+.sugg { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3); align-items: center; padding-top: var(--space-3); border-top: 1px solid var(--line); }
+.sugg p { margin: 0; font: 400 13px/20px var(--font-sans); color: var(--ink); }
+.sugg .done { font: 400 13px/18px var(--font-sans); color: var(--fit-ok); white-space: nowrap; }
+.review-note { font: 400 12px/17px var(--font-sans); color: var(--ink-3); }
+/* 工作台 */
+.resume { border: 0; text-align: left; cursor: pointer; background: var(--brand-tint); color: var(--brand-pressed); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font: 400 13px/18px var(--font-sans); }
+.resume b { font-weight: 600; }
+.studio-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.act { height: 64px; border: 0; border-radius: var(--radius-md); background: var(--surface); display: grid; justify-items: center; align-content: center; gap: 2px; cursor: pointer; color: var(--ink); font: 400 13px/18px var(--font-sans); }
+.act svg { width: 22px; height: 22px; stroke: var(--ink-2); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.act.on { background: var(--brand-tint); color: var(--brand-pressed); }
+.act.on svg { stroke: var(--brand-pressed); }
+.nameinput { border: 0; padding: 0; background: none; font: 600 18px/26px var(--font-sans); color: var(--ink); width: 100%; border-radius: 0; border-bottom: 1px dashed transparent; }
+.nameinput:hover, .nameinput:focus { border-bottom-color: var(--line-strong); outline: none; }
+.strip { display: grid; grid-auto-flow: column; grid-auto-columns: 132px; gap: var(--space-3); overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--space-4)); padding-inline: var(--space-4); scroll-padding-inline: var(--space-4); }
+.strip::-webkit-scrollbar { display: none; }
+.inspo { border: 0; padding: 0; background: var(--surface); border-radius: var(--radius-md); overflow: hidden; text-align: left; cursor: pointer; display: grid; }
+.inspo .traybox { aspect-ratio: 1; background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.inspo .traybox img { width: 94%; }
+.inspo .body { padding: var(--space-2) var(--space-3) var(--space-3); display: grid; gap: 2px; }
+.inspo .nm { font: 600 15px/22px var(--font-sans); }
+.inspo.on { box-shadow: 0 0 0 2px var(--brand); }
+.bottombar.ontab { bottom: calc(52px + env(safe-area-inset-bottom, 0px)); padding-bottom: var(--space-2); margin-bottom: 0; box-shadow: none; border-top: 1px solid var(--line); }
+.tpls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.tpl { background: var(--surface); border: 0; border-radius: var(--radius-md); padding: 0; overflow: hidden; text-align: left; cursor: pointer; display: grid; }
+.tpl .traybox { aspect-ratio: 1; background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.tpl .traybox img { width: 92%; aspect-ratio: 1; }
+.tpl .body { padding: var(--space-3); display: grid; gap: var(--space-1); }
+.tpl .nm { font: 600 16px/24px var(--font-sans); }
+.tpl .foot { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-1); margin-top: var(--space-1); }
+.price { font: 700 16px/20px var(--font-num); color: var(--brand); }
+.spec { font: 500 11px/16px var(--font-num); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* 手围 */
+.wristcard { justify-items: center; }
+.bigwrist { display: flex; align-items: center; justify-content: center; gap: var(--space-6); padding-block: var(--space-2); }
+.bigwrist b { font: 700 40px/48px var(--font-num); min-width: 120px; text-align: center; font-variant-numeric: tabular-nums; }
+.bigwrist b small { font: 400 15px/22px var(--font-sans); color: var(--ink-2); margin-left: 2px; }
+.step, .bigwrist button { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); background: var(--surface); font-size: 22px; cursor: pointer; }
+.ruler { width: 100%; height: 28px; border-radius: var(--radius-sm); position: relative; overflow: hidden;
+  background: repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 10px) bottom / 100% 10px no-repeat, var(--tray); }
+.ruler i { position: absolute; top: 0; bottom: 0; left: 0; background: var(--brand-tint); border-right: 2px solid var(--brand); }
+.steps { margin: 0; padding-left: 20px; display: grid; gap: var(--space-2); color: var(--ink-2); }
+
+/* 3D 托盘 */
+.stage { position: relative; width: 100%; aspect-ratio: 1; border-radius: var(--radius-lg); overflow: hidden; touch-action: none; cursor: grab;
+  background: radial-gradient(circle at 50% 45%, var(--tray) 0%, var(--tray) 45%, var(--tray-deep) 100%); }
+.stage canvas { display: block; width: 100% !important; height: 100% !important; }
+.stage .hud { position: absolute; left: var(--space-3); right: var(--space-3); bottom: var(--space-3); display: flex; justify-content: space-between; gap: var(--space-2);
+  font: 400 11px/16px var(--font-sans); color: var(--ink-2); pointer-events: none; }
+.stage .hud b, #hudInfo { font: 500 11px/16px var(--font-num); color: var(--ink); }
+.stage .empty { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; color: var(--ink-2); font: 400 13px/20px var(--font-sans); pointer-events: none; padding: var(--space-6); }
+.viewtoggle { position: absolute; top: var(--space-3); right: var(--space-3); display: flex; gap: 2px; padding: 2px; background: var(--surface); border-radius: var(--radius-pill); z-index: 1; }
+.viewtoggle .chip { height: 28px; border: 0; background: none; color: var(--ink-2); font-weight: 400; }
+.viewtoggle .chip.on { background: var(--ink); color: var(--surface); }
+
+/* 设计页信息 */
+.design-name { font: 600 18px/26px var(--font-sans); }
+.meaning { color: var(--ink-2); }
+.meter { display: grid; gap: var(--space-2); }
+.lentrack { position: relative; height: 8px; border-radius: var(--radius-pill); background: var(--tray-deep); }
+.lenzone { position: absolute; top: -4px; bottom: -4px; border: 1.5px dashed var(--fit-ok); border-radius: var(--radius-sm); }
+.lenfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: var(--radius-pill); background: var(--fit-warn); transition: width .2s ease-out; }
+.meter.ok .lenfill { background: var(--fit-ok); }
+.fittext { font: 400 13px/18px var(--font-sans); color: var(--fit-warn); display: flex; gap: var(--space-1); align-items: baseline; flex-wrap: wrap; }
+.meter.ok .fittext { color: var(--fit-ok); }
+.fittext b { font-family: var(--font-num); font-weight: 600; }
+.fittext .muted { width: 100%; font-size: 11px; line-height: 16px; }
+.seltools { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; }
+.countrow { display: flex; gap: var(--space-2); align-items: center; overflow-x: auto; scrollbar-width: none; }
+.countrow::-webkit-scrollbar { display: none; }
+.countrow .lbl { flex: none; font: 400 12px/16px var(--font-sans); color: var(--ink-3); }
+.countrow .chip { flex: none; height: 28px; font-size: 12px; }
+.seltools .hint { font: 400 11px/16px var(--font-sans); color: var(--ink-3); width: 100%; }
+textarea, input[type=text], input[type=tel], input[type=number], select { width: 100%; box-sizing: border-box; background: var(--surface); border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm); padding: 10px 12px; color: var(--ink); font: 400 15px/22px var(--font-sans); resize: none; }
+textarea::placeholder, input::placeholder { color: var(--ink-3); }
+.status { font: 400 13px/18px var(--font-sans); color: var(--ink-2); }
+.status:empty { display: none; }
+.wristcard > .chips { width: 100%; justify-content: center; }
+.section-head .wristlink { font: 400 13px/18px var(--font-sans); color: var(--ink-2); }
+
+/* 选珠格 */
+.palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4) var(--space-2); }
+.cell { background: none; border: 0; padding: 0; display: grid; justify-items: center; gap: 2px; cursor: pointer; text-align: center; color: var(--ink); }
+.cell .traybox { width: 100%; max-width: 72px; aspect-ratio: 1; border-radius: var(--radius-md); display: grid; place-items: center; margin-bottom: var(--space-1);
+  background: radial-gradient(circle at 50% 40%, var(--tray), var(--tray-deep)); border: 1.5px solid transparent; transition: transform .2s ease-out; }
+.cell:active .traybox { transform: scale(.94); }
+.cell .traybox img { width: 86%; }
+.traybox img.real, .thumb img.real { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.cell .nm { font: 400 13px/18px var(--font-sans); }
+.cell .mm { font: 500 13px/18px var(--font-num); font-variant-numeric: tabular-nums; }
+.cell em { font: 700 13px/18px var(--font-num); font-style: normal; color: var(--brand); }
+.cell .note { font: 400 11px/16px var(--font-sans); color: var(--ink-3); }
+
+/* 明细行 */
+.lines { display: grid; gap: var(--space-3); }
+.line { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: var(--space-3); align-items: center; }
+.line .thumb { width: 40px; height: 40px; border-radius: var(--radius-sm); background: radial-gradient(circle at 50% 40%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.line .thumb img { width: 80%; }
+.line .main { display: grid; gap: 2px; min-width: 0; }
+.line .main b { font: 400 15px/22px var(--font-sans); }
+.line .amt { font: 500 13px/18px var(--font-num); color: var(--ink); }
+
+/* 底部操作栏 */
+.bottombar { position: sticky; bottom: 0; z-index: 4; display: flex; align-items: center; gap: var(--space-2);
+  margin: 0 calc(-1 * max(var(--space-4), env(safe-area-inset-left, 0px))) calc(-1 * var(--space-6));
+  padding: var(--space-2) max(var(--space-4), env(safe-area-inset-right, 0px)) calc(var(--space-2) + env(safe-area-inset-bottom, 0px)) max(var(--space-4), env(safe-area-inset-left, 0px));
+  background: var(--surface); box-shadow: var(--shadow-bar); min-height: 56px; }
+.bottombar .sum { flex: 1; display: grid; min-width: 0; }
+.bottombar .sum b { font: 700 22px/28px var(--font-num); color: var(--brand); }
+.bottombar .sum > span { font: 400 11px/16px var(--font-sans); color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bottombar .btn { padding: 0 var(--space-4); }
+
+/* 试戴 */
+.skins { display: flex; gap: var(--space-3); align-items: center; }
+.skin { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line-strong); cursor: pointer; }
+.skin.on { box-shadow: 0 0 0 2px var(--brand); }
+.pstage { position: relative; width: 100%; aspect-ratio: 3 / 4; max-height: 70vh; border-radius: var(--radius-lg); overflow: hidden; touch-action: none;
+  background: radial-gradient(circle at 50% 45%, var(--tray), var(--tray-deep)); }
+.pstage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pstage canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: move; }
+.pstage .empty { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; color: var(--ink-2); font: 400 15px/24px var(--font-sans); pointer-events: none; padding: var(--space-6); }
+.slider { display: grid; grid-template-columns: 3em 1fr; align-items: center; gap: var(--space-3); font: 400 13px/18px var(--font-sans); color: var(--ink-2); }
+.slider input { width: 100%; accent-color: var(--brand); }
+.check { display: flex; align-items: center; gap: var(--space-2); font: 400 13px/18px var(--font-sans); color: var(--ink); }
+.check input { accent-color: var(--brand); width: 18px; height: 18px; }
+.sharecard { width: 100%; border-radius: var(--radius-md); display: block; }
+
+/* 下单 */
+.opt { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+.opt span:last-child { font-family: var(--font-num); }
+.total { font: 700 22px/28px var(--font-num); color: var(--brand); }
+.err { color: var(--danger); font: 400 13px/18px var(--font-sans); }
+.err:not(:empty)::before { content: "! "; font-weight: 700; }
+.done { text-align: center; display: grid; gap: var(--space-3); justify-items: center; padding-block: var(--space-8); }
+.done .traybox { width: 60%; aspect-ratio: 1; border-radius: var(--radius-lg); background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.done img { width: 90%; }
+.done p { margin: 0; color: var(--ink-2); max-width: 300px; }
+
+/* 列表 */
+.list { display: grid; gap: var(--space-3); }
+.item { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: var(--space-3); align-items: center; background: var(--surface); border-radius: var(--radius-md);
+  padding: var(--space-3); cursor: pointer; border: 0; text-align: left; color: var(--ink); }
+.item .traybox { width: 72px; height: 72px; border-radius: var(--radius-sm); background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
+.item .traybox img { width: 92%; }
+.item .nm { font: 600 15px/22px var(--font-sans); }
+.item .chev { color: var(--ink-3); font-size: 18px; }
+.badge { font: 500 11px/16px var(--font-sans); padding: 0 6px; border-radius: var(--radius-sm); background: var(--tray); color: var(--ink-2); margin-left: var(--space-1); vertical-align: 1px; }
+.empty-note { font: 400 13px/18px var(--font-sans); color: var(--ink-3); padding: var(--space-4); text-align: center; background: var(--surface); border-radius: var(--radius-md); }
+
+/* 后台 */
+.admin-note { font: 400 13px/20px var(--font-sans); color: var(--ink-2); background: var(--surface); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); }
+.fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3) var(--space-2); }
+.fields label, .field { display: grid; gap: var(--space-1); font: 400 12px/16px var(--font-sans); color: var(--ink-2); min-width: 0; }
+.fields .wide { grid-column: 1 / -1; }
+.fields input[type=color] { width: 100%; height: 44px; border: 1px solid var(--line-strong); background: var(--surface); border-radius: var(--radius-sm); padding: 4px; box-sizing: border-box; }
+.fields .req.bad input { border-color: var(--danger); }
+.photo { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; font: 400 12px/16px var(--font-sans); color: var(--ink-3); }
+.photo img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+
+/* 底部标签栏 */
+nav { position: sticky; bottom: 0; z-index: 4; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--surface); box-shadow: var(--shadow-bar);
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+nav button { height: 52px; border: 0; background: none; display: grid; justify-items: center; align-content: center; gap: 2px; color: var(--ink-3); font: 400 11px/16px var(--font-sans); cursor: pointer; }
+nav button svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+nav button.on { color: var(--brand); font-weight: 600; }
+.toast { position: fixed; left: 50%; top: 42%; transform: translate(-50%, -50%); background: rgba(31,27,26,.88); color: var(--surface); padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md); font: 400 15px/22px var(--font-sans); pointer-events: none; opacity: 0; transition: opacity .2s ease-out; z-index: 20; max-width: 78%; text-align: center; }
+.toast.show { opacity: 1; }
+@media (max-width: 340px) { .entry-ai__head { grid-template-columns: 1fr; } .entry-ai .traybox { display: none; } }
+@media (max-width: 360px) { .palette { grid-template-columns: repeat(3, minmax(0, 1fr)); } .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .toast, .lenfill, .cell .traybox { transition: none; } }
+</style>
+
+<div class="app">
+  <header>
+    <button class="back" id="back" aria-label="返回" hidden>‹</button>
+    <h1 id="title">串个珠</h1>
+    <button class="wristpill" id="wristPill">手围 15cm</button>
+  </header>
+  <main>
+    <!-- 首页：宣传位 + 入口 + 热门款 -->
+    <section class="view" id="v-home">
+      <div class="banner" id="banner"></div>
+      <div class="dots" id="bannerDots"></div>
+      <div class="quick">
+        <button class="qk" data-quick="blank"><span class="qi"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" stroke-dasharray="2.5 3"/><path d="M12 9v6M9 12h6"/></svg></span>自己 DIY</button>
+        <button class="qk" data-quick="ai"><span class="qi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9l-4.7 1.8L12 15.5l-1.8-4.7L5.5 9l4.7-1.3z"/><path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span>AI 配寓意</button>
+        <button class="qk" data-quick="same"><span class="qi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h3l1.5-2h6L15 9h2v10H3z"/><circle cx="10" cy="14" r="3"/><path d="M19.5 3l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span>拍照做同款</button>
+        <button class="qk" data-quick="try"><span class="qi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>拍照试戴</button>
+      </div>
+      <div class="section-head" id="hotHead"><h2>热门款</h2><button class="wristlink caption" id="hotWrist"></button></div>
+      <div class="tpls" id="tpls"></div>
+    </section>
+
+    <!-- 自己串（主推）：继续上次 + 选个起点 -->
+    <section class="view" id="v-diy" hidden>
+      <div class="row"><span class="ink2">长度按 <b class="num" style="color:var(--ink)" id="diyWrist">15cm</b> 手围计算</span><button class="btn text" id="diyWristBtn" type="button">改手围</button></div>
+      <button class="mode resume" id="resumeCard" hidden></button>
+      <div class="section-head"><h2>选个起点</h2><span class="caption muted">挑好主珠能一键铺满一圈</span></div>
+      <div class="starts" id="starts"></div>
+    </section>
+
+    <!-- AI 配：对话，每次 3 条候选，可以追问 -->
+    <section class="view" id="v-ai" hidden>
+      <div class="row" id="chatTools" hidden><span class="caption muted">按 <b class="num" id="aiWrist" style="color:var(--ink)">15cm</b> 手围配</span><button class="btn text" id="chatClear" type="button">清空对话</button></div>
+      <div class="chat" id="chat"></div>
+      <form class="composer" id="aiPanel" novalidate>
+        <div class="chips" id="wishChips"></div>
+        <div class="askbox"><input type="text" id="wish" maxlength="40" placeholder="送谁、什么寓意、喜欢什么颜色…" aria-label="跟 AI 说你想要的手串">
+          <button class="send" type="submit" id="aiGo" aria-label="发送"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div>
+      </form>
+    </section>
+
+    <!-- 拍照做同款：拍照 → 认珠子（不对就换）→ 按手围串好放到托盘上 -->
+    <section class="view" id="v-same" hidden>
+      <input type="file" id="sameFile" accept="image/*" hidden>
+      <div id="sameBody" style="display:grid;gap:var(--space-4)"></div>
+      <div class="bottombar" id="sameBar"></div>
+    </section>
+
+    <!-- 编辑页：改一条手串 -->
+    <section class="view" id="v-editor" hidden>
+      <div class="stage" id="studioStage">
+        <div class="viewtoggle"><button class="chip on" data-mode="ring">手串</button><button class="chip" data-mode="wrist">戴在手上</button></div>
+        <div class="hud"><span>拖动旋转 · 点珠子可以换</span><span id="hudInfo"></span></div>
+      </div>
+      <div class="card">
+        <input class="nameinput" id="dName" maxlength="12" aria-label="手串名字">
+        <div class="tags" id="dTags"></div>
+        <div class="meaning" id="dMeaning"></div>
+        <div class="meter" id="meter"><div class="lentrack"><div class="lenzone"></div><div class="lenfill"></div></div><div class="fittext"></div></div>
+        <div class="seltools" id="selTools"></div>
+        <div class="countrow" id="countRow"></div>
+      </div>
+      <div class="card review" id="reviewCard" hidden>
+        <div class="row"><h2>AI 帮你看看</h2><button class="btn ghost sm" id="reviewGo" type="button">看看这条</button></div>
+        <div class="review-body" id="reviewBody"></div>
+      </div>
+      <div class="card">
+        <div class="row"><h2>选珠</h2><span class="caption muted" id="palHint">点珠子加到手串上</span></div>
+        <div class="chips" id="catChips"></div>
+        <div class="chips" id="sizeChips"></div>
+        <div class="palette" id="palette"></div>
+      </div>
+      <div class="card" id="notesCard" hidden><h2>每颗珠子的寓意</h2><div class="lines" id="dNotes"></div></div>
+      <div class="bottombar">
+        <div class="sum"><b>¥<span id="dPrice">0</span></b><span id="dSpec"></span></div>
+        <button class="btn ghost" id="toShare">分享</button>
+        <button class="btn" id="toOrder">去下单</button>
+      </div>
+    </section>
+
+    <!-- 量手围 -->
+    <section class="view" id="v-wrist" hidden>
+      <div class="admin-note" id="wristWhy" hidden></div>
+      <div class="card wristcard">
+        <div class="bigwrist"><button data-wstep="-0.5" aria-label="减少">−</button><b id="wBig"></b><button data-wstep="0.5" aria-label="增加">+</button></div>
+        <div class="ruler" aria-hidden="true"><i id="wRuler"></i></div>
+        <div class="chips" id="wChips"></div>
+      </div>
+      <div class="card">
+        <h2>怎么量</h2>
+        <ol class="steps">
+          <li>拿软尺或一张纸条，贴着手腕最细处（腕骨靠手掌那侧）绕一圈。</li>
+          <li>纸条在重合处做记号，摊平用尺子量出长度。</li>
+          <li>填量到的数字就行。余量我们按珠子大小自动加：6mm 珠加 1cm，8mm 加 1.5cm，10mm 加 2cm，12mm 加 2.5cm。</li>
+        </ol>
+        <div class="caption muted">没尺子？女生常见 14–15cm，男生 16–17cm。串好前客服还会再和你核对一次。</div>
+      </div>
+      <div class="bottombar"><div class="sum"><span>已选手围</span><b class="num" id="wSum">15cm</b></div><button class="btn" id="wDone">确定</button></div>
+    </section>
+
+    <!-- 试戴 -->
+    <section class="view" id="v-try" hidden>
+      <div class="chips"><button class="chip on" data-try="photo">拍我的手</button><button class="chip" data-try="model">3D 模型手</button></div>
+      <div id="tryPhoto" class="view">
+        <div class="pstage" id="pStage">
+          <img id="pImg" alt="你的手腕照片" hidden>
+          <canvas id="pCv"></canvas>
+          <div class="empty" id="pEmpty">拍一张手腕的照片<br><span class="caption">手背朝上、手臂横放，光线亮一点效果最好</span></div>
+        </div>
+        <div class="row" style="flex-wrap:nowrap">
+          <label class="btn ghost" style="flex:1">拍照 / 选照片<input type="file" id="pFile" accept="image/*" capture="environment" hidden></label>
+          <button class="btn ghost" style="flex:1" id="pSave" disabled>保存试戴照</button>
+        </div>
+        <div class="card" id="pCtrls" hidden>
+          <div class="caption muted">拖动照片上的手串对准手腕，再调大小和角度。</div>
+          <label class="slider">大小<input type="range" id="pSize" min="8" max="95" value="38"></label>
+          <label class="slider">旋转<input type="range" id="pRot" min="-90" max="90" value="0"></label>
+          <label class="slider">倾斜<input type="range" id="pTilt" min="0" max="85" value="68"></label>
+          <label class="check"><input type="checkbox" id="pHide" checked>藏住被手腕挡住的珠子</label>
+        </div>
+        <div class="caption muted">照片只在你的手机上处理，不会上传。</div>
+      </div>
+      <div class="stage" id="tryStage" hidden><div class="hud"><span>拖动旋转 · 按你的手围等比例</span><span></span></div></div>
+      <div class="card">
+        <div class="row" id="skinRow" hidden><span>肤色</span><div class="skins" id="skins"></div></div>
+        <div class="fittext" id="tryFit"></div>
+      </div>
+      <div class="bottombar"><div class="sum"><b>¥<span class="tryPrice"></span></b><span>含手工费 ¥15</span></div>
+        <button class="btn ghost" data-nav="share">分享</button><button class="btn" data-nav="order">去下单</button></div>
+    </section>
+
+    <!-- 分享 -->
+    <section class="view" id="v-share" hidden>
+      <img class="sharecard" id="shareImg" alt="手串分享卡片">
+      <div class="caption muted" style="text-align:center">小程序里可以直接发给好友或存相册。好友点开能买同款，也能改成自己的。</div>
+      <button class="btn text" id="previewShared">看看朋友打开是什么样 ›</button>
+      <div class="bottombar"><div class="sum"><b>¥<span class="tryPrice"></span></b><span>含手工费 ¥15</span></div>
+        <button class="btn ghost" id="saveCard">保存图片</button><button class="btn" data-nav="order">去下单</button></div>
+    </section>
+
+    <!-- 下单 -->
+    <section class="view" id="v-order" hidden>
+      <div class="card"><div class="design-name" id="oName"></div><div class="lines" id="oLines"></div></div>
+      <div class="card">
+        <div class="opt"><span>手围 / 珠串总长</span><button class="btn text" type="button" id="oWristBtn" style="padding:0;height:auto;color:var(--ink)"><span id="oWrist" class="num"></span>&nbsp;<span style="color:var(--ink-2)">修改 ›</span></button></div>
+        <div class="fittext" id="oFit" hidden style="justify-content:space-between"></div>
+        <div class="opt"><span>穿绳</span><div class="chips" id="cordOpts"></div></div>
+        <label class="opt" for="gift"><span>礼盒包装 +¥10</span><input type="checkbox" id="gift" style="accent-color:var(--brand);width:18px;height:18px"></label>
+        <div class="opt"><span>手工串制</span><span>¥15</span></div>
+        <div class="opt"><span>运费</span><span id="oShip"></span></div>
+        <div class="opt" id="oPromoRow" hidden><span>新人首单立减</span><span id="oPromo" style="color:var(--brand)"></span></div>
+      </div>
+      <form class="card" id="orderForm" novalidate>
+        <h2>收货信息</h2>
+        <input type="text" id="oPerson" placeholder="收货人" autocomplete="name">
+        <input type="tel" id="oPhone" placeholder="手机号" autocomplete="tel">
+        <input type="text" id="oAddr" placeholder="详细地址" autocomplete="street-address">
+        <div class="err" id="oErr"></div>
+        <div class="caption muted">原型演示：不会真的扣款或发货。</div>
+      </form>
+      <div class="bottombar"><div class="sum"><b>¥<span id="oTotal"></span></b><span>合计（含运费）</span></div><button class="btn" type="submit" form="orderForm">提交订单</button></div>
+    </section>
+
+    <section class="view" id="v-done" hidden>
+      <div class="done"><div class="traybox"><img id="doneImg" alt=""></div><h2 class="display">下单成功</h2><p id="doneText"></p>
+        <button class="btn" data-nav="home">回首页</button></div>
+    </section>
+
+    <!-- 朋友打开分享看到的页面 -->
+    <section class="view" id="v-shared" hidden>
+      <div class="admin-note">你的朋友用串个珠设计了这条手串，发给你看看。</div>
+      <div class="stage" id="sharedStage"><div class="hud"><span>拖动旋转</span><span id="sharedHud"></span></div></div>
+      <div class="card"><div class="design-name" id="sName"></div><div class="tags" id="sTags"></div><div class="meaning" id="sMeaning"></div>
+        <div class="meter" id="sMeter"><div class="lentrack"><div class="lenzone"></div><div class="lenfill"></div></div><div class="fittext"></div></div></div>
+      <div class="card"><h2>每颗珠子的寓意</h2><div class="lines" id="sNotes"></div></div>
+      <div class="bottombar"><div class="sum"><b>¥<span id="sPrice"></span></b><span>按你的手围串，含手工费</span></div>
+        <button class="btn ghost" id="remix">改成我的</button><button class="btn" id="buySame">买同款</button></div>
+    </section>
+
+    <!-- 我的 -->
+    <section class="view" id="v-mine" hidden>
+      <div class="card"><div class="row"><span>我的手围</span><button class="btn text" id="mineWrist">15cm ›</button></div></div>
+      <h2>我的订单</h2><div class="list" id="myOrders"></div>
+      <h2>我的作品</h2><div class="list" id="myDesigns"></div>
+      <button class="item" id="adminLink" hidden><span class="traybox"><svg style="width:28px;height:28px;stroke:var(--ink-2);fill:none;stroke-width:1.5" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 10h8M8 14h5"/></svg></span><div><div class="nm">料包管理</div><div class="spec">上架、编辑每一颗珠子（仅管理员可见）</div></div><span class="chev">›</span></button>
+    </section>
+
+    <!-- 后台：料包（单颗珠子）列表 -->
+    <section class="view" id="v-admin" hidden>
+      <div class="admin-note" id="adminNote"></div>
+      <div class="chips" id="adminCats"></div>
+      <div class="list" id="kitList"></div>
+      <button class="btn block" id="newKit">上架一颗新珠子</button>
+    </section>
+
+    <!-- 后台：编辑一颗珠子 -->
+    <section class="view" id="v-kit" hidden>
+      <div class="stage" id="kitStage" style="aspect-ratio:16/10"><div class="hud"><span>预览：用这颗珠子串满 15cm 手围</span><span id="kitHud"></span></div></div>
+      <div class="card fields" id="beadForm">
+        <label class="wide">名称<input type="text" id="bName" maxlength="12" placeholder="例：小叶紫檀"></label>
+        <label class="req" id="bMmWrap"><span id="bMmLabel">直径 mm *</span><input type="number" id="bMm" min="1" max="30" step="0.5"></label>
+        <label class="req" id="bPriceWrap">单价 ¥ *<input type="number" id="bPrice" min="0" step="0.5"></label>
+        <label>材质<select id="bMat"></select></label>
+        <label>亮色<input type="color" id="bC0"></label>
+        <label>暗色<input type="color" id="bC1"></label>
+        <label>排序<input type="number" id="bOrder" min="0" max="9999"></label>
+        <label class="wide">寓意（用逗号隔开，AI 推荐会用到）<input type="text" id="bTags" placeholder="例：平安，温润"></label>
+        <label class="check wide"><input type="checkbox" id="bSpacer">这是隔片（扁片，尺寸填厚度）</label>
+        <label class="check wide"><input type="checkbox" id="bOnSale">上架（取消勾选后用户看不到）</label>
+        <div class="photo wide" id="bPhoto"></div>
+      </div>
+      <div class="err" id="kErr"></div>
+      <div class="bottombar"><div class="sum"></div><button class="btn ghost" id="kDel">删除</button><button class="btn" id="kSave">保存</button></div>
+    </section>
+  </main>
+  <nav id="nav">
+    <button data-tab="home" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20H4z"/><path d="M10 20v-5h4v5"/></svg>首页</button>
+    <button data-tab="diy" class="center"><span class="ci"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" stroke-dasharray="2.5 3"/><path d="M12 9v6M9 12h6"/></svg></span>自己串</button>
+    <button data-tab="ai"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9l-4.7 1.8L12 15.5l-1.8-4.7L5.5 9l4.7-1.3z"/><path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>AI 配</button>
+    <button data-tab="mine"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.5 4-5 7-5s5.8 1.5 7 5"/></svg>我的</button>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ================= 示例料包（每颗珠子单独一条；连不上后台时用，后台有数据时以后台为准） =================
+const DEFAULT_BEADS = [
+  { id: 'zt8', name: '小叶紫檀', mm: 8, price: 3, mat: 'wood', c: ['#a3442f', '#3d110b'], tags: ['沉稳', '长寿'] },
+  { id: 'zt10', name: '小叶紫檀', mm: 10, price: 4, mat: 'wood', c: ['#a3442f', '#3d110b'], tags: ['沉稳', '长寿'] },
+  { id: 'jg10', name: '金刚菩提', mm: 10, price: 3, mat: 'wood', c: ['#bf7442', '#5e2a12'], tags: ['智慧', '坚毅', '事业'] },
+  { id: 'xy8', name: '星月菩提', mm: 8, price: 1, mat: 'bodhi', c: ['#f6eed8', '#b8935a'], tags: ['静心', '禅意'] },
+  { id: 'nh8', name: '南红', mm: 8, price: 12, mat: 'stone', c: ['#ec5a3f', '#8e1a10'], tags: ['红火', '本命年'] },
+  { id: 'ft12', name: '南红佛头', mm: 12, price: 18, mat: 'stone', c: ['#ec5a3f', '#7a140b'], tags: ['圆满', '吉祥'] },
+  { id: 'ml10', name: '蜜蜡', mm: 10, price: 18, mat: 'stone', c: ['#ffd35c', '#d4870b'], tags: ['富贵', '温润'] },
+  { id: 'qj8', name: '青金石', mm: 8, price: 5, mat: 'stone', c: ['#3f63d6', '#14236b'], tags: ['事业', '沉稳'] },
+  { id: 'ls8', name: '绿松石', mm: 8, price: 6, mat: 'stone', c: ['#5fd0c4', '#1e7f78'], tags: ['平安', '成功', '出行'] },
+  { id: 'ls6', name: '绿松石', mm: 6, price: 4, mat: 'stone', c: ['#5fd0c4', '#1e7f78'], tags: ['平安', '成功', '出行'] },
+  { id: 'hy8', name: '黑曜石', mm: 8, price: 3, mat: 'stone', c: ['#55556a', '#0b0b10'], tags: ['沉稳', '坚定'] },
+  { id: 'bj8', name: '白水晶', mm: 8, price: 2, mat: 'crystal', c: ['#ffffff', '#bfcadb'], tags: ['专注', '清透'] },
+  { id: 'fj8', name: '粉晶', mm: 8, price: 3, mat: 'crystal', c: ['#ffe0e7', '#e08aa0'], tags: ['好人缘', '温柔'] },
+  { id: 'zj8', name: '紫水晶', mm: 8, price: 4, mat: 'crystal', c: ['#e2c7ff', '#6b3fa0'], tags: ['智慧', '考试', '学业'] },
+  { id: 'cm8', name: '草莓晶', mm: 8, price: 6, mat: 'crystal', c: ['#ffc7c7', '#c2414f'], tags: ['甜蜜', '恋爱'] },
+  { id: 'zy6', name: '金色转运珠', mm: 6, price: 10, mat: 'metal', c: ['#fff1b8', '#a87a1c'], tags: ['好运', '吉祥'] },
+  { id: 'sp4', name: '银色隔珠', mm: 4, price: 1, mat: 'metal', c: ['#ffffff', '#8a8f98'], tags: ['点缀'] },
+  { id: 'sp4z', name: '铜色隔珠', mm: 4, price: 1, mat: 'metal', c: ['#f0c79a', '#8a5424'], tags: ['点缀'] },
+  { id: 'gp', name: '金色隔片', mm: 2, price: 1, mat: 'metal', c: ['#fff1b8', '#a87a1c'], tags: ['点缀'], spacer: true }
+].map((b, i) => ({ ...b, order: (i + 1) * 10, onSale: true }));
+const MATS = { wood: '木质', bodhi: '菩提', stone: '玉石', crystal: '水晶', metal: '金属配件' };
+
+// 模板 = 开头特殊珠 + 循环花型（+ 结尾珠），按手围自动填满
+const TEMPLATES = [
+  { id: 't1', name: '好运连连', meaning: '蜜蜡温润富贵，转运珠添一点亮色，黑曜石沉稳压住整串。寓意好运连连。', special: ['zy6'], pattern: ['ml10', 'hy8', 'hy8'] },
+  { id: 't2', name: '甜蜜粉晶', meaning: '粉晶温柔，草莓晶添甜蜜，银隔珠点亮整串。送女朋友不会错。', special: ['cm8'], pattern: ['fj8', 'fj8', 'sp4', 'fj8', 'cm8', 'sp4'] },
+  { id: 't3', name: '金榜题名', meaning: '紫水晶寓意智慧，白水晶清透干净，考试季戴上图个好兆头。', special: [], pattern: ['zj8', 'bj8', 'bj8', 'sp4'] },
+  { id: 't4', name: '岁岁平安', meaning: '星月菩提朴素耐看，绿松石寓意平安，适合送长辈或出远门的人。', special: ['ls6'], pattern: ['xy8', 'xy8', 'xy8', 'ls6'] },
+  { id: 't5', name: '沉稳之选', meaning: '小叶紫檀沉稳，南红佛头寓意圆满。男生通勤百搭。', special: ['ft12', 'gp'], pattern: ['zt10'], tail: ['gp'] },
+  { id: 't6', name: '步步高升', meaning: '青金石深蓝沉稳，寓意事业顺遂，适合升职季和新工作。', special: ['zy6'], pattern: ['qj8', 'qj8', 'qj8', 'ls8'] }
+];
+// 寓意六类（对应设计规范的 MeaningTag）
+const TAG_CAT = { wealth: ['富贵', '好运', '吉祥', '财源'], love: ['恋爱', '好人缘', '甜蜜', '温柔', '浪漫'], study: ['考试', '学业', '智慧', '专注', '清透'],
+  safe: ['平安', '出行', '静心', '禅意', '成功', '长寿', '沉稳', '温润', '健康'], career: ['事业', '升职', '坚毅', '坚定', '进取'], guard: ['本命年', '红火', '圆满', '守护'] };
+const tagClass = t => Object.keys(TAG_CAT).find(k => TAG_CAT[k].includes(t)) || 'guard';
+function topTags(ids, max) {
+  const cnt = {}; ids.forEach(id => (ITEM[id]?.tags || []).forEach(t => { if (t !== '点缀') cnt[t] = (cnt[t] || 0) + 1; }));
+  return Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]).slice(0, max);
+}
+const tagsHtml = tags => tags.map(t => `<span class="tag ${tagClass(t)}">${esc(t)}</span>`).join('');
+const WISHES = ['考试顺利', '好运连连', '送女朋友', '本命年', '送爸妈平安', '升职加薪'];
+const CORDS = [['弹力线', 0], ['编织绳', 5]];
+const SKINS = ['#f1c9a5', '#d9a27a', '#9c6a4a'];
+
+// ================= 本地服务接口（server/app.py 启动时注入 window.CGZ_API；线上原型里没有，走原来的逻辑） =================
+const API = window.CGZ_API || '';
+async function apiJson(path, body) {
+  const r = await fetch(API + path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(j.error || ('请求失败 ' + r.status)); e.status = r.status; throw e; }
+  return j;
+}
+
+// ================= 工具 =================
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('cgz_' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('cgz_' + k, JSON.stringify(v)); } catch {} }
+};
+let toastT;
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 1800); }
+const buzz = () => { try { navigator.vibrate && navigator.vibrate(8); } catch {} };
+const label = it => `${it.name} ${it.mm}mm`;
+
+// ================= 珠子库索引 =================
+let ALL_BEADS = [], BEADS = [], ITEM = {}, kitSource = 'demo';
+function setCatalog(list) {
+  ALL_BEADS = list.map(i => ({ ...i, c: (i.c || ['#cccccc', '#666666']).slice(), tags: (i.tags || []).slice() }))
+    .sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
+  BEADS = ALL_BEADS.filter(i => i.onSale !== false && i.mm > 0);
+  ITEM = {}; BEADS.forEach(it => { ITEM[it.id] = it; });
+  clearCaches();
+}
+const validIds = arr => (arr || []).every(id => ITEM[id]);
+
+// ================= 尺寸计算 =================
+// 串珠师傅常用：珠串总长 = 手围 + 余量，余量随珠子直径变大（6mm +1cm、8mm +1.5cm、10mm +2cm、12mm +2.5cm）
+let wrist = +store.get('wrist', 15), wristSet = store.get('wristSet', false);
+if (!Number.isFinite(wrist) || wrist < 10 || wrist > 22) { wrist = 15; wristSet = false; }
+// 手围只在第一次需要时问一次：问过（不管点了确定还是直接返回）就不再弹，之后从各处的“改手围”入口修改
+let wristAsked = store.get('wristAsked', false) || wristSet;
+function askWristOnce() { if (wristAsked) return false; wristAsked = true; store.set('wristAsked', true); return true; }
+const margin = d => Math.max(8, 2.5 * d - 5);
+const lengthOf = beads => beads.reduce((s, id) => s + ITEM[id].mm, 0);
+function mainSize(beads) {
+  const m = beads.filter(id => !ITEM[id].spacer && ITEM[id].mm >= 6);
+  if (!m.length) return 8;
+  const cnt = {}; m.forEach(id => cnt[ITEM[id].mm] = (cnt[ITEM[id].mm] || 0) + 1);
+  return +Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0];
+}
+const targetLen = beads => Math.round(wrist * 10 + margin(mainSize(beads)));
+const perRound = mm => Math.round((wrist * 10 + margin(mm)) / mm);
+function fill(special, pattern, tail, fixed) {
+  if (fixed) { const n = Math.max(0, fixed - special.length - (tail || []).length); return [...special, ...Array.from({ length: n }, (_, i) => pattern[i % pattern.length]), ...(tail || [])]; }   // 108 颗这类按颗数串
+  const beads = [...special];
+  const target = Math.round(wrist * 10 + margin(mainSize(special.concat(pattern, tail || [])))) - lengthOf(tail || []);
+  let i = 0;
+  while (lengthOf(beads) + ITEM[pattern[i % pattern.length]].mm / 2 < target && beads.length < 80) beads.push(pattern[i++ % pattern.length]);
+  return beads.concat(tail || []);
+}
+const priceOf = beads => beads.reduce((s, id) => s + (ITEM[id].price || 0), 0);
+function fitOf(beads) {
+  const len = lengthOf(beads), t = targetLen(beads), d = len - t;
+  if (!beads.length) return { ok: false, len, t, text: '还没有珠子' };
+  if (beads.length >= 54) return { ok: true, len, t, text: `${beads.length} 颗念珠，总长 <b>${len}mm</b>，可多圈绕腕或挂颈` };   // 108、54 颗不按手围算
+  if (d < -4) return { ok: false, len, t, text: `还差 <b>${-d}mm</b>，大约再加 ${Math.max(1, Math.round(-d / mainSize(beads)))} 颗 ${mainSize(beads)}mm 珠` };
+  if (d > 6) return { ok: false, len, t, text: `长了 <b>${d}mm</b>，戴着会松，建议去掉 ${Math.max(1, Math.round(d / mainSize(beads)))} 颗` };
+  return { ok: true, len, t, text: `长度合适：总长 <b>${len}mm</b>，适合 ${wrist}cm 手围` };
+}
+
+// ================= 3D：珠子纹理与材质 =================
+const texCache = {}, matCache = {}, geoCache = {};
+function clearCaches() {
+  Object.values(texCache).forEach(t => t.dispose()); Object.values(matCache).forEach(m => m.dispose());
+  for (const k in texCache) delete texCache[k]; for (const k in matCache) delete matCache[k];
+  thumbCache.clear && thumbCache.clear();
+}
+const thumbCache = new Map();
+function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+function hashStr(s) { let h = 7; for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) % 2147483647; return h || 1; }
+function itemKey(it) { return [it.id, it.mat, it.c.join(), it.texture || ''].join('|'); }
+function photoUrl(id) { return id ? (/^(\/|https?:|data:)/.test(id) ? id : '/_blob/' + id) : ''; }
+function beadTexture(it) {
+  const key = itemKey(it); if (texCache[key]) return texCache[key];
+  let tex;
+  if (it.texture) {   // 后台单独上传的纹理图（平光、正方形）；实拍图不直接贴到 3D 上，会变形、光影打架
+    tex = new THREE.TextureLoader().load(photoUrl(it.texture), () => { requestRedraw(); thumbCache.clear(); refreshThumbs(); });
+  } else {
+    const W = 512, H = 256, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
+    const r = rnd(hashStr(key)), [a, b] = it.c;
+    const grad = x.createLinearGradient(0, 0, 0, H); grad.addColorStop(0, b); grad.addColorStop(.5, a); grad.addColorStop(1, b);
+    x.fillStyle = it.mat === 'crystal' || it.mat === 'bodhi' ? a : grad; x.fillRect(0, 0, W, H);
+    if (it.mat === 'wood') {           // 木纹：沿经线方向的波浪纹
+      for (let k = 0; k < 46; k++) {
+        x.strokeStyle = b; x.globalAlpha = .18 + r() * .35; x.lineWidth = .8 + r() * 2.4; x.beginPath();
+        const y0 = r() * H, amp = 3 + r() * 9, f = 1 + Math.floor(r() * 3), ph = r() * 6;
+        for (let u = 0; u <= W; u += 6) { const y = y0 + Math.sin(u / W * Math.PI * 2 * f + ph) * amp; u ? x.lineTo(u, y) : x.moveTo(u, y); }
+        x.stroke();
+      }
+    } else if (it.mat === 'bodhi') {   // 星月菩提：密集星眼 + 几个月亮
+      x.globalAlpha = 1;
+      for (let k = 0; k < 1500; k++) { x.fillStyle = b; x.globalAlpha = .55 + r() * .45; x.beginPath(); x.arc(r() * W, 20 + r() * (H - 40), .8 + r() * 1.8, 0, 7); x.fill(); }
+      for (let k = 0; k < 3; k++) { const cx = 60 + k * 170 + r() * 40, cy = H / 2 + (r() - .5) * 40; x.globalAlpha = .9; x.fillStyle = b; x.beginPath(); x.arc(cx, cy, 16, 0, 7); x.fill(); x.fillStyle = a; x.beginPath(); x.arc(cx, cy, 10, 0, 7); x.fill(); }
+    } else if (it.mat === 'stone') {   // 玉石：云絮斑块
+      for (let k = 0; k < 160; k++) {
+        const cx = r() * W, cy = r() * H, rr = 8 + r() * 40, g = x.createRadialGradient(cx, cy, 0, cx, cy, rr);
+        const c = r() > .5 ? a : b; g.addColorStop(0, c); g.addColorStop(1, 'rgba(0,0,0,0)'); x.globalAlpha = .25; x.fillStyle = g; x.fillRect(cx - rr, cy - rr, rr * 2, rr * 2);
+      }
+      x.globalAlpha = .18; x.strokeStyle = '#ffffff'; x.lineWidth = 1;
+      for (let k = 0; k < 6; k++) { x.beginPath(); x.moveTo(r() * W, r() * H); x.bezierCurveTo(r() * W, r() * H, r() * W, r() * H, r() * W, r() * H); x.stroke(); }
+    } else if (it.mat === 'crystal') { // 水晶：通透底色 + 冰裂丝
+      const g2 = x.createLinearGradient(0, 0, W, 0); g2.addColorStop(0, a); g2.addColorStop(.5, b); g2.addColorStop(1, a); x.globalAlpha = .5; x.fillStyle = g2; x.fillRect(0, 0, W, H);
+      x.globalAlpha = .35; x.strokeStyle = '#ffffff';
+      for (let k = 0; k < 10; k++) { x.lineWidth = .5 + r(); x.beginPath(); x.moveTo(r() * W, r() * H); x.lineTo(r() * W, r() * H); x.stroke(); }
+    } else {                            // 金属：横向拉丝
+      const g3 = x.createLinearGradient(0, 0, 0, H); g3.addColorStop(0, a); g3.addColorStop(.5, b); g3.addColorStop(1, a); x.fillStyle = g3; x.fillRect(0, 0, W, H);
+    }
+    x.globalAlpha = 1;
+    tex = new THREE.CanvasTexture(cv);
+  }
+  tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 4;
+  return texCache[key] = tex;
+}
+function beadMaterial(it) {
+  const key = itemKey(it); if (matCache[key]) return matCache[key];
+  const P = { wood: [.55, 0, .35], bodhi: [.5, 0, .25], stone: [.22, 0, .9], crystal: [.05, 0, 1], metal: [.22, 1, .2] }[it.mat] || [.4, 0, .5];
+  const m = new THREE.MeshPhysicalMaterial({ map: beadTexture(it), roughness: P[0], metalness: P[1], clearcoat: P[2], clearcoatRoughness: .08,
+    transparent: it.mat === 'crystal', opacity: it.mat === 'crystal' ? .8 : 1, envMapIntensity: it.mat === 'metal' ? 1.2 : .9 });
+  return matCache[key] = m;
+}
+function beadGeo(it) {
+  const key = (it.spacer ? 's' : 'b') + it.mm; if (geoCache[key]) return geoCache[key];
+  return geoCache[key] = it.spacer ? new THREE.CylinderGeometry(4.6, 4.6, it.mm, 36) : new THREE.SphereGeometry(it.mm / 2, 48, 32);
+}
+const cordMat = typeof THREE !== 'undefined' ? new THREE.MeshStandardMaterial({ color: 0x8c2a1c, roughness: .8 }) : null;
+
+// 手串模型：珠子按各自直径沿圆周排布，周长 = 珠子直径之和
+function ringGroup(beads, sel) {
+  const g = new THREE.Group(), total = lengthOf(beads), R = total / (2 * Math.PI);
+  let cur = Math.PI / 2;
+  beads.forEach((id, i) => {
+    const it = ITEM[id], frac = it.mm / total, a = cur - frac * Math.PI; cur -= frac * 2 * Math.PI;
+    let mat = beadMaterial(it);
+    if (i === sel) { mat = mat.clone(); mat.emissive = new THREE.Color(0x7a5410); mat.emissiveIntensity = .7; mat.userData.temp = true; }
+    const m = new THREE.Mesh(beadGeo(it), mat);
+    m.position.set(R * Math.cos(a), R * Math.sin(a), 0);
+    m.rotation.z = a;                   // 珠孔方向沿着绳子
+    if (i === sel) m.scale.setScalar(1.12);
+    m.userData.i = i; g.add(m);
+  });
+  if (beads.length) g.add(new THREE.Mesh(new THREE.TorusGeometry(R, .5, 8, 160), cordMat));
+  g.userData.R = R;
+  g.userData.maxD = beads.length ? Math.max(...beads.map(id => ITEM[id].mm)) : 8;
+  return g;
+}
+function disposeGroup(g) { g.traverse(o => { if (o.material && o.material.userData.temp) o.material.dispose(); if (o.geometry && o.geometry.type === 'TorusGeometry') o.geometry.dispose(); if (o.userData.own) { o.geometry.dispose(); o.material.dispose(); } }); }
+
+// 环境光照：画一张带两盏柔光箱的全景图，给珠子反光
+function makeEnv(renderer) {
+  const cv = document.createElement('canvas'); cv.width = 512; cv.height = 256; const x = cv.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, '#ffffff'); g.addColorStop(.45, '#d8d1c9'); g.addColorStop(1, '#6f655e'); x.fillStyle = g; x.fillRect(0, 0, 512, 256);
+  [[130, 60, 50], [380, 80, 36], [260, 30, 70]].forEach(([cx, cy, r]) => { const rg = x.createRadialGradient(cx, cy, 0, cx, cy, r); rg.addColorStop(0, '#ffffff'); rg.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = rg; x.fillRect(cx - r, cy - r, r * 2, r * 2); });
+  const t = new THREE.CanvasTexture(cv); t.mapping = THREE.EquirectangularReflectionMapping; t.encoding = THREE.sRGBEncoding;
+  const pm = new THREE.PMREMGenerator(renderer); const env = pm.fromEquirectangular(t).texture; pm.dispose(); t.dispose(); return env;
+}
+function makeRenderer(w, h) {
+  const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+  r.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); r.setSize(w, h, false);
+  r.outputEncoding = THREE.sRGBEncoding; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.0;
+  return r;
+}
+function addLights(scene) {
+  scene.add(new THREE.HemisphereLight(0xfff1df, 0x2a1c14, .5));
+  const k = new THREE.DirectionalLight(0xffffff, 1.1); k.position.set(60, 140, 120); scene.add(k);
+  const rim = new THREE.DirectionalLight(0xffd29a, .5); rim.position.set(-100, 30, -80); scene.add(rim);
+}
+
+// 手臂：椭圆截面，周长按手围（皮肤会被轻微压住，取 92%）
+function armGroup(skin) {
+  const g = new THREE.Group(), k = wrist * 10 * .92 / (2 * Math.PI * 1.011);
+  const mat = new THREE.MeshStandardMaterial({ color: skin, roughness: .7, metalness: 0 });
+  const fore = new THREE.Mesh(new THREE.CylinderGeometry(k, k * 1.35, 170, 48, 1, true), mat);
+  fore.rotation.z = Math.PI / 2; fore.position.x = 85; fore.scale.set(.85, 1, 1.15); g.add(fore);
+  const joint = new THREE.Mesh(new THREE.SphereGeometry(k, 40, 24), mat); joint.scale.set(.9, .85, 1.15); g.add(joint);
+  const palm = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 28), mat); palm.scale.set(k * 2.3, k * .78, k * 1.5); palm.position.x = -k * 2.2; g.add(palm);
+  const thumb = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), mat); thumb.scale.set(k * 1.3, k * .45, k * .45); thumb.position.set(-k * 2.2, -k * .1, k * 1.45); thumb.rotation.y = .5; g.add(thumb);
+  g.traverse(o => { if (o.isMesh) o.userData.own = true; });
+  g.userData.k = k; return g;
+}
+
+// ================= 3D 主视图（设计、试戴、后台预览共用一个画布） =================
+let redrawFlag = true; const requestRedraw = () => { redrawFlag = true; };
+const viewer = {
+  init() {
+    if (this.r) return true;
+    if (typeof THREE === 'undefined') return false;
+    this.r = makeRenderer(400, 400);
+    this.scene = new THREE.Scene(); this.scene.environment = makeEnv(this.r); addLights(this.scene);
+    this.cam = new THREE.PerspectiveCamera(30, 1, 1, 3000);
+    this.root = new THREE.Group(); this.scene.add(this.root);
+    this.rx = -0.85; this.ry = 0; this.spin = true;
+    const el = this.r.domElement; let down = null, moved = 0;
+    el.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; moved = 0; el.setPointerCapture(e.pointerId); this.spin = false; });
+    el.addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - down[0], dy = e.clientY - down[1]; moved += Math.abs(dx) + Math.abs(dy);
+      this.ry += dx * .01; this.rx = Math.max(-1.5, Math.min(1.5, this.rx + dy * .01)); down = [e.clientX, e.clientY]; requestRedraw(); });
+    el.addEventListener('pointerup', e => { if (down && moved < 6 && this.onPick) this.pick(e); down = null; });
+    el.addEventListener('pointercancel', () => { down = null; });
+    const loop = () => {
+      if (this.host && this.host.isConnected && !this.host.closest('[hidden]')) {
+        const w = this.host.clientWidth, h = this.host.clientHeight, pr = this.r.getPixelRatio();
+        if (w && (Math.abs(el.width - w * pr) > 1 || Math.abs(el.height - h * pr) > 1)) { this.r.setSize(w, h, false); this.cam.aspect = w / h; this.cam.updateProjectionMatrix(); redrawFlag = true; }
+        if (this.spin && !matchMedia('(prefers-reduced-motion: reduce)').matches) { this.ry += .004; redrawFlag = true; }
+        if (redrawFlag) { this.root.rotation.set(this.rx, this.ry, 0); this.r.render(this.scene, this.cam); redrawFlag = false; }
+      }
+      requestAnimationFrame(loop);
+    };
+    loop(); return true;
+  },
+  mount(host) { if (!this.init()) { host.insertAdjacentHTML('beforeend', '<div class="empty">3D 组件没加载出来，请检查网络后刷新</div>'); return false; } this.host = host; host.prepend(this.r.domElement); redrawFlag = true; return true; },
+  show(beads, opts = {}) {
+    if (!this.r) return;
+    if (this.ring) { this.root.remove(this.ring); disposeGroup(this.ring); }
+    if (this.arm) { this.root.remove(this.arm); disposeGroup(this.arm); this.arm = null; }
+    this.ring = ringGroup(beads, opts.sel); this.onPick = opts.onPick || null;
+    const R = this.ring.userData.R, maxD = this.ring.userData.maxD;
+    if (opts.mode === 'wrist') {
+      this.arm = armGroup(opts.skin || SKINS[0]); this.root.add(this.arm);
+      this.ring.rotation.y = Math.PI / 2;
+      // 手串挂在手腕上：内圈顶部贴住手腕顶部
+      const k = this.arm.userData.k, sag = Math.max(0, (R - mainSize(beads) / 2) - k * .85);
+      this.ring.position.set(10, -sag, 0);
+      this.cam.position.set(0, 0, 260); this.cam.lookAt(0, 0, 0);
+      if (opts.resetView) { this.rx = .45; this.ry = -.6; this.spin = false; }
+    } else {
+      const dist = (R + maxD) / Math.tan(15 * Math.PI / 180) * 1.12;
+      this.cam.position.set(0, 0, Math.max(80, dist)); this.cam.lookAt(0, 0, 0);
+      if (opts.resetView) { this.rx = -0.85; this.ry = 0; this.spin = true; }
+    }
+    this.cam.near = 1; this.cam.far = 3000; this.cam.updateProjectionMatrix();
+    this.root.add(this.ring); requestRedraw();
+  },
+  pick(e) {
+    const rect = this.r.domElement.getBoundingClientRect();
+    const p = new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1);
+    const rc = new THREE.Raycaster(); rc.setFromCamera(p, this.cam);
+    const hit = rc.intersectObjects(this.ring.children).find(h => h.object.userData.i !== undefined);
+    this.onPick(hit ? hit.object.userData.i : null);
+  }
+};
+
+// ================= 3D 缩略图（模板卡片、调色板、分享图） =================
+let thumbR = null, thumbScene, thumbCam, thumbSize = 0;
+function thumb(beads, size = 256, tilt = -0.85) {
+  const key = beads.join(',') + '@' + size + '@' + tilt + '@' + wrist; if (thumbCache.has(key)) return thumbCache.get(key);
+  if (typeof THREE === 'undefined') return '';
+  if (!thumbR) { thumbR = makeRenderer(size, size); thumbR.setPixelRatio(1); thumbScene = new THREE.Scene(); thumbScene.environment = makeEnv(thumbR); addLights(thumbScene); thumbCam = new THREE.PerspectiveCamera(30, 1, 1, 3000); }
+  if (thumbSize !== size) { thumbR.setSize(size, size, false); thumbSize = size; }
+  const g = ringGroup(beads); g.rotation.x = tilt; thumbScene.add(g);
+  const R = g.userData.R, maxD = g.userData.maxD;
+  const dist = beads.length === 1 ? maxD * 2.3 / Math.tan(15 * Math.PI / 180) * .5 : (R + maxD) / Math.tan(15 * Math.PI / 180) * 1.08;
+  if (beads.length === 1) { g.position.set(0, R, 0); g.rotation.x = 0; g.children[0] && (g.children[0].rotation.z = Math.PI / 2 + .5); }
+  thumbCam.position.set(0, 0, dist); thumbCam.lookAt(0, 0, 0);
+  thumbR.render(thumbScene, thumbCam);
+  const url = thumbR.domElement.toDataURL('image/png');
+  thumbScene.remove(g); disposeGroup(g);
+  thumbCache.set(key, url); return url;
+}
+const beadThumb = id => ITEM[id] && ITEM[id].photo ? photoUrl(ITEM[id].photo) : thumb([id], 112, 0);   // 有实拍图就给用户看实拍
+function itemPreviewThumb(it) {   // 后台编辑中的珠子还没入库，临时放进索引画一张
+  const id = '__p_' + it.id; ITEM[id] = { ...it, id: it.id, mm: +it.mm || 8 };
+  const u = thumb([id], 112, 0); thumbCache.delete(id + '@112@0@' + wrist); delete ITEM[id]; return u;
+}
+let refreshThumbs = () => {};
+
+// ================= 工作台：首页就是一条可以直接改的手串 =================
+let design = null, sel = null, history = [], curCat = 'all', curSize = 'all', viewMode = 'ring', skin = SKINS[0], tplIdx = 0, shared = null, afterWrist = null;
+const designs = store.get('designs', []);
+const orders = store.get('orders', []);
+const clone = o => JSON.parse(JSON.stringify(o));
+function newDesign(src, data) { design = Object.assign({ id: 'd' + Date.now() + Math.random().toString(36).slice(2, 5), source: src, name: '', meaning: '', beads: [], edited: false }, data); sel = null; history = []; }
+function autoMeaning(beads) {
+  const tags = []; beads.forEach(id => ITEM[id].tags.forEach(t => { if (!tags.includes(t) && t !== '点缀') tags.push(t); }));
+  return tags.length ? '寓意：' + tags.slice(0, 6).join(' · ') : '';
+}
+function fromTemplate(t) { return { source: 'tpl', tplId: t.id, name: t.name, meaning: t.meaning, special: t.special, pattern: t.pattern, tail: t.tail, beads: fill(t.special, t.pattern, t.tail) }; }
+const validTemplates = () => TEMPLATES.filter(t => validIds(t.special) && validIds(t.pattern) && validIds(t.tail || []));
+
+// 改动：记录撤销、标记已编辑、自动存进“我的作品”
+function commit(beads, keepSel) {
+  history.push(design.beads); if (history.length > 60) history.shift();
+  design.beads = beads; design.edited = true; if (!keepSel) sel = null;
+  renderStudio(false); saveSoon();
+}
+let saveT; function saveSoon() { clearTimeout(saveT); saveT = setTimeout(() => saveDesign(), 400); }
+// 打开编辑页（上一条有改动的话已经自动保存；第一次先量手围）
+function openEditor(src, data, msg) {
+  saveDesign(); newDesign(src, data); store.set('draftId', design.id);
+  if (askWristOnce()) { afterWrist = 'editor'; wristReason = '先量一下手围，后面每条手串都按它算颗数和长度。只问这一次，之后可以随时在右上角修改。'; go('wrist'); }
+  else go('editor');
+  if (msg) toast(msg);
+}
+const loadDesign = openEditor;
+let wristReason = '';
+
+function fillUp(beads, id) {
+  const b = beads.slice(), mm = ITEM[id].mm;
+  while (b.length < 80 && lengthOf(b) + mm / 2 < targetLen(b.concat(id))) b.push(id);
+  return b;
+}
+function renderMeter(el, beads) {
+  const f = fitOf(beads), t = f.t, max = t * 1.25;
+  el.className = 'meter' + (f.ok ? ' ok' : '');
+  el.querySelector('.lenfill').style.width = Math.min(100, f.len / max * 100) + '%';
+  const z = el.querySelector('.lenzone'); z.style.left = ((t - 4) / max * 100) + '%'; z.style.width = (10 / max * 100) + '%';
+  el.querySelector('.fittext').innerHTML = `<span aria-hidden="true">${f.ok ? '✓' : '!'}</span>` + f.text + `<span class="muted">按 ${wrist}cm 手围，建议 ${t - 4}–${t + 6}mm</span>`;
+}
+function notesHtml(d) {
+  const b = d.beads, ids = [...new Set(b)];
+  return ids.map(id => { const it = ITEM[id], n = b.filter(x => x === id).length, note = (d.notes || {})[id];
+    return `<div class="line"><span class="thumb"><img src="${beadThumb(id)}" alt=""${ITEM[id] && ITEM[id].photo ? ' class="real"' : ''}></span><span class="main"><b>${esc(label(it))} × ${n}</b>${(it.points || []).length ? `<span class="caption ink2">${esc(it.points.join(' · '))}</span>` : ''}${it.safety ? `<span class="caption" style="color:var(--danger)">${esc(it.safety)}</span>` : ''}${note ? `<span class="caption ink2">${esc(note)}</span>` : it.meaning ? `<span class="caption ink2">${esc(it.meaning)}</span>` : `<span class="tags">${tagsHtml(it.tags.filter(t => t !== '点缀').slice(0, 2))}</span>`}</span><span class="amt">¥${it.price * n}</span></div>`; }).join('');
+}
+// ================= 按颗数串：用户想要 18 颗、21 颗这种有说法的数，反推珠子大小 =================
+let COUNT_RULES = [];
+const COUNT_FALLBACK = [12, 14, 18, 21];
+const isAcc = id => ITEM[id].spacer || ITEM[id].mat === 'metal';   // 隔珠、隔片、金属配件不算颗数
+function renderCountRow(b) {
+  const counts = COUNT_RULES.length ? [...new Set(COUNT_RULES.map(c => c.count))].sort((x, y) => x - y) : COUNT_FALLBACK;
+  const n = b.filter(id => !isAcc(id)).length;
+  $('countRow').hidden = !b.length;
+  $('countRow').innerHTML = b.length ? `<span class="lbl">按颗数串</span>` + counts.map(c => `<button type="button" class="chip${c === n ? ' on' : ''}" data-count="${c}">${c} 颗</button>`).join('') : '';
+}
+function setCount(n) {
+  const b = design.beads, main = b.filter(id => !isAcc(id));
+  if (!main.length) return;
+  const cnt = {}; main.forEach(id => cnt[ITEM[id].name] = (cnt[ITEM[id].name] || 0) + 1);
+  const mainName = Object.keys(cnt).sort((x, y) => cnt[y] - cnt[x])[0];
+  // 按原来的排法循环，主珠换成某个尺寸，数够 n 颗（隔珠照原样夹在中间）
+  const build = it => { const out = []; let k = 0, i = 0;
+    while (k < n && i < 600) { const id0 = b[i % b.length], id = ITEM[id0].name === mainName && !isAcc(id0) ? it.id : id0; out.push(id); if (!isAcc(id)) k++; i++; }
+    return out; };
+  // 料包里这种主珠的每个尺寸都试一遍，挑串出来最接近合适长度的
+  let best = null;
+  BEADS.filter(it => it.name === mainName && !isAcc(it.id)).forEach(it => { const seq = build(it), diff = lengthOf(seq) - (wrist * 10 + margin(it.mm));
+    if (!best || Math.abs(diff) < Math.abs(best.diff)) best = { it, seq, diff }; });
+  if (!best || best.diff < -12 || best.diff > 12) {
+    const need = Math.round((wrist * 10 + 10) / n * 2) / 2;
+    return toast(`${wrist}cm 手围串 ${n} 颗，主珠要约 ${need}mm，料包里的${mainName}没有这个尺寸`);
+  }
+  commit(best.seq);
+  const rule = COUNT_RULES.find(c => c.count === n), f = fitOf(best.seq);
+  toast(`${n} 颗 · ${mainName} ${best.it.mm}mm${f.ok ? '，长度刚好' : '，长度还差一点，可以加减隔珠'}${rule && rule.meaning ? '。' + rule.meaning.slice(0, 28) : ''}`);
+}
+document.addEventListener('click', e => { const c = e.target.closest('[data-count]'); if (c && design) setCount(+c.dataset.count); });
+
+function render3D(reset) { viewer.show(design.beads, { mode: viewMode, skin, sel, resetView: reset, onPick: i => { sel = (i === null || sel === i) ? null : i; renderStudio(false); } }); }
+
+function renderStudio(reset) {
+  const b = design.beads;
+  render3D(reset);
+  $('studioStage').querySelector('.empty')?.remove();
+  if (!b.length) $('studioStage').insertAdjacentHTML('beforeend', `<div class="empty">第一步：从下面挑一颗主珠<br>${wrist}cm 手围，8mm 珠一圈约 ${perRound(8)} 颗，挑好可以一键铺满</div>`);
+  $('hudInfo').textContent = b.length ? `${b.length} 颗 · ${lengthOf(b)}mm` : '';
+  if (document.activeElement !== $('dName')) $('dName').value = design.name || '我的手串';
+  $('dTags').innerHTML = tagsHtml(topTags(b, 4));
+  $('dMeaning').textContent = (design.edited ? '' : design.meaning) || autoMeaning(b) || '加几颗珠子，这里会显示寓意。';
+  renderMeter($('meter'), b); renderCountRow(b);
+  $('dPrice').textContent = b.length ? priceOf(b) + 15 : 0;
+  $('dSpec').textContent = b.length ? `做成实物 · ${b.length} 颗 · 含手工费` : '加几颗珠子就能做成实物';
+  const tools = $('selTools');
+  if (sel !== null && b[sel]) {
+    const it = ITEM[b[sel]];
+    tools.innerHTML = `<span class="caption" style="width:100%">选中第 ${sel + 1} 颗：${esc(label(it))}。点下面的珠子可以直接替换它</span><button class="chip" data-op="left">往前挪</button><button class="chip" data-op="right">往后挪</button><button class="chip danger" data-op="del">移除</button><button class="chip" data-op="desel">取消选中</button>`;
+    $('palHint').textContent = '点一颗替换选中的珠子';
+  } else {
+    // 一键铺满：用最近加的那颗珠子把这圈补到合适长度
+    const last = [...b].reverse().find(id => !ITEM[id].spacer), fillN = last ? fillUp(b, last).length - b.length : 0;
+    tools.innerHTML = (fillN > 0 ? `<button class="chip on" data-op="fillup">用「${esc(label(ITEM[last]))}」铺满剩下的 ${fillN} 颗</button>` : '') +
+      (history.length ? `<button class="chip" data-op="undo">撤销</button>` : '') +
+      (b.length && design.pattern ? `<button class="chip" data-op="refit">按手围重排</button>` : '') +
+      (fillN > 0 && b.length <= 2 ? `<span class="hint">铺满后，在 3D 里点一颗珠子，再点下面的珠子就能换成配珠</span>` : '');
+    $('palHint').textContent = b.length ? '点珠子加到手串上' : '先挑一颗主珠';
+  }
+  tools.hidden = !tools.innerHTML;
+  ['toShare', 'toOrder'].forEach(id => $(id).disabled = b.length < 6);
+  $('notesCard').hidden = !b.length; $('dNotes').innerHTML = notesHtml(design);
+  renderReview();
+}
+$('dName').addEventListener('input', () => { design.name = $('dName').value.trim(); design.edited = true; saveSoon(); });
+$('selTools').onclick = e => {
+  const op = e.target.dataset.op; if (!op) return;
+  const b = design.beads.slice();
+  if (op === 'del') commit((b.splice(sel, 1), b));
+  if (op === 'left' || op === 'right') { const j = (sel + (op === 'left' ? -1 : 1) + b.length) % b.length; [b[sel], b[j]] = [b[j], b[sel]]; sel = j; commit(b, true); }
+  if (op === 'desel') { sel = null; renderStudio(false); }
+  if (op === 'undo') { design.beads = history.pop(); sel = null; renderStudio(false); saveSoon(); }
+  if (op === 'refit') commit(fill(design.special || [], design.pattern, design.tail));
+  if (op === 'fillup') { const last = [...b].reverse().find(id => !ITEM[id].spacer); if (last) { commit(fillUp(b, last)); toast('铺满了，点一颗珠子可以换成别的'); } }
+};
+document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
+  viewMode = b.dataset.mode; document.querySelectorAll('[data-mode]').forEach(x => x.classList.toggle('on', x === b)); render3D(true);
+});
+
+function renderKits() {
+  const cats = Object.keys(MATS).filter(m => BEADS.some(b => b.mat === m));
+  $('catChips').innerHTML = [['all', '全部']].concat(cats.map(m => [m, MATS[m]])).map(([v, n]) => `<button class="chip ${curCat === v ? 'on' : ''}" data-cat="${v}">${n}</button>`).join('');
+  const sizes = [...new Set(BEADS.filter(b => !b.spacer && (curCat === 'all' || b.mat === curCat)).map(b => b.mm))].sort((a, b) => a - b);
+  if (curSize !== 'all' && !sizes.includes(curSize)) curSize = 'all';
+  $('sizeChips').innerHTML = sizes.length > 1 ? [['all', '全部尺寸']].concat(sizes.map(m => [m, m + 'mm'])).map(([v, n]) => `<button class="chip ${curSize === v ? 'on' : ''}" data-size="${v}">${n}</button>`).join('') : '';
+  const list = BEADS.filter(b => (curCat === 'all' || b.mat === curCat) && (curSize === 'all' || b.mm === curSize || b.spacer));
+  $('palette').innerHTML = list.length ? list.map(it => `<button class="cell" data-id="${it.id}" title="${esc((it.points || []).join(' · ') || MATS[it.mat] || '')} · ${esc(it.tags.join('、'))}"><span class="traybox"><img src="${beadThumb(it.id)}" alt=""${it.photo ? ' class="real"' : ''}></span><span class="nm">${esc(it.name)}</span><span class="mm">${it.spacer ? it.mm + 'mm 厚' : it.mm + 'mm'}</span><em>¥${it.price}/颗</em><span class="note">${!it.spacer && it.mm >= 6 && it.mat !== 'metal' ? '一圈约 ' + perRound(it.mm) + ' 颗' : '点缀'}</span></button>`).join('') : '<div class="caption muted">这一类还没有上架的珠子</div>';
+}
+$('catChips').onclick = e => { const v = e.target.dataset.cat; if (v) { curCat = v; renderKits(); } };
+$('sizeChips').onclick = e => { const v = e.target.dataset.size; if (v) { curSize = v === 'all' ? 'all' : +v; renderKits(); } };
+$('palette').onclick = e => {
+  const c = e.target.closest('.cell'); if (!c) return;
+  const b = design.beads.slice(); buzz();
+  if (sel !== null && b[sel]) { b[sel] = c.dataset.id; return commit(b, true); }   // 选中了就替换
+  if (b.length >= 80) return toast('珠子太多啦');
+  b.push(c.dataset.id); commit(b);
+};
+
+
+// ================= AI 帮你看看：串好后先肯定，再给最多两条能一键采纳的建议 =================
+let review = null;   // { did, key, loading, praise, meaning, sugg: [{ text, op, from, to, id, count, applied }] }
+const GIFT = { love: '送恋人、闺蜜或自己戴都合适', study: '考试季戴上很应景', safe: '送长辈、送出远门的朋友都合适', wealth: '新年、开工戴很应景', career: '换工作、升职季戴很合适', guard: '本命年戴正合适' };
+function compo(b) { const cnt = {}; b.forEach(id => cnt[id] = (cnt[id] || 0) + 1); return Object.keys(cnt).sort((a, c) => cnt[c] - cnt[a]).map(id => ({ id, n: cnt[id] })); }
+function applyOp(b, s) {
+  const out = b.slice();
+  if (s.op === 'swapAll') return out.map(x => x === s.from ? s.to : x);
+  if (s.op === 'accent') {   // 在一圈里均匀换上几颗点缀
+    const k = Math.max(1, Math.min(6, s.count || 2));
+    for (let i = 0; i < k; i++) out[Math.round(i * out.length / k) % out.length] = s.id;
+    return out;
+  }
+  return out;
+}
+function validSugg(s, b) {
+  if (!s || !s.text) return false;
+  if (s.op === 'swapAll') return ITEM[s.to] && b.includes(s.from) && s.from !== s.to;
+  if (s.op === 'accent') return !!ITEM[s.id];
+  return false;
+}
+function localReview(b) {
+  const c = compo(b), main = ITEM[c[0].id], second = c[1] && ITEM[c[1].id];
+  const names = new Set(b.map(id => ITEM[id].name)), hasMetal = b.some(id => ITEM[id].mat === 'metal');
+  const praise = names.size === 1 ? `整串都是${main.name}，干净耐看，很显质感。`
+    : `${main.name}做主珠，${second.name}点缀，颜色有主有次，看着很舒服。`;
+  const tags = topTags(b, 3), cat = tags[0] ? tagClass(tags[0]) : '';
+  const meaning = tags.length ? `${tags.join('、')}，${GIFT[cat] || '自己戴、送人都合适'}。` : '';
+  const sugg = [];
+  if (!hasMetal) {
+    const m = BEADS.filter(x => x.mat === 'metal' && !x.spacer).sort((x, y) => y.tags.length - x.tags.length)[0];
+    if (m) sugg.push({ op: 'accent', id: m.id, count: 2, text: `在两侧换上 2 颗${m.name}，加一点亮色，整串更精神。` });
+  }
+  if (names.size === 1) {
+    const pal = BEADS.filter(x => !x.spacer && x.mat !== 'metal' && x.name !== main.name && Math.abs(x.mm - main.mm) <= 2);
+    const pick = pal.find(x => x.mat !== main.mat && x.tags.some(t => !main.tags.includes(t))) || pal[0];
+    if (pick) sugg.push({ op: 'accent', id: pick.id, count: 3, text: `再换 3 颗${pick.name}做配珠，顺便带上「${pick.tags[0]}」的寓意。` });
+  } else if (names.size >= 4) {
+    const least = c[c.length - 1];
+    if (ITEM[least.id].mat !== 'metal') sugg.push({ op: 'swapAll', from: least.id, to: main.id, text: `颜色有点多，把${ITEM[least.id].name}换成${main.name}会更统一。` });
+  }
+  return { praise, meaning, sugg: sugg.slice(0, 2) };
+}
+async function runReview() {
+  const b = design.beads.slice(), key = b.join(',');
+  review = { did: design.id, key, loading: true }; renderReview();
+  let r = null;
+  if (API) {
+    try { const j = await apiJson('/ai/review', { beads: b, wrist, fitOk: fitOf(b).ok }); r = { praise: j.praise, meaning: j.meaning, sugg: (j.sugg || []).filter(s => validSugg(s, b)) }; } catch (e) {}
+  }
+  if (!r && sampleFn) {
+    const catalog = BEADS.map(it => `${it.id}|${label(it)}|${MATS[it.mat] || ''}|${it.spacer ? '隔片' : '珠'}|${it.tags.join('/') || '装饰'}`).join('\n');
+    const now = compo(b).map(x => `${x.id}(${label(ITEM[x.id])})×${x.n}`).join('、');
+    const prompt = `你是手串搭配师，帮用户看看她自己串的手串。语气像懂行的朋友：先真诚肯定，再给最多 2 条小建议。只说寓意，不说功效，不用“能量”“转运必备”这类词。\n可用珠子（id|名称尺寸|材质|类型|寓意）：\n${catalog}\n\n她的手串（共 ${b.length} 颗，按顺序）：${now}\n手围 ${wrist}cm，长度${fitOf(b).ok ? '合适' : '不太合适'}。\n\n每条建议必须能一键执行，只能用两种操作：\n- {"op":"accent","id":"珠子id","count":2-4} 在一圈里均匀换上几颗这种珠子做点缀\n- {"op":"swapAll","from":"她手串里的珠子id","to":"珠子id"} 把某种珠子全部换掉\n如果她串得已经很好，可以不给建议。\n只输出 JSON：{"praise":"20-40字的肯定","meaning":"25-50字，这条整体寓意什么、适合送谁","sugg":[{"op":"...","text":"20-40字，说清改什么、为什么"}]}`;
+    try {
+      const j = await sampleFn.json(prompt, { modelTier: 'quick' });
+      if (j && j.praise) r = { praise: String(j.praise).slice(0, 80), meaning: String(j.meaning || '').slice(0, 100),
+        sugg: (Array.isArray(j.sugg) ? j.sugg : []).map(s => ({ ...s, text: String(s.text || '').slice(0, 60) })).filter(s => validSugg(s, b)).slice(0, 2) };
+    } catch (e) {}
+  }
+  if (!r) r = localReview(b);
+  if (!design || design.id !== review.did) return;
+  review = { did: design.id, key, ...r };
+  design.aiMeaning = r.meaning; saveSoon();
+  renderReview();
+}
+function renderReview() {
+  const card = $('reviewCard'), b = design.beads, mine = review && review.did === design.id;
+  card.hidden = !(mine || (b.length >= 6 && fitOf(b).ok));
+  if (card.hidden) return;
+  const go = $('reviewGo'), body = $('reviewBody');
+  if (!mine) { go.hidden = false; go.textContent = '看看这条'; body.innerHTML = '<p class="mean">串好了？让 AI 看看搭配和寓意，给你一两条能一键采纳的小建议。</p>'; return; }
+  if (review.loading) { go.hidden = true; body.innerHTML = '<p class="mean">AI 正在看你的手串…</p>'; return; }
+  // 撤销后恢复建议状态：回到点评时的样子就全部可采纳；回到某条建议采纳后的样子，就只保留它之前采纳的
+  const cur = b.join(',');
+  if (cur === review.key) review.sugg.forEach(x => x.applied = false);
+  const hit = review.sugg.find(x => x.applied && x.afterKey === cur);
+  if (hit) review.sugg.forEach(x => { if (x.applied && x.order > hit.order) x.applied = false; });
+  const stale = ![review.key, ...review.sugg.filter(x => x.applied).map(x => x.afterKey)].includes(cur);
+  go.hidden = !stale; go.textContent = '再看一次';
+  body.innerHTML = `<p class="praise">${esc(review.praise)}</p>` + (review.meaning ? `<p class="mean"><b>寓意</b>　${esc(review.meaning)}</p>` : '') +
+    review.sugg.map((s, i) => `<div class="sugg"><p>${esc(s.text)}</p>${s.applied ? '<span class="done">✓ 已采纳</span>' : `<button class="btn ghost sm" type="button" data-sugg="${i}"${stale ? ' disabled' : ''}>用这个建议</button>`}</div>`).join('') +
+    (!review.sugg.length ? '<p class="review-note">这条已经很完整了，可以直接下单。</p>' : '') +
+    (stale ? '<p class="review-note">珠子改过了，建议可能不准，点「再看一次」。</p>' : '');
+}
+$('reviewGo').onclick = runReview;
+$('reviewBody').onclick = e => {
+  const i = e.target.dataset.sugg; if (i === undefined) return;
+  const s = review.sugg[+i], nb = applyOp(design.beads, s);
+  s.applied = true; s.order = Date.now(); s.afterKey = nb.join(','); commit(nb);
+  toast('已采纳，不喜欢可以点「撤销」');
+};
+
+// ================= AI 配寓意 =================
+let sampleFn = null;
+$('wishChips').onclick = e => { if (e.target.dataset.w) askAi(e.target.dataset.w); };
+// 没有 AI 时：按关键词匹配珠子寓意，保证主珠、配珠、点缀三种不同的珠子
+const WISH_SYN = { 考: '考试', 学: '学业', 财: '富贵', 钱: '富贵', 富: '富贵', 爱: '恋爱', 女朋友: '恋爱', 男朋友: '恋爱', 老婆: '甜蜜', 闺蜜: '好人缘', 桃花: '恋爱', 平安: '平安', 爸: '平安', 妈: '平安', 长辈: '长寿', 健康: '平安', 升职: '升职', 工作: '事业', 事业: '事业', 本命年: '本命年', 转运: '好运', 运: '好运', 静: '静心', 压力: '静心', 旅: '出行', 智: '智慧' };
+function wishTags(text) { const w = new Set(); Object.keys(WISH_SYN).forEach(k => { if (text.includes(k)) w.add(WISH_SYN[k]); }); return w; }
+function localPick(wish, opt = {}) {
+  const want = wishTags(wish);
+  const score = it => it.tags.filter(t => want.has(t)).length;
+  const ok = opt.filter || (() => true), avoid = opt.avoid || [];
+  let pool = BEADS.filter(it => !it.spacer && it.mat !== 'metal' && it.mm >= 6 && it.mm <= 10 && ok(it));
+  if (pool.filter(it => !avoid.includes(it.name)).length >= 2) pool = pool.filter(it => !avoid.includes(it.name));
+  if (!pool.length) return null;
+  const ranked = pool.map(it => ({ it, s: score(it), r: Math.random() })).sort((a, b) => b.s - a.s || a.r - b.r);
+  const main = ranked[0].it;
+  const accent = (ranked.find(x => x.it.name !== main.name && x.s > 0) || ranked.find(x => x.it.name !== main.name && x.it.mat !== main.mat) || ranked.find(x => x.it.name !== main.name) || ranked[0]).it;
+  const metals = BEADS.filter(it => it.mat === 'metal' && ok(it)).map(it => ({ it, s: score(it) + (it.spacer ? 0 : .5) })).sort((a, b) => b.s - a.s);
+  const deco = metals[0] && metals[0].it;
+  const pattern = [main.id, main.id, accent.id, main.id, main.id].concat(deco ? [deco.id] : []);
+  const why = it => `${it.tags.slice(0, 2).join('、') || '吉祥'}`;
+  const notes = { [main.id]: `主珠 · ${why(main)}`, [accent.id]: `配珠 · ${why(accent)}` };
+  if (deco) notes[deco.id] = `点缀 · ${deco.tags.filter(t => t !== '点缀').slice(0, 2).join('、') || '提亮整串'}`;
+  const hit = [...want][0];
+  return { name: `${main.name}${hit || main.tags[0] || '心愿'}串`, meaning: `以${main.name}为主，寓意${why(main)}；${accent.name}添${why(accent)}${deco ? '，' + deco.name + '点缀' : ''}。`, special: [], pattern, notes };
+}
+// ---- AI 配：对话。每次返回 3 条候选（可能混一条匹配的热门款），可以接着追问 ----
+let chat = store.get('chat', []);   // [{ role: 'me' | 'ai', text, cands: [{ src, tplId, name, meaning, special, pattern, tail, notes }] }]
+let chatBusy = false;
+const REFINES = ['颜色淡一点', '100 以内', '换成水晶', '男生戴的', '再来三条'];
+const hexL = h => { const n = parseInt(h.slice(1), 16); return (0.3 * (n >> 16 & 255) + 0.59 * (n >> 8 & 255) + 0.11 * (n & 255)) / 255; };
+// 把整段对话里说过的要求合在一起：寓意、预算、颜色深浅、材质、男生款
+function constraintsOf(texts) {
+  const all = texts.join('；'), c = { text: all };
+  const m = all.match(/(\d{2,4})\s*(块|元)?\s*(以内|以下|内)/); if (m) c.budget = +m[1];
+  if (/淡|浅|清新|素/.test(all)) c.light = true;
+  if (/深|沉稳|低调/.test(all)) c.dark = true;
+  if (/水晶/.test(all)) c.mat = 'crystal'; else if (/木|紫檀|菩提|文玩/.test(all)) c.mat = 'wood'; else if (/玉|石头|南红|绿松/.test(all)) c.mat = 'stone';
+  if (/男/.test(all)) c.male = true;
+  return c;
+}
+function beadOk(c) {
+  return it => {
+    if (c.mat === 'crystal' && it.mat !== 'crystal') return false;
+    if (c.mat === 'wood' && !['wood', 'bodhi'].includes(it.mat)) return false;
+    if (c.mat === 'stone' && it.mat !== 'stone') return false;
+    if (c.light && hexL(it.c[0]) < .62) return false;
+    if (c.dark && hexL(it.c[0]) > .7) return false;
+    if (c.male && (it.tags.includes('甜蜜') || it.tags.includes('恋爱'))) return false;
+    if (c.budget && it.price > Math.max(2, (c.budget - 15) / 18)) return false;
+    return true;
+  };
+}
+const candPrice = d => priceOf(fill(d.special || [], d.pattern, d.tail)) + 15;
+function localCands(c, shownNames) {
+  const out = [], avoid = [...shownNames];
+  for (let i = 0; i < 6 && out.length < 3; i++) {
+    const r = localPick(c.text, { filter: beadOk(c), avoid });
+    if (!r) break;
+    const main = ITEM[r.pattern[0]].name; avoid.push(main);
+    if (out.some(x => x.pattern.join() === r.pattern.join())) continue;
+    if (c.budget && candPrice(r) > c.budget) continue;
+    out.push({ src: 'ai', ...r });
+  }
+  // 混一条匹配的热门款
+  const want = wishTags(c.text);
+  const hot = validTemplates().map(t => ({ t, s: topTags(fill(t.special, t.pattern, t.tail), 6).filter(tag => want.has(tag) || c.text.includes(tag)).length }))
+    .filter(x => x.s > 0 && fill(x.t.special, x.t.pattern, x.t.tail).every(id => beadOk(c)(ITEM[id]) || ITEM[id].mat === 'metal') && (!c.budget || candPrice(x.t) <= c.budget) && !shownNames.includes(x.t.name))
+    .sort((a, b) => b.s - a.s)[0];
+  if (hot) { const t = hot.t; out.splice(Math.min(1, out.length), 0, { src: 'tpl', tplId: t.id, name: t.name, meaning: t.meaning, special: t.special, pattern: t.pattern, tail: t.tail }); }
+  return out.slice(0, 3);
+}
+async function genCands(userText) {
+  const mine = chat.filter(m => m.role === 'me').map(m => m.text);
+  const c = constraintsOf(/再来/.test(userText) ? mine : mine.slice(-4));
+  const shown = chat.filter(m => m.cands).flatMap(m => m.cands.map(x => x.name)).slice(-9);
+  let cands = null, note = '';
+  if (API) {   // 先查方案库：现成搭配按手围和预算微调；“再来三条”时跳过已给过的
+    try {
+      const seenIds = chat.filter(m => m.cands).flatMap(m => m.cands.map(x => x.id)).filter(Boolean);
+      const r = await apiJson('/plans/match', { text: userText, history: mine.slice(0, -1).slice(-4), wrist, exclude: seenIds });
+      if (r.results && r.results.length) return { text: r.reply, cands: r.results.map(x => ({ src: 'plan', id: x.id, name: x.name, meaning: x.meaning, tips: x.tips, special: x.special, pattern: x.pattern, tail: x.tail, fixed: x.fixed })) };
+    } catch (e) {}
+    try {
+      const hist = chat.slice(-6).map(m => m.role === 'me' ? '用户：' + m.text : '你：' + m.text + (m.seen ? '（照片：' + m.seen + '）' : '') + (m.cands ? '（给了：' + m.cands.map(x => x.name).join('、') + '）' : ''));
+      const r = await apiJson('/ai/design', { text: userText, history: hist, wrist });
+      if (r.designs && r.designs.length) return { text: r.reply || `配了 ${r.designs.length} 条`, cands: r.designs };
+    } catch (e) {}   // 503：没配模型；502：模型出错。都退回本地规则
+  }
+  if (!cands && sampleFn) {
+    const catalog = BEADS.map(it => `${it.id}|${label(it)}|${MATS[it.mat] || ''}|${it.spacer ? '隔片' : '珠'}|¥${it.price}|${it.tags.join('/') || '装饰'}`).join('\n');
+    const hist = chat.slice(-6).map(m => m.role === 'me' ? `用户：${m.text}` : `你：${m.text}${m.cands ? '（给了：' + m.cands.map(x => x.name).join('、') + '）' : ''}`).join('\n');
+    const prompt = `你是手串设计师，在和用户聊天帮她配手串。只用下面目录里的珠子，每颗单独卖、可以自由组合。只说寓意，不说功效。\n目录（id|名称尺寸|材质|类型|单价|寓意）：\n${catalog}\n\n用户手围 ${wrist}cm，手工费 ¥15。\n之前的对话：\n${hist || '（无）'}\n用户刚说：${userText}\n\n请给 3 条不同的手串，和之前给过的不要重复。每条至少 2 种不同名称的珠子，主珠直径一致。pattern 是循环花型（3-8 颗），special 是只出现一次的开头珠（0-2 颗）。如果用户提了预算，按手围大约 20 颗估算，别超预算。\n只输出 JSON：{"reply":"一句话回应，20-40字，口语化","designs":[{"name":"4-6字","meaning":"20-40字寓意","special":["id"],"pattern":["id"]}]}`;
+    try {
+      const j = await sampleFn.json(prompt, { modelTier: 'quick' });
+      const ds = (j && Array.isArray(j.designs) ? j.designs : []).filter(d => Array.isArray(d.pattern) && d.pattern.length && validIds(d.pattern) && validIds(d.special || []) && new Set(d.pattern.concat(d.special || []).map(id => ITEM[id].name)).size >= 2)
+        .map(d => ({ src: 'ai', name: String(d.name || '心愿手串').slice(0, 10), meaning: String(d.meaning || '').slice(0, 80), special: d.special || [], pattern: d.pattern }));
+      if (ds.length) { cands = ds.slice(0, 3); note = String(j.reply || '').slice(0, 60); }
+    } catch (e) {}
+  }
+  if (!cands) {
+    cands = localCands(c, shown);
+    const bits = [c.budget && `都在 ¥${c.budget} 以内`, c.light && '颜色偏浅', c.dark && '颜色偏深', c.mat === 'crystal' && '用水晶', c.mat === 'wood' && '用木质和菩提', c.male && '偏男生款'].filter(Boolean);
+    note = cands.length ? `配了 ${cands.length} 条${bits.length ? '，' + bits.join('、') : ''}。喜欢哪条点「用这条」，也可以接着说怎么改。`
+      : `按这些要求（${bits.join('、') || '目前的料包'}）配不出来，换个说法试试？`;
+  }
+  return { text: note, cands };
+}
+function candHtml(d, mi, ci) {
+  if (!validIds(d.pattern) || !validIds(d.special || []) || !validIds(d.tail || [])) return '';   // 珠子已下架
+  const beads = fill(d.special || [], d.pattern, d.tail, d.fixed);
+  return `<div class="cand"><span class="traybox"><img src="${thumb(beads, 220, -0.75)}" alt=""></span><div class="body">
+    <span class="nm">${esc(d.name)}${d.src === 'tpl' ? '<span class="badge">热门款</span>' : d.src === 'plan' ? '<span class="badge">精选方案</span>' : ''}</span>
+    <span class="tags">${tagsHtml(topTags(beads, 2))}</span><span class="mean">${esc(d.meaning || '')}</span>
+    <div class="foot"><span class="price">¥${priceOf(beads) + 15}</span><button class="btn ghost sm" type="button" data-use="${mi}.${ci}">用这条</button></div></div></div>`;
+}
+function renderChat() {
+  $('aiWrist').textContent = wrist + 'cm';
+  $('chatTools').hidden = !chat.length;
+  const intro = chat.length ? '' : aiHeroHtml();
+  $('chat').innerHTML = intro + chat.map((m, mi) => m.role === 'me' ? `<div class="msg me">${m.image ? `<img class="photo" src="${m.image}" alt="你拍的手串">` : ''}<div class="bubble">${esc(m.text)}</div></div>`
+    : `<div class="msg ai"><div class="bubble">${esc(m.text)}</div>${m.seen ? `<div class="seen">识别到：${esc(m.seen)}</div>` : ''}${m.cands && m.cands.length ? `<div class="cands">${m.cands.map((d, ci) => candHtml(d, mi, ci)).join('')}</div>` : ''}</div>`).join('') +
+    (chatBusy ? '<div class="msg ai"><div class="bubble wait">正在配…</div></div>' : '');
+  const hasRes = chat.some(m => m.cands && m.cands.length);   // 出过结果后才显示追问快捷词，开场由示例卡代替
+  $('wishChips').innerHTML = hasRes ? REFINES.map(w => `<button type="button" class="chip" data-w="${w}">${w}</button>`).join('') : '';
+  $('wishChips').hidden = !hasRes; $('v-ai').classList.toggle('has-chips', hasRes);
+  $('aiGo').disabled = chatBusy;
+}
+// 开场：三条手串扇形叠在托盘上 + “大家常这样说”示例卡（每张配一条示意手串）
+const EXAMPLES = [
+  { text: '送女朋友，希望她考研顺利', ids: ['fj8', 'fj8', 'zj8', 'fj8', 'fj8', 'sp4'] },
+  { text: '本命年，想要红一点的', ids: ['nh8', 'zt8', 'zt8', 'zt8', 'gp'] },
+  { text: '送爸妈，保平安', ids: ['xy8', 'xy8', 'xy8', 'ls6'] },
+  { text: '想要好运，100 以内', ids: ['hy8', 'hy8', 'hy8', 'zy6'] }
+];
+function aiHeroHtml() {
+  const art = [['fj8', 'fj8', 'cm8', 'sp4'], ['zt8', 'zt8', 'nh8', 'zt8', 'gp'], ['ls8', 'xy8', 'xy8', 'sp4z']]
+    .map(ids => ids.filter(id => ITEM[id])).filter(ids => ids.length).map(ids => `<img src="${thumb(fill([], ids), 264, -0.9)}" alt="">`).join('');
+  const ex = EXAMPLES.map(e => { const ids = e.ids.filter(id => ITEM[id]);
+    return `<button class="example" type="button" data-ex="${esc(e.text)}"><span class="traybox">${ids.length ? `<img src="${thumb(fill([], ids), 200, -0.8)}" alt="">` : ''}</span><span class="body"><q>${esc(e.text)}</q><span class="go">点一下，让 AI 配 ›</span></span></button>`; }).join('');
+  return `<div class="ai-hero"><div class="ai-hero__art">${art}</div><h2>说一句话，AI 帮你配手串</h2><p>送谁、什么寓意、喜欢什么颜色都行。按你的 ${wrist}cm 手围配 3 条给你挑，不满意可以接着说。</p></div>
+    <div class="section-head"><h2>大家常这样说</h2></div><div class="examples">${ex}</div>`;
+}
+async function askAi(text) {
+  if (!text || chatBusy) return;
+  chat.push({ role: 'me', text }); chatBusy = true; $('wish').value = ''; renderChat(); scrollChat();
+  const r = await genCands(text);
+  chatBusy = false; chat.push({ role: 'ai', text: r.text, cands: r.cands });
+  store.set('chat', chat.slice(-20)); renderChat(); scrollChat();
+}
+const scrollChat = () => setTimeout(() => { const last = $('chat').lastElementChild; last && last.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+$('chat').onclick = e => {
+  const ex = e.target.closest('[data-ex]'); if (ex) return askAi(ex.dataset.ex);
+  const u = e.target.dataset.use; if (!u) return;
+  const [mi, ci] = u.split('.').map(Number), d = chat[mi].cands[ci];
+  openEditor(d.src, { ...clone(d), beads: fill(d.special || [], d.pattern, d.tail, d.fixed) }, d.fixed ? `按 ${d.fixed} 颗串好了，多圈绕腕` : '放到托盘上了，可以接着改');
+};
+// 读图、压缩
+const loadImg = file => new Promise((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = () => rej(new Error('图片打不开')); img.src = URL.createObjectURL(file); });
+function imgToDataUrl(img, max, q) {
+  const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+  c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', q);
+}
+// 从照片里取手串的主要颜色：先估出背景色（四边像素的平均）并排除，再把剩下的像素聚成 4 类
+function extractPalette(img) {
+  const n = 64, c = document.createElement('canvas'); c.width = c.height = n; const x = c.getContext('2d');
+  const sz = Math.min(img.naturalWidth, img.naturalHeight); x.drawImage(img, (img.naturalWidth - sz) / 2, (img.naturalHeight - sz) / 2, sz, sz, 0, 0, n, n);
+  const d = x.getImageData(0, 0, n, n).data, at = (px, py) => { const i = (py * n + px) * 4; return [d[i], d[i + 1], d[i + 2]]; };
+  const border = []; for (let k = 0; k < n; k++) border.push(at(k, 0), at(k, n - 1), at(0, k), at(n - 1, k));
+  const bg = [0, 1, 2].map(ch => border.reduce((s, p) => s + p[ch], 0) / border.length);
+  const d2 = (a, b) => 2 * (a[0] - b[0]) ** 2 + 4 * (a[1] - b[1]) ** 2 + 3 * (a[2] - b[2]) ** 2;
+  const px = []; for (let py = 0; py < n; py++) for (let qx = 0; qx < n; qx++) { const p = at(qx, py); if (d2(p, bg) > 9 * 40 * 40) px.push(p); }
+  if (px.length < 40) return [];
+  px.sort((a, b) => (a[0] + a[1] + a[2]) - (b[0] + b[1] + b[2]));
+  let cs = [0.15, 0.4, 0.65, 0.9].map(f => px[Math.floor(f * (px.length - 1))].slice());
+  for (let it = 0; it < 10; it++) {
+    const sum = cs.map(() => [0, 0, 0, 0]);
+    px.forEach(p => { let bi = 0, bd = Infinity; cs.forEach((cc, ci) => { const dd = d2(p, cc); if (dd < bd) { bd = dd; bi = ci; } }); sum[bi][0] += p[0]; sum[bi][1] += p[1]; sum[bi][2] += p[2]; sum[bi][3]++; });
+    cs = sum.map((sm, ci) => sm[3] ? [sm[0] / sm[3], sm[1] / sm[3], sm[2] / sm[3], sm[3]] : [...cs[ci].slice(0, 3), 0]);
+  }
+  return cs.map(cc => ({ rgb: cc.slice(0, 3), share: cc[3] / px.length })).filter(cc => cc.share >= .04).sort((a, b) => b.share - a.share);
+}
+const hexToRgb = h => { const v = parseInt(h.slice(1), 16); return [v >> 16 & 255, v >> 8 & 255, v & 255]; };
+const beadRgb = it => { const a = hexToRgb(it.c[0]), b = hexToRgb(it.c[1]); return a.map((v, i) => v * .45 + b[i] * .55); };
+const colorDist = (a, b) => 2 * (a[0] - b[0]) ** 2 + 4 * (a[1] - b[1]) ** 2 + 3 * (a[2] - b[2]) ** 2;
+function hsl([r, g, b]) {
+  r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; let h = 0, s = 0;
+  if (mx !== mn) { const dd = mx - mn; s = l > .5 ? dd / (2 - mx - mn) : dd / (mx + mn);
+    h = mx === r ? ((g - b) / dd + (g < b ? 6 : 0)) : mx === g ? (b - r) / dd + 2 : (r - g) / dd + 4; h *= 60; }
+  return [h, s, l];
+}
+const isMetal = rgb => { const [h, s, l] = hsl(rgb); return (h >= 30 && h <= 60 && s > .35 && l > .5) || (s < .1 && l > .72); };
+function colorName(rgb) {
+  const [h, s, l] = hsl(rgb);
+  if (isMetal(rgb)) return s < .1 ? '银' : '金';   // 先认金属色，避免把金珠说成橙色
+  if (l > .86 && s < .25) return '白'; if (l < .16) return '黑'; if (s < .12) return '灰';
+  if (h < 15 || h >= 345) return l > .72 ? '粉' : l < .35 ? '深红' : '红'; if (h < 40) return l < .45 ? '棕' : '橙'; if (h < 65) return isMetal(rgb) ? '金' : '黄';
+  if (h < 165) return '绿'; if (h < 200) return '青'; if (h < 255) return '蓝'; if (h < 290) return '紫'; return l > .65 ? '粉' : '玫红';
+}
+// ================= 拍照做同款：拍照 → 认珠子（不对就换）→ 按手围串好放到托盘上 =================
+// 分工：AI（没有 AI 时用本地取色）只负责“认”——照片里的主珠、配珠、金属点缀各最像料包里哪一颗，
+// 再加一句看到了什么。排法、颗数、价格都由代码按手围算。认错了用户点一下就能换，所以模型认不准也做不坏。
+let same = { status: 'empty' };
+const samePool = () => BEADS.filter(it => !it.spacer && it.mat !== 'metal' && it.mm >= 6 && it.mm <= 12 && !/佛头|三通/.test(it.name));   // 佛头一条只用一颗，不当主珠配珠
+const sameMetals = () => BEADS.filter(it => it.mat === 'metal');
+const rankIds = (rgb, list, mm) => list.map(it => ({ id: it.id, d: colorDist(rgb, beadRgb(it)) + (mm && it.mm !== mm ? 6000 : 0) })).sort((a, b) => a.d - b.d).map(x => x.id);
+const uniq = a => [...new Set(a.filter(Boolean))];
+function goSame() {
+  if (askWristOnce()) { afterWrist = 'same'; wristReason = '先量一下手围，做出来的同款按它算颗数。只问这一次，之后可以随时修改。'; return go('wrist'); }
+  go('same');
+}
+// 本地：按照片颜色认
+function sameFromPalette(pal) {
+  const body = pal.filter(p => !isMetal(p.rgb)), metalC = pal.find(p => isMetal(p.rgb));
+  if (!body.length) return null;
+  const main = rankIds(body[0].rgb, samePool(), 8)[0];
+  const accC = body.slice(1).find(p => p.share >= .12 && colorDist(p.rgb, body[0].rgb) > 9 * 45 * 45);
+  const accent = accC ? rankIds(accC.rgb, samePool().filter(it => it.name !== ITEM[main].name), ITEM[main].mm)[0] : '';
+  const metal = metalC ? rankIds(metalC.rgb, sameMetals())[0] : '';
+  const share = accC ? accC.share / (body[0].share + accC.share) : 0;
+  const every = accC ? Math.max(2, Math.min(6, Math.round(1 / Math.max(share, .17)))) : 4;
+  const seen = `${colorName(body[0].rgb)}色珠子为主${accC ? '，夹着' + colorName(accC.rgb) + '色配珠' : ''}${metalC ? '，有' + colorName(metalC.rgb) + '色金属点缀' : ''}`;
+  return { pick: { main, accent, metal, every }, seen, colors: { main: body[0].rgb, accent: accC && accC.rgb, metal: metalC && metalC.rgb } };
+}
+// AI 只回答“是哪几颗”，不做设计，对模型要求低
+function samePrompt() {
+  const catalog = BEADS.map(it => `${it.id}|${label(it)}|${MATS[it.mat] || ''}|${it.spacer ? '隔片' : '珠'}`).join('\n');
+  return `用户拍了一张喜欢的手串照片，想用我们料包里的珠子做同款。你只需要认珠子，不用设计。\n目录（id|名称尺寸|材质|类型）：\n${catalog}\n\n看照片里的手串，回答：\n- ok：照片里有没有手串\n- main：数量最多的那种珠子，在目录里最像的 id（颜色优先，其次材质）\n- accent：第二种珠子最像的 id，没有就填空字符串\n- metal：金属隔珠或隔片最像的 id（只能是金属配件），没有就填空字符串\n- every：配珠或隔珠大约每几颗出现一次（2-6）\n- seen：一句话（15-30 字）说你看到的颜色、材质和排法\n只输出 JSON：{"ok":true,"seen":"","main":"id","accent":"","metal":"","every":4}`;
+}
+async function sameRecognize(file) {
+  if (!file) return;
+  let img; try { img = await loadImg(file); } catch (e) { return toast(e.message); }
+  const photo = imgToDataUrl(img, 360, .8), big = imgToDataUrl(img, 1024, .85);
+  same = { status: 'busy', photo }; renderSame();
+  const loc = sameFromPalette(extractPalette(img));
+  let ai = null;
+  if (API) { try { ai = await apiJson('/ai/photo', { image: big }); } catch (e) {} }
+  if (!ai && sampleFn) {
+    try { const lim = sampleFn.limits ? await sampleFn.limits() : null;
+      if (lim && lim.images) ai = await sampleFn.json(samePrompt(), { modelTier: 'quick', images: [await (await fetch(big)).blob()] }); } catch (e) {}
+  }
+  const poolIds = new Set(samePool().map(it => it.id)), metIds = new Set(sameMetals().map(it => it.id));
+  if (ai && ai.ok === false) { same = { status: 'fail', photo, text: String(ai.seen || '').slice(0, 40) }; return renderSame(); }
+  let pick = null, seen = '', by = 'local';
+  if (ai && poolIds.has(ai.main)) {   // AI 给的 id 不在在售目录里就不用
+    pick = { main: ai.main, accent: poolIds.has(ai.accent) && ai.accent !== ai.main ? ai.accent : '', metal: metIds.has(ai.metal) ? ai.metal : '', every: Math.max(2, Math.min(6, Math.round(+ai.every) || 4)) };
+    seen = String(ai.seen || '').slice(0, 60); by = 'ai';
+  } else if (loc) { pick = loc.pick; seen = loc.seen; }
+  if (!pick) { same = { status: 'fail', photo }; return renderSame(); }
+  // 每种珠子给几颗相近的备选：有照片颜色就按颜色排，没有就给同尺寸的
+  const colors = loc ? loc.colors : {}, mm = ITEM[pick.main].mm, sameMm = samePool().filter(it => it.mm === mm);
+  const opts = {
+    main: uniq([pick.main, ...(colors.main ? rankIds(colors.main, samePool(), mm) : []), ...sameMm.map(it => it.id)]).slice(0, 6),
+    accent: uniq([pick.accent, ...(colors.accent ? rankIds(colors.accent, samePool(), mm) : []), ...sameMm.filter(it => it.name !== ITEM[pick.main].name).map(it => it.id)]).filter(id => id !== pick.main).slice(0, 6),
+    metal: uniq([pick.metal, ...(colors.metal ? rankIds(colors.metal, sameMetals()) : []), ...sameMetals().map(it => it.id)]).slice(0, 4)
+  };
+  same = { status: 'done', photo, seen, by, pick, opts, colors };
+  renderSame();
+}
+function samePattern() {
+  const { main, accent, metal, every } = same.pick;
+  if (!accent && !metal) return [main];
+  const p = Array(every - 1).fill(main); p.push(accent || main); if (metal) p.push(metal);
+  return p;
+}
+const CAMERA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+function renderSame() {
+  const body = $('sameBody'), bar = $('sameBar');
+  if (same.status === 'empty') {
+    body.innerHTML = `<label class="same-drop" for="sameFile">${CAMERA_SVG}<b>拍一张喜欢的手串</b><span>朋友戴的、店里看到的、网上存的图都行</span></label>
+      <div class="card"><b style="font:600 15px/22px var(--font-sans)">怎么做同款</b><ol class="same-steps">
+        <li><div>认出照片里的珠子<span>主珠、配珠、金属点缀，从我们的料包里找最像的</span></div></li>
+        <li><div>你看一眼，不对就换<span>每种珠子都给几颗相近的备选</span></div></li>
+        <li><div>按你的 ${wrist}cm 手围串好<span>放到托盘上，还能接着改</span></div></li></ol></div>
+      <p class="same-tips">手串占画面一半以上、背景干净，认得更准。颜色以实物为准。</p>`;
+    bar.innerHTML = '<label class="btn block" for="sameFile">拍照或从相册选</label>'; return;
+  }
+  if (same.status === 'busy') { body.innerHTML = `<div class="same-wait"><img src="${same.photo}" alt="你选的照片"><span>正在认珠子…</span></div>`; bar.innerHTML = ''; return; }
+  if (same.status === 'fail') {
+    body.innerHTML = `<div class="same-wait"><img src="${same.photo}" alt="你选的照片"><span>${same.text ? esc(same.text) + '。' : '没看清照片里的手串。'}换一张手串占画面大一点、背景干净一点的试试？</span></div>`;
+    bar.innerHTML = '<label class="btn block" for="sameFile">换一张</label>'; return;
+  }
+  const pick = same.pick, beads = fill([], samePattern()), f = fitOf(beads);
+  const role = (r, name, hint, canNone) => { const c = same.colors[r];
+    return `<div class="role"><div class="rh">${c ? `<span class="sw" style="background:rgb(${c.map(Math.round).join(',')})" title="照片里的颜色"></span>` : ''}${name}${hint ? `<span class="caption">${hint}</span>` : ''}</div><div class="opts">` +
+      (canNone ? `<button type="button" class="bopt none${!pick[r] ? ' on' : ''}" data-role="${r}" data-id="">不加</button>` : '') +
+      same.opts[r].map(id => `<button type="button" class="bopt${pick[r] === id ? ' on' : ''}" data-role="${r}" data-id="${id}"><img src="${beadThumb(id)}" alt=""><span>${esc(ITEM[id].name)}</span><span class="p">${ITEM[id].mm}mm ¥${ITEM[id].price}</span></button>`).join('') + '</div></div>'; };
+  const every = pick.accent || pick.metal ? `<div class="role"><div class="rh">${pick.accent ? '配珠' : '点缀'}多久出现一次</div><div class="chips">${[2, 3, 4, 6].map(n => `<button type="button" class="chip${pick.every === n ? ' on' : ''}" data-every="${n}">每 ${n} 颗</button>`).join('')}</div></div>` : '';
+  body.innerHTML = `<div class="same-top"><img src="${same.photo}" alt="你拍的手串"><div><div class="by">${same.by === 'ai' ? 'AI 认出来的' : '按照片颜色认的'}</div><p class="seen">${esc(same.seen)}</p><label class="btn text" for="sameFile" style="padding:0;height:28px">换一张照片</label></div></div>
+    <div class="same-ring"><img src="${thumb(beads, 352, -0.85)}" alt="按你的手围串好的样子"></div>
+    <div class="section-head" style="margin-top:0"><h2>认出来的珠子</h2><span class="caption muted">不对就点别的</span></div>
+    <div class="card">${role('main', '主珠', '数量最多的', false)}${role('accent', '配珠', '', true)}${role('metal', '金属点缀', '', true)}${every}</div>
+    <p class="same-tips">颜色以实物为准。料包里没有一模一样的珠子时，按最接近的配。</p>`;
+  bar.innerHTML = `<div class="sum"><b>¥${priceOf(beads) + 15}</b><span>${beads.length} 颗 · ${f.len}mm · 按 ${wrist}cm 手围</span></div><button class="btn" type="button" id="sameGo">放到托盘上改</button>`;
+}
+$('sameFile').onchange = e => { const f = e.target.files[0]; e.target.value = ''; sameRecognize(f); };
+$('v-same').addEventListener('click', e => {
+  const o = e.target.closest('[data-role]');
+  if (o) { same.pick[o.dataset.role] = o.dataset.id; if (same.pick.accent === same.pick.main) same.pick.accent = ''; return renderSame(); }
+  const ev = e.target.closest('[data-every]'); if (ev) { same.pick.every = +ev.dataset.every; return renderSame(); }
+  if (e.target.closest('#sameGo')) { const pattern = samePattern();
+    openEditor('same', { name: ITEM[same.pick.main].name + '同款', special: [], pattern, beads: fill([], pattern) }, '按照片串好了，点珠子可以换'); }
+});
+$('chatClear').onclick = () => { chat = []; store.set('chat', []); renderChat(); };
+$('aiPanel').addEventListener('submit', e => { e.preventDefault(); askAi($('wish').value.trim()); });
+
+// ================= 试戴 =================
+let tryMode = 'photo';
+function buildTry() {
+  document.querySelectorAll('[data-try]').forEach(x => x.classList.toggle('on', x.dataset.try === tryMode));
+  $('tryPhoto').hidden = tryMode !== 'photo'; $('tryStage').hidden = tryMode !== 'model'; $('skinRow').hidden = tryMode !== 'model';
+  const f = fitOf(design.beads);
+  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceOf(design.beads) + 15);
+  $('tryFit').innerHTML = `<span class="ink2">手围 <b class="num" style="color:var(--ink)">${wrist}cm</b> · 总长 <b class="num" style="color:var(--ink)">${f.len}mm</b></span> ${f.ok ? '<span style="color:var(--fit-ok)">✓ 松紧合适</span>' : '<span style="color:var(--fit-warn)">! ' + f.text.replace(/<[^>]+>/g, '') + '</span>'}`;
+  if (tryMode === 'photo') return photoTry.render();
+  if (!viewer.mount($('tryStage'))) return;
+  viewer.show(design.beads, { mode: 'wrist', skin, resetView: true });
+  $('skins').innerHTML = SKINS.map(s => `<button class="skin ${s === skin ? 'on' : ''}" style="background:${s}" data-skin="${s}" aria-label="肤色"></button>`).join('');
+}
+$('skins').onclick = e => { if (e.target.dataset.skin) { skin = e.target.dataset.skin; buildTry(); } };
+document.querySelectorAll('[data-try]').forEach(b => b.onclick = () => { tryMode = b.dataset.try; buildTry(); });
+
+// 拍照试戴：把 3D 手串叠在用户自己的手腕照片上，用户拖动、缩放、旋转、倾斜对准
+const photoTry = {
+  x: .5, y: .5,             // 手串中心在照片里的位置（比例）
+  init() {
+    if (this.r || typeof THREE === 'undefined') return !!this.r;
+    const cv = $('pCv');
+    this.r = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: true });
+    this.r.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    this.r.outputEncoding = THREE.sRGBEncoding; this.r.toneMapping = THREE.ACESFilmicToneMapping; this.r.toneMappingExposure = 1.0;
+    this.scene = new THREE.Scene(); this.scene.environment = makeEnv(this.r); addLights(this.scene);
+    this.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, -1000, 1000);
+    let drag = null;
+    cv.addEventListener('pointerdown', e => { if (!this.hasPhoto) return; drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', e => { if (!drag) return; const r = cv.getBoundingClientRect();
+      this.x = Math.min(1, Math.max(0, this.x + (e.clientX - drag.x) / r.width)); this.y = Math.min(1, Math.max(0, this.y + (e.clientY - drag.y) / r.height));
+      drag = { x: e.clientX, y: e.clientY }; this.draw(); });
+    const up = () => { drag = null; }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    ['pSize', 'pRot', 'pTilt', 'pHide'].forEach(id => $(id).addEventListener('input', () => this.draw()));
+    $('pFile').addEventListener('change', e => this.load(e.target.files[0]));
+    $('pSave').onclick = () => this.save();
+    return true;
+  },
+  load(file) {
+    if (!file) return;
+    if (this.url) URL.revokeObjectURL(this.url);
+    this.url = URL.createObjectURL(file);
+    const img = $('pImg'); img.onload = () => {
+      this.hasPhoto = true; img.hidden = false; $('pEmpty').hidden = true; $('pCtrls').hidden = false; $('pSave').disabled = false;
+      $('pStage').style.aspectRatio = img.naturalWidth + ' / ' + img.naturalHeight;
+      this.x = .5; this.y = .5; requestAnimationFrame(() => this.draw());
+    };
+    img.src = this.url;
+  },
+  render() { if (!this.init()) { $('pEmpty').textContent = '3D 组件没加载出来，请检查网络后刷新'; return; } this.draw(); },
+  draw() {
+    if (!this.r || !this.hasPhoto || !design) return;
+    const cv = $('pCv'), w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+    this.r.setSize(w, h, false);
+    Object.assign(this.cam, { left: -w / 2, right: w / 2, top: h / 2, bottom: -h / 2 }); this.cam.updateProjectionMatrix();
+    if (this.ring) { this.scene.remove(this.ring); disposeGroup(this.ring); }
+    const g = ringGroup(design.beads), R = g.userData.R;
+    const px = +$('pSize').value / 100 * w / (2 * R + g.userData.maxD);   // 每毫米多少像素
+    g.scale.setScalar(px);
+    // 默认手臂横放：手串平面竖着套在手腕上，绕竖轴转一点就能看到前后两侧的珠子
+    g.rotation.set(0, THREE.MathUtils.degToRad(+$('pTilt').value), 0);
+    const holder = new THREE.Group(); holder.add(g);
+    holder.rotation.z = THREE.MathUtils.degToRad(-$('pRot').value);
+    holder.position.set((this.x - .5) * w, (.5 - this.y) * h, 0);
+    this.scene.add(holder); this.ring = holder;
+    holder.updateMatrixWorld(true);
+    const hide = $('pHide').checked, v = new THREE.Vector3();
+    g.children.forEach(m => { if (m.userData.i === undefined) { m.visible = !hide; return; } m.getWorldPosition(v); m.visible = !hide || v.z > -R * px * .15; });
+    this.r.render(this.scene, this.cam);
+  },
+  save() {
+    const img = $('pImg'), cv = $('pCv'), out = document.createElement('canvas');
+    out.width = cv.width; out.height = cv.height; const x = out.getContext('2d');
+    x.drawImage(img, 0, 0, out.width, out.height); x.drawImage(cv, 0, 0);
+    out.toBlob(async blob => {
+      if (!downloads) { $('shareImg').src = out.toDataURL('image/jpeg', .9); shareCanvas = out; toast('已放到分享页'); return go('share'); }
+      try { await downloads.save({ filename: (design.name || '手串') + '-试戴.jpg', data: blob }); toast('已保存'); } catch (e) { if (e && e.code !== 'cancelled') toast('没有保存'); }
+    }, 'image/jpeg', .92);
+  }
+};
+window.addEventListener('resize', () => { if (!$('v-try').hidden && tryMode === 'photo') photoTry.draw(); });
+
+// ================= 分享卡片 =================
+function rr(x, l, t, w, h, r) { x.beginPath(); x.moveTo(l + r, t); x.arcTo(l + w, t, l + w, t + h, r); x.arcTo(l + w, t + h, l, t + h, r); x.arcTo(l, t + h, l, t, r); x.arcTo(l, t, l + w, t, r); x.closePath(); }
+function wrapText(x, text, left, top, maxW, lh) { let line = '', y = top; for (const ch of text) { if (x.measureText(line + ch).width > maxW) { x.fillText(line, left, y); line = ch; y += lh; } else line += ch; } if (line) x.fillText(line, left, y); return y + lh; }
+let shareCanvas = null;
+function buildShare() {
+  const W = 720, H = 1060, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
+  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceOf(design.beads) + 15);
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+  const g = x.createRadialGradient(W / 2, 330, 40, W / 2, 360, 420); g.addColorStop(0, '#efece8'); g.addColorStop(.5, '#efece8'); g.addColorStop(1, '#e3ded8');
+  x.fillStyle = g; rr(x, 32, 32, W - 64, 620, 40); x.fill();
+  const img = new Image();
+  img.onload = () => {
+    x.drawImage(img, 92, 50, 536, 536);
+    const sans = '"PingFang SC", -apple-system, "Helvetica Neue", sans-serif', num = '"DIN Alternate", "Helvetica Neue", Arial, sans-serif';
+    x.textAlign = 'left'; x.fillStyle = '#1f1b1a'; x.font = `600 44px ${sans}`; x.fillText(design.name || '我的手串', 56, 724);
+    // 寓意标签
+    let tx = 56; x.font = `500 22px ${sans}`;
+    const TINT = { wealth: ['#f8f0dc', '#7d5a12'], love: ['#fbe9f0', '#b23565'], study: ['#f0eaf8', '#6a45a8'], safe: ['#e4f3ec', '#22705a'], career: ['#e6eef9', '#2a55a0'], guard: ['#eceae8', '#3b3634'] };
+    topTags(design.beads, 3).forEach(t => { const [bgc, fg] = TINT[tagClass(t)], w = x.measureText(t).width + 24; x.fillStyle = bgc; rr(x, tx, 752, w, 36, 8); x.fill(); x.fillStyle = fg; x.fillText(t, tx + 12, 778); tx += w + 10; });
+    x.fillStyle = '#5e5753'; x.font = `400 26px ${sans}`;
+    const endY = wrapText(x, design.meaning || design.aiMeaning || autoMeaning(design.beads), 56, 836, W - 112, 40);
+    x.fillStyle = '#c8302e'; x.font = `700 44px ${num}`; x.fillText(`¥${priceOf(design.beads) + 15}`, 56, Math.max(endY + 30, 940));
+    x.fillStyle = '#736b66'; x.font = `500 22px ${num}`; x.fillText(`${design.beads.length} 颗 · ${lengthOf(design.beads)}mm · 适合 ${wrist}cm 手围`, 56, Math.max(endY + 30, 940) + 40);
+    x.strokeStyle = '#e6e2dd'; x.lineWidth = 2; x.beginPath(); x.arc(W - 130, 950, 70, 0, 7); x.stroke();
+    x.fillStyle = '#736b66'; x.font = `400 20px ${sans}`; x.textAlign = 'center'; x.fillText('小程序码', W - 130, 948); x.fillText('长按串同款', W - 130, 976);
+    $('shareImg').src = cv.toDataURL('image/png'); shareCanvas = cv;
+  };
+  img.src = thumb(design.beads, 600, -0.6);
+}
+let downloads = null;
+$('saveCard').onclick = () => shareCanvas && shareCanvas.toBlob(async blob => {
+  try { await downloads.save({ filename: (design.name || '手串') + '.png', data: blob }); toast('已保存'); } catch (e) { if (e && e.code !== 'cancelled') toast('没有保存'); }
+});
+
+// ================= 朋友打开分享 =================
+function renderShared() {
+  if (!shared) return;
+  viewer.mount($('sharedStage')); viewer.show(shared.beads, { mode: 'ring', resetView: true });
+  $('sharedHud').textContent = `${shared.beads.length} 颗 · ${lengthOf(shared.beads)}mm`;
+  $('sName').textContent = shared.name || '朋友的手串';
+  $('sTags').innerHTML = tagsHtml(topTags(shared.beads, 4));
+  $('sMeaning').textContent = shared.meaning || autoMeaning(shared.beads);
+  renderMeter($('sMeter'), shared.beads);
+  $('sNotes').innerHTML = notesHtml(shared);
+  $('sPrice').textContent = priceOf(shared.beads) + 15;
+}
+$('previewShared').onclick = () => { shared = clone(design); go('shared'); };
+$('remix').onclick = () => { const d = clone(shared); delete d.id; stack = ['diy']; loadDesign('shared', { ...d, source: 'shared', edited: false }, '已放到你的托盘上，随便改'); };
+$('buySame').onclick = () => { const d = clone(shared); delete d.id; saveDesign(); stack = ['home']; newDesign('shared', { ...d, source: 'shared' }); store.set('draftId', design.id); gotoOrder(); };
+function gotoOrder() {
+  saveDesign(true);
+  if (askWristOnce()) { afterWrist = 'order'; wristReason = '下单前确认一下手围，师傅按这个尺寸给你串。只问这一次，之后在下单页也能修改。'; return go('wrist'); }
+  go('order');
+}
+
+// ================= 下单 =================
+let cord = 0;
+function orderTotal() { const sub = priceOf(design.beads) + 15 + CORDS[cord][1] + ($('gift').checked ? 10 : 0), ship = sub >= 99 ? 0 : 8, promo = orders.length ? 0 : 10; return { ship, promo, sum: Math.max(0, sub + ship - promo) }; }
+function buildOrder() {
+  $('oName').textContent = design.name || '我的手串';
+  const counts = {}; design.beads.forEach(id => counts[id] = (counts[id] || 0) + 1);
+  $('oLines').innerHTML = Object.keys(counts).map(id => { const it = ITEM[id];
+    return `<div class="line"><span class="thumb"><img src="${beadThumb(id)}" alt=""${ITEM[id] && ITEM[id].photo ? ' class="real"' : ''}></span><span class="main"><b>${esc(label(it))}</b><span class="caption muted num">¥${it.price} × ${counts[id]}</span></span><span class="amt">¥${it.price * counts[id]}</span></div>`; }).join('');
+  $('oWrist').textContent = `${wrist}cm / ${lengthOf(design.beads)}mm`;
+  const of = fitOf(design.beads);   // 改了手围后长度可能不合适，下单前提醒
+  $('oFit').hidden = of.ok;
+  if (!of.ok) $('oFit').innerHTML = `<span>! ${of.text.replace(/<[^>]+>/g, '')}</span><button class="btn text" type="button" id="oFix" style="padding:0;height:auto">回去调整 ›</button>`;
+  $('cordOpts').innerHTML = CORDS.map(([n, p], i) => `<button type="button" class="chip ${i === cord ? 'on' : ''}" data-c="${i}">${n}${p ? ' +¥' + p : ''}</button>`).join('');
+  const t = orderTotal(); $('oShip').textContent = t.ship ? `¥${t.ship}（满 ¥99 包邮）` : '包邮'; $('oTotal').textContent = t.sum; $('oErr').textContent = '';
+  $('oPromoRow').hidden = !t.promo; $('oPromo').textContent = `-¥${t.promo}`;
+}
+$('cordOpts').onclick = e => { if (e.target.dataset.c) { cord = +e.target.dataset.c; buildOrder(); } };
+$('gift').onchange = buildOrder;
+$('orderForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!$('oPerson').value.trim() || !$('oAddr').value.trim()) return $('oErr').textContent = '请填写收货人和地址';
+  if (!/^1\d{10}$/.test($('oPhone').value.trim())) return $('oErr').textContent = '手机号要 11 位数字，以 1 开头';
+  const t = orderTotal(); let no = 'CGZ' + Date.now().toString().slice(-8);
+  if (API) {   // 价格以后台算的为准
+    try {
+      const o = await apiJson('/orders', { name: design.name || '我的手串', beads: design.beads, wrist, length: lengthOf(design.beads), cord, gift: $('gift').checked,
+        person: $('oPerson').value.trim(), phone: $('oPhone').value.trim(), addr: $('oAddr').value.trim() });
+      no = o.no; t.sum = o.total;
+    } catch (err) { return $('oErr').textContent = err.message; }
+  }
+  design.ordered = true; saveDesign(true); store.set('draftId', '');
+  orders.unshift({ no, name: design.name || '我的手串', beads: design.beads.slice(), wrist, sum: t.sum, time: new Date().toLocaleDateString('zh-CN') });
+  store.set('orders', orders.slice(0, 30));
+  $('doneImg').src = thumb(design.beads);
+  $('doneText').textContent = `订单 ${no} · ¥${t.sum}。按 ${wrist}cm 手围串制，客服会先和你核对尺寸，48 小时内发出。`;
+  go('done');
+});
+
+// ================= 我的 =================
+function saveDesign(force) {
+  if (!design || !design.beads.length || design.reorder) return;
+  if (!force && !design.edited && design.source === 'tpl') return;
+  const d = { id: design.id, name: design.name || '我的手串', meaning: design.meaning, notes: design.notes, beads: design.beads.slice(), source: design.source, special: design.special, pattern: design.pattern, tail: design.tail, tplId: design.tplId, edited: design.edited, ordered: design.ordered, aiMeaning: design.aiMeaning };
+  const i = designs.findIndex(x => x.id === d.id); if (i >= 0) designs[i] = d; else designs.unshift(d);
+  store.set('designs', designs.slice(0, 30));
+}
+const SRC = { tpl: '模板', ai: 'AI', diy: '自己串', shared: '朋友的', same: '照片同款', plan: '精选方案' };
+function renderMine() {
+  const list = (arr, el, empty, fn) => {
+    const ok = arr.filter(d => validIds(d.beads));
+    el.innerHTML = ok.length ? '' : `<div class="empty-note">${empty}</div>`;
+    ok.forEach(d => { const b = document.createElement('button'); b.className = 'item';
+      b.innerHTML = `<span class="traybox"><img src="${thumb(d.beads, 160)}" alt=""></span>${fn(d)}<span class="chev">›</span>`;
+      b.onclick = () => {
+        if (d.no) { saveDesign(); newDesign('tpl', { name: d.name, beads: d.beads.slice(), edited: true, reorder: true }); return gotoOrder(); }   // 再买一条：原样下单，不另存作品
+        const c = clone(d); if (c.ordered) { delete c.id; c.ordered = false; }   // 下过单的再改，当成一条新作品
+        loadDesign(c.source || 'tpl', c);
+      };
+      el.appendChild(b); });
+  };
+  list(designs, $('myDesigns'), '还没有作品。在首页改过的手串会自动存到这里。', d => `<div><div class="nm">${esc(d.name)}<span class="badge">${d.ordered ? '已下单' : (SRC[d.source] || '')}</span></div><div class="tags" style="margin:2px 0">${tagsHtml(topTags(d.beads, 2))}</div><div class="spec">${d.beads.length} 颗 · ${lengthOf(d.beads)}mm · <span style="color:var(--brand)">¥${priceOf(d.beads) + 15}</span></div></div>`);
+  list(orders, $('myOrders'), '还没有订单。', d => `<div><div class="nm">${esc(d.name)}</div><div class="spec">${d.no} · ${d.time} · ${d.wrist || ''}cm · ¥${d.sum}</div><div class="caption" style="color:var(--fit-ok)">串制中 · 点开再买一条</div></div>`);
+}
+
+// ================= 首页 =================
+const BANNERS = [
+  { tag: '考试季', title: '金榜题名手串', sub: '紫水晶配白水晶，考前戴上安心', tpl: 't3' },
+  { tag: '新人礼', title: '首单立减 ¥10', sub: '自己设计的手串，师傅手工串好寄到家', go: 'diy', newUser: true },
+  { tag: '送礼', title: '甜蜜粉晶', sub: '粉晶加草莓晶，送女朋友不会错', tpl: 't2' }
+];
+let bannerTimer = null;
+function renderHome() {
+  $('hotWrist').textContent = wristSet ? `已按你的 ${wrist}cm 手围配好 ›` : `先按常见的 ${wrist}cm 配，量一下更准 ›`;
+  // 宣传位
+  const ts = validTemplates(), byId = id => ts.find(t => t.id === id);
+  const banners = BANNERS.filter(b => !(b.newUser && orders.length));   // 新人活动只给没下过单的人看
+  $('banner').innerHTML = banners.map((b, i) => {
+    const t = b.tpl && byId(b.tpl), beads = t ? fill(t.special, t.pattern, t.tail) : fill([], ['fj8', 'zt8', 'ls8', 'ml10', 'qj8', 'bj8', 'cm8', 'nh8'].filter(id => ITEM[id]));
+    return `<button class="slide" data-b="${BANNERS.indexOf(b)}"><span class="txt"><span class="badge">${b.tag}</span><b>${b.title}</b><span class="sub">${b.sub}</span><span class="go">${t ? '去看看' : '去设计一条'} ›</span></span><img src="${thumb(beads, 248, -0.75)}" alt=""></button>`;
+  }).join('');
+  $('bannerDots').innerHTML = banners.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('');
+  clearInterval(bannerTimer);
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) bannerTimer = setInterval(() => {
+    const el = $('banner'); if (el.closest('[hidden]')) return;
+    const i = (Math.round(el.scrollLeft / el.clientWidth) + 1) % banners.length; el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' });
+  }, 4000);
+  // 热门款
+  $('tpls').innerHTML = '';
+  ts.forEach(t => {
+    const beads = fill(t.special, t.pattern, t.tail), c = document.createElement('div'); c.className = 'tpl';
+    c.innerHTML = `<span class="traybox" data-act="use"><img src="${t.cover ? photoUrl(t.cover) : thumb(beads)}" alt=""${t.cover ? ' class="real"' : ''}></span><span class="body"><span class="nm" data-act="use">${t.name}</span><span class="tags">${tagsHtml(topTags(beads, 2))}</span><span class="foot"><span class="price">¥${priceOf(beads) + 15}</span><span class="spec">${beads.length} 颗 · ${lengthOf(beads)}mm</span></span>
+      <span class="cardacts"><button class="btn ghost" data-act="try">试戴</button><button class="btn ghost" data-act="use">用这款</button></span></span>`;
+    c.onclick = e => { const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
+      if (a === 'try') { saveDesign(); newDesign('tpl', fromTemplate(t)); tryMode = 'photo'; go('try'); }
+      else openEditor('tpl', fromTemplate(t)); };
+    $('tpls').appendChild(c);
+  });
+  if (!ts.length) $('tpls').innerHTML = '<div class="empty-note">热门款用到的珠子已下架。</div>';
+}
+$('banner').addEventListener('scroll', () => { const el = $('banner'), i = Math.round(el.scrollLeft / el.clientWidth); [...$('bannerDots').children].forEach((d, k) => d.classList.toggle('on', k === i)); }, { passive: true });
+$('banner').onclick = e => { const s = e.target.closest('.slide'); if (!s) return; const b = BANNERS[+s.dataset.b], t = b.tpl && validTemplates().find(x => x.id === b.tpl);
+  if (t) openEditor('tpl', fromTemplate(t)); else goTab('diy'); };
+document.querySelector('.quick').onclick = e => { const q = e.target.closest('[data-quick]')?.dataset.quick; if (!q) return;
+  if (q === 'same') goSame();
+  if (q === 'ai') { goTab('ai'); setTimeout(() => $('wish').focus(), 100); }
+  if (q === 'blank') goTab('diy');
+  if (q === 'try') {
+    const d = designs.find(x => x.id === store.get('draftId', '') && validIds(x.beads) && !x.ordered);
+    if (d) { saveDesign(); newDesign(d.source, clone(d)); tryMode = 'photo'; return go('try'); }
+    $('hotHead').scrollIntoView({ behavior: 'smooth' }); toast('先挑一款，点卡片上的「试戴」');
+  }
+};
+$('hotWrist').onclick = () => go('wrist');
+
+// ================= 自己串 / AI 配 两个标签 =================
+function goTab(tab) {
+  if (askWristOnce()) { stack = [tab]; afterWrist = null; wristReason = '先量一下手围，后面每条手串都按它算颗数和长度。只问这一次，之后点「改手围」就能修改。'; stack.push('wrist'); return show('wrist'); }
+  go(tab);
+}
+function renderDiy() {
+  $('diyWrist').textContent = wrist + 'cm';
+  const last = designs.find(d => d.id === store.get('draftId', '') && validIds(d.beads) && d.edited && !d.ordered);
+  $('resumeCard').hidden = !last;
+  if (last) { $('resumeCard').innerHTML = `继续上次的「<b>${esc(last.name)}</b>」 · ¥${priceOf(last.beads) + 15} ›`; $('resumeCard').onclick = () => openEditor(last.source, clone(last)); }
+  $('starts').innerHTML = `<button class="start blank" type="button" data-start="blank"><span class="traybox"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke-dasharray="2.5 3"/><path d="M12 8.5v7M8.5 12h7"/></svg></span><span class="body"><span class="nm">从空白开始</span><span class="go">一颗颗挑，挑好主珠一键铺满</span></span></button>` +
+    `<button class="start" type="button" data-start="photo"><span class="traybox">${CAMERA_SVG}</span><span class="body"><span class="nm">照着照片串</span><span class="go">拍一张喜欢的手串，认出珠子帮你串好</span></span></button>` +
+    validTemplates().map(t => { const beads = fill(t.special, t.pattern, t.tail);
+      return `<button class="start" type="button" data-start="${t.id}"><span class="traybox"><img src="${t.cover ? photoUrl(t.cover) : thumb(beads)}" alt=""${t.cover ? ' class="real"' : ''}></span><span class="body"><span class="nm">${t.name}</span><span class="tags">${tagsHtml(topTags(beads, 2))}</span><span class="foot" style="display:flex;justify-content:space-between;align-items:baseline"><span class="price">¥${priceOf(beads) + 15}</span><span class="go">从这款开始 ›</span></span></span></button>`; }).join('');
+}
+$('starts').onclick = e => {
+  const b = e.target.closest('[data-start]'); if (!b) return;
+  if (b.dataset.start === 'photo') return goSame();
+  if (b.dataset.start === 'blank') { curCat = 'all'; curSize = 'all'; return openEditor('diy', { name: '我的手串' }); }
+  const t = validTemplates().find(x => x.id === b.dataset.start); if (t) openEditor('tpl', fromTemplate(t));
+};
+$('diyWristBtn').onclick = () => go('wrist');
+
+// ================= 手围 =================
+function renderWrist() {
+  $('wBig').innerHTML = `${wrist}<small>cm</small>`; $('wSum').textContent = wrist + 'cm'; $('wRuler').style.width = ((wrist - 10) / 12 * 100) + '%';
+  $('wChips').innerHTML = [13, 14, 15, 16, 17, 18].map(v => `<button class="chip ${v === wrist ? 'on' : ''}" data-set="${v}">${v}cm</button>`).join('');
+  $('wristPill').textContent = `手围 ${wrist}cm`;
+}
+function setWrist(v) { if (!Number.isFinite(+v)) return; wrist = Math.max(10, Math.min(22, Math.round(v * 2) / 2)); store.set('wrist', wrist); thumbCache.clear(); renderWrist(); }
+document.querySelectorAll('[data-wstep]').forEach(b => b.onclick = () => setWrist(wrist + +b.dataset.wstep));
+$('wChips').onclick = e => { if (e.target.dataset.set) setWrist(+e.target.dataset.set); };
+$('wristPill').onclick = () => go('wrist');
+$('wDone').onclick = () => {
+  wristSet = true; store.set('wristSet', true);
+  stack.pop(); const prev = stack[stack.length - 1];
+  // 没改过的模板 / AI 方案按新手围重新算颗数；自己动过的不碰，只提示长度
+  [design, shared].forEach(d => { if (d && d.pattern && !d.edited && !d.fixed) d.beads = fill(d.special || [], d.pattern, d.tail); });
+  if (afterWrist) { const a = afterWrist; afterWrist = null; stack.push(a); return show(a); }
+  if (prev === 'diy' || prev === 'ai') toast('手围记下了');
+  show(prev);
+};
+
+// ================= 后台：料包 = 一颗颗单独上架的珠子 =================
+let db = null, assets = null, canAdmin = false, editing = null, adminCat = 'all';
+function renderAdmin() {
+  $('adminNote').innerHTML = kitSource === 'live'
+    ? `每颗珠子单独上架，改完实时同步给所有用户。尺寸必填，前台靠它算颗数和 3D 比例。`
+    : (db ? '后台还没有珠子。点“导入示例珠子”先放一批进去，再按需修改。' : '后台需要在 claude.ai 里登录后打开才能保存。下面是示例珠子，只能看不能存。');
+  const cats = Object.keys(MATS).filter(m => ALL_BEADS.some(b => b.mat === m));
+  $('adminCats').innerHTML = [['all', `全部 ${ALL_BEADS.length}`]].concat(cats.map(m => [m, `${MATS[m]} ${ALL_BEADS.filter(b => b.mat === m).length}`])).map(([v, n]) => `<button class="chip ${adminCat === v ? 'on' : ''}" data-acat="${v}">${n}</button>`).join('');
+  $('kitList').innerHTML = '';
+  ALL_BEADS.filter(b => adminCat === 'all' || b.mat === adminCat).forEach(it => {
+    const b = document.createElement('button'); b.className = 'item';
+    b.innerHTML = `<span class="traybox"><img src="${itemPreviewThumb(it)}" alt=""></span><div><div class="nm">${esc(it.name)} <span class="num">${it.mm}mm</span>${it.onSale === false ? '<span class="badge">已下架</span>' : ''}</div><div class="spec">${MATS[it.mat] || ''}${it.spacer ? ' · 隔片' : ''} · ¥${it.price}/颗${it.photo ? ' · 有实拍' : ''}</div><div class="tags" style="margin-top:4px">${tagsHtml(it.tags.filter(t => t !== '点缀').slice(0, 3))}</div></div><span class="chev">›</span>`;
+    b.onclick = () => openKit(it); $('kitList').appendChild(b);
+  });
+  if (db && kitSource !== 'live') {
+    const imp = document.createElement('button'); imp.className = 'btn ghost'; imp.textContent = '导入示例珠子';
+    imp.onclick = async () => { imp.disabled = true; try { for (const k of DEFAULT_BEADS) { const { id, ...rest } = k; await db.doc('beads/' + id).set(rest); } toast('已导入'); } catch (e) { toast('导入失败：' + (e.code || '')); imp.disabled = false; } };
+    $('kitList').appendChild(imp);
+  }
+  $('newKit').disabled = !db;
+}
+$('adminCats').onclick = e => { if (e.target.dataset.acat) { adminCat = e.target.dataset.acat; renderAdmin(); } };
+$('bMat').innerHTML = Object.entries(MATS).map(([v, n]) => `<option value="${v}">${n}</option>`).join('');
+function openKit(it) {
+  editing = JSON.parse(JSON.stringify(it || { id: 'b' + Date.now().toString(36), name: '', mm: null, price: null, mat: 'stone', c: ['#d8c3a5', '#6e5236'], tags: [], onSale: true, order: (ALL_BEADS.length + 1) * 10 }));
+  editing.isNew = !it;
+  $('bName').value = editing.name; $('bMm').value = editing.mm ?? ''; $('bPrice').value = editing.price ?? ''; $('bMat').value = editing.mat;
+  $('bC0').value = editing.c[0]; $('bC1').value = editing.c[1]; $('bOrder').value = editing.order ?? ''; $('bTags').value = editing.tags.join('，');
+  $('bSpacer').checked = !!editing.spacer; $('bOnSale').checked = editing.onSale !== false;
+  $('kErr').textContent = ''; $('kDel').hidden = editing.isNew; $('kSave').disabled = !db;
+  go('kit'); syncForm();
+}
+function syncForm() {
+  editing.name = $('bName').value.trim(); editing.mm = $('bMm').value === '' ? null : +$('bMm').value; editing.price = $('bPrice').value === '' ? null : +$('bPrice').value;
+  editing.mat = $('bMat').value; editing.c = [$('bC0').value, $('bC1').value]; editing.order = +$('bOrder').value || 0;
+  editing.tags = $('bTags').value.split(/[,，、\s]+/).filter(Boolean).slice(0, 6); editing.spacer = $('bSpacer').checked; editing.onSale = $('bOnSale').checked;
+  $('bMmLabel').textContent = editing.spacer ? '厚度 mm *' : '直径 mm *';
+  $('bMmWrap').classList.toggle('bad', !(editing.mm > 0)); $('bPriceWrap').classList.toggle('bad', editing.price === null);
+  $('bPhoto').innerHTML = (editing.photo ? `<img src="${photoUrl(editing.photo)}" alt="">` : '') +
+    (assets ? `<label class="chip" style="cursor:pointer">${editing.photo ? '换实拍照片' : '上传实拍照片'}<input type="file" accept="image/*" id="bFile" hidden></label>` : '<span class="muted">登录的编辑者可以上传实拍照片，3D 会直接用照片贴图</span>') +
+    (editing.photo ? '<button class="chip" id="bNoPhoto" type="button">改用颜色</button>' : '');
+  kitPreview();
+}
+$('beadForm').addEventListener('input', e => { if (e.target.type !== 'file') { clearCaches(); syncForm(); } });
+$('beadForm').addEventListener('change', async e => {
+  if (e.target.id !== 'bFile') return;
+  const file = e.target.files[0]; if (!file) return;
+  if (file.size > 5 * 1024 * 1024) return toast('照片请小于 5MB');
+  toast('上传中…');
+  try { const up = await assets.upload(file); editing.photo = up.id; toast('已上传'); clearCaches(); syncForm(); } catch (err) { toast('上传失败：' + (err.code || '')); }
+});
+$('beadForm').addEventListener('click', e => { if (e.target.id === 'bNoPhoto') { delete editing.photo; clearCaches(); syncForm(); } });
+function kitPreview() {
+  if (!viewer.mount($('kitStage'))) return;
+  const id = '__p_' + editing.id, had = ITEM[id];
+  ITEM[id] = { ...editing, id: editing.id, mm: editing.mm > 0 ? editing.mm : 8 };
+  const w0 = wrist; wrist = 15; const beads = fill([], [id]); wrist = w0;
+  viewer.show(beads, { mode: 'ring', resetView: false });
+  $('kitHud').textContent = editing.mm > 0 ? `${beads.length} 颗 · ${lengthOf(beads)}mm` : '先填尺寸';
+  if (!had) delete ITEM[id];
+}
+$('kSave').onclick = async () => {
+  syncForm();
+  if (!editing.name) return $('kErr').textContent = '请填写名称';
+  if (!(editing.mm > 0)) return $('kErr').textContent = '请填写尺寸（mm）。用户要靠它判断合不合手。';
+  if (editing.price === null) return $('kErr').textContent = '请填写单价';
+  const { id, isNew, ...rest } = editing;
+  const data = { name: rest.name, mm: rest.mm, price: rest.price, mat: rest.mat, c: rest.c, tags: rest.tags, order: rest.order, onSale: rest.onSale };
+  if (rest.spacer) data.spacer = true; if (rest.photo) data.photo = rest.photo;
+  $('kSave').disabled = true;
+  try { await db.doc('beads/' + id).set(data); toast('已保存，用户端已同步'); back(); }
+  catch (e) { $('kErr').textContent = '保存失败：' + (e.code === 'permission_denied' ? '只有编辑者能改料包' : (e.message || e.code)); }
+  $('kSave').disabled = false;
+};
+let delArmed = false;
+$('kDel').onclick = async () => {
+  if (!delArmed) { delArmed = true; $('kDel').textContent = '再点一次确认'; setTimeout(() => { delArmed = false; $('kDel').textContent = '删除'; }, 3000); return; }
+  delArmed = false; $('kDel').textContent = '删除';
+  try { await db.doc('beads/' + editing.id).delete(); toast('已删除'); back(); } catch (e) { $('kErr').textContent = '删除失败：' + (e.code || ''); }
+};
+
+// ================= 页面切换 =================
+const TITLES = { home: '串个珠', diy: '自己串', ai: 'AI 配', same: '拍照做同款', editor: '设计手串', wrist: '量手围', try: '3D 试戴', share: '分享', shared: '朋友分享的手串', order: '确认订单', done: '下单成功', mine: '我的', admin: '料包管理', kit: '编辑珠子' };
+const TABS = ['home', 'diy', 'ai', 'mine'];
+let stack = ['home'];
+function show(v) {
+  Object.keys(TITLES).forEach(k => $('v-' + k).hidden = k !== v);
+  $('title').textContent = TITLES[v];
+  $('back').hidden = TABS.includes(v) || v === 'done';
+  $('nav').hidden = !TABS.includes(v);
+  $('wristPill').hidden = !['editor', 'try', 'shared'].includes(v);
+  $('wristWhy').hidden = !(v === 'wrist' && wristReason); $('wristWhy').textContent = wristReason;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === v));
+  if (v === 'home') renderHome();
+  if (v === 'diy') renderDiy();
+  if (v === 'same') renderSame();
+  if (v === 'ai') { renderChat(); if (chat.length) scrollChat(); }
+  if (v === 'editor') { viewer.mount($('studioStage')); renderKits(); renderStudio(true); }
+  if (v === 'wrist') renderWrist();
+  if (v === 'shared') renderShared();
+  if (v === 'mine') { renderMine(); $('mineWrist').textContent = `${wrist}cm ›`; $('adminLink').hidden = !(canAdmin || API); }
+  if (v === 'try') buildTry();
+  if (v === 'share') buildShare();
+  if (v === 'order') buildOrder();
+  if (v === 'admin') renderAdmin();
+  window.scrollTo(0, 0);
+}
+function go(v) { if (TABS.includes(v)) stack = [v]; else stack.push(v); if (v !== 'wrist') wristReason = afterWrist ? wristReason : ''; show(v); }
+function back() { if (stack.length > 1) stack.pop(); afterWrist = null; wristReason = ''; show(stack[stack.length - 1]); }
+$('back').onclick = back;
+document.querySelector('nav').onclick = e => { const t = e.target.closest('[data-tab]'); if (!t) return; ['diy', 'ai'].includes(t.dataset.tab) ? goTab(t.dataset.tab) : go(t.dataset.tab); };
+document.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => b.dataset.nav === 'order' ? gotoOrder() : go(b.dataset.nav));
+$('toShare').onclick = () => { saveDesign(true); go('share'); };
+$('toOrder').onclick = gotoOrder;
+$('newKit').onclick = () => openKit(null);
+$('adminLink').onclick = () => API ? window.open('/admin', '_blank') : go('admin');   // 本地服务有独立的网页后台
+$('mineWrist').onclick = () => go('wrist');
+$('oWristBtn').onclick = () => go('wrist');
+$('oFit').onclick = e => { if (e.target.id === 'oFix') back(); };
+refreshThumbs = () => { const v = stack[stack.length - 1]; if (v === 'editor') renderKits(); else if (['home', 'diy', 'ai', 'mine', 'admin'].includes(v)) show(v); };
+setCatalog(DEFAULT_BEADS);
+$('wristPill').textContent = `手围 ${wrist}cm`;
+(function start() {
+  const last = designs.find(d => d.id === store.get('draftId', '') && validIds(d.beads));
+  if (last) newDesign(last.source, clone(last)); else { const ts = validTemplates(); newDesign('tpl', fromTemplate(ts[1] || ts[0])); }
+})();
+show('home');
+
+// ================= 接入平台能力（AI、后台数据库、图片上传、保存图片） =================
+(async () => {
+  if (!window.claude) return;
+  const [s, d, a, dl, u] = await Promise.all(['sample', 'db', 'assets', 'downloads', 'user'].map(n => window.claude.use(n).catch(() => null)));
+  sampleFn = s; downloads = dl; assets = a; db = d;
+  if (!downloads) $('saveCard').hidden = true;
+  canAdmin = u ? await u.canEdit().catch(() => false) : false;
+  if (stack[stack.length - 1] === 'mine') $('adminLink').hidden = !canAdmin;
+  if (db) {
+    db.collection('beads').onSnapshot(snap => {
+      if (snap.empty) { kitSource = 'demo'; setCatalog(DEFAULT_BEADS); }
+      else { kitSource = 'live'; setCatalog(snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))); }
+      const v = stack[stack.length - 1];
+      if (v === 'kit') return;
+      if (design) design.beads = design.beads.filter(id => ITEM[id]);
+      if (['home', 'diy', 'ai', 'mine', 'admin'].includes(v)) show(v); else if (v === 'editor') { renderKits(); renderStudio(false); }
+    }, () => {});
+  }
+})();
+if (!window.claude) $('saveCard').hidden = true;
+// 本地服务：珠子、模板、宣传位都从后台读
+if (API) (async () => {
+  try {
+    apiJson('/kb/rules').then(r => { if (Array.isArray(r.counts)) COUNT_RULES = r.counts.filter(c => c.count >= 11 && c.count <= 30 && c.confidence !== 'low'); }).catch(() => {});
+    const c = await apiJson('/catalog');
+    kitSource = 'live'; setCatalog(c.beads);
+    TEMPLATES.splice(0, TEMPLATES.length, ...c.templates);
+    BANNERS.splice(0, BANNERS.length, ...c.banners);
+    if (design) design.beads = design.beads.filter(id => ITEM[id]);
+    show(stack[stack.length - 1]);
+  } catch (e) { toast('连不上本地服务，先用示例数据'); }
+})();
+</script>

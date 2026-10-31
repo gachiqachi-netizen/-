@@ -1,0 +1,3569 @@
+[
+  {
+    "id": "gift-bf-blackgold-01",
+    "name": "墨石金眸",
+    "audience": [
+      "男友"
+    ],
+    "occasion": [
+      "生日",
+      "日常"
+    ],
+    "meaning": [
+      "沉稳",
+      "勇气"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "male",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "heiyao",
+        "mm": 12,
+        "role": "主珠"
+      },
+      {
+        "kb": "heiyao",
+        "mm": 12,
+        "role": "主珠"
+      },
+      {
+        "kb": "huyan-shi",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "color": "金黄"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "heiyao": [
+        "cha-jing"
+      ],
+      "huyan-shi": [
+        "huang-shuijing"
+      ]
+    },
+    "story": "黑曜石乌黑内敛，虎眼石有一道流动的金色光带，黑金配色干净利落。黑曜石常被看作沉稳的象征，虎眼石在民间寓意勇气与坚毅。12mm 大珠戴着有分量，适合喜欢简洁风、不爱花哨的男友。",
+    "tips": "男生手腕偏粗的话按实际手围多留一颗珠的余量。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bf-tigereye-02",
+    "name": "虎眼流光",
+    "audience": [
+      "男友",
+      "兄弟"
+    ],
+    "occasion": [
+      "新工作",
+      "升职"
+    ],
+    "meaning": [
+      "勇气",
+      "坚定"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "male",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "huyan-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "金黄"
+        }
+      },
+      {
+        "kb": "huyan-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "金黄"
+        }
+      },
+      {
+        "kb": "huyan-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "金黄"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "huyan-shi": [
+        "cha-jing"
+      ]
+    },
+    "story": "虎眼石满串排开，转动时光带像猫眼一样游走，金棕色耐看又不挑衣服。传统说法里虎眼石象征勇气和坚毅，正好送给刚换新工作、准备大干一场的人。10mm 珠径不夸张，通勤也能天天戴。",
+    "tips": "附一张写着“新工作顺利”的卡片，比单送手串更有心意。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bf-zitan-03",
+    "name": "紫檀一点红",
+    "audience": [
+      "男友"
+    ],
+    "occasion": [
+      "生日",
+      "纪念日"
+    ],
+    "meaning": [
+      "沉稳",
+      "古朴",
+      "红火"
+    ],
+    "style": [
+      "文玩"
+    ],
+    "gender": "male",
+    "budget": "mid",
+    "special": [
+      {
+        "kb": "nanhong",
+        "mm": 12,
+        "role": "佛头",
+        "attrs": {
+          "color": "柿子红"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "pattern": [
+      {
+        "kb": "xiaoye-zitan",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "origin": "印度"
+        }
+      }
+    ],
+    "tail": [
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "substitutes": {
+      "xiaoye-zitan": [
+        "jichi-mu",
+        "tanxiang"
+      ],
+      "nanhong": [
+        "zhanguo-hong",
+        "putong-manao"
+      ]
+    },
+    "story": "小叶紫檀色深沉稳，常被视为木中上品，越盘越有光泽；一颗南红做佛头，深紫里点一抹红，寓意红火吉祥。这是经典的文玩配法，适合爱喝茶、喜欢传统物件的男友，一起盘串的过程也是陪伴。",
+    "tips": "小叶紫檀需能说明合法来源，缺货时可换鸡翅木或檀香。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bf-lapis-04",
+    "name": "星夜青金",
+    "audience": [
+      "男友"
+    ],
+    "occasion": [
+      "七夕",
+      "情人节"
+    ],
+    "meaning": [
+      "稳重",
+      "华贵"
+    ],
+    "style": [
+      "轻奢"
+    ],
+    "gender": "male",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "qingjin",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "深蓝"
+        }
+      },
+      {
+        "kb": "qingjin",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "深蓝"
+        }
+      },
+      {
+        "kb": "qingjin",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "深蓝"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "qingjin": [
+        "fangna"
+      ]
+    },
+    "story": "青金石深蓝里散着金色星点，像一片夜空。古人用它做颜料和礼器，色调庄重，自古被视为尊贵之色。配上金色隔片更显精致，七夕送男友比香水领带更有心意，配白衬衫或深色毛衣都好看。",
+    "tips": "青金石怕酸碱，提醒他洗手、运动时摘下。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bf-labradorite-05",
+    "name": "灰月流光",
+    "audience": [
+      "男友"
+    ],
+    "occasion": [
+      "纪念日",
+      "日常"
+    ],
+    "meaning": [
+      "神秘",
+      "内敛"
+    ],
+    "style": [
+      "清冷"
+    ],
+    "gender": "male",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "lachang-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "effect": "蓝光"
+        }
+      },
+      {
+        "kb": "lachang-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "effect": "蓝光"
+        }
+      },
+      {
+        "kb": "lachang-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "effect": "蓝光"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "lachang-shi": [
+        "yueguang-shi",
+        "heiyao"
+      ]
+    },
+    "story": "拉长石灰底不起眼，换个角度就闪出蓝色晕彩，很像话不多但心里有数的人。它常取神秘、内敛的意象，配银色隔珠走清冷路线。适合低调、平时不戴首饰的男友，第一次送手串也不会太张扬。",
+    "tips": "挑晕彩明显的珠子，在阳光下拍给他看效果最好。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bf-jingang-06",
+    "name": "岁岁长情",
+    "audience": [
+      "男友"
+    ],
+    "occasion": [
+      "纪念日",
+      "情人节"
+    ],
+    "meaning": [
+      "坚韧",
+      "恒久"
+    ],
+    "style": [
+      "文玩"
+    ],
+    "gender": "male",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "jingang",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "pattern": "五瓣"
+        }
+      },
+      {
+        "kb": "jingang",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "pattern": "五瓣"
+        }
+      },
+      {
+        "kb": "jingang",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "pattern": "五瓣"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "jingang": [
+        "fengyan"
+      ]
+    },
+    "story": "金刚菩提纹路深、质地硬，越盘越红润，像一段越处越深的感情；它寓意坚韧，常被拿来比喻长久。五瓣籽最常见，价格也好接受。适合喜欢文玩、有耐心盘串的男友，作纪念日礼物很有说头。",
+    "tips": "新串先用软毛刷刷一刷纹路里的粉屑再上手。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-gf-sweet-01",
+    "name": "甜心粉晶",
+    "audience": [
+      "女友"
+    ],
+    "occasion": [
+      "生日",
+      "情人节"
+    ],
+    "meaning": [
+      "温柔",
+      "甜蜜",
+      "浪漫"
+    ],
+    "style": [
+      "少女"
+    ],
+    "gender": "female",
+    "budget": "low",
+    "special": [
+      {
+        "kb": "caomei-jing",
+        "mm": 8,
+        "role": "点缀",
+        "attrs": {
+          "color": "红草莓"
+        }
+      }
+    ],
+    "pattern": [
+      {
+        "kb": "fen-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "淡粉"
+        }
+      },
+      {
+        "kb": "fen-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "淡粉"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      },
+      {
+        "kb": "fen-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "淡粉"
+        }
+      },
+      {
+        "kb": "caomei-jing",
+        "mm": 8,
+        "role": "配珠",
+        "attrs": {
+          "color": "红草莓"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "fen-jing": [
+        "caomei-jing"
+      ],
+      "caomei-jing": [
+        "shiliu"
+      ]
+    },
+    "story": "粉晶是最常见的粉色水晶，颜色柔和，寓意温柔浪漫；草莓晶里有细密的红点，像撒了一层糖霜，再添一点甜。银色隔珠让整串更透亮。适合第一次送女友，百元以内也能很有心意，学生党也送得起。",
+    "tips": "粉晶久晒会褪色，提醒她别长时间放在窗台。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "server/seed.py 模板"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-gf-moonlight-02",
+    "name": "月色温柔",
+    "audience": [
+      "女友"
+    ],
+    "occasion": [
+      "纪念日",
+      "七夕"
+    ],
+    "meaning": [
+      "温柔",
+      "浪漫"
+    ],
+    "style": [
+      "清冷"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "yueguang-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "蓝月光"
+        }
+      },
+      {
+        "kb": "yueguang-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "蓝月光"
+        }
+      },
+      {
+        "kb": "yueguang-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "蓝月光"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "yueguang-shi": [
+        "bai-shuijing"
+      ]
+    },
+    "story": "月光石转动时会浮起一层蓝白色的柔光，像月色落在水面上。它常被当作表达心意的礼物，寓意温柔与浪漫。整串只用银色隔珠点缀，清冷又干净，适合气质安静、穿搭偏素的女友。",
+    "tips": "月光石不耐磕，送时提醒她和硬物分开收纳。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-gf-pearl-03",
+    "name": "珠光粉影",
+    "audience": [
+      "女友"
+    ],
+    "occasion": [
+      "情人节",
+      "纪念日"
+    ],
+    "meaning": [
+      "优雅",
+      "温柔",
+      "圆满"
+    ],
+    "style": [
+      "轻奢"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "fen-jing",
+        "mm": 6,
+        "role": "主珠"
+      },
+      {
+        "kb": "zhenzhu",
+        "mm": 6,
+        "role": "配珠",
+        "attrs": {
+          "color": "白",
+          "origin": "淡水"
+        }
+      },
+      {
+        "kb": "fen-jing",
+        "mm": 6,
+        "role": "主珠"
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "fen-jing": [
+        "caomei-jing"
+      ],
+      "zhenzhu": [
+        "beike"
+      ]
+    },
+    "story": "淡水珍珠圆润有光泽，自古寓意圆满纯净；穿插浅粉色粉晶，再用金色小隔珠串起来，像一条精致的细手链。6mm 小珠很秀气，适合上班族女友，配通勤装、配裙子都合适。",
+    "tips": "珍珠怕香水和汗，戴完用软布擦一擦。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-gf-lavender-04",
+    "name": "薰衣草之约",
+    "audience": [
+      "女友"
+    ],
+    "occasion": [
+      "七夕"
+    ],
+    "meaning": [
+      "浪漫",
+      "优雅"
+    ],
+    "style": [
+      "森系"
+    ],
+    "gender": "female",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "zi-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "薰衣草紫"
+        }
+      },
+      {
+        "kb": "zi-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "薰衣草紫"
+        }
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "配珠"
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "zi-jing": [
+        "zi-yusui"
+      ],
+      "bai-shuijing": [
+        "shiyingyan-yu"
+      ]
+    },
+    "story": "浅紫水晶颜色像薰衣草，透亮不浓艳，穿插几颗白水晶让整串更轻盈。紫色在传统里有“紫气”尊贵之意，浅紫又多了几分浪漫。适合喜欢紫色、穿搭偏温柔的女友，七夕送很应景。",
+    "tips": "紫水晶也怕久晒，日常收在首饰盒里。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-gf-nanhong-05",
+    "name": "锦红如意",
+    "audience": [
+      "女友"
+    ],
+    "occasion": [
+      "本命年",
+      "生日"
+    ],
+    "meaning": [
+      "红火",
+      "吉祥",
+      "喜庆"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "female",
+    "budget": "high",
+    "special": [
+      {
+        "kb": "zhuanyun",
+        "mm": 6,
+        "role": "点缀",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "pattern": [
+      {
+        "kb": "nanhong",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "柿子红",
+          "clarity": "满肉"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "nanhong": [
+        "zhanguo-hong",
+        "putong-manao"
+      ]
+    },
+    "story": "南红色如赤玉，传统上寓意红火吉祥；柿子红满肉的珠子串成一圈，再配一颗金色路路通，喜气但不俗。8mm 珠子秀气，冬天配毛衣尤其好看。适合本命年或生日送女友，红色在中式礼俗里一直是好彩头。",
+    "tips": "南红价格看满色程度，预算紧可换战国红或红玛瑙。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-gf-greenapple-06",
+    "name": "青柠夏日",
+    "audience": [
+      "女友"
+    ],
+    "occasion": [
+      "出行",
+      "毕业"
+    ],
+    "meaning": [
+      "清新",
+      "生机",
+      "灵动"
+    ],
+    "style": [
+      "森系"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "lv-yusui",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "苹果绿"
+        }
+      },
+      {
+        "kb": "lv-yusui",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "苹果绿"
+        }
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "配珠"
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "lv-yusui": [
+        "dongling-yu"
+      ],
+      "bai-shuijing": [
+        "shiyingyan-yu"
+      ]
+    },
+    "story": "澳洲绿玉髓是青苹果一样的嫩绿，半透润泽；每两颗加一颗白水晶，像阳光照进树林。绿色寓意生机与清新，整串很有夏天的感觉。适合爱旅行、爱户外的女友，出游拍照也很上镜。",
+    "tips": "可以在出发旅行前送，让它陪着一起出镜。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-wife-zhulian-01",
+    "name": "珠联璧合",
+    "audience": [
+      "老婆"
+    ],
+    "occasion": [
+      "纪念日",
+      "生日"
+    ],
+    "meaning": [
+      "温润",
+      "圆满",
+      "恒久"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "female",
+    "budget": "high",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "hetian-yu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "白玉"
+        }
+      },
+      {
+        "kb": "hetian-yu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "白玉"
+        }
+      },
+      {
+        "kb": "zhenzhu",
+        "mm": 8,
+        "role": "配珠",
+        "attrs": {
+          "color": "白"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "hetian-yu": [
+        "xiu-yu",
+        "shiyingyan-yu"
+      ],
+      "zhenzhu": [
+        "beike"
+      ]
+    },
+    "story": "古人说“珠联璧合”，用珠与玉比喻美好的结合。和田白玉温润，珍珠圆满，两样串在一起正合这个意思。8mm 尺寸大方又不压手，适合送结婚多年的老婆当纪念日礼物，上班日常也能戴。",
+    "tips": "和田玉价差很大，按预算可换俄料或青海料。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-wife-violetmoon-02",
+    "name": "紫月清辉",
+    "audience": [
+      "老婆"
+    ],
+    "occasion": [
+      "生日",
+      "母亲节"
+    ],
+    "meaning": [
+      "优雅",
+      "温柔"
+    ],
+    "style": [
+      "轻奢"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "zi-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深紫"
+        }
+      },
+      {
+        "kb": "zi-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深紫"
+        }
+      },
+      {
+        "kb": "yueguang-shi",
+        "mm": 8,
+        "role": "配珠",
+        "attrs": {
+          "color": "白月光"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "zi-jing": [
+        "zi-yusui"
+      ],
+      "yueguang-shi": [
+        "bai-shuijing"
+      ]
+    },
+    "story": "深紫水晶沉稳华贵，夹一颗月光石泛出柔和的白光，紫与白的搭配优雅大方。紫色在传统里象征尊贵，月光石寓意温柔。适合三十岁上下、穿搭讲究的老婆，母亲节由你和孩子一起送也很合适。",
+    "tips": "母亲节送可以让孩子亲手放进礼盒。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-wife-redmakeup-03",
+    "name": "十里红妆",
+    "audience": [
+      "老婆"
+    ],
+    "occasion": [
+      "新婚",
+      "纪念日"
+    ],
+    "meaning": [
+      "喜庆",
+      "红火",
+      "美满"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "female",
+    "budget": "low",
+    "special": [
+      {
+        "kb": "zhuanyun",
+        "mm": 6,
+        "role": "点缀",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "pattern": [
+      {
+        "kb": "putong-manao",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "红"
+        }
+      },
+      {
+        "kb": "putong-manao",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "红"
+        }
+      },
+      {
+        "kb": "putong-manao",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "红"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "putong-manao": [
+        "nanhong",
+        "shiliu"
+      ]
+    },
+    "story": "“十里红妆”说的是旧时嫁女的排场，红色一直是婚嫁里最重要的颜色。红玛瑙色正价实，配一颗金色路路通和小金隔片，喜庆而不张扬。适合新婚第一年送老婆，也适合婚礼当天戴着拍照。",
+    "tips": "婚礼当天戴可以选 7–8mm，配秀禾服刚好。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-wife-pearl-04",
+    "name": "月白珠光",
+    "audience": [
+      "老婆"
+    ],
+    "occasion": [
+      "日常",
+      "纪念日"
+    ],
+    "meaning": [
+      "优雅",
+      "端庄",
+      "圆满"
+    ],
+    "style": [
+      "轻奢"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "zhenzhu",
+        "mm": 7,
+        "role": "主珠",
+        "attrs": {
+          "color": "白",
+          "origin": "淡水"
+        }
+      },
+      {
+        "kb": "zhenzhu",
+        "mm": 7,
+        "role": "主珠",
+        "attrs": {
+          "color": "白",
+          "origin": "淡水"
+        }
+      },
+      {
+        "kb": "zhenzhu",
+        "mm": 7,
+        "role": "主珠",
+        "attrs": {
+          "color": "白",
+          "origin": "淡水"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "zhenzhu": [
+        "beike"
+      ]
+    },
+    "story": "珍珠是少有的有机宝石，温润圆满，向来是端庄优雅的代名词。7mm 淡水珍珠串成一圈，用金色小隔片点出层次，不用多余设计。适合气质温婉的老婆，搭连衣裙或衬衫都好看，还能和项链叠戴。",
+    "tips": "珍珠要最后戴、最先摘，避开化妆品和香水。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-hub-smoky-01",
+    "name": "一盏浓茶",
+    "audience": [
+      "老公"
+    ],
+    "occasion": [
+      "生日",
+      "日常"
+    ],
+    "meaning": [
+      "沉稳",
+      "内敛",
+      "稳重"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "male",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "cha-jing",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "color": "深茶"
+        }
+      },
+      {
+        "kb": "cha-jing",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "color": "深茶"
+        }
+      },
+      {
+        "kb": "cha-jing",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "color": "深茶"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "cha-jing": [
+        "heiyao"
+      ]
+    },
+    "story": "茶晶是带茶色的天然水晶，颜色像一杯沉下来的浓茶，通透但不张扬，寓意沉稳。12mm 大珠配金色隔片，有分量又不显浮夸。适合三四十岁、穿着偏商务的老公，衬衫袖口露出一点刚刚好。",
+    "tips": "商务场合戴单圈就够，不要和手表戴同一只手。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-hub-amber-02",
+    "name": "蜜色流年",
+    "audience": [
+      "老公"
+    ],
+    "occasion": [
+      "纪念日",
+      "生日"
+    ],
+    "meaning": [
+      "温润",
+      "恒久",
+      "富足"
+    ],
+    "style": [
+      "文玩"
+    ],
+    "gender": "male",
+    "budget": "high",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "mila",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "color": "鸡油黄"
+        }
+      },
+      {
+        "kb": "mila",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "color": "鸡油黄"
+        }
+      },
+      {
+        "kb": "mila",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "color": "鸡油黄"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "mila": [
+        "hupo",
+        "huanglong-yu"
+      ]
+    },
+    "story": "蜜蜡是不透明的琥珀，鸡油黄色温暖厚重，越戴越润，常被比作时间沉淀下来的东西，寓意温润长久。12mm 大珠配金色隔片，手感敦实。适合结婚多年的老公，纪念日送它，意思是日子越过越有味道。",
+    "tips": "蜜蜡怕高温和酒精，别放在车里暴晒。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-hub-sandal-03",
+    "name": "一缕檀香",
+    "audience": [
+      "老公"
+    ],
+    "occasion": [
+      "升职",
+      "乔迁"
+    ],
+    "meaning": [
+      "清雅",
+      "沉稳",
+      "古朴"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "male",
+    "budget": "mid",
+    "special": [
+      {
+        "kb": "lvsong",
+        "mm": 12,
+        "role": "佛头",
+        "attrs": {
+          "color": "天蓝"
+        }
+      }
+    ],
+    "pattern": [
+      {
+        "kb": "tanxiang",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "origin": "印度（老山）"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "tanxiang": [
+        "hexiang"
+      ],
+      "lvsong": [
+        "tianhe-shi"
+      ]
+    },
+    "story": "老山檀香木质细密，自带淡淡木香，是传统书斋和文房里常见的香材，寓意清雅庄重。整串配一颗绿松石佛头，黄蓝相衬，古朴耐看。适合爱读书、爱喝茶的老公，升职或搬新家后放在书房案头也体面。",
+    "tips": "檀香香气会慢慢变淡，收在密封袋里能留得久一些。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-hub-newdad-04",
+    "name": "初为人父",
+    "audience": [
+      "老公"
+    ],
+    "occasion": [
+      "父亲节",
+      "日常"
+    ],
+    "meaning": [
+      "圆满",
+      "传承",
+      "质朴"
+    ],
+    "style": [
+      "文玩"
+    ],
+    "gender": "male",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "xingyue",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "顺白",
+          "pattern": "正月"
+        }
+      },
+      {
+        "kb": "xingyue",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "顺白",
+          "pattern": "正月"
+        }
+      },
+      {
+        "kb": "xingyue",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "顺白",
+          "pattern": "正月"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "xingyue": [
+        "baiyu-puti"
+      ]
+    },
+    "story": "星月菩提白底黑点，像满天星月，越盘越黄润，寓意清净圆满。它不贵，却要时间慢慢盘出颜色，就像新手爸爸陪孩子一点点长大。适合第一个父亲节送老公，可以和孩子一起把它盘出包浆。",
+    "tips": "前两周别沾水，用干净的手常盘，颜色会更均匀。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bestie-twin-01",
+    "name": "粉紫双生",
+    "audience": [
+      "闺蜜"
+    ],
+    "occasion": [
+      "生日",
+      "日常"
+    ],
+    "meaning": [
+      "友谊",
+      "少女感",
+      "甜蜜"
+    ],
+    "style": [
+      "少女"
+    ],
+    "gender": "female",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "fen-jing",
+        "mm": 8,
+        "role": "主珠"
+      },
+      {
+        "kb": "zi-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "浅紫"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "fen-jing": [
+        "caomei-jing"
+      ],
+      "zi-jing": [
+        "zi-yusui"
+      ]
+    },
+    "story": "粉晶和紫水晶交替排开，一个温柔一个浪漫，配色清新不撞款。闺蜜两人可以各做一条，一条粉多一点、一条紫多一点，成对又各有性格。价格友好，适合学生和刚工作的女生互送，见证一段长久的友谊。",
+    "tips": "做成一对时把两人名字缩写写在卡片上。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bestie-rainbow-02",
+    "name": "彩虹软糖",
+    "audience": [
+      "闺蜜",
+      "女友"
+    ],
+    "occasion": [
+      "生日",
+      "毕业"
+    ],
+    "meaning": [
+      "灵动",
+      "活力",
+      "友谊"
+    ],
+    "style": [
+      "少女"
+    ],
+    "gender": "female",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "ying-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "彩虹萤石"
+        }
+      },
+      {
+        "kb": "ying-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "彩虹萤石"
+        }
+      },
+      {
+        "kb": "ying-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "彩虹萤石"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "ying-shi": [
+        "putong-manao"
+      ]
+    },
+    "story": "彩虹萤石一颗里有紫有绿，每颗颜色都不一样，像一把彩色软糖，看着就开心。它颜色丰富，常取活泼灵动的意象，很适合性格开朗的闺蜜。毕业时送一条，纪念一起走过的青春。",
+    "tips": "萤石偏软，提醒她别和硬物碰撞，洗手时摘下。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bestie-seasalt-03",
+    "name": "海盐汽水",
+    "audience": [
+      "闺蜜"
+    ],
+    "occasion": [
+      "出行"
+    ],
+    "meaning": [
+      "清新",
+      "清透",
+      "友谊"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "hailanbao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "浅蓝"
+        }
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 6,
+        "role": "配珠"
+      },
+      {
+        "kb": "hailanbao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "浅蓝"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "hailanbao": [
+        "tianhe-shi"
+      ],
+      "bai-shuijing": [
+        "shiyingyan-yu"
+      ]
+    },
+    "story": "浅蓝的海蓝宝夹着透明白水晶，像一瓶冒着气泡的海盐汽水，清爽又干净。6mm 小珠很秀气，可以和别的手链叠戴。海蓝宝常和大海联系在一起，适合送一起旅行过、约好下次还要去看海的闺蜜，出发前送最应景。",
+    "tips": "两个人可以各戴一条去旅行拍合照。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bestie-wedding-04",
+    "name": "珠光月色",
+    "audience": [
+      "闺蜜"
+    ],
+    "occasion": [
+      "新婚"
+    ],
+    "meaning": [
+      "祝福",
+      "美满",
+      "优雅"
+    ],
+    "style": [
+      "轻奢"
+    ],
+    "gender": "female",
+    "budget": "high",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "zhenzhu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "白"
+        }
+      },
+      {
+        "kb": "yueguang-shi",
+        "mm": 8,
+        "role": "配珠",
+        "attrs": {
+          "color": "白月光"
+        }
+      },
+      {
+        "kb": "zhenzhu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "白"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "zhenzhu": [
+        "beike"
+      ],
+      "yueguang-shi": [
+        "bai-shuijing"
+      ]
+    },
+    "story": "珍珠和白月光石都是柔和的白光，一个圆润一个清透，配金色小隔片，素雅又有质感。珍珠向来寓意圆满，月光石寓意温柔。适合闺蜜结婚时当新婚贺礼，婚礼当天还能当新娘的配饰。",
+    "tips": "提前问好她的手围，婚礼当天戴才刚好。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bro-sardonyx-01",
+    "name": "黑白缠丝",
+    "audience": [
+      "兄弟"
+    ],
+    "occasion": [
+      "毕业"
+    ],
+    "meaning": [
+      "友谊",
+      "坚定",
+      "恒久"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "male",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "chansi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "黑白"
+        }
+      },
+      {
+        "kb": "chansi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "黑白"
+        }
+      },
+      {
+        "kb": "chansi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "黑白"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "chansi": [
+        "putong-manao"
+      ]
+    },
+    "story": "缠丝玛瑙一层层黑白条纹缠在一起，像多年的交情，一圈一圈分不开，寓意长久。每颗纹理都不同，男生戴也不显花哨。价格亲民，适合毕业时送室友、发小，或生日送兄弟，一人一条也不贵。",
+    "tips": "宿舍几个人可以各做一条，隔珠颜色区分。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bro-hawkeye-02",
+    "name": "苍蓝鹰眼",
+    "audience": [
+      "兄弟"
+    ],
+    "occasion": [
+      "出行",
+      "新工作"
+    ],
+    "meaning": [
+      "勇气",
+      "坚定",
+      "自在"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "male",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "huyan-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "蓝（鹰眼）"
+        }
+      },
+      {
+        "kb": "huyan-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "蓝（鹰眼）"
+        }
+      },
+      {
+        "kb": "huyan-shi",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "蓝（鹰眼）"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "huyan-shi": [
+        "fangna"
+      ]
+    },
+    "story": "蓝色的虎眼石俗称鹰眼石，灰蓝底上有一道光带，冷静又有个性。鹰在传统里象征志向高远，这类宝石也寓意勇气。适合送要出远门、去外地工作或出国留学的兄弟，祝他一路展翅高飞。",
+    "tips": "出发前一天送，配一句“到了报个信”。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-bro-nanhong-03",
+    "name": "赤诚之交",
+    "audience": [
+      "兄弟"
+    ],
+    "occasion": [
+      "新婚",
+      "生日"
+    ],
+    "meaning": [
+      "红火",
+      "喜庆",
+      "祝福"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "male",
+    "budget": "high",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "nanhong",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "柿子红"
+        }
+      },
+      {
+        "kb": "nanhong",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "柿子红"
+        }
+      },
+      {
+        "kb": "nanhong",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "柿子红"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "nanhong": [
+        "zhanguo-hong",
+        "putong-manao"
+      ]
+    },
+    "story": "南红色如赤玉，传统上寓意红火吉祥，“赤诚”二字也正好借了这份红。10mm 满色南红配金色隔片，男生戴也大气。兄弟结婚时送一条，喜事戴红，图个好彩头，比礼金更有纪念意义。",
+    "tips": "预算不够可以只做佛头用南红，主珠换红玛瑙。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-mom-amber-01",
+    "name": "金秋蜜韵",
+    "audience": [
+      "妈妈"
+    ],
+    "occasion": [
+      "母亲节",
+      "生日"
+    ],
+    "meaning": [
+      "温润",
+      "福气",
+      "富足"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "female",
+    "budget": "high",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "mila",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "鸡油黄"
+        }
+      },
+      {
+        "kb": "mila",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "鸡油黄"
+        }
+      },
+      {
+        "kb": "mila",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "鸡油黄"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "mila": [
+        "hupo",
+        "huanglong-yu"
+      ]
+    },
+    "story": "蜜蜡颜色暖黄，像秋天的阳光，质地温润，越戴越亮，在传统里常寓意富足吉祥。8mm 珠子不压手，金色隔片添一点精致。适合五十岁上下的妈妈，母亲节送它，谢谢她多年把家照顾得暖暖和和。",
+    "tips": "蜜蜡怕高温，提醒妈妈做饭时摘下来。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-mom-xiuyu-02",
+    "name": "碧玉年华",
+    "audience": [
+      "妈妈",
+      "长辈"
+    ],
+    "occasion": [
+      "母亲节",
+      "日常"
+    ],
+    "meaning": [
+      "温润",
+      "平安",
+      "质朴"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "female",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "xiu-yu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "碧绿"
+        }
+      },
+      {
+        "kb": "xiu-yu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "碧绿"
+        }
+      },
+      {
+        "kb": "xiu-yu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "碧绿"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "xiu-yu": [
+        "dongling-yu"
+      ]
+    },
+    "story": "岫玉产自辽宁岫岩，是国内历史悠久的名玉，颜色碧绿温润，价格却很亲民。8mm 圆珠配金色隔片，素净耐看。玉在中国人心里一直有温润平和的寓意，适合不爱张扬的妈妈日常戴，不用担心太贵重。",
+    "tips": "岫玉硬度不高，和金属手镯分开戴。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-mom-violetpearl-03",
+    "name": "紫韵珠光",
+    "audience": [
+      "妈妈"
+    ],
+    "occasion": [
+      "生日",
+      "母亲节"
+    ],
+    "meaning": [
+      "端庄",
+      "优雅",
+      "华贵"
+    ],
+    "style": [
+      "轻奢"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "zi-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深紫"
+        }
+      },
+      {
+        "kb": "zi-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深紫"
+        }
+      },
+      {
+        "kb": "zhenzhu",
+        "mm": 8,
+        "role": "配珠",
+        "attrs": {
+          "color": "白"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "zi-jing": [
+        "zi-yusui"
+      ],
+      "zhenzhu": [
+        "beike"
+      ]
+    },
+    "story": "深紫水晶端庄华贵，紫色在传统里有“紫气东来”的尊贵寓意；中间穿插白珍珠，圆润柔和，寓意圆满。紫白搭配显气色又不老气，适合爱打扮的妈妈，出门喝早茶、参加聚会都拿得出手。",
+    "tips": "妈妈手腕细的话可以换 6mm，看起来更秀气。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-mom-spring-04",
+    "name": "翠色春回",
+    "audience": [
+      "妈妈",
+      "长辈"
+    ],
+    "occasion": [
+      "康复"
+    ],
+    "meaning": [
+      "生机",
+      "祝福",
+      "自然"
+    ],
+    "style": [
+      "森系"
+    ],
+    "gender": "female",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "dongling-yu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "绿东陵"
+        }
+      },
+      {
+        "kb": "dongling-yu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "绿东陵"
+        }
+      },
+      {
+        "kb": "dongling-yu",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "绿东陵"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "dongling-yu": [
+        "xiu-yu"
+      ]
+    },
+    "story": "东陵玉是带细小闪片的绿色玉石，绿得像初春的新叶，寓意生机。它价格亲民，颜色明快。适合妈妈休养一段时间、慢慢好起来的时候送，不讲大道理，只是一份“春天来了”的祝福，配上一张手写卡片更好。",
+    "tips": "配一张手写卡片，比手串本身更打动人。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-dad-zitan-01",
+    "name": "紫檀岁月",
+    "audience": [
+      "爸爸"
+    ],
+    "occasion": [
+      "父亲节",
+      "生日"
+    ],
+    "meaning": [
+      "沉稳",
+      "古朴",
+      "传承"
+    ],
+    "style": [
+      "文玩"
+    ],
+    "gender": "male",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "xiaoye-zitan",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "pattern": "金星"
+        }
+      },
+      {
+        "kb": "xiaoye-zitan",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "pattern": "金星"
+        }
+      },
+      {
+        "kb": "xiaoye-zitan",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "pattern": "金星"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "xiaoye-zitan": [
+        "jichi-mu",
+        "tanxiang"
+      ]
+    },
+    "story": "小叶紫檀色深质密，金星点点，常被视为木中上品，越盘越润，越久越有味道，正像父亲。12mm 大珠拿在手里有分量，配金色隔片更精神。适合父亲节送爱喝茶、爱盘串的爸爸，平时也能当手把件。",
+    "tips": "小叶紫檀需能说明合法来源，缺货时可换鸡翅木。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-dad-phoenix-02",
+    "name": "凤眼长青",
+    "audience": [
+      "爸爸",
+      "长辈"
+    ],
+    "occasion": [
+      "父亲节",
+      "日常"
+    ],
+    "meaning": [
+      "吉祥",
+      "质朴"
+    ],
+    "style": [
+      "文玩"
+    ],
+    "gender": "male",
+    "budget": "low",
+    "special": [
+      {
+        "kb": "putong-manao",
+        "mm": 12,
+        "role": "佛头",
+        "attrs": {
+          "color": "红"
+        }
+      }
+    ],
+    "pattern": [
+      {
+        "kb": "fengyan",
+        "mm": 12,
+        "role": "主珠"
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "fengyan": [
+        "xingyue"
+      ],
+      "putong-manao": [
+        "nanhong"
+      ]
+    },
+    "story": "凤眼菩提每颗都有一只眼睛状的纹，形似凤眼，名字讨喜，寓意吉祥；红玛瑙做佛头，棕红相配很朴实。价格不贵，却经得起天天盘，越盘颜色越深。适合不讲究牌子、喜欢实在东西的爸爸。",
+    "tips": "教爸爸用干净的手盘，别用油擦。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-dad-turquoise-03",
+    "name": "松石苍翠",
+    "audience": [
+      "爸爸"
+    ],
+    "occasion": [
+      "父亲节",
+      "新年"
+    ],
+    "meaning": [
+      "古朴",
+      "吉祥",
+      "稳重"
+    ],
+    "style": [
+      "复古"
+    ],
+    "gender": "male",
+    "budget": "high",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "lvsong",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "天蓝",
+          "texture": "高瓷"
+        }
+      },
+      {
+        "kb": "lvsong",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "天蓝",
+          "texture": "高瓷"
+        }
+      },
+      {
+        "kb": "lvsong",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "天蓝",
+          "texture": "高瓷"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "lvsong": [
+        "tianhe-shi"
+      ]
+    },
+    "story": "绿松石天蓝里带着铁线，颜色古朴，是我国使用历史很久的玉石之一，传统上寓意吉祥。高瓷料质地细密，配金色隔片，有点藏式的粗犷。适合六十岁上下、喜欢老物件的爸爸，过生日送它很体面。",
+    "tips": "绿松石怕油和汗，提醒爸爸洗手时摘下。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-elder-boxwood-01",
+    "name": "松鹤延年",
+    "audience": [
+      "长辈"
+    ],
+    "occasion": [
+      "生日"
+    ],
+    "meaning": [
+      "长寿",
+      "福气",
+      "质朴"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "huangyang",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "蛋黄"
+        }
+      },
+      {
+        "kb": "huangyang",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "蛋黄"
+        }
+      },
+      {
+        "kb": "huangyang",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "蛋黄"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "huangyang": [
+        "tanxiang"
+      ]
+    },
+    "story": "黄杨木生长极慢，民间有“千年矮”的说法，木质细腻温黄，传统上寓意长寿。整串素净不花哨，轻巧不压手，金色隔片添一点喜气。适合给爷爷奶奶、外公外婆贺寿，价格实在，心意十足。",
+    "tips": "老人手腕细，下单前量好手围再加余量。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-elder-starmoon-02",
+    "name": "岁岁安好",
+    "audience": [
+      "长辈"
+    ],
+    "occasion": [
+      "新年",
+      "生日"
+    ],
+    "meaning": [
+      "平安",
+      "圆满",
+      "祝福"
+    ],
+    "style": [
+      "文玩"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "xingyue",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "顺白"
+        }
+      },
+      {
+        "kb": "xingyue",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "顺白"
+        }
+      },
+      {
+        "kb": "xingyue",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "顺白"
+        }
+      },
+      {
+        "kb": "lvsong",
+        "mm": 10,
+        "role": "配珠",
+        "attrs": {
+          "color": "天蓝"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "xingyue": [
+        "baiyu-puti"
+      ],
+      "lvsong": [
+        "tianhe-shi"
+      ]
+    },
+    "story": "星月菩提朴素耐看，白底黑点像星月相伴，寓意清净圆满；几颗绿松石点缀其间，蓝白相映，民间常把绿松石当作吉祥之物。价格亲民，适合过年给长辈拜年时送，祝老人家岁岁安好。",
+    "tips": "可以全家一起盘一阵再送，颜色会更温润。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "server/seed.py 模板"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-elder-hetian-03",
+    "name": "玉润千秋",
+    "audience": [
+      "长辈"
+    ],
+    "occasion": [
+      "生日",
+      "新年"
+    ],
+    "meaning": [
+      "温润",
+      "长寿",
+      "传承"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "any",
+    "budget": "high",
+    "special": [
+      {
+        "kb": "nanhong",
+        "mm": 10,
+        "role": "点缀",
+        "attrs": {
+          "color": "柿子红"
+        }
+      }
+    ],
+    "pattern": [
+      {
+        "kb": "hetian-yu",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "青白玉"
+        }
+      },
+      {
+        "kb": "hetian-yu",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "青白玉"
+        }
+      },
+      {
+        "kb": "hetian-yu",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "青白玉"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 6,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "hetian-yu": [
+        "xiu-yu",
+        "shiyingyan-yu"
+      ],
+      "nanhong": [
+        "zhanguo-hong"
+      ]
+    },
+    "story": "和田玉自古被看作“君子之玉”，青白玉色调沉静，正合长辈的年纪；一颗南红点缀，寓意红火吉庆，正好添贺寿的喜气。这样一串可以戴很多年，还能作为家里的老物件一代代传下去。",
+    "tips": "整寿（六十、七十）送最合适，附上生辰日期的卡片。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-elder-teacher-04",
+    "name": "桃李芬芳",
+    "audience": [
+      "长辈"
+    ],
+    "occasion": [
+      "教师节"
+    ],
+    "meaning": [
+      "清雅",
+      "书卷气",
+      "祝福"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "any",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "tanxiang",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "origin": "印度（老山）"
+        }
+      },
+      {
+        "kb": "tanxiang",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "origin": "印度（老山）"
+        }
+      },
+      {
+        "kb": "tanxiang",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "origin": "印度（老山）"
+        }
+      },
+      {
+        "kb": "lv-yusui",
+        "mm": 8,
+        "role": "配珠",
+        "attrs": {
+          "color": "苹果绿"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "tanxiang": [
+        "hexiang"
+      ],
+      "lv-yusui": [
+        "dongling-yu"
+      ]
+    },
+    "story": "檀香木细密温润，带着淡淡木香，是书斋文房里的老朋友，寓意清雅；几颗绿玉髓点缀，像春天新发的桃李枝叶。教师节送老师，取“桃李芬芳”之意，男女老师都合适，比贺卡更能留在身边。",
+    "tips": "注意学校对师生收礼的规定，毕业后再送更合适。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-kid-peach-01",
+    "name": "桃气宝贝",
+    "audience": [
+      "孩子"
+    ],
+    "occasion": [
+      "生日",
+      "新年"
+    ],
+    "meaning": [
+      "吉祥",
+      "祝福",
+      "活力"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "tao-mu",
+        "mm": 6,
+        "role": "主珠"
+      },
+      {
+        "kb": "tao-mu",
+        "mm": 6,
+        "role": "主珠"
+      },
+      {
+        "kb": "tao-mu",
+        "mm": 6,
+        "role": "主珠"
+      },
+      {
+        "kb": "huangyang",
+        "mm": 6,
+        "role": "配珠",
+        "attrs": {
+          "color": "蛋黄"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "tao-mu": [
+        "huangyang"
+      ],
+      "huangyang": [
+        "tanxiang"
+      ]
+    },
+    "story": "桃木和黄杨木都是轻巧的木珠，不怕摔也不硌手，6mm 小珠适合孩子的小手腕。桃木是传统年俗里常见的吉祥题材，黄杨木色温黄讨喜。适合小朋友过生日或过年时戴，大人记得用弹力线，别让孩子放进嘴里。",
+    "tips": "三岁以下不建议佩戴串珠，大一点的孩子也要大人看着。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-kid-red-02",
+    "name": "朱红童趣",
+    "audience": [
+      "孩子"
+    ],
+    "occasion": [
+      "本命年",
+      "新年"
+    ],
+    "meaning": [
+      "红火",
+      "喜庆",
+      "吉祥"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "putong-manao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "红"
+        }
+      },
+      {
+        "kb": "putong-manao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "红"
+        }
+      },
+      {
+        "kb": "putong-manao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "红"
+        }
+      },
+      {
+        "kb": "xingyue",
+        "mm": 6,
+        "role": "配珠",
+        "attrs": {
+          "color": "顺白"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "putong-manao": [
+        "nanhong"
+      ],
+      "xingyue": [
+        "tao-mu"
+      ]
+    },
+    "story": "本命年讲究戴点红，给孩子用红玛瑙正合适：玛瑙质地坚硬、不易磕坏，6mm 小珠秀气不累赘，穿插几颗星月菩提，红白相间活泼可爱。红色寓意红火喜庆，过年穿新衣时戴上很应景。",
+    "tips": "孩子佩戴时大人看着，别让小珠子入口。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-kid-candy-03",
+    "name": "糖果玛瑙",
+    "audience": [
+      "孩子",
+      "学生"
+    ],
+    "occasion": [
+      "生日",
+      "日常"
+    ],
+    "meaning": [
+      "活力",
+      "灵动",
+      "祝福"
+    ],
+    "style": [
+      "多宝"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "putong-manao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "红"
+        }
+      },
+      {
+        "kb": "putong-manao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "白"
+        }
+      },
+      {
+        "kb": "putong-manao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "绿"
+        }
+      },
+      {
+        "kb": "putong-manao",
+        "mm": 6,
+        "role": "主珠",
+        "attrs": {
+          "color": "蓝"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "putong-manao": [
+        "bi-shi"
+      ]
+    },
+    "story": "红白绿蓝四色玛瑙排在一起，像一把水果糖，小朋友一眼就会喜欢。玛瑙硬度高、不易碎，6mm 小珠轻巧，适合上幼儿园、小学的孩子。玛瑙在传统里寓意吉祥，当生日礼物很讨喜，佩戴时大人在旁边看着。",
+    "tips": "可以让孩子自己挑颜色顺序，一起完成更有意思。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-stu-exam-01",
+    "name": "蟾宫折桂",
+    "audience": [
+      "学生"
+    ],
+    "occasion": [
+      "考试"
+    ],
+    "meaning": [
+      "明亮",
+      "清透",
+      "祝福"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "zi-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深紫"
+        }
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "主珠"
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "主珠"
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "zi-jing": [
+        "zi-yusui"
+      ],
+      "bai-shuijing": [
+        "shiyingyan-yu"
+      ]
+    },
+    "story": "紫水晶配白水晶，紫色寓意尊贵，白水晶清透明亮，整串干净利落，男女都能戴。“蟾宫折桂”是古人对金榜题名的美称，送考生图个好彩头。价格学生党友好，考前送一条，比一句“加油”更有分量。",
+    "tips": "考前一两周送，别等考试当天，免得分心。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "server/seed.py 模板"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-stu-grad-02",
+    "name": "海阔天空",
+    "audience": [
+      "学生"
+    ],
+    "occasion": [
+      "毕业",
+      "出行"
+    ],
+    "meaning": [
+      "自在",
+      "清新",
+      "祝福"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "tianhe-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "浅蓝绿"
+        }
+      },
+      {
+        "kb": "tianhe-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "浅蓝绿"
+        }
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "配珠"
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "tianhe-shi": [
+        "hailanbao",
+        "lv-yusui"
+      ],
+      "bai-shuijing": [
+        "shiyingyan-yu"
+      ]
+    },
+    "story": "天河石是带白纹的蓝绿色，像晴天下的大海；配上透明白水晶，清爽干净，男女都适合。毕业是从校园走向更大的世界，“海阔天空”正是对新起点的祝福。适合送即将毕业的学生或学弟学妹，价格也不吓人。",
+    "tips": "毕业典礼当天送，合影时正好戴上。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-stu-sunny-03",
+    "name": "向阳而生",
+    "audience": [
+      "学生"
+    ],
+    "occasion": [
+      "毕业",
+      "考试"
+    ],
+    "meaning": [
+      "阳光",
+      "明亮",
+      "活力"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "huang-shuijing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "柠檬黄"
+        }
+      },
+      {
+        "kb": "huang-shuijing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "柠檬黄"
+        }
+      },
+      {
+        "kb": "huang-shuijing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "柠檬黄"
+        }
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "配珠"
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "huang-shuijing": [
+        "huanglong-yu"
+      ],
+      "bai-shuijing": [
+        "shiyingyan-yu"
+      ]
+    },
+    "story": "黄水晶色如柠檬，透亮温暖，夹一颗白水晶更显清透，像清晨的阳光。黄色在传统里有温暖、尊贵的意思。适合刚考完试、拿到录取通知的学生，祝对方像向日葵一样朝着光生长，男女都能戴。",
+    "tips": "市面黄水晶多为加热处理，介意的话下单时看清标注。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-col-clear-01",
+    "name": "素心如简",
+    "audience": [
+      "同事"
+    ],
+    "occasion": [
+      "生日",
+      "日常"
+    ],
+    "meaning": [
+      "纯净",
+      "清透",
+      "好人缘"
+    ],
+    "style": [
+      "简约"
+    ],
+    "gender": "any",
+    "budget": "low",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "clarity": "清透"
+        }
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "clarity": "清透"
+        }
+      },
+      {
+        "kb": "bai-shuijing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "clarity": "清透"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "bai-shuijing": [
+        "shiyingyan-yu"
+      ]
+    },
+    "story": "白水晶清透干净，寓意纯净明澈，没有颜色也就不挑人、不挑衣服。整串只配银色隔片，简单大方。同事之间送礼讲究分寸，这样一条价格适中、男女都能戴，心意到了又不会让对方有负担。",
+    "tips": "不知道对方手围时选弹力线，按 15–16cm 做。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-col-lapis-02",
+    "name": "深蓝星辰",
+    "audience": [
+      "同事",
+      "领导"
+    ],
+    "occasion": [
+      "升职",
+      "新工作"
+    ],
+    "meaning": [
+      "稳重",
+      "大气",
+      "祝福"
+    ],
+    "style": [
+      "轻奢"
+    ],
+    "gender": "any",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "qingjin",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深蓝"
+        }
+      },
+      {
+        "kb": "qingjin",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深蓝"
+        }
+      },
+      {
+        "kb": "qingjin",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深蓝"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "qingjin": [
+        "fangna"
+      ]
+    },
+    "story": "青金石深蓝底上散着金色星点，庄重大气，古代常用作礼器和壁画的颜料，被视为尊贵之色。8mm 尺寸男女都合适，配金色隔片更精致。同事升职或跳槽去新公司时送一条，祝贺到位，也显得有品位。",
+    "tips": "附一句简短的祝贺就好，不必说得太满。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "server/seed.py 模板"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-col-prehnite-03",
+    "name": "初夏青提",
+    "audience": [
+      "同事"
+    ],
+    "occasion": [
+      "康复",
+      "日常"
+    ],
+    "meaning": [
+      "清新",
+      "生机",
+      "祝福"
+    ],
+    "style": [
+      "森系"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "putao-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "黄绿"
+        }
+      },
+      {
+        "kb": "putao-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "黄绿"
+        }
+      },
+      {
+        "kb": "putao-shi",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "黄绿"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔珠",
+        "attrs": {
+          "color": "银色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "putao-shi": [
+        "lv-yusui"
+      ]
+    },
+    "story": "葡萄石是淡淡的黄绿色，半透明里带着一点奶感，像初夏刚挂果的青提，看着就清爽。绿色寓意生机与清新。同事病愈回来上班时送一条，比鲜花留得久，也是一句不必说出口的“欢迎回来”。",
+    "tips": "康复时送礼要低调，私下给比当众给更合适。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-boss-zhixing-01",
+    "name": "知行合一",
+    "audience": [
+      "领导"
+    ],
+    "occasion": [
+      "升职",
+      "新年"
+    ],
+    "meaning": [
+      "坚韧",
+      "稳重",
+      "大气"
+    ],
+    "style": [
+      "文玩"
+    ],
+    "gender": "male",
+    "budget": "mid",
+    "special": [
+      {
+        "kb": "nanhong",
+        "mm": 12,
+        "role": "佛头",
+        "attrs": {
+          "color": "柿子红"
+        }
+      }
+    ],
+    "pattern": [
+      {
+        "kb": "jingang",
+        "mm": 12,
+        "role": "主珠",
+        "attrs": {
+          "pattern": "五瓣"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "jingang": [
+        "fengyan"
+      ],
+      "nanhong": [
+        "zhanguo-hong",
+        "putong-manao"
+      ]
+    },
+    "story": "金刚菩提纹路深峻、质地坚硬，寓意坚韧；南红佛头色如赤玉，传统上寓意红火吉祥。棕红一体，稳重又不沉闷。取王阳明“知行合一”之意，适合务实肯干的领导，升职或生日时送，盘玩也有乐趣。",
+    "tips": "给领导送礼注意单位规定，价值不宜过高。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/wenwan.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-boss-junzi-02",
+    "name": "如玉君子",
+    "audience": [
+      "领导",
+      "长辈"
+    ],
+    "occasion": [
+      "生日",
+      "升职"
+    ],
+    "meaning": [
+      "温润",
+      "谦和",
+      "书卷气"
+    ],
+    "style": [
+      "新中式"
+    ],
+    "gender": "male",
+    "budget": "high",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "hetian-yu",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "青白玉"
+        }
+      },
+      {
+        "kb": "hetian-yu",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "青白玉"
+        }
+      },
+      {
+        "kb": "hetian-yu",
+        "mm": 10,
+        "role": "主珠",
+        "attrs": {
+          "color": "青白玉"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "hetian-yu": [
+        "xiu-yu",
+        "shiyingyan-yu"
+      ]
+    },
+    "story": "《诗经》里有“言念君子，温其如玉”，和田玉自古拿来比喻君子品格。青白玉色调素净，油润细腻，配一点金色隔片也不显老气。适合温和稳重、偏爱质感的领导或长辈，是一份能长久戴下去的礼物。",
+    "tips": "公务往来注意单位规定，更适合私交深的长辈型领导。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  },
+  {
+    "id": "gift-boss-bluepearl-03",
+    "name": "蓝调珠光",
+    "audience": [
+      "领导"
+    ],
+    "occasion": [
+      "升职",
+      "新工作"
+    ],
+    "meaning": [
+      "优雅",
+      "大气",
+      "端庄"
+    ],
+    "style": [
+      "轻奢"
+    ],
+    "gender": "female",
+    "budget": "mid",
+    "special": [],
+    "pattern": [
+      {
+        "kb": "zhenzhu",
+        "mm": 8,
+        "role": "配珠",
+        "attrs": {
+          "color": "白"
+        }
+      },
+      {
+        "kb": "qingjin",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深蓝"
+        }
+      },
+      {
+        "kb": "qingjin",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "深蓝"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 4,
+        "role": "隔片",
+        "attrs": {
+          "color": "金色"
+        }
+      }
+    ],
+    "tail": [],
+    "substitutes": {
+      "zhenzhu": [
+        "beike"
+      ],
+      "qingjin": [
+        "fangna"
+      ]
+    },
+    "story": "深蓝青金石带着金色星点，夹一颗白珍珠，蓝白配色干练又不失柔和。青金石自古被视为尊贵之色，珍珠寓意圆满。8mm 珠子大方得体，适合职场上干练的女领导，升职时送显得懂审美又有分寸。",
+    "tips": "给领导送礼注意单位规定，团队合送更得体。",
+    "sources": [
+      "kb/data/beads 品种寓意与常见尺寸",
+      "市场调研 kb/market/crystals.md"
+    ],
+    "confidence": {
+      "story": "mid"
+    }
+  }
+]

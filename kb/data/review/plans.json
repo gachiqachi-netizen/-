@@ -1,0 +1,1122 @@
+{
+ "plans": {
+  "gift-bf-blackgold-01": {
+   "score": 85,
+   "issues": [
+    "黑曜石+金黄虎眼+金隔的黑金配色与 self-m-tiger-01 基本相同，只差 2mm 和隔珠"
+   ],
+   "fixes": [
+    "和 self-m-tiger-01 拉开差异：本条保留 12mm 大珠，或把虎眼换成鹰眼/茶晶做冷色版"
+   ]
+  },
+  "gift-bf-tigereye-02": {
+   "score": 80,
+   "issues": [
+    "虎眼素串与 self-m-tiger-01、gift-bro-hawkeye-02 同料同结构",
+    "替代 cha-jing 没有光带效应，‘流光’的卖点丢失"
+   ],
+   "fixes": [
+    "替代改为同有光带的鹰眼（huyan-shi 蓝色）或保留茶晶但在 tips 说明效果不同",
+    "与 bro-hawkeye-02 合并或换主题（如虎眼+茶晶双色）"
+   ]
+  },
+  "gift-bf-zitan-03": {
+   "score": 78,
+   "issues": [
+    "与 self-m-zitan-01 几乎同方（小叶紫檀 10mm+南红 12mm 佛头），仅多两片金隔",
+    "主珠是 restricted 的小叶紫檀，给了替代但仍作首推",
+    "南红单颗当佛头，没有三通/佛塔，和 rules 的 fotou 结构说法不一致"
+   ],
+   "fixes": [
+    "佛头写成南红三通，或加 fotou 配件",
+    "二选一保留，另一条改用鸡翅木/黄杨木做非受限文玩款"
+   ]
+  },
+  "gift-bf-lapis-04": {
+   "score": 76,
+   "issues": [
+    "与 self-m-lapis-01（同 10mm 深蓝+金隔）、gift-col-lapis-02 同方，三条青金素串",
+    "青金市面染色、压制常见，未用 attrs 限定 treatment",
+    "‘比香水领带更有心意’是营销套话"
+   ],
+   "fixes": [
+    "加 attrs treatment=天然 或在 tips 提示看染色",
+    "改成青金+白水晶/金发晶的配珠款，与另两条区分",
+    "删掉套话，换成具体画面"
+   ]
+  },
+  "gift-bf-labradorite-05": {
+   "score": 83,
+   "issues": [
+    "替代 yueguang-shi 价位比拉长石高，不符合‘更常见或更便宜’；heiyao 没有晕彩",
+    "与 self-m-labra-01、self-f-aurora-01 同料同色调"
+   ],
+   "fixes": [
+    "替代改为灰月光石之外的低价选项（如 heiyao 带紫/带绿 或 fangna），并说明无晕彩"
+   ]
+  },
+  "gift-bf-jingang-06": {
+   "score": 80,
+   "issues": [
+    "与 self-m-jingang-01、gift-boss-zhixing-01 同为 12mm 五瓣金刚素串",
+    "情人节/纪念日送扎手、需要刷的文玩菩提，贴合度一般"
+   ],
+   "fixes": [
+    "场合改为生日/日常，或换成对串（与女友款配对）",
+    "与 jingang 组至少换一个珠径或加配珠区分"
+   ]
+  },
+  "gift-gf-sweet-01": {
+   "score": 84,
+   "issues": [
+    "special 放一颗草莓晶做点缀，而 pattern 里也循环草莓晶，点缀失去意义",
+    "与 self-f-berry-01、self-f-rose-01 同为粉晶系，差异不大"
+   ],
+   "fixes": [
+    "special 改用白珍珠或金色小珠做主题珠，或删掉 special"
+   ]
+  },
+  "gift-gf-moonlight-02": {
+   "score": 78,
+   "issues": [
+    "满串 8mm 蓝月光 标 mid 偏紧，蓝光明显的料通常更贵",
+    "替代 bai-shuijing 无月光效应，颜色接近但寓意‘月色’落空",
+    "与 self-f-moon-01、self-c-sunmoon-she 几乎同方"
+   ],
+   "fixes": [
+    "预算改 high 或 attrs 改灰月光/白月光",
+    "替代加 beike（白贝）或灰月光石"
+   ]
+  },
+  "gift-gf-pearl-03": {
+   "score": 80,
+   "issues": [
+    "粉晶（莫氏 7）与珍珠（2.5–4.5）直接相邻，违反 rules 的 hardness 禁忌，珍珠表层会被磨花"
+   ],
+   "fixes": [
+    "珍珠两侧各垫金色隔片，pattern 改为 粉晶-隔片-珍珠-隔片"
+   ]
+  },
+  "gift-gf-lavender-04": {
+   "score": 72,
+   "issues": [
+    "与 self-f-lavender-01 几乎一字不差（薰衣草紫 8mm×2+白水晶+银隔 4mm）",
+    "‘紫水晶+白水晶’全库出现 6 次",
+    "style 标森系不贴，紫白配色更像清冷/少女"
+   ],
+   "fixes": [
+    "改成紫晶+绿玉髓或紫晶+锂云母的‘花田’版，或删掉一条",
+    "style 改为 少女/清冷"
+   ]
+  },
+  "gift-gf-nanhong-05": {
+   "score": 82,
+   "issues": [
+    "点缀用 zhuanyun，品种名‘转运珠’本身含禁用词‘转运’，story 写‘路路通’只规避了文案，程序展示仍可能出现原名",
+    "与 self-f-benming-01 同方，但这里标 high、那里标 mid，预算不一致"
+   ],
+   "fixes": [
+    "点缀改用 gezhu 金色圆珠，或给 zhuanyun 改显示名为‘路路通’",
+    "两条统一为 high，并合并或区分"
+   ]
+  },
+  "gift-gf-greenapple-06": {
+   "score": 85,
+   "issues": [
+    "与 self-f-forest-01 同用苹果绿玉髓+白水晶，但这里标 mid、那里标 low"
+   ],
+   "fixes": [
+    "统一预算档（澳玉满串建议 mid）"
+   ]
+  },
+  "gift-wife-zhulian-01": {
+   "score": 83,
+   "issues": [
+    "和田玉与珍珠直接相邻，硬度差大",
+    "tips 写‘俄料或青海料’，这两者在国标里仍叫和田玉，算不上降档替代"
+   ],
+   "fixes": [
+    "珍珠两侧加金隔片",
+    "tips 改为‘按预算选不同产地或换岫玉’"
+   ]
+  },
+  "gift-wife-violetmoon-02": {
+   "score": 80,
+   "issues": [
+    "与 gift-mom-violetpearl-03 同为‘深紫 8mm×2+白色配珠+隔珠’，只把珍珠换成月光石"
+   ],
+   "fixes": [
+    "改成紫晶+月光石+银隔的‘清辉’冷色版加锂云母，或换主色"
+   ]
+  },
+  "gift-wife-redmakeup-03": {
+   "score": 76,
+   "issues": [
+    "替代 nanhong 比红玛瑙贵得多，违背替代原则，low 档会超支",
+    "tips 说可选 7mm，但 putong-manao 常见尺寸没有 7mm",
+    "与 self-f-newyear-01 几乎同方（红玛瑙+金路路通+金隔）",
+    "zhuanyun 品种名含‘转运’",
+    "新婚送老婆用 low 档红玛瑙，贴合度偏弱"
+   ],
+   "fixes": [
+    "替代改为 shiliu、chansi 红缠丝 或 bi-shi",
+    "tips 改为 6–8mm",
+    "与 self-f-newyear-01 拉开（如本条加白玉/珍珠做红白婚嫁配色）"
+   ]
+  },
+  "gift-wife-pearl-04": {
+   "score": 70,
+   "issues": [
+    "与 self-f-pearl-01 配方完全相同（7mm 白淡水珍珠×3+3mm 金隔）",
+    "替代 beike 没有 7mm 常见尺寸"
+   ],
+   "fixes": [
+    "删一条或把本条改为珍珠+月光石/粉珍珠等差异款",
+    "珠径改 6/8mm 或替代改 8mm"
+   ]
+  },
+  "gift-hub-smoky-01": {
+   "score": 84,
+   "issues": [
+    "茶晶市面多为辐照处理，未限定 treatment"
+   ],
+   "fixes": [
+    "tips 补一句处理说明，或 attrs 加 treatment"
+   ]
+  },
+  "gift-hub-amber-02": {
+   "score": 78,
+   "issues": [
+    "与 self-m-amber-01、self-f-amber-01、gift-mom-amber-01 同为鸡油黄蜜蜡素串+金隔，只换珠径"
+   ],
+   "fixes": [
+    "四条合并成 1–2 条，或本条加南红/绿松佛头做差异"
+   ]
+  },
+  "gift-hub-sandal-03": {
+   "score": 72,
+   "issues": [
+    "绿松石佛头配檀香木珠，违反 rules 的 porous-oil 禁忌：木珠盘玩的油汗会让绿松石变色",
+    "佛头与主珠同为 12mm，rules 说佛头一般大 2–4mm"
+   ],
+   "fixes": [
+    "佛头改南红或战国红 14mm",
+    "若保留绿松石，tips 写明不可上油、只干盘"
+   ]
+  },
+  "gift-hub-newdad-04": {
+   "score": 84,
+   "issues": [
+    "与 gift-elder-starmoon-02 同用 10mm 顺白星月素串，差别只是隔珠"
+   ],
+   "fixes": [
+    "加一颗代表孩子的小点缀珠（如南红或粉晶）区分"
+   ]
+  },
+  "gift-bestie-twin-01": {
+   "score": 83,
+   "issues": [
+    "story 说做两条（一条粉多一条紫多），方案只给了一种排法，程序配不出成对款"
+   ],
+   "fixes": [
+    "拆成两条成对方案或去掉这句"
+   ]
+  },
+  "gift-bestie-rainbow-02": {
+   "score": 80,
+   "issues": [
+    "替代 putong-manao 不是多色、寓意也不同",
+    "萤石硬度约 4，易磕，送活泼的闺蜜耐用性差"
+   ],
+   "fixes": [
+    "替代改为多色玛瑙（attrs color 多色）或碧玺系平价品种"
+   ]
+  },
+  "gift-bestie-seasalt-03": {
+   "score": 84,
+   "issues": [
+    "与 self-f-sea-01、self-m-grad-01 同为海蓝宝+白色配珠"
+   ],
+   "fixes": [
+    "本条保留 6mm 细珠叠戴定位即可，其它两条做区分"
+   ]
+  },
+  "gift-bestie-wedding-04": {
+   "score": 76,
+   "issues": [
+    "珍珠与月光石紧挨，硬度差",
+    "8mm 淡水珍珠+白月光 实际多在 ¥100–300，标 high 偏高",
+    "婚礼白色系作为‘新娘配饰’可行，但闺蜜送礼应考虑新娘自己的造型"
+   ],
+   "fixes": [
+    "加金隔片隔开",
+    "预算改 mid",
+    "tips 改为‘婚前提前送，问清造型再定’"
+   ]
+  },
+  "gift-bro-sardonyx-01": {
+   "score": 83,
+   "issues": [
+    "黑白缠丝多为染色玛瑙，黑白相邻有串色风险（rules dye-bleed）",
+    "story 提到生日送兄弟，occasion 没有‘生日’"
+   ],
+   "fixes": [
+    "occasion 加 生日",
+    "tips 提示选天然色或红缠丝"
+   ]
+  },
+  "gift-bro-hawkeye-02": {
+   "score": 84,
+   "issues": [
+    "与虎眼组同结构"
+   ],
+   "fixes": [
+    "可保留，作为冷色男款与金虎眼区分"
+   ]
+  },
+  "gift-bro-nanhong-03": {
+   "score": 84,
+   "issues": [
+    "tips 说‘只做佛头用南红’，但方案里没有佛头槽位"
+   ],
+   "fixes": [
+    "tips 改为‘可换战国红或红玛瑙’，或增加一个佛头版"
+   ]
+  },
+  "gift-mom-amber-01": {
+   "score": 78,
+   "issues": [
+    "蜜蜡素串第 4 次出现，仅珠径不同"
+   ],
+   "fixes": [
+    "改为蜜蜡+南红/绿松石的妈妈款，或与 self-f-amber-01 合并"
+   ]
+  },
+  "gift-mom-xiuyu-02": {
+   "score": 85,
+   "issues": [],
+   "fixes": []
+  },
+  "gift-mom-violetpearl-03": {
+   "score": 78,
+   "issues": [
+    "紫水晶与珍珠紧挨，硬度差",
+    "与 gift-wife-violetmoon-02 结构雷同"
+   ],
+   "fixes": [
+    "珍珠两侧加金隔片",
+    "换成紫晶+金发晶或紫晶+石榴石等‘显气色’差异款"
+   ]
+  },
+  "gift-mom-spring-04": {
+   "score": 84,
+   "issues": [],
+   "fixes": [
+    "可以加一颗白水晶或黄水晶，让整串不那么单调"
+   ]
+  },
+  "gift-dad-zitan-01": {
+   "score": 78,
+   "issues": [
+    "主珠是 restricted 的小叶紫檀满串，12mm 金星料标 mid 偏低",
+    "与 gift-bf-zitan-03、self-m-zitan-01 同料"
+   ],
+   "fixes": [
+    "预算改 high，或主推鸡翅木/黄杨木、紫檀作可选"
+   ]
+  },
+  "gift-dad-phoenix-02": {
+   "score": 80,
+   "issues": [
+    "佛头与主珠同为 12mm，且是单颗不是三通",
+    "替代 putong-manao→nanhong 更贵"
+   ],
+   "fixes": [
+    "佛头改 14mm 红玛瑙三通或加 fotou",
+    "替代改战国红/红缠丝"
+   ]
+  },
+  "gift-dad-turquoise-03": {
+   "score": 80,
+   "issues": [
+    "story 说‘天蓝里带着铁线’，attrs 却写高瓷天蓝，两种料是不同卖点",
+    "绿松石大量压制/优化，未限定 treatment"
+   ],
+   "fixes": [
+    "story 与 attrs 统一（要铁线就写铁线，要净天蓝就删铁线）",
+    "attrs 加 treatment=天然 或 tips 提示"
+   ]
+  },
+  "gift-elder-boxwood-01": {
+   "score": 80,
+   "issues": [
+    "名字‘松鹤延年’和珠子没有任何松、鹤元素，名不副实",
+    "替代 tanxiang 比黄杨木贵"
+   ],
+   "fixes": [
+    "改名如‘黄杨千岁’‘温黄寿木’",
+    "替代改桃木"
+   ]
+  },
+  "gift-elder-starmoon-02": {
+   "score": 70,
+   "issues": [
+    "星月菩提需要手盘，混入绿松石违反 rules 的 porous-oil 禁忌",
+    "low 档里 4 颗一组插 10mm 天然绿松石，整串大概率超 ¥100"
+   ],
+   "fixes": [
+    "绿松石换天河石或白玉菩提+南红点缀",
+    "若保留绿松石，预算改 mid 并提示不可上油"
+   ]
+  },
+  "gift-elder-hetian-03": {
+   "score": 81,
+   "issues": [
+    "与 gift-boss-junzi-02、self-m-hetian-01 同为 10mm 青白玉素串，只多一颗南红"
+   ],
+   "fixes": [
+    "本条保留贺寿定位，其它两条做区分"
+   ]
+  },
+  "gift-elder-teacher-04": {
+   "score": 80,
+   "issues": [
+    "audience 只能选‘长辈’，老师不一定是长辈（标签缺‘老师’）",
+    "绿玉髓比作‘桃李枝叶’有点牵强"
+   ],
+   "fixes": [
+    "词表加‘老师’，或改 audience 为 长辈/领导",
+    "配珠可改成粉晶（桃花）+绿玉髓（叶）对应桃李"
+   ]
+  },
+  "gift-kid-peach-01": {
+   "score": 76,
+   "issues": [
+    "6mm 小珠与 rules small-kids‘给小孩选大一点的珠子’相冲",
+    "桃木民俗主要意象是辟邪，写‘吉祥题材’回避了但用户容易联想",
+    "替代 tanxiang 更贵且有香气，不适合幼童"
+   ],
+   "fixes": [
+    "改 8–10mm 或编绳每颗打结",
+    "替代改黄杨木/桃木互替，去掉檀香"
+   ]
+  },
+  "gift-kid-red-02": {
+   "score": 74,
+   "issues": [
+    "6mm 小珠，同上与 small-kids 相冲",
+    "替代 nanhong 比红玛瑙贵很多，不适合 low 儿童款",
+    "红玛瑙多染色/加热，白色星月相邻有串色风险"
+   ],
+   "fixes": [
+    "珠径改 8mm，编绳打结",
+    "替代改 shiliu 以外的平价红色如红缠丝；配珠改白玉菩提或白玛瑙并注明天然色"
+   ]
+  },
+  "gift-kid-candy-03": {
+   "score": 72,
+   "issues": [
+    "蓝、绿玛瑙基本都是染色，和白玛瑙紧挨违反 dye-bleed，孩子会咬更不应选染色料",
+    "6mm 小珠，与 small-kids 相冲",
+    "四颗都是主珠，没有结构"
+   ],
+   "fixes": [
+    "换天然色组合：红玛瑙+白玛瑙+绿东陵+黄玉髓，或改木珠糖果色（无染料）",
+    "珠径 8mm、编绳打结"
+   ]
+  },
+  "gift-stu-exam-01": {
+   "score": 72,
+   "issues": [
+    "紫水晶+白水晶第 6 次出现，与 self-f-exam-01、self-m-exam-01 同方",
+    "名字‘蟾宫折桂’和用料无关（没有月、桂的意象）"
+   ],
+   "fixes": [
+    "改用黄水晶/金发晶做‘桂’、白水晶做‘月’，让名字有落点",
+    "三条考试款只留一条通用款，另两条换配色"
+   ]
+  },
+  "gift-stu-grad-02": {
+   "score": 82,
+   "issues": [
+    "替代 hailanbao、lv-yusui 都比天河石贵"
+   ],
+   "fixes": [
+    "替代改蓝东陵或石英岩玉（蓝绿）"
+   ]
+  },
+  "gift-stu-sunny-03": {
+   "score": 85,
+   "issues": [],
+   "fixes": []
+  },
+  "gift-col-clear-01": {
+   "score": 80,
+   "issues": [
+    "meaning 标‘好人缘’，白水晶故事里没有依据，且贴近禁用词‘招人缘’",
+    "与 self-f-clear-01 几乎同方"
+   ],
+   "fixes": [
+    "meaning 改为 纯净/清透/素雅",
+    "与 self-f-clear-01 合并"
+   ]
+  },
+  "gift-col-lapis-02": {
+   "score": 74,
+   "issues": [
+    "青金素串第 3 条，同事送 mid 档深蓝青金偏贵重"
+   ],
+   "fixes": [
+    "改为 low 档方钠石/蓝东陵通勤款，或删除"
+   ]
+  },
+  "gift-col-prehnite-03": {
+   "score": 83,
+   "issues": [
+    "gender 只标 female，但葡萄石淡绿男同事也能戴"
+   ],
+   "fixes": [
+    "gender 改 any 或加 8mm 男款"
+   ]
+  },
+  "gift-boss-zhixing-01": {
+   "score": 74,
+   "issues": [
+    "名字借王阳明‘知行合一’，与金刚菩提、南红没有关联，牵强",
+    "南红单颗当佛头、与主珠同 12mm",
+    "与金刚菩提组雷同；给领导送带佛头的菩提有宗教色彩"
+   ],
+   "fixes": [
+    "改名如‘金刚赤心’‘坚韧如一’",
+    "佛头改 14mm 南红三通"
+   ]
+  },
+  "gift-boss-junzi-02": {
+   "score": 76,
+   "issues": [
+    "与 self-m-hetian-01 几乎同方（10mm 青白玉+隔珠，同样引‘君子’）",
+    "high 档送领导，有合规顾虑（tips 已提示）"
+   ],
+   "fixes": [
+    "本条加一颗南红/墨玉点缀或改 8mm 区分",
+    "两条中只保留一处‘君子’典故"
+   ]
+  },
+  "gift-boss-bluepearl-03": {
+   "score": 78,
+   "issues": [
+    "青金常见染色，紧挨白珍珠有串色和磨损风险"
+   ],
+   "fixes": [
+    "珍珠两侧加隔片，attrs 加天然"
+   ]
+  },
+  "self-f-rose-01": {
+   "score": 80,
+   "issues": [
+    "白珍珠紧挨粉晶，硬度差",
+    "替代 hongwen 比粉晶贵"
+   ],
+   "fixes": [
+    "珍珠两侧加银隔片",
+    "替代改草莓晶或粉色石英岩玉"
+   ]
+  },
+  "self-f-berry-01": {
+   "score": 80,
+   "issues": [
+    "替代 hongwen 比粉晶贵",
+    "与 gift-gf-sweet-01 同用粉晶+草莓晶，差异只在主配互换"
+   ],
+   "fixes": [
+    "替代改草莓晶互替或淡粉石英岩玉",
+    "改一个主色（如草莓晶+白水晶）"
+   ]
+  },
+  "self-f-lavender-01": {
+   "score": 72,
+   "issues": [
+    "与 gift-gf-lavender-04 几乎完全相同",
+    "紫+白水晶组合全库 6 次"
+   ],
+   "fixes": [
+    "换成浅紫晶+锂云母+粉晶的花田配色，或删除"
+   ]
+  },
+  "self-f-moon-01": {
+   "score": 76,
+   "issues": [
+    "与 gift-gf-moonlight-02 同方，只多一颗白水晶",
+    "替代 bai-shuijing、beike 没有月光效应"
+   ],
+   "fixes": [
+    "合并或换成灰月光+银隔的清冷款",
+    "替代加灰月光/白月光"
+   ]
+  },
+  "self-f-sea-01": {
+   "score": 76,
+   "issues": [
+    "海蓝宝（7.5–8）紧挨珍珠，硬度差最大的组合之一",
+    "替代 lan-yusui 价位不低于海蓝宝",
+    "与 gift-bestie-seasalt-03、self-m-grad-01 同色系"
+   ],
+   "fixes": [
+    "珍珠换白贝或白水晶，或两侧加隔片",
+    "替代改蓝水晶/石英岩玉"
+   ]
+  },
+  "self-f-forest-01": {
+   "score": 78,
+   "issues": [
+    "苹果绿玉髓价位‘中’，满串加东陵标 low 偏低；同料在 gift-gf-greenapple-06 标 mid",
+    "tips 空"
+   ],
+   "fixes": [
+    "预算改 mid，或主珠改绿东陵、玉髓作点缀"
+   ]
+  },
+  "self-f-jade-01": {
+   "score": 80,
+   "issues": [
+    "与 self-c-jade-she（8mm 白玉+南红）几乎同方"
+   ],
+   "fixes": [
+    "本条改青白玉+墨玉或+珍珠区分"
+   ]
+  },
+  "self-f-amber-01": {
+   "score": 76,
+   "issues": [
+    "蜜蜡素串雷同组之一",
+    "替代 huang-shuijing 透明，和不透明蜜蜡质感差距大"
+   ],
+   "fixes": [
+    "替代改黄龙玉（不透明暖黄）",
+    "与 gift-mom-amber-01 合并"
+   ]
+  },
+  "self-f-turq-01": {
+   "score": 82,
+   "issues": [
+    "蜜蜡（2–2.5）紧挨绿松石、南红，硬度差大（藏式传统做法，但应提示）",
+    "替代 lan-yusui 比绿松石贵或持平，颜色也偏冷"
+   ],
+   "fixes": [
+    "蜜蜡两侧加金隔片",
+    "绿松石替代改天河石"
+   ]
+  },
+  "self-f-pearl-01": {
+   "score": 70,
+   "issues": [
+    "与 gift-wife-pearl-04 配方完全相同",
+    "替代 beike 无 7mm；yueguang-shi 质感不同"
+   ],
+   "fixes": [
+    "删一条或改为粉/金色珍珠款"
+   ]
+  },
+  "self-f-gold-01": {
+   "score": 84,
+   "issues": [],
+   "fixes": []
+  },
+  "self-f-duobao-01": {
+   "score": 78,
+   "issues": [
+    "名字‘小雏菊’与粉白蓝紫莓红配色不符（雏菊是白瓣黄芯）",
+    "五种全标主珠，没有主次",
+    "替代 hongwen、lan-yusui 更贵"
+   ],
+   "fixes": [
+    "改名如‘糖霜多宝’，或配色改白+黄",
+    "定一种主珠，其余为配珠"
+   ]
+  },
+  "self-f-smoky-01": {
+   "score": 80,
+   "issues": [
+    "替代 youling、hongwen 都更贵",
+    "茶晶多辐照",
+    "tips 空"
+   ],
+   "fixes": [
+    "替代改黑曜石带金/石英岩玉"
+   ]
+  },
+  "self-f-aurora-01": {
+   "score": 80,
+   "issues": [
+    "替代 yueguang-shi 比拉长石贵",
+    "与拉长石组雷同"
+   ],
+   "fixes": [
+    "替代改低价灰月光或说明晕彩差异"
+   ]
+  },
+  "self-f-xingyue-01": {
+   "score": 78,
+   "issues": [
+    "low 档里每 5 颗插一颗柿子红南红 8mm，整串大概率超 ¥100",
+    "替代 lianzi 没有 8mm"
+   ],
+   "fixes": [
+    "点缀改红玛瑙或战国红，或预算改 mid",
+    "替代改白玉菩提"
+   ]
+  },
+  "self-f-clear-01": {
+   "score": 76,
+   "issues": [
+    "点缀用 zhuanyun（‘转运珠’名含禁用词）",
+    "替代 yueguang-shi 更贵",
+    "与 gift-col-clear-01 同方"
+   ],
+   "fixes": [
+    "点缀改 gezhu 银色圆珠",
+    "合并两条白水晶素串"
+   ]
+  },
+  "self-f-wisteria-01": {
+   "score": 84,
+   "issues": [
+    "替代 hongwen 更贵",
+    "tips 空"
+   ],
+   "fixes": [
+    "替代改草莓晶"
+   ]
+  },
+  "self-f-benming-01": {
+   "score": 72,
+   "issues": [
+    "满串 8mm 柿子红南红标 mid，同料 gift-gf-nanhong-05 标 high，前后矛盾；按市场价应为 high",
+    "与 gift-gf-nanhong-05 同方"
+   ],
+   "fixes": [
+    "预算改 high，或主珠改战国红/红玛瑙、南红只做佛头做出 mid 版"
+   ]
+  },
+  "self-f-newyear-01": {
+   "score": 74,
+   "issues": [
+    "与 gift-wife-redmakeup-03 几乎同方",
+    "zhuanyun 名含‘转运’",
+    "替代 nanhong、zhanguo-hong 都比红玛瑙贵"
+   ],
+   "fixes": [
+    "点缀改 gezhu 金珠",
+    "替代改红缠丝/碧石红"
+   ]
+  },
+  "self-m-obsidian-01": {
+   "score": 82,
+   "issues": [
+    "与 self-c-bw-he 同为 10mm 黑曜石+银隔",
+    "tips 空"
+   ],
+   "fixes": [
+    "加 tips；与情侣黑款拉开（如用乌金+茶晶）"
+   ]
+  },
+  "self-m-tiger-01": {
+   "score": 80,
+   "issues": [
+    "与 gift-bf-blackgold-01 同配色同料"
+   ],
+   "fixes": [
+    "二者保留一条"
+   ]
+  },
+  "self-m-zitan-01": {
+   "score": 70,
+   "issues": [
+    "名字‘紫檀沉香’混入‘沉香’——沉香是另一种受限香材，易误导",
+    "与 gift-bf-zitan-03 同方",
+    "受限木作主珠；南红单颗当佛头无三通"
+   ],
+   "fixes": [
+    "改名如‘紫檀一点朱’",
+    "加 fotou 或写南红三通；主推鸡翅木版"
+   ]
+  },
+  "self-m-jingang-01": {
+   "score": 80,
+   "issues": [
+    "三通佛头与主珠同 12mm，rules 建议大 2–4mm",
+    "与金刚菩提组雷同"
+   ],
+   "fixes": [
+    "佛头改 15mm"
+   ]
+  },
+  "self-m-lapis-01": {
+   "score": 74,
+   "issues": [
+    "与 gift-bf-lapis-04 同方",
+    "‘历来是帝王礼器用石’说法偏满，只在清代祭天朝珠等场合有记载"
+   ],
+   "fixes": [
+    "改成‘清代祭天的朝珠就用青金’这类有据说法",
+    "与 bf-lapis 合并或换配珠"
+   ]
+  },
+  "self-m-rutile-01": {
+   "score": 84,
+   "issues": [],
+   "fixes": []
+  },
+  "self-m-labra-01": {
+   "score": 80,
+   "issues": [
+    "替代 yueguang-shi 更贵",
+    "tips 空"
+   ],
+   "fixes": [
+    "替代改黑曜石或方钠石并说明无晕彩"
+   ]
+  },
+  "self-m-xingyue108-01": {
+   "score": 74,
+   "issues": [
+    "108 颗只配一颗南红当佛头，缺三通、佛塔和 3 颗分段隔珠，与 rules 的 108/gezhu 结构不一致",
+    "tips 说多圈绕腕约 5 圈，rules 108 条说 8mm 多挂颈，口径不一",
+    "low 档加 12mm 柿子红南红，大概率超 ¥100",
+    "替代 lianzi 没有 8mm"
+   ],
+   "fixes": [
+    "special 改为 fotou 或南红三通，再加 3 颗隔珠",
+    "统一 tips 与 rules",
+    "佛头改红玛瑙或预算改 mid",
+    "替代改白玉菩提"
+   ]
+  },
+  "self-m-benming-01": {
+   "score": 82,
+   "issues": [
+    "替代 zhanguo-hong 比红玛瑙贵",
+    "tips 空"
+   ],
+   "fixes": [
+    "替代改红缠丝"
+   ]
+  },
+  "self-m-forest-01": {
+   "score": 84,
+   "issues": [],
+   "fixes": []
+  },
+  "self-m-hetian-01": {
+   "score": 76,
+   "issues": [
+    "与 gift-boss-junzi-02 几乎同方，同样引君子比德"
+   ],
+   "fixes": [
+    "改 8mm 或加墨玉/南红点缀做区分"
+   ]
+  },
+  "self-m-amber-01": {
+   "score": 74,
+   "issues": [
+    "蜜蜡素串雷同组第 4 条",
+    "替代 huang-shuijing 质感差远",
+    "tips 空"
+   ],
+   "fixes": [
+    "合并到 gift-hub-amber-02，或改蜜蜡+南红老珠复古款",
+    "替代改黄龙玉"
+   ]
+  },
+  "self-m-duobao-01": {
+   "score": 82,
+   "issues": [
+    "tips 空"
+   ],
+   "fixes": [
+    "补 tips：四色同饱和度"
+   ]
+  },
+  "self-m-exam-01": {
+   "score": 62,
+   "issues": [
+    "story 把内部编写说明写进了面向用户的文案：‘参照小程序里“金榜题名”模板改成男生的 10mm’",
+    "紫+白水晶第 6 次出现，与 self-f-exam-01、gift-stu-exam-01 雷同",
+    "‘图个心静的好兆头’贴近‘安神’类功效说法"
+   ],
+   "fixes": [
+    "重写 story，删掉模板说明",
+    "配色换成墨蓝青金+白水晶等‘书卷’意象",
+    "删‘心静’改‘图个好兆头’"
+   ]
+  },
+  "self-m-newyear-01": {
+   "score": 82,
+   "issues": [
+    "替代 nanhong 比战国红更贵",
+    "‘因战国时期就被琢成饰品而得名’出处不明，KB 应标 mid"
+   ],
+   "fixes": [
+    "替代改红玛瑙/红缠丝",
+    "story 改为‘名字取自战国时期的红玛瑙器物’并标出处"
+   ]
+  },
+  "self-m-grad-01": {
+   "score": 78,
+   "issues": [
+    "10mm 海蓝宝 high 档对毕业生偏贵",
+    "与海蓝宝组雷同",
+    "tips 空"
+   ],
+   "fixes": [
+    "改 8mm、mid 或换蓝东陵/天河石平价款"
+   ]
+  },
+  "self-c-sunmoon-she": {
+   "score": 76,
+   "issues": [
+    "白月光+白水晶+银隔与 moon 组同方",
+    "替代没有月光效应"
+   ],
+   "fixes": [
+    "替代加灰月光/白贝并说明"
+   ]
+  },
+  "self-c-sunmoon-he": {
+   "score": 80,
+   "issues": [
+    "黄水晶市面多为加热紫晶，未提示",
+    "替代 youling 更贵",
+    "tips 空"
+   ],
+   "fixes": [
+    "补加热说明 tips；替代改黑曜石金曜"
+   ]
+  },
+  "self-c-bw-she": {
+   "score": 84,
+   "issues": [],
+   "fixes": []
+  },
+  "self-c-bw-he": {
+   "score": 84,
+   "issues": [],
+   "fixes": []
+  },
+  "self-c-jade-she": {
+   "score": 80,
+   "issues": [
+    "与 self-f-jade-01 几乎同方",
+    "她/他两串替代不一致（她用石英岩玉、他用蓝田玉）"
+   ],
+   "fixes": [
+    "成对两条替代统一"
+   ]
+  },
+  "self-c-jade-he": {
+   "score": 80,
+   "issues": [
+    "替代与女款不一致，缺货换料后两串不再‘同料’"
+   ],
+   "fixes": [
+    "替代统一为 xiu-yu、shiyingyan-yu"
+   ]
+  },
+  "self-c-qixi-she": {
+   "score": 74,
+   "issues": [
+    "紫+白水晶第 6 次出现"
+   ],
+   "fixes": [
+    "改浅蓝/银白的‘银河’配色（如白水晶+月光石+海蓝宝）"
+   ]
+  },
+  "self-c-qixi-he": {
+   "score": 76,
+   "issues": [
+    "story 说紫晶与青金‘一冷一暖’，紫和深蓝都是冷色，说法不对",
+    "青金常染色，紧挨白水晶有串色风险"
+   ],
+   "fixes": [
+    "改成‘一深一浅’",
+    "attrs 加天然或加隔片"
+   ]
+  },
+  "self-f-exam-01": {
+   "score": 62,
+   "issues": [
+    "story 写‘沿用小程序“金榜题名”的紫配白’，把内部模板说明暴露给用户",
+    "紫白组合雷同",
+    "‘图个心静的好兆头’贴近安神类表述"
+   ],
+   "fixes": [
+    "重写 story，删去模板说明和‘心静’",
+    "换配色"
+   ]
+  },
+  "self-f-grad-01": {
+   "score": 82,
+   "issues": [
+    "替代 riguang-shi 比黄水晶贵"
+   ],
+   "fixes": [
+    "替代改黄龙玉"
+   ]
+  },
+  "self-f-commute-01": {
+   "score": 78,
+   "issues": [
+    "替代 youling 没有 6mm，且更贵",
+    "茶晶多辐照"
+   ],
+   "fixes": [
+    "替代改 6mm 黑曜石或石英岩玉"
+   ]
+  },
+  "self-f-travel-01": {
+   "score": 84,
+   "issues": [
+    "替代 lv-yusui 比水草玛瑙贵"
+   ],
+   "fixes": [
+    "替代改绿东陵"
+   ]
+  },
+  "self-f-zitan108-01": {
+   "score": 76,
+   "issues": [
+    "受限木做 108 主珠",
+    "南红单颗当佛头，缺三通和 3 颗分段隔珠"
+   ],
+   "fixes": [
+    "加 fotou 和隔珠；主推鸡翅木/黄杨木 108"
+   ]
+  },
+  "self-m-fengyan108-01": {
+   "score": 76,
+   "issues": [
+    "10mm×108 颗 tips 说绕腕约 6 圈，与 rules 108 条‘10mm 以上基本只能挂颈或手持’矛盾",
+    "108 只有佛头没有 3 颗隔珠",
+    "替代 jingang 比凤眼贵"
+   ],
+   "fixes": [
+    "tips 改为挂颈/手持，或珠径改 8mm",
+    "加 3 颗隔珠",
+    "替代改龙眼菩提"
+   ]
+  },
+  "self-m-commute-01": {
+   "score": 74,
+   "issues": [
+    "low 档‘第一串木质手串’首推 restricted 的黑檀，违背‘尽量不用 restricted’",
+    "tips 说‘黑檀属受保护木种’过于笼统，只有部分柿属（如马达加斯加种）列 CITES",
+    "纯黑黑檀常见染色"
+   ],
+   "fixes": [
+    "主珠改鸡翅木或黑檀可选，tips 改为‘部分产地黑檀需合法来源’",
+    "加处理提示"
+   ]
+  }
+ },
+ "rules": [
+  {
+   "id": "counts/14",
+   "issue": "form 写‘单圈手串（珠径约 12mm）’，按程序公式手围 15cm 配 12mm 是 15 颗（14 颗=168mm，比目标 175 短 7mm 不合格），和 sizing/count-by-size 自相矛盾；14 颗约需 12.5–13.5mm",
+   "fix": "改为‘单圈手串（珠径约 13mm，手围 15–16cm）’"
+  },
+  {
+   "id": "counts/21",
+   "issue": "form 写‘珠径约 7–8mm’，7mm×21=147mm，比 15cm 手围目标 162.5mm 短很多；按公式 21 颗对应约 8mm（15cm）到 8.4mm（16cm）",
+   "fix": "改为‘珠径约 8mm’"
+  },
+  {
+   "id": "counts/12",
+   "issue": "form 写‘约 15–18mm’，18mm×12=216mm，任何常见手围都超长；rules 自己写 18mm 对应 11 颗",
+   "fix": "改为‘约 15–16mm’"
+  },
+  {
+   "id": "counts/111",
+   "issue": "只有 Encyclopedia of Buddhism 一条维基类出处，‘藏式念珠做 111 颗’属于市场/民间说法，和 SCHEMA‘只收有出处的说法’要求勉强",
+   "fix": "补一条藏传佛教文献或权威辞书出处，否则降为 low 不展示"
+  },
+  {
+   "id": "counts/*（佛光大辞典链接）",
+   "issue": "《佛光大辞典》引的是 fodizi.tw 这类转载站，不是官方版本，出处可信度打折",
+   "fix": "改引佛光山官方‘佛光大辞典’在线版或纸本页码"
+  },
+  {
+   "id": "structures/single",
+   "issue": "how 写‘市场常见 12mm 约 17 颗、15mm 约 15 颗’，与 sizing/count-by-size（15cm 手围 12mm 15 颗、15mm 12 颗）矛盾；17×12=204mm 对应手围约 17.5cm 以上，没交代手围前提",
+   "fix": "改为‘手围 15cm：12mm 约 15 颗、15mm 约 12 颗；市场标的颗数多按 16–17cm 男款手围’"
+  },
+  {
+   "id": "structures/gezhu",
+   "issue": "‘旧称数取、四天珠’：四天珠有辞书依据，‘数取’是否指隔珠存疑（多见于记子语境），未给具体条目",
+   "fix": "核对佛光大辞典原文，查不到就删‘数取’"
+  },
+  {
+   "id": "structures/fotou",
+   "issue": "‘佛头直径一般比主珠大 2–4mm’与方案库大量同径佛头（金刚 12+12、凤眼 12+12、绿松 12+12）不一致；规则只标 mid 也没给市场依据",
+   "fix": "写成‘一般与主珠同径或大 1–2 号’，或保留规则并据此修改方案"
+  },
+  {
+   "id": "structures/multi 与 sizing/108",
+   "issue": "multi 说 108 念珠多圈绕腕；108 条说 8mm 多挂颈、10mm 以上只能挂颈，而方案 self-m-xingyue108-01（8mm 绕 5 圈）、self-m-fengyan108-01（10mm 绕 6 圈）照样写绕腕，规则口径不清",
+   "fix": "108 条给出明确上限：‘6mm 绕腕 4 圈；8mm 可绕 5 圈但偏粗，多挂颈；10mm 以上不建议绕腕’，并据此改方案 tips"
+  },
+  {
+   "id": "sizing/reverse",
+   "issue": "‘适用于 6mm 以上；5mm 以下用 (手围×10+8)÷颗数’——分界实际在 5.2mm（2.5d−5=8），5–6mm 之间的说法有空档",
+   "fix": "改为‘珠径 ≥5.2mm 用前式，以下用后式’，或直接写‘6mm 及以上 / 5mm 及以下’并说明 5–6mm 两式结果几乎相同"
+  },
+  {
+   "id": "sizing/measure",
+   "issue": "要求在腕骨凸起处量，量出的是最大围度；不少商家建议在腕骨上方（手掌侧）量。没给出处，标 mid 偏高",
+   "fix": "补出处或写‘腕骨处或略上方，取戴手串的位置’，confidence 改 low/mid"
+  },
+  {
+   "id": "taboos/amber-heat",
+   "issue": "‘遇酒精、香水会失光甚至发黏’——发黏多见于柯巴树脂/再造琥珀，天然琥珀一般是失光、起雾、开裂，说法夸大且无出处",
+   "fix": "改为‘会失光、表面起雾’，补 GIA 琥珀保养等出处"
+  },
+  {
+   "id": "taboos/pearl-acid",
+   "issue": "规则句‘避免和需要清洁剂或常接触香水的设计搭在一起’表达含糊，看不出是串法禁忌还是保养提醒；且漏了最实际的一条：珍珠不要和硬珠紧挨（hardness 规则已有但方案大量违反）",
+   "fix": "改为‘珍珠、珊瑚等碳酸钙材质单独穿或两侧垫隔片，佩戴时避开香水、清洁剂’"
+  },
+  {
+   "id": "taboos/protected",
+   "issue": "只列了沉香属、黄檀属、檀香紫檀，没提黑檀（KB 里 heitan 是 restricted），方案 tips 却写‘黑檀属受保护木种’，口径不一；且没说明黑檀只是部分柿属（马达加斯加种等）列入 CITES",
+   "fix": "补‘柿属（乌木/黑檀）部分产地列 CITES 附录 II’，并统一方案 tips 措辞"
+  },
+  {
+   "id": "taboos/small-kids",
+   "issue": "只说‘给小孩选大一点的珠子’，没给年龄和珠径下限，和方案库 3 条儿童款都用 6mm 冲突；也没有‘儿童不用易碎材质（萤石、珍珠、玻璃）’这一条",
+   "fix": "写明‘3 岁以下不戴；学龄前用 ≥8mm、编绳每颗打结；不用萤石、月光石、珍珠等易碎易磨材质，不用染色料’"
+  },
+  {
+   "id": "taboos/porous-oil",
+   "issue": "规则本身正确且有 GIA 出处，但方案库 gift-hub-sandal-03（绿松佛头+檀香）、gift-elder-starmoon-02（星月+绿松）直接违反，说明校验没跑这条",
+   "fix": "在 validate.py 加入 lvsong 与 wood/bodhi 同串的检查"
+  },
+  {
+   "id": "taboos/dye-bleed",
+   "issue": "规则合理但没落到方案：青金、黑白缠丝、彩色玛瑙相邻白珠的方案都没提示",
+   "fix": "给容易染色的品种在方案里加 attrs treatment=天然 或 tips 提示，并加入校验"
+  }
+ ],
+ "overall": [
+  "雷同严重：至少 12 组方案只是换名字/换珠径（见下列组），100 条里实质不同的配方约 75 条；同料素串（青金、蜜蜡、和田、紫白水晶）各出现 3–6 次",
+  "配色过度集中在‘某色主珠+白水晶+银/金隔珠’公式，白水晶出现在 24 条里，整体风格偏同质",
+  "可串性规则没进校验：珍珠与水晶/海蓝宝/和田紧挨（7 条）、绿松石配盘玩菩提/木（2 条）、染色料配白珠（4 条）都违反 rules.json 的 taboos",
+  "预算口径不一：同一料满串 8mm 柿子红南红一条标 high 一条标 mid；苹果绿玉髓一条 low 一条 mid；low 档里多颗南红/天然绿松点缀的会超 ¥100",
+  "替代品经常比原料更贵（约 34 处，如红玛瑙→南红、粉晶→红纹石、拉长石→月光石），违反 SCHEMA‘更常见或更便宜’；还有 5 处替代品没有对应珠径（贝壳 7mm、莲子 8mm、幽灵 6mm）",
+  "面向用户的 story 里有内部编写说明（self-m-exam-01、self-f-exam-01 提到‘小程序金榜题名模板’），需在发布前全文过一遍",
+  "转运珠（zhuanyun）品种名本身含禁用词‘转运’，被 4 条方案使用；建议统一改显示名为‘路路通’",
+  "儿童款 3 条都用 6mm 小珠，与 small-kids 规则冲突，其中 2 条含染色风险料",
+  "覆盖缺口：乔迁、教师节各 1 条，康复 2 条，父亲节/母亲节各 4 条；孩子、同事、爸爸各 3 条；男友没有 high 档、孩子/学生没有 mid 以上；多宝 4 条、复古 5 条；没有 18 子、54 颗、手绳款、桶珠/老型珠等非圆珠形态；audience 词表缺‘老师’",
+  "配方实际用到的只有 39 个品种（含配件），KB 共 200 个，碧玺、石榴石主串、金曜石、核桃/橄榄等文玩、木珠（绿檀、崖柏）等常见非受限品种基本没用",
+  "受限木（小叶紫檀 5 条、黑檀 1 条）作主珠首推，虽然给了替代，但 low/mid 档应以非受限料为主、受限料作可选",
+  "108 念珠 3 条都没按 rules 的形制配三通+3 颗隔珠，珠径/圈数说法和 rules 108 条不一致"
+ ]
+}

@@ -1,0 +1,2558 @@
+{
+ "lvsong": {
+  "score": 86,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“TQ”不是国内常用叫法，会造成误匹配",
+   "dims.color 里放了“铁线”，铁线是纹理，pattern 里已有",
+   "treatments 漏了扎克里处理（Zachery），这是绿松石常见的提色提瓷处理，肉眼难辨",
+   "story 写二里头绿松石龙形器，但 sources 里没有对应出处，只靠“常识”"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删除“TQ”，可加“Turquoise”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "[\"天蓝\",\"蓝绿\",\"黄绿\",\"乌兰花\"]（删“铁线”）"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"扎克里处理\",\"note\":\"电化学方法提色、提高瓷度，颜色过于均匀鲜艳，肉眼难辨，需看鉴定证书\"}"
+   },
+   {
+    "field": "sources",
+    "suggest": "补二里头遗址绿松石龙形器的考古出处（中国社会科学院考古研究所二里头工作队发掘简报，或中国国家博物馆藏品介绍）"
+   }
+  ]
+ },
+ "qingjin": {
+  "score": 90,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "朝珠礼制只写了“转引《皇朝礼器图式》”，没有给出可查的原始出处",
+   "智利产青金普遍含白色方解石多、颜色偏灰，dims 只把它列为产地，没提示品质差异",
+   "confusables 漏了玻璃或树脂仿青金（掺金粉），这类仿品很常见"
+  ],
+  "fixes": [
+   {
+    "field": "sources",
+    "suggest": "补《大清会典》或《皇朝礼器图式》卷四“冠服·朝珠”条的具体卷次"
+   },
+   {
+    "field": "confusables",
+    "suggest": "新增 {\"id\":\"\",\"name\":\"玻璃或树脂仿青金\",\"how\":\"金点是均匀的闪粉或铜粉，颜色一致，常见圆气泡，重量偏轻\"}"
+   },
+   {
+    "field": "dims.origin",
+    "suggest": "保留，在 grades level3 desc 补“智利料多白灰杂质”"
+   }
+  ]
+ },
+ "kongque": {
+  "score": 85,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "confusables 漏了同库条目 guikongque（硅孔雀石），两者常共生、外观相近",
+   "aliases 只写了本名，等于没写",
+   "孔雀石含铜，粉尘和啃咬都有风险，compliance.note 没有任何提示"
+  ],
+  "fixes": [
+   {
+    "field": "confusables",
+    "suggest": "新增 {\"id\":\"guikongque\",\"name\":\"硅孔雀石\",\"how\":\"硅孔雀石偏天蓝到蓝绿，没有孔雀石那样清楚的同心环纹\"}"
+   },
+   {
+    "field": "aliases",
+    "suggest": "[\"Malachite\"]"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "“含铜矿物，避免儿童啃咬入口；本身不是保护物种”"
+   }
+  ]
+ },
+ "heiyao": {
+  "score": 83,
+  "parts": {
+   "name": 17,
+   "identify": 15,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 12,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“乌金”和阴沉木、乌木的俗称“乌金”撞名，需要消歧",
+   "用“玻璃常有圆气泡”区分黑色玻璃不可靠，黑曜石本身也常有气泡",
+   "“红曜石”是品种（mahogany obsidian），放在 dims.color 里不准确",
+   "treatments 是空的，但镀膜冒充彩眼、黑色玻璃冒充都很常见",
+   "meaning 只写了“沉稳、内敛”，太空泛"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“乌金”，或改为在 dims.color 里保留“乌金”，并注明“黑曜石语境”"
+   },
+   {
+    "field": "confusables[黑色玻璃].how",
+    "suggest": "“玻璃颜色死黑均匀，没有流纹，强光下边缘不透绿灰；彩眼、金银曜都不会出现”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"镀膜/仿制\",\"note\":\"黑色玻璃镀膜冒充彩眼或金曜，膜层均匀，磕碰处露底\"}"
+   },
+   {
+    "field": "aliases",
+    "suggest": "加“红曜石（褐红色变种）”，dims.color 里的“红曜石”改成“褐红”"
+   }
+  ]
+ },
+ "shujulai": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 只写了染色仿品，漏了注胶充填；中低档舒俱来常注胶稳定",
+   "染色仿品里漏了染紫的菱镁矿或白松石",
+   "dims 没收市场常用词“皇家紫”",
+   "confusables 里引用了 id “liyunmu”，要确认 taxonomy 里有这一条"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"注胶/充填\",\"note\":\"多孔或有裂的料常注胶，表面有胶光、局部发亮，常见程度待核\"}"
+   },
+   {
+    "field": "confusables",
+    "suggest": "染色仿品条改成 name “染色石英岩、玉髓、菱镁矿”"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "加“皇家紫”（市场对浓紫半透料的叫法）"
+   }
+  ]
+ },
+ "ying-shi": {
+  "score": 83,
+  "parts": {
+   "name": 15,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“夜明珠”是张冠李戴，市售“夜明珠”多为夜光粉制品，confusables 里也已经这么写了，两处矛盾",
+   "treatments 漏了染色和镀膜萤石（彩色款有染色）",
+   "dims.purity 和 grades 都把“裂”当主要指标，但萤石的解理裂几乎是常态，应说明“细小解理纹不算大瑕”"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“夜明珠”，改加“Fluorite”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"染色\",\"note\":\"颜色过艳、色带呆板，裂隙积色，常见程度待核\"}"
+   },
+   {
+    "field": "grades[1].desc",
+    "suggest": "“透明度高，颜色鲜艳，解理纹细少”"
+   }
+  ]
+ },
+ "putao-shi": {
+  "score": 84,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 是空的，漏了染色石英、玻璃冒充，以及有裂料注胶",
+   "aliases 只写了本名",
+   "dims.inclusion 里“棉”应归 purity"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"染色仿品\",\"note\":\"染绿石英岩或玻璃冒充，颜色均匀、没有放射纹和黑针\"}"
+   },
+   {
+    "field": "aliases",
+    "suggest": "[\"Prehnite\"]"
+   },
+   {
+    "field": "dims",
+    "suggest": "inclusion 只留“黑针（绿帘石）”，新增 purity:[\"净体\",\"有棉\",\"有裂\"]"
+   }
+  ]
+ },
+ "hongwen": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 12,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 里写的“染色白松石冒充”是仿品，不是红纹石本身的处理",
+   "漏了注胶：低档红纹石多注胶",
+   "dims.origin 漏了南非，冰种樱桃红料多产南非，把握应标中"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "改为 [{\"type\":\"注胶\",\"note\":\"低档多孔料常注胶，表面胶光\"},{\"type\":\"染色仿品\",\"note\":\"染色白松石、菱镁矿冒充，颜色浮艳\"}]"
+   },
+   {
+    "field": "dims.origin",
+    "suggest": "[\"阿根廷\",\"秘鲁\",\"南非\",\"美国\"]"
+   }
+  ]
+ },
+ "lalima": {
+  "score": 88,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 是空的，漏了低档料注胶稳定，也漏了染色、玻璃仿品（只写在 confusables 里）",
+   "care 写“暴晒褪色”，标了 low，可以保留，但要写清是部分料的说法"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"注胶\",\"note\":\"浅色多裂料可能注胶，常见程度待核\"},{\"type\":\"仿品\",\"note\":\"染色菱镁矿、玻璃、树脂仿拉利玛\"}"
+   }
+  ]
+ },
+ "tianqing": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "漏了市场常混的“天使石”（硬石膏 angelite），颜色也是淡蓝",
+   "grades 只有 2 档",
+   "和青金石只是名字像，不算真易混；真易混的是染色玉髓或海蓝宝"
+  ],
+  "fixes": [
+   {
+    "field": "confusables",
+    "suggest": "新增 {\"id\":\"\",\"name\":\"天使石（硬石膏）\",\"how\":\"天使石不透明、蜡状光泽，天青石透明到半透明、玻璃光泽\"}"
+   },
+   {
+    "field": "grades",
+    "suggest": "补 level3 {\"label\":\"发灰多裂\",\"desc\":\"颜色灰白，解理裂多\"}"
+   }
+  ]
+ },
+ "fangna": {
+  "score": 81,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 11,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "summary 说“常被染色后冒充青金石”，但 treatments 是空的，前后矛盾；方钠石多是本色直接当青金卖，染色不是主流",
+   "dims.color 里的“蓝白”是图案，不是颜色",
+   "confusables 漏了染色碧石（“瑞士青金”）"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "“含钠的蓝色硅酸盐矿物，深蓝带白脉，常被当作青金石的平价替代或冒充。”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"染色\",\"note\":\"少数浅色料染蓝提色，裂隙积色，常见程度待核\"}"
+   },
+   {
+    "field": "dims.color",
+    "suggest": "删“蓝白”，pattern 已有“白脉”"
+   }
+  ]
+ },
+ "baisong": {
+  "score": 85,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 13,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "grades 只有 2 档，而且“白底纹清”对主流的染色款没有意义",
+   "meaning 太空，标了 low，可以接受"
+  ],
+  "fixes": [
+   {
+    "field": "grades",
+    "suggest": "补一句：染色款按“颜色均匀、不掉色、无裂”另分档，或写“本品多作染色原料，无品级惯例”后留空"
+   }
+  ]
+ },
+ "huoshan": {
+  "score": 81,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 12,
+   "confidence": 8
+  },
+  "issues": [
+   "meaning.text 里“多孔可吸附精油，常用作扩香石”是用途，不是寓意，容易被引申成“扩香疗愈”",
+   "treatments 漏了人造火山石（发泡陶粒、树脂）",
+   "dims.shape 只有圆珠",
+   "市场常把火山石宣传成“负离子、能量石”，compliance.note 没有提醒"
+  ],
+  "fixes": [
+   {
+    "field": "meaning.text",
+    "suggest": "“来自火山岩浆，粗犷质朴，常取自然、坚韧的意象。”（扩香用法移到 summary 或 care）"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"人造仿品\",\"note\":\"发泡陶粒或树脂压制，气孔大小一致\"}"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "“不宣传负离子、能量等功效”"
+   }
+  ]
+ },
+ "zhusha": {
+  "score": 82,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 12,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "grades 只给原矿分了档，市面主流的压制朱砂没有品级描述",
+   "treatments 漏了合成朱砂（人工硫化汞），也漏了“紫金砂”“帝王砂”这些压制品商品名",
+   "compliance.level 用 restricted 表示有毒，和 SCHEMA 里“受保护或需合法来源”的含义不一致，note 要写清原因",
+   "confusables 里“压制朱砂”其实就是本品的加工形态，不该当作易混品"
+  ],
+  "fixes": [
+   {
+    "field": "grades",
+    "suggest": "补 {\"level\":3,\"label\":\"压制料\",\"desc\":\"颜色均匀无晶光，需标“压制”，按含量和做工另分\"}"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"合成\",\"note\":\"人工合成硫化汞冒充天然朱砂\"}，并注明“紫金砂”“帝王砂”多为压制品"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "开头加“此处 restricted 是因为含汞有毒，不是保护物种”"
+   }
+  ]
+ },
+ "huangtie": {
+  "score": 83,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“黄金矿”不是常见别名，还会让人以为含金，应该删掉",
+   "confusables 漏了白铁矿（marcasite），两者常被混称",
+   "treatments 是空的，漏了上油、镀膜防锈",
+   "meaning 的“富足”容易被引申成招财，要写成文化意象"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"愚人金\",\"Pyrite\"]"
+   },
+   {
+    "field": "confusables",
+    "suggest": "新增 {\"id\":\"\",\"name\":\"白铁矿\",\"how\":\"颜色更白偏灰，更易氧化粉化\"}"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"上油/镀膜\",\"note\":\"防锈增亮，常见程度待核\"}"
+   }
+  ]
+ },
+ "chaluo": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 是空的，漏了染紫大理石、玉髓仿品和注胶",
+   "grades 只有 2 档"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"染色仿品\",\"note\":\"染紫石英岩、大理石冒充，没有纤维丝光\"}"
+   },
+   {
+    "field": "grades",
+    "suggest": "补中间档 {\"label\":\"有丝光带杂\",\"desc\":\"丝光可见，杂斑中等\"}"
+   }
+  ]
+ },
+ "lanjing": {
+  "score": 81,
+  "parts": {
+   "name": 16,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“晶刃石”没有出处，不是常见叫法",
+   "confusables 里的蓝宝石做手串很少，不算真易混；真易混的是染色石英、蓝色砂金石",
+   "treatments 漏了低档料染色提蓝"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"蓝晶\",\"Kyanite\"]"
+   },
+   {
+    "field": "confusables",
+    "suggest": "把蓝宝石换成 {\"id\":\"\",\"name\":\"蓝砂金石（蓝色东陵石）\",\"how\":\"有细小闪片，没有刀片状平行结构\"}"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"染色\",\"note\":\"浅色料染蓝，纹理里积色，常见程度待核\"}"
+   }
+  ]
+ },
+ "guikongque": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "summary 说高档料叫蓝玉髓，但 confusables 又把 lan-yusui 当成另一个品种，两条的边界要统一说清",
+   "treatments 的把握是 low，可以接受"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "“含铜的蓝绿色矿物；硅孔雀石渗进玉髓形成的硬质半透料，市场叫蓝玉髓，单独见 lan-yusui 条。”"
+   }
+  ]
+ },
+ "lantong": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "dims.color 里的“蓝绿”其实是和孔雀石共生的特征，不是蓝铜矿本身的颜色",
+   "treatments 漏了染色仿品（染蓝白松、玻璃）",
+   "grades 只有 2 档"
+  ],
+  "fixes": [
+   {
+    "field": "dims.color",
+    "suggest": "[\"深蓝\",\"靛蓝\"]；把“蓝铜孔雀共生”放进 inclusion"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"染色仿品\",\"note\":\"染蓝菱镁矿冒充，颜色均匀，没有绿色共生\"}"
+   }
+  ]
+ },
+ "bantong": {
+  "score": 76,
+  "parts": {
+   "name": 14,
+   "identify": 14,
+   "quality": 13,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "市售“孔雀铜”多数其实是黄铜矿经酸处理产生的彩膜，条目只在 confusables 里标了“待核”，定名会误导",
+   "identify 的“颜色会随时间变化”太泛，没法拿来认",
+   "grades 只有 2 档"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "“斑铜矿的商品名是孔雀铜；但市售颜色艳丽的‘孔雀铜/孔雀矿’相当一部分是黄铜矿酸处理而成，应如实标注。”"
+   },
+   {
+    "field": "identify",
+    "suggest": "加“断面或磨损处露出黄铜色（黄铜矿）或古铜色（斑铜矿），可以借此判断底材”"
+   }
+  ]
+ },
+ "juhua": {
+  "score": 85,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "只写了浏阳，漏了其他产地（如江西永丰等也产菊花石）",
+   "“花心常有深色硬质颗粒”没有出处",
+   "sizes 待核，可以接受"
+  ],
+  "fixes": [
+   {
+    "field": "dims.origin",
+    "suggest": "[\"湖南浏阳\",\"江西永丰\"]（第二项把握标中）"
+   },
+   {
+    "field": "identify",
+    "suggest": "删“花心常有深色硬质颗粒”，或标低把握"
+   }
+  ]
+ },
+ "yunshi": {
+  "score": 67,
+  "parts": {
+   "name": 12,
+   "identify": 14,
+   "quality": 11,
+   "compliance": 9,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“天铁”张冠李戴：藏式“天铁”（托甲）多指古代铜合金护身器物，不是陨铁",
+   "“利比亚陨石”是撞击形成的利比亚沙漠玻璃，不是陨石；捷克陨石属玻璃陨石（tektite），std 把两者都算进“陨石”不准确",
+   "compliance 写 none 不对：纳米比亚把境内陨石当国家遗产保护，新发现的吉本陨石禁止出口，至少要提示合法来源",
+   "identify 的“能被磁铁吸住”不能当证据，铁合金仿品也会被吸",
+   "grades 是空的；铁陨石珠有无锈、纹清不清，是可以分档的"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“天铁”“利比亚陨石”，改为“利比亚沙漠玻璃”“捷克玻璃陨石”“铁陨石”"
+   },
+   {
+    "field": "std",
+    "suggest": "“铁陨石；玻璃陨石（捷克）；撞击玻璃（利比亚沙漠玻璃）”"
+   },
+   {
+    "field": "compliance",
+    "suggest": "{\"level\":\"restricted\",\"note\":\"纳米比亚陨石（吉本）受当地文化遗产法保护、新发现的禁止出口，应有合法来源或旧藏证明；仿品多，需检测\"}"
+   },
+   {
+    "field": "identify",
+    "suggest": "把磁铁一条改为“磁铁吸只说明含铁，合金仿品也会被吸；要看蚀刻纹是否连续、不重复”"
+   },
+   {
+    "field": "grades",
+    "suggest": "[{\"level\":1,\"label\":\"纹清无锈\",\"desc\":\"维斯台登纹清楚连续，无锈点\"},{\"level\":2,\"label\":\"有锈纹浅\",\"desc\":\"有锈斑或纹路模糊\"}]"
+   }
+  ]
+ },
+ "dimang": {
+  "score": 69,
+  "parts": {
+   "name": 11,
+   "identify": 14,
+   "quality": 11,
+   "compliance": 12,
+   "meaning": 12,
+   "confidence": 9
+  },
+  "issues": [
+   "std 写“碧石（染色）”没有证据。市售“帝王石/海洋碧玉/印象石”多为染色、胶结的再造料，矿物组成并不统一",
+   "treatments 漏了胶结再造和压制",
+   "aliases 里的“皇帝石”没有出处",
+   "grades 对染色料没有实际意义"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“染色石料（成分不一，多为胶结再造，待核）”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"胶结再造\",\"note\":\"碎石加树脂压制再染色，网脉为胶，常见\"}"
+   },
+   {
+    "field": "aliases",
+    "suggest": "删“皇帝石”，加“海洋碧玉”（标低把握）"
+   },
+   {
+    "field": "grades",
+    "suggest": "改为空数组 []"
+   }
+  ]
+ },
+ "fangjie": {
+  "score": 85,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“冰洲石”只指无色透明的变种，当作整个品种的别名不准确",
+   "confusables 漏了同库条目 afuhan-yu（阿富汗玉，本质是方解石或大理石）",
+   "treatments 漏了注胶、浸蜡"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“冰洲石”，把“冰洲石（无色透明）”放进 dims.clarity 或 color"
+   },
+   {
+    "field": "confusables",
+    "suggest": "新增 {\"id\":\"afuhan-yu\",\"name\":\"阿富汗玉\",\"how\":\"同为碳酸钙，阿富汗玉是白色细粒大理石，不透明\"}"
+   }
+  ]
+ },
+ "lvlian": {
+  "score": 78,
+  "parts": {
+   "name": 14,
+   "identify": 15,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“帘石”是矿物族名，不是别名",
+   "和粉色长石共生的“花斑料”是绿帘花岗岩（unakite），是岩石，不是绿帘石珠，look 混在一起写了",
+   "identify 的“能看到条状结构”太泛",
+   "treatments 是空的"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"Epidote\"]"
+   },
+   {
+    "field": "look",
+    "suggest": "把花斑料单独写一句：“粉绿花斑的是绿帘花岗岩（Unakite），由绿帘石和粉色长石、石英组成”"
+   },
+   {
+    "field": "dims.pattern",
+    "suggest": "“花斑”改为“绿帘花岗岩花斑”"
+   }
+  ]
+ },
+ "chitie": {
+  "score": 82,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 11,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 是空的，但市售“赤铁矿”珠相当一部分是人造赤铁矿或磁性材料（hematine），还有镀膜，应写进 treatments",
+   "confusables 引用了 id “cishi”，要确认 taxonomy 里有这一条"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"人造/合成\",\"note\":\"氧化铁粉烧结的人造赤铁矿和磁性珠很常见，异形珠尤多，应标“人造”\"},{\"type\":\"镀膜\",\"note\":\"镀彩膜做成彩色赤铁矿\"}"
+   }
+  ]
+ },
+ "zhuanyun": {
+  "score": 76,
+  "parts": {
+   "name": 12,
+   "identify": 16,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“足银”“铂金”“钛钢”“不锈钢”“14K 包金”“藏银”是材质，不是转运珠的别名，搜“铂金”会被错误映射到转运珠",
+   "名字“转运”本身就在 SCHEMA 的禁用词里，展示名要有替代",
+   "GB 11887 没写年份，现行版本是 GB 11887-2012；“14K 包金”在国内一般只写“包金”加含金量",
+   "dims.treatment 里放的是材质（足金、925 银），不是处理"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"路路通\",\"通孔金属珠\"]"
+   },
+   {
+    "field": "meaning.text",
+    "suggest": "保留，并建议前端展示名用“路路通/金属通孔珠”"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "把 GB 11887 改为 GB 11887-2012，并写“包金须注明含金量和底材，‘藏银’不得标为银”"
+   },
+   {
+    "field": "dims.treatment",
+    "suggest": "只留 [\"电镀\",\"包金\",\"无镀层\"]，材质另做材质字段"
+   }
+  ]
+ },
+ "gezhu": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 13,
+   "compliance": 14,
+   "meaning": 15,
+   "confidence": 8
+  },
+  "issues": [
+   "dims.treatment 里混了材质（水晶、玛瑙、足金、铜），treatment 维度应只放处理"
+  ],
+  "fixes": [
+   {
+    "field": "dims.treatment",
+    "suggest": "[\"电镀\",\"无镀层\"]；材质改成关联品种 id"
+   }
+  ]
+ },
+ "fotou": {
+  "score": 82,
+  "parts": {
+   "name": 16,
+   "identify": 17,
+   "quality": 13,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“顶珠”在清代指官帽顶珠，有歧义",
+   "dims.treatment 里放的是材质",
+   "meaning 的“从佛头起数”是念珠的通行用法，标 low 偏保守，可标 mid"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"佛头\",\"三通\",\"佛塔\",\"佛头塔\"]"
+   },
+   {
+    "field": "dims.treatment",
+    "suggest": "清空，材质改用关联品种"
+   },
+   {
+    "field": "confidence.meaning",
+    "suggest": "mid"
+   }
+  ]
+ },
+ "beiyun": {
+  "score": 80,
+  "parts": {
+   "name": 14,
+   "identify": 16,
+   "quality": 13,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“吊坠”“挂件”“流苏”太宽，会把所有吊坠都识别成背云",
+   "dims.treatment 里放的是材质"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"背云\",\"记子\",\"坠角\"]"
+   },
+   {
+    "field": "dims.treatment",
+    "suggest": "清空，材质改用关联品种"
+   }
+  ]
+ },
+ "xiancai": {
+  "score": 86,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 13,
+   "compliance": 15,
+   "meaning": 15,
+   "confidence": 8
+  },
+  "issues": [
+   "dims.treatment 里放的是线材种类，不是处理",
+   "dims 里有“玉线”，aliases 和 look 里都没有"
+  ],
+  "fixes": [
+   {
+    "field": "dims",
+    "suggest": "把线材种类移到 shape 或新的材质字段"
+   },
+   {
+    "field": "aliases",
+    "suggest": "加“玉线”"
+   }
+  ]
+ },
+ "shibazi": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "story 的出处是二手网站（ourchinastory），应换成香港故宫文化博物馆官网的藏品页",
+   "没写清传统十八子的形制（18 颗主珠加隔珠、佛头、背云、坠角）",
+   "meaning 提了“十八界”，虽然标了“文化附会”，也最好删掉宗教解释"
+  ],
+  "fixes": [
+   {
+    "field": "sources",
+    "suggest": "换成香港故宫文化博物馆藏品页链接，并写藏品编号"
+   },
+   {
+    "field": "look",
+    "suggest": "补“传统十八子：18 颗主珠，常加 2 颗隔珠、佛头、背云、坠角”"
+   },
+   {
+    "field": "meaning.text",
+    "suggest": "“十八子手串在清代宫廷很流行，取圆满吉祥之意。”"
+   }
+  ]
+ },
+ "duobao": {
+  "score": 80,
+  "parts": {
+   "name": 17,
+   "identify": 15,
+   "quality": 12,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "identify 的“配珠左右对称”不是必然",
+   "dims.count 里的“108 颗”和 foz108 重叠",
+   "多宝串的配珠里染色珊瑚、再造松石、染色青金很常见，treatments 是空的"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "删“配珠常左右对称”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"配珠处理\",\"note\":\"染色珊瑚、再造松石、染色青金常见，配珠需逐颗标注\"}"
+   }
+  ]
+ },
+ "foz108": {
+  "score": 90,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 10
+  },
+  "issues": [
+   "“代表 108 种烦恼”只是通行解释之一，应写说法不一"
+  ],
+  "fixes": [
+   {
+    "field": "meaning.text",
+    "suggest": "“108 颗来自佛教念珠传统，常见解释是对应 108 种烦恼，说法不一；念诵时一颗颗拨过，用来计数。”"
+   }
+  ]
+ },
+ "hetao": {
+  "score": 80,
+  "parts": {
+   "name": 13,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "std 写“核桃”太宽：文玩核桃主体是麻核桃（河北核桃 Juglans hopeiensis），也有铁核桃等",
+   "aliases 里的“楸子”是另一种植物（核桃楸 J. mandshurica），“狮子头”“官帽”“公子帽”是品种，dims.shape 里已有",
+   "treatments 漏了粘补和拼接",
+   "已核 2021《国家重点保护野生植物名录》：胡桃科只收喙核桃、贵州山核桃（二级），没有麻核桃，条目结论正确，但 compliance.note 是空的"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“麻核桃（河北核桃 Juglans hopeiensis）为主”"
+   },
+   {
+    "field": "aliases",
+    "suggest": "[\"文玩核桃\",\"麻核桃\"]；“楸子”单列或放 confusables"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"粘补/拼接\",\"note\":\"补尖、补边、粘裂，补处颜色和纹路不连贯\"}"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "“麻核桃不在 2021 国家重点保护野生植物名录；野生喙核桃、贵州山核桃为国家二级，不能交易”"
+   }
+  ]
+ },
+ "taohe": {
+  "score": 91,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 15,
+   "confidence": 10
+  },
+  "issues": [
+   "sizes 和 treatments 都标了待核，可以接受；整体可靠"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "补学名：桃 Prunus persica（Li 2014 记作 Amygdalus persica）"
+   }
+  ]
+ },
+ "xinghe": {
+  "score": 79,
+  "parts": {
+   "name": 17,
+   "identify": 13,
+   "quality": 13,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 太薄，只能和桃核对比",
+   "treatments 是空的，漏了做色",
+   "grades 只有 2 档"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"做色\",\"note\":\"色素做红，纹缝颜色不自然，常见程度待核\"}"
+   }
+  ]
+ },
+ "zaohe": {
+  "score": 77,
+  "parts": {
+   "name": 15,
+   "identify": 13,
+   "quality": 13,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "Li 2014 把酸枣（Ziziphus jujuba var. spinosa）的核记为“小凤眼”，市场上酸枣核也被当作菩提卖，应补别名并消歧",
+   "treatments 是空的"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "加“小凤眼（菩提）”"
+   },
+   {
+    "field": "std",
+    "suggest": "“酸枣核（Ziziphus jujuba var. spinosa）”"
+   },
+   {
+    "field": "confusables",
+    "suggest": "新增 {\"id\":\"fengyan\",\"name\":\"凤眼菩提\",\"how\":\"凤眼个大、有一个狭长眼痕；酸枣核小，两端尖\"}"
+   }
+  ]
+ },
+ "shanhetao": {
+  "score": 73,
+  "parts": {
+   "name": 11,
+   "identify": 13,
+   "quality": 13,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "std 写“山核桃”定名混乱：植物学上的山核桃是 Carya cathayensis（浙皖食用种），而文玩“小核桃手串”多是野核桃、核桃楸等",
+   "aliases 里的“小核桃”也是山核桃食品的叫法",
+   "楸子的区分写在本条的 confusables，但楸子却列在 hetao 的 aliases 里，两条互相矛盾",
+   "所有字段都是 low，可以展示的内容很少"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“小型核桃类（山核桃 Carya cathayensis、核桃楸、野核桃等，树种待核）”"
+   },
+   {
+    "field": "aliases",
+    "suggest": "[\"小核桃\",\"楸子\"]（同时从 hetao 删掉“楸子”）"
+   }
+  ]
+ },
+ "hulu": {
+  "score": 82,
+  "parts": {
+   "name": 15,
+   "identify": 16,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 15,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“葫芦籽”错了，那是葫芦的种子，不是小葫芦",
+   "可以补“手捻葫芦”“草里金”等常见市场词"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"小葫芦\",\"手捻葫芦\"]"
+   },
+   {
+    "field": "dims.shape",
+    "suggest": "加“草里金”（标中把握）"
+   }
+  ]
+ },
+ "ganlan": {
+  "score": 91,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 15,
+   "confidence": 10
+  },
+  "issues": [
+   "std 没写学名，Li 2014 记为乌榄 Canarium pimela",
+   "treatments 是空的，漏了做色"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“橄榄核（乌榄 Canarium pimela）”"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"做色\",\"note\":\"色素或茶水做红，常见程度待核\"}"
+   }
+  ]
+ },
+ "hexiang": {
+  "score": 82,
+  "parts": {
+   "name": 17,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 11,
+   "meaning": 15,
+   "confidence": 8
+  },
+  "issues": [
+   "compliance 是空的：合香配方可能含麝香、龙涎香等受保护原料，或朱砂、雄黄等有毒成分",
+   "aliases 里的“中药香珠”带药效暗示，还和 zangxiang 的“中药香”撞名"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"香珠\",\"古法合香\"]"
+   },
+   {
+    "field": "compliance",
+    "suggest": "{\"level\":\"none\",\"note\":\"配方含麝香、龙涎香、沉香的，须是人工或合法来源；不应含朱砂、雄黄等有毒矿物\"}"
+   }
+  ]
+ },
+ "chenxiang-fen": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 14,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "compliance.level 写 none，note 却讲 CITES，和 chenxiang 的 restricted 不一致",
+   "treatments 漏了“杂木粉加香精冒充沉香粉”，这是最常见的"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.level",
+    "suggest": "restricted，或在 note 里说明为什么不同于沉香木"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"杂木粉冒充\",\"note\":\"普通木粉加沉香香精，香气单一发冲\"}"
+   }
+  ]
+ },
+ "tanxiang-fen": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 漏了杂木粉冒充檀香粉",
+   "grades 的把握是 low，只有 2 档"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"杂木粉冒充\",\"note\":\"普通木粉加檀香精，香气冲且很快变淡\"}"
+   }
+  ]
+ },
+ "xianghui": {
+  "score": 73,
+  "parts": {
+   "name": 14,
+   "identify": 13,
+   "quality": 13,
+   "compliance": 11,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“寺庙香灰”无法验证来源，还容易被引申成加持",
+   "identify 的“比木珠重、比石头轻”太泛",
+   "treatments 是空的，漏了黏土、水泥加染灰冒充",
+   "compliance 没提醒：不要宣传“某寺香灰”和加持"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"香灰\"]"
+   },
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"仿品\",\"note\":\"普通黏土或水泥染灰冒充，无法验证是否含香灰\"}"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "“来源无法验证，不宣传某寺香灰、加持等说法”"
+   }
+  ]
+ },
+ "zangxiang": {
+  "score": 79,
+  "parts": {
+   "name": 15,
+   "identify": 16,
+   "quality": 14,
+   "compliance": 12,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“药香珠”“中药香”带药效暗示，还和 hexiang 撞名",
+   "传统藏香配方可能含麝香等动物药材，compliance 没提醒",
+   "dims.origin 只写了尼木"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"藏香\",\"藏香珠\"]"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "“含麝香等动物性原料的，必须是人工或合法来源，并如实标注”"
+   },
+   {
+    "field": "dims.origin",
+    "suggest": "[\"西藏尼木\",\"西藏其他\"]"
+   }
+  ]
+ },
+ "longxian": {
+  "score": 81,
+  "parts": {
+   "name": 17,
+   "identify": 16,
+   "quality": 12,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "已核实：抹香鲸在 2021 名录中是国家一级，compliance 写对了",
+   "CITES 对龙涎香这类排泄物的处理和动物本体不同，note 写“能否交易待核”可以，但应补上这一点（把握低）",
+   "grades 是空的"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "补“CITES 对龙涎香作为排泄物的规定与鲸体不同，国内是否可交易仍待核，把握低”"
+   },
+   {
+    "field": "grades",
+    "suggest": "可按“标注清楚／香精刺鼻”分 2 档"
+   }
+  ]
+ },
+ "shexiang": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 12,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "grades 是空的",
+   "“人工麝香”在国内是受管理的药品原料，饰品里实际多是麝香酮香精，应写清"
+  ],
+  "fixes": [
+   {
+    "field": "treatments[0].note",
+    "suggest": "“饰品里多为麝香型香精或合成麝香酮，必须如实标注；不宣传药用”"
+   }
+  ]
+ },
+ "chenxiang": {
+  "score": 86,
+  "parts": {
+   "name": 16,
+   "identify": 16,
+   "quality": 17,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“奇楠”“棋楠”是沉香里的特殊品类，当别名会把奇楠和普通沉香划等号，dims.texture 里已有“奇楠”",
+   "identify 的“沉水”可以靠注胶、注油增重做出来，没提醒",
+   "dims.origin 里的“海南”涉及国家二级野生资源，没提示"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"沉水香\",\"沉香木\"]"
+   },
+   {
+    "field": "identify",
+    "suggest": "补“注胶注油也能做出沉水效果，沉水只是参考”"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "补“海南野生土沉香为国家二级，只收人工种植来源”"
+   }
+  ]
+ },
+ "tanxiang": {
+  "score": 77,
+  "parts": {
+   "name": 13,
+   "identify": 16,
+   "quality": 13,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“白檀”也是山矾科植物白檀（Symplocos paniculata）的正式中文名，“檀木”泛指各种檀，都会张冠李戴",
+   "std 只写“檀香”，没给植物学名",
+   "dims.origin 里的“印尼新山檀”不准：市场通常把澳洲檀叫新山，印尼和东帝汶一带的叫地门",
+   "dims.texture 里的“老料”应归 age",
+   "compliance.note 写的是产地说法，不是合规内容"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"老山檀\",\"檀香木\"]"
+   },
+   {
+    "field": "std",
+    "suggest": "“檀香（檀香属 Santalum，老山檀为 S. album）”"
+   },
+   {
+    "field": "dims.origin",
+    "suggest": "[\"印度（老山）\",\"澳洲（新山）\",\"印尼/东帝汶（地门）\"]（把握中）"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "“印度檀香 S. album 野生资源稀少，印度限制出口；不在 CITES 附录”，产地说法移到 dims 注释"
+   }
+  ]
+ },
+ "xiaoye-zitan": {
+  "score": 92,
+  "parts": {
+   "name": 19,
+   "identify": 18,
+   "quality": 18,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“紫檀”太宽，市场上也指别的紫檀属木材",
+   "dims.age 里把部位（树头料）、料性（泥料、琴料）和新老混在一起"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“紫檀”或加注“仅指檀香紫檀”"
+   },
+   {
+    "field": "dims",
+    "suggest": "把“泥料”“琴料”“树头料”“二膘”移到 texture"
+   }
+  ]
+ },
+ "daye-zitan": {
+  "score": 89,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 只有打蜡，漏了染色杂木冒充（dims 里已有“染色”）"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"染色\",\"note\":\"杂木染黑紫冒充，擦白布掉色\"}"
+   }
+  ]
+ },
+ "xue-tan": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 14,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "identify 里的“多数浮在水上”存疑：染料紫檀密度接近 1，部分会沉，不能当作可靠的区分方法",
+   "“偶有像金星的亮点”容易被商家拿来混淆小叶紫檀，要强调导管粗"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "把“掂手偏轻，多数浮在水上”改为“通常比小叶紫檀轻，但沉浮不稳定，不能单靠这点判断”"
+   }
+  ]
+ },
+ "huanghuali": {
+  "score": 89,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 里的“价格远高于越黄”不是识别特征",
+   "confusables 漏了非洲、南美花梨冒充"
+  ],
+  "fixes": [
+   {
+    "field": "identify",
+    "suggest": "删价格那一条，改成“新切面辛香明显，不发酸”"
+   },
+   {
+    "field": "confusables",
+    "suggest": "新增 {\"id\":\"\",\"name\":\"染色或浸香的非洲花梨\",\"how\":\"纹理粗、香味发冲\"}"
+   }
+  ]
+ },
+ "yuehuang": {
+  "score": 81,
+  "parts": {
+   "name": 16,
+   "identify": 14,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "std 写成“东京黄檀（多认为）”，不规范；不确定的说法应写在 summary 和 confidence 里",
+   "identify 主要靠卖家标注和价格，没有实物特征"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“东京黄檀”，把握标 mid"
+   },
+   {
+    "field": "identify",
+    "suggest": "补“新切面香味偏酸，鬼脸多但纹理比海黄粗”（把握 low）"
+   }
+  ]
+ },
+ "yabai": {
+  "score": 88,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 14,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "dims.texture 里的“沉水”对侧柏不现实（侧柏比重约 0.6），市场上的“沉水崖柏”多是浸油增重",
+   "dims.origin 只写了太行山"
+  ],
+  "fixes": [
+   {
+    "field": "dims.texture",
+    "suggest": "删“沉水”，改为“满油”"
+   },
+   {
+    "field": "treatments[0].note",
+    "suggest": "补“所谓沉水料多为浸油增重”"
+   }
+  ]
+ },
+ "heitan": {
+  "score": 80,
+  "parts": {
+   "name": 15,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 12,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“乌木”和 yinchen 撞名",
+   "aliases 里的“非洲黑檀”和紫光檀冲突（factcheck 已经指出）",
+   "compliance 写 none 不对：马达加斯加的柿属乌木列在 CITES 附录 II",
+   "dims.pattern 里的“斑马纹”容易和斑马木混"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"黑檀\",\"苏拉威西乌木\",\"条纹乌木\",\"印尼黑檀\"]"
+   },
+   {
+    "field": "compliance",
+    "suggest": "{\"level\":\"restricted\",\"note\":\"马达加斯加柿属列 CITES 附录 II（注释 #5，管原木、锯材、单板）；成品珠子一般不在范围，但应写明产地\"}"
+   },
+   {
+    "field": "dims.pattern",
+    "suggest": "删“斑马纹”"
+   }
+  ]
+ },
+ "yinchen": {
+  "score": 72,
+  "parts": {
+   "name": 14,
+   "identify": 12,
+   "quality": 14,
+   "compliance": 10,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“乌木”和黑檀撞名",
+   "look 和 dims 里的“炭化”说法不准确，阴沉木多是部分矿化、氧化，不是炭化",
+   "compliance：河床、地下挖出的阴沉木可能按埋藏物归国家所有（四川彭州乌木案），交易需来源说明，note 只说了树种",
+   "identify 的把握是 low，内容也泛"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"阴沉木\",\"乌木阴沉\"]"
+   },
+   {
+    "field": "dims.texture",
+    "suggest": "“炭化”改为“部分矿化”"
+   },
+   {
+    "field": "compliance.note",
+    "suggest": "补“出土阴沉木的权属有争议（如 2012 年四川彭州乌木案），应能说明合法来源”"
+   }
+  ]
+ },
+ "lvtan": {
+  "score": 87,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "confusables 里檀香那一条的 id 是空的，库里有 tanxiang"
+  ],
+  "fixes": [
+   {
+    "field": "confusables[0].id",
+    "suggest": "tanxiang"
+   }
+  ]
+ },
+ "suanzhi": {
+  "score": 83,
+  "parts": {
+   "name": 15,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里列了“白酸枝”，confusables 又说它不是标准用语、单独区分，前后矛盾",
+   "aliases 里的“黑酸枝”和大叶紫檀、紫光檀冲突，这两种都属黑酸枝木类",
+   "aliases 里的“交趾黄檀”只是其中一种，当整个品种的别名会把奥氏黄檀等也算成交趾黄檀"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"酸枝\",\"红酸枝\",\"老挝大红酸枝\"]；“交趾黄檀”“白酸枝（奥氏黄檀）”放进 dims 的种类说明"
+   }
+  ]
+ },
+ "jinsinan": {
+  "score": 85,
+  "parts": {
+   "name": 17,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "已核 2021 名录：楠属保护种还有细叶楠 Phoebe hui（二级），note 漏了",
+   "confusables 说“润楠冒充”，但润楠 Machilus nanmu 本身也是国家二级，没提示",
+   "aliases 里的“阴沉金丝楠”和 yinchen 交叉"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "“桢楠、闽楠、浙江楠、细叶楠为国家二级；冒充用的润楠（Machilus nanmu）同样是国家二级”"
+   },
+   {
+    "field": "aliases",
+    "suggest": "删“阴沉金丝楠”，放进 dims.age 的“阴沉料”"
+   }
+  ]
+ },
+ "ziguang-tan": {
+  "score": 88,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 16,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "整体正确；confusables 的 id heitan 指向“非洲黑檀”，要等 heitan 删掉这个别名后保持一致"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "可加“紫光檀（黑木黄檀）”，学名 Dalbergia melanoxylon 写进 std"
+   }
+  ]
+ },
+ "huangyang": {
+  "score": 83,
+  "parts": {
+   "name": 17,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "std 没写学名（小叶黄杨 Buxus sinica）",
+   "confusables 漏了进口“黄杨”替代材（如南美、东南亚产的黄色细木）"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“黄杨（Buxus sinica 等）”"
+   },
+   {
+    "field": "confusables",
+    "suggest": "新增 {\"id\":\"\",\"name\":\"进口‘黄杨’\",\"how\":\"颜色更白或更黄、纹理略显，价格低，需看树种说明\"}"
+   }
+  ]
+ },
+ "tao-mu": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 14,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 很弱，只有颜色和重量",
+   "treatments 是空的，漏了用杂木冒充"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"杂木冒充\",\"note\":\"用其他浅色木冒充桃木，无法凭外观可靠区分\"}"
+   }
+  ]
+ },
+ "jichi-mu": {
+  "score": 86,
+  "parts": {
+   "name": 19,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 13,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "compliance.note 是空的；非洲崖豆木资源紧张，可以注明",
+   "confusables 只有一项"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "“GB/T 18107 鸡翅木类：非洲崖豆木、白花崖豆木、铁刀木；不在 CITES 附录”"
+   }
+  ]
+ },
+ "huali": {
+  "score": 80,
+  "parts": {
+   "name": 15,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 11,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里有“草花梨”，confusables 又把草花梨当成另一种，自相矛盾",
+   "compliance.level 写 none，note 却讲 CITES II，和 xue-tan 的 restricted 不一致",
+   "std 写“大果紫檀等”不规范"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "删“草花梨”"
+   },
+   {
+    "field": "std",
+    "suggest": "“花梨木类（紫檀属，市售多为大果紫檀）”"
+   },
+   {
+    "field": "compliance.level",
+    "suggest": "restricted（非洲紫檀属 CITES II），或在 note 说明大果紫檀本身不受管"
+   }
+  ]
+ },
+ "leiji": {
+  "score": 78,
+  "parts": {
+   "name": 17,
+   "identify": 14,
+   "quality": 10,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "grades 是空的；可以按树种和有无焦痕分档",
+   "整体诚实，但雷击无法证实，展示时应以树种为主名"
+  ],
+  "fixes": [
+   {
+    "field": "grades",
+    "suggest": "[{\"level\":1,\"label\":\"料实无裂\",\"desc\":\"枣木料密实、无裂\"},{\"level\":2,\"label\":\"有裂有疤\",\"desc\":\"有裂或虫眼\"}]"
+   }
+  ]
+ },
+ "hongdoushan": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 12,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "compliance 漏了 CITES：中国红豆杉等多种红豆杉列在附录 II",
+   "红豆杉全株含紫杉碱，木珠风险低，但也应提示不要啃咬",
+   "identify 很弱"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "补“多种红豆杉（如 Taxus chinensis、T. cuspidata、T. wallichiana）列 CITES 附录 II；枝叶种子有毒，木珠避免儿童啃咬”"
+   }
+  ]
+ },
+ "baimu": {
+  "score": 80,
+  "parts": {
+   "name": 14,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“香柏”是别的树（如北美香柏 Thuja occidentalis），张冠李戴",
+   "“沉柏”既是别名又是 confusables，自相矛盾",
+   "std 没写学名"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"柏木\"]"
+   },
+   {
+    "field": "std",
+    "suggest": "“柏木（Cupressus funebris）”"
+   }
+  ]
+ },
+ "zhangmu": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "compliance.note 可以补一句：樟在 1999 年名录里是二级，2021 年已删除，避免用户误会"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "“樟（Cinnamomum camphora）已从 2021 国家重点保护野生植物名录中删除”"
+   }
+  ]
+ },
+ "zhugen": {
+  "score": 83,
+  "parts": {
+   "name": 18,
+   "identify": 15,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "grades 的第 2、3 档只是色差和裂，品质区分很粗"
+  ],
+  "fixes": [
+   {
+    "field": "dims.texture",
+    "suggest": "加“实心/空心”（竹根料是否实心是主要差别，把握待核）"
+   }
+  ]
+ },
+ "jiangzhen": {
+  "score": 70,
+  "parts": {
+   "name": 12,
+   "identify": 12,
+   "quality": 13,
+   "compliance": 11,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“降香”是中药降香，指降香黄檀心材，直接张冠李戴",
+   "std 写“降真香”，没有对应任何植物",
+   "dims.texture 里的“沉水”没有依据",
+   "dims.origin 里的“海南”，如果料是降香黄檀就是国家二级，compliance.level 不该是 none"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"降真\"]"
+   },
+   {
+    "field": "std",
+    "suggest": "“降真香（原植物说法不一，待核）”"
+   },
+   {
+    "field": "compliance.level",
+    "suggest": "restricted，note 写“原料不明，可能涉及降香黄檀（国家二级），须有树种说明”"
+   }
+  ]
+ },
+ "xuelong": {
+  "score": 49,
+  "parts": {
+   "name": 6,
+   "identify": 5,
+   "quality": 7,
+   "compliance": 9,
+   "meaning": 12,
+   "confidence": 10
+  },
+  "issues": [
+   "原植物不明（复查也没找到对应学名），却给出了 look 和 dims，展示出来等于编",
+   "compliance 写 none 不妥：树种不明，可能是非洲紫檀属等 CITES 附录 II 物种，应提示来源",
+   "confusables 里“龙血树”和本品无关"
+  ],
+  "fixes": [
+   {
+    "field": "look",
+    "suggest": "\"\"（留空）"
+   },
+   {
+    "field": "compliance",
+    "suggest": "{\"level\":\"restricted\",\"note\":\"树种不明，可能涉及受 CITES 管控的非洲紫檀属等，须卖家提供树种和来源\"}"
+   },
+   {
+    "field": "summary",
+    "suggest": "“市场叫法，树种不明，暂不推荐”"
+   }
+  ]
+ },
+ "youmu": {
+  "score": 83,
+  "parts": {
+   "name": 19,
+   "identify": 15,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "compliance.note 是空的；缅甸柚木在欧美有制裁和合法来源要求，可以注明（不属 CITES）",
+   "confusables 只有一项，漏了染色杂木"
+  ],
+  "fixes": [
+   {
+    "field": "compliance.note",
+    "suggest": "“不在 CITES 附录；缅甸柚木在部分市场有制裁和来源审查”"
+   }
+  ]
+ },
+ "xingyue": {
+  "score": 90,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 17,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "dims.origin 里的“元宝籽”是籽形，“同枝料”是配串方式，都不是产地"
+  ],
+  "fixes": [
+   {
+    "field": "dims",
+    "suggest": "origin 只留 [\"海南\",\"老挝籽\"]；“元宝籽”移到 shape，“同枝料”移到 count 或 texture"
+   }
+  ]
+ },
+ "jingang": {
+  "score": 85,
+  "parts": {
+   "name": 15,
+   "identify": 17,
+   "quality": 16,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "std 写“金刚菩提子”，不是植物名",
+   "aliases 里列了“黑金刚”，confusables 又说它多为染色，前后矛盾"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“杜英属果核（Li 2014 记为 Elaeocarpus angustifolius，常称圆果杜英）”"
+   },
+   {
+    "field": "aliases",
+    "suggest": "删“黑金刚”"
+   }
+  ]
+ },
+ "fengyan": {
+  "score": 82,
+  "parts": {
+   "name": 17,
+   "identify": 15,
+   "quality": 14,
+   "compliance": 15,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "Li 2014 原文为 Ziziphus abyssinica，“埃塞俄比亚枣”是自译，应附学名",
+   "市场普遍说凤眼产自尼泊尔，学名说法也不统一，应标注",
+   "look 的把握是 low"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "写成“Li 等（2014）记为 Ziziphus abyssinica 的二室果核”"
+   }
+  ]
+ },
+ "lianhua": {
+  "score": 80,
+  "parts": {
+   "name": 17,
+   "identify": 13,
+   "quality": 13,
+   "compliance": 15,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "identify 和 look 都是 low，内容很薄",
+   "treatments 是空的，dims 里却有“上色”"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "新增 {\"type\":\"上色\",\"note\":\"染红或刷油，颜色浮在表面\"}"
+   }
+  ]
+ },
+ "longyan": {
+  "score": 81,
+  "parts": {
+   "name": 17,
+   "identify": 14,
+   "quality": 13,
+   "compliance": 15,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "look 和 identify 的把握都是 low"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "补学名 Ziziphus abyssinica（Li 2014）"
+   }
+  ]
+ },
+ "qianyan": {
+  "score": 58,
+  "parts": {
+   "name": 8,
+   "identify": 8,
+   "quality": 8,
+   "compliance": 12,
+   "meaning": 12,
+   "confidence": 10
+  },
+  "issues": [
+   "原植物未明，却写了 look 和 dims",
+   "grades 是空的",
+   "meaning 的“取周全吉祥之意”是编出来的，没有出处"
+  ],
+  "fixes": [
+   {
+    "field": "meaning.text",
+    "suggest": "“以‘千眼’命名，暂无可靠的传统寓意。”"
+   },
+   {
+    "field": "look",
+    "suggest": "留空，或只写“卖家实拍为准”"
+   }
+  ]
+ },
+ "baiyu-puti": {
+  "score": 73,
+  "parts": {
+   "name": 11,
+   "identify": 13,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“白玉”和和田白玉严重撞名",
+   "aliases 里的“玉化菩提”太宽",
+   "已核 Li 2014：“白玉”= 油棕 Elaeis guineensis；“菩提根”= 贝叶棕。confusables 写“菩提根是贝叶棕籽”，却又说两者肉眼难分，等于没给区分方法"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"白玉菩提\"]"
+   },
+   {
+    "field": "std",
+    "suggest": "“待核（Li 2014 记为油棕 Elaeis guineensis；市场多说是贝叶棕）”"
+   }
+  ]
+ },
+ "taiyang": {
+  "score": 65,
+  "parts": {
+   "name": 13,
+   "identify": 8,
+   "quality": 8,
+   "compliance": 13,
+   "meaning": 13,
+   "confidence": 10
+  },
+  "issues": [
+   "已核 Li 2014：太阳子 = Caesalpinia major（大托叶云实），条目说法正确",
+   "look 和 identify 都很空",
+   "grades 是空的"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“太阳菩提（Li 2014 记为大托叶云实 Caesalpinia major）”"
+   }
+  ]
+ },
+ "yueliang": {
+  "score": 55,
+  "parts": {
+   "name": 10,
+   "identify": 5,
+   "quality": 5,
+   "compliance": 13,
+   "meaning": 12,
+   "confidence": 10
+  },
+  "issues": [
+   "look 是空的，dims 只有 age",
+   "factcheck 建议先不收录，或只写“市场俗称，原植物未明”"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "“市场俗称，原植物未明（可能是刺果苏木，待核），暂不展示细节”"
+   }
+  ]
+ },
+ "yeke": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "treatments 里的“上蜡”和 care 等内容都偏泛",
+   "grades 合理"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "补“椰子 Cocos nucifera 内果皮”"
+   }
+  ]
+ },
+ "xiangsi": {
+  "score": 87,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 15,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“红豆”和 haihongdou 撞名，factcheck 要求消歧"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"相思豆\",\"相思子\",\"鸡母珠\"]（删“红豆”）"
+   }
+  ]
+ },
+ "puti-gen": {
+  "score": 83,
+  "parts": {
+   "name": 17,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“白玉菩提根”和 baiyu-puti 撞名",
+   "“贝叶棕”是植物名，不是珠子名",
+   "已核 Li 2014：菩提根、虎斑、蜜瓜都是 Corypha umbraculifera，可以补"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"菩提根\",\"贝叶棕籽\"]"
+   },
+   {
+    "field": "dims.pattern",
+    "suggest": "加“虎斑”“蜜瓜”（Li 2014 记为同种）"
+   }
+  ]
+ },
+ "tianzhu-puti": {
+  "score": 74,
+  "parts": {
+   "name": 11,
+   "identify": 14,
+   "quality": 14,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“天竺黄”是中药竹黄，条目自己在 confusables 里说两者无关，却又列成别名，直接张冠李戴"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"天竺\",\"天竺子\"]（删“天竺黄”）"
+   }
+  ]
+ },
+ "wuyan": {
+  "score": 88,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "confusables 写“其他酸枣核”不准：南酸枣（漆树科）不是酸枣（鼠李科）"
+  ],
+  "fixes": [
+   {
+    "field": "confusables[0].name",
+    "suggest": "“其他果核”"
+   }
+  ]
+ },
+ "qiansi": {
+  "score": 84,
+  "parts": {
+   "name": 19,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "std 没写学名（Li 2014 已核为 Wodyetia bifurcata）"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“狐尾椰（Wodyetia bifurcata）种子”"
+   }
+  ]
+ },
+ "jinchan": {
+  "score": 52,
+  "parts": {
+   "name": 8,
+   "identify": 5,
+   "quality": 5,
+   "compliance": 12,
+   "meaning": 12,
+   "confidence": 10
+  },
+  "issues": [
+   "原植物未明，look、dims、grades 全空，基本没法用",
+   "民俗里金蟾常带招财意象，meaning 写“富贵”要小心"
+  ],
+  "fixes": [
+   {
+    "field": "meaning.tags",
+    "suggest": "[\"吉祥\"]"
+   }
+  ]
+ },
+ "fodu": {
+  "score": 52,
+  "parts": {
+   "name": 8,
+   "identify": 5,
+   "quality": 5,
+   "compliance": 12,
+   "meaning": 12,
+   "confidence": 10
+  },
+  "issues": [
+   "原植物未明，各字段都空"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "保留“原植物未明”，暂不展示"
+   }
+  ]
+ },
+ "yuanbao": {
+  "score": 62,
+  "parts": {
+   "name": 14,
+   "identify": 10,
+   "quality": 8,
+   "compliance": 7,
+   "meaning": 13,
+   "confidence": 10
+  },
+  "issues": [
+   "已核 Li 2014：“金元宝”= 黄花夹竹桃 Thevetia peruviana，种子含强心苷，剧毒",
+   "compliance.level 写 none，毒性提示又是有条件的（“如果是…”），这里必须无条件警示",
+   "look 和 identify 都是 low"
+  ],
+  "fixes": [
+   {
+    "field": "compliance",
+    "suggest": "{\"level\":\"restricted\",\"note\":\"Li 2014 记为黄花夹竹桃果核，全株有毒、种子含强心苷；不要入口，远离儿童和宠物\"}"
+   },
+   {
+    "field": "std",
+    "suggest": "“元宝菩提（Li 2014 记为黄花夹竹桃 Thevetia peruviana）”"
+   }
+  ]
+ },
+ "mile": {
+  "score": 52,
+  "parts": {
+   "name": 8,
+   "identify": 5,
+   "quality": 5,
+   "compliance": 12,
+   "meaning": 12,
+   "confidence": 10
+  },
+  "issues": [
+   "原植物未明，各字段都空"
+  ],
+  "fixes": [
+   {
+    "field": "summary",
+    "suggest": "保留“原植物未明”，暂不展示"
+   }
+  ]
+ },
+ "qilin": {
+  "score": 77,
+  "parts": {
+   "name": 17,
+   "identify": 13,
+   "quality": 10,
+   "compliance": 15,
+   "meaning": 13,
+   "confidence": 9
+  },
+  "issues": [
+   "grades 是空的，但同源的凤眼、龙眼都分了档",
+   "treatments 是空的"
+  ],
+  "fixes": [
+   {
+    "field": "grades",
+    "suggest": "照凤眼分 3 档：眼清完整 / 有小缺 / 有裂"
+   }
+  ]
+ },
+ "feidie": {
+  "score": 51,
+  "parts": {
+   "name": 8,
+   "identify": 5,
+   "quality": 5,
+   "compliance": 12,
+   "meaning": 11,
+   "confidence": 10
+  },
+  "issues": [
+   "原植物未明，各字段都空",
+   "meaning 写“可按吉祥说法”，等于现编寓意"
+  ],
+  "fixes": [
+   {
+    "field": "meaning.text",
+    "suggest": "“以外形命名，暂无传统寓意。”"
+   }
+  ]
+ },
+ "wuhuanzi": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 16,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "aliases 里的“鬼见愁”带辟邪联想，同名也指别的植物；Li 2014 确实以此记 Sapindus saponaria，可以保留但要注明",
+   "story 是空的，其实可以用《佛说木槵子经》（foz108 已引用，木槵子即无患子）"
+  ],
+  "fixes": [
+   {
+    "field": "story",
+    "suggest": "“《佛说木槵子经》记佛告波流离王‘当贯木槵子一百八’，木槵子即无患子，是无患子做念珠最常被引用的出处。”"
+   },
+   {
+    "field": "aliases",
+    "suggest": "“鬼见愁”加注“（俗称，Li 2014）”"
+   }
+  ]
+ },
+ "yedi": {
+  "score": 77,
+  "parts": {
+   "name": 17,
+   "identify": 13,
+   "quality": 12,
+   "compliance": 14,
+   "meaning": 13,
+   "confidence": 8
+  },
+  "issues": [
+   "grades 是空的",
+   "look 和 identify 都是 low"
+  ],
+  "fixes": [
+   {
+    "field": "grades",
+    "suggest": "[{\"level\":1,\"label\":\"花心清楚\",\"desc\":\"放射纹清楚、无裂\"},{\"level\":2,\"label\":\"纹弱有裂\",\"desc\":\"花心不清或有裂\"}]"
+   }
+  ]
+ },
+ "lianzi": {
+  "score": 84,
+  "parts": {
+   "name": 18,
+   "identify": 15,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 8
+  },
+  "issues": [
+   "confusables 漏了“千年古莲子”这类宣传",
+   "std 没写学名"
+  ],
+  "fixes": [
+   {
+    "field": "std",
+    "suggest": "“莲 Nelumbo nucifera 的老熟种子”"
+   }
+  ]
+ },
+ "yiyi": {
+  "score": 89,
+  "parts": {
+   "name": 19,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 15,
+   "confidence": 9
+  },
+  "issues": [
+   "整体可靠；grades 的第 1 档可以补“天然孔通畅”"
+  ],
+  "fixes": [
+   {
+    "field": "grades[0].desc",
+    "suggest": "“表面光亮、大小均匀、天然孔通畅”"
+   }
+  ]
+ },
+ "haihongdou": {
+  "score": 86,
+  "parts": {
+   "name": 17,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "aliases 里的“红豆”和 xiangsi 撞名",
+   "Li 2014 记作“红心”，可以补别名"
+  ],
+  "fixes": [
+   {
+    "field": "aliases",
+    "suggest": "[\"孔雀豆\",\"海红豆\",\"红心\"]"
+   }
+  ]
+ },
+ "xiangyaguo": {
+  "score": 87,
+  "parts": {
+   "name": 18,
+   "identify": 17,
+   "quality": 15,
+   "compliance": 14,
+   "meaning": 14,
+   "confidence": 9
+  },
+  "issues": [
+   "treatments 里的“雕刻”是工艺，不是处理",
+   "std 没写学名（Li 2014 已核为 Phytelephas macrocarpa）"
+  ],
+  "fixes": [
+   {
+    "field": "treatments",
+    "suggest": "删“雕刻”，移到 dims.shape"
+   },
+   {
+    "field": "std",
+    "suggest": "“象牙椰（Phytelephas macrocarpa）胚乳”"
+   }
+  ]
+ }
+}

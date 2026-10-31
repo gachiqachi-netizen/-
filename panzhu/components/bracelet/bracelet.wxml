@@ -1,0 +1,9 @@
+<view class="box" style="width:{{box}}rpx;height:{{box}}rpx;">
+  <view wx:if="{{items.length}}" class="string"
+    style="width:{{r*2}}rpx;height:{{r*2}}rpx;left:{{box/2-r}}rpx;top:{{box/2-r}}rpx;"></view>
+  <view class="rot {{animate ? 'anim' : ''}}" style="transform:rotate({{rotate}}deg);">
+    <view wx:for="{{items}}" wx:key="index" class="bead" data-i="{{index}}" catchtap="onTap"
+      style="left:{{item.x}}rpx;top:{{item.y}}rpx;width:{{s}}rpx;height:{{s}}rpx;background:{{item.bg}};"></view>
+  </view>
+  <view wx:if="{{!items.length}}" class="empty">点下方珠子开始串</view>
+</view>

@@ -1,0 +1,11 @@
+<view class="page">
+  <view wx:for="{{list}}" wx:key="id" class="item {{item.id === cur ? 'on' : ''}}"
+    data-id="{{item.id}}" data-name="{{item.name}}" bindtap="use" bindlongpress="del">
+    <bracelet beads="{{item.beads}}" size="{{item.size}}" box="{{180}}" patina="{{item.patina}}" />
+    <view class="info">
+      <view class="nm">{{item.name}} <text wx:if="{{item.id === cur}}" class="tag">正在盘</text></view>
+      <view class="muted">{{item.beads.length}} 颗 · {{item.level}} · 盘了 {{item.count}} 次</view>
+    </view>
+  </view>
+  <view class="tip muted">点一下切换手串，长按删除</view>
+</view>

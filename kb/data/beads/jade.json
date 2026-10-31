@@ -1,0 +1,2496 @@
+[
+ {
+  "id": "hetian-yu",
+  "name": "和田玉",
+  "std": "软玉（和田玉）",
+  "category": "jade",
+  "aliases": [
+   "和田玉",
+   "软玉"
+  ],
+  "summary": "以透闪石为主的软玉，油润细腻。“和田玉”是矿物名，不代表产地。",
+  "look": "白、青白、青、碧、墨、糖、黄等色，微透明到半透明，油脂光泽，质地细腻温润。籽料有皮色和毛孔，碧玉常带黑点。",
+  "identify": [
+   "光泽柔和像油脂，不刺眼",
+   "透光看是均匀的云雾状结构，看不到颗粒",
+   "碧玉常见小黑点，墨玉黑白交杂",
+   "籽料表面有细小毛孔和自然皮色；颜色浮在表面、进裂的皮可能是染的"
+  ],
+  "confusables": [
+   {
+    "id": "afuhan-yu",
+    "name": "阿富汗玉（大理石）",
+    "how": "大理石光泽干、易划花，透光可见颗粒和层纹"
+   },
+   {
+    "id": "shiyingyan-yu",
+    "name": "京白玉等石英岩玉",
+    "how": "玻璃光泽强、颗粒感明显，看着“亮”而不“润”"
+   },
+   {
+    "id": "xiu-yu",
+    "name": "岫玉",
+    "how": "多偏黄绿，硬度低易划伤，手感更轻"
+   },
+   {
+    "id": "bi-shi",
+    "name": "碧石",
+    "how": "碧石不透明、光泽偏干；和田碧玉边缘透光、油润"
+   },
+   {
+    "id": "jinsi-yu",
+    "name": "金丝玉",
+    "how": "石英质玉，玻璃光泽更强，产地和材质都不同"
+   }
+  ],
+  "dims": {
+   "color": [
+    "羊脂白",
+    "白玉",
+    "青白玉",
+    "青玉",
+    "碧玉",
+    "墨玉",
+    "糖玉",
+    "和田黄玉",
+    "烟青",
+    "翠青"
+   ],
+   "texture": [
+    "油润",
+    "细腻",
+    "瓷度"
+   ],
+   "purity": [
+    "无绺",
+    "石花",
+    "黑点",
+    "绺裂"
+   ],
+   "origin": [
+    "新疆",
+    "青海",
+    "俄罗斯（俄料、俄碧）",
+    "韩国",
+    "阿富汗",
+    "籽料",
+    "山料",
+    "山流水",
+    "戈壁料"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色（假皮）",
+    "浸蜡"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "细润无瑕",
+    "desc": "质地细腻油润，颜色均匀，看不到石花绺裂"
+   },
+   {
+    "level": 2,
+    "label": "略有瑕疵",
+    "desc": "有轻微颗粒感、少量石花或色不匀"
+   },
+   {
+    "level": 3,
+    "label": "干涩有绺",
+    "desc": "光泽发干，有明显绺裂、杂质"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12,
+    14
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "籽料常被染出假皮色，颜色浮在表面、顺裂纹渗入"
+   },
+   {
+    "type": "浸蜡",
+    "note": "抛光后浸蜡较普遍，属常规工艺"
+   },
+   {
+    "type": "滚料冒充籽料",
+    "note": "山料滚磨后染皮冒充籽料，毛孔浅而均匀、皮色浮"
+   },
+   {
+    "type": "产地冒充",
+    "note": "俄料、青海料当新疆料卖，肉眼难分，看来源和证书产地说明"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "按 GB/T 38821-2020，和田玉是矿物学名称，不表示新疆产地；产地需要另外写明"
+  },
+  "meaning": {
+   "tags": [
+    "君子",
+    "温润"
+   ],
+   "text": "中国玉文化有“君子比德于玉”的传统，常用和田玉的温润比喻人的品格。"
+  },
+  "story": "《礼记·聘义》记孔子语：“君子比德于玉焉，温润而泽，仁也。”后世常用这句话概括和田玉温润的审美。",
+  "care": "避免磕碰和接触化学品，平时用软布擦拭即可。",
+  "price_band": "高",
+  "sources": [
+   "GB/T 38821-2020《和田玉 鉴定与分类》（未取得原文，据二手转述：https://www.chinesestandard.net/Related.aspx/GBT38821-2020 、https://skyjems.ca/pages/encyclopedia-hetian）",
+   "GB/T 16552-2017《珠宝玉石 名称》（摘录 https://www.chinesestandard.net/PDF.aspx/GBT16552-2017）",
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json",
+   "《礼记·聘义》",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "treatments": "mid",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "mid",
+   "care": "mid",
+   "price_band": "mid"
+  }
+ },
+ {
+  "id": "feicui",
+  "name": "翡翠",
+  "std": "翡翠",
+  "category": "jade",
+  "aliases": [
+   "缅甸玉",
+   "硬玉",
+   "危料",
+   "危地马拉翡翠",
+   "翡翠玉"
+  ],
+  "summary": "以硬玉为主的玉石，颜色和种水跨度极大；B 货、C 货必须标明。",
+  "look": "绿、紫、黄、红、白、黑（墨翠）等色，透明度从玻璃种到豆种。玻璃光泽，抛光好的表面很亮。颜色常呈不均匀的色根、飘花。",
+  "identify": [
+   "表面或内部可见细小片状闪光，俗称“翠性”或“苍蝇翅”",
+   "颜色常不均匀，有色根、色带",
+   "抛光表面光泽强，敲击声清脆",
+   "B 货（酸洗注胶）光泽偏蜡，放大可见表面网状酸蚀纹",
+   "C 货（染色）颜色沿颗粒缝隙呈丝网状分布"
+  ],
+  "confusables": [
+   {
+    "id": "shuimo",
+    "name": "水沫玉",
+    "how": "内部有白色泡沫状絮团，没有翠性，手掂偏轻"
+   },
+   {
+    "id": "shiyingyan-yu",
+    "name": "马来玉（染色石英岩）",
+    "how": "颜色鲜绿均匀但呈丝网状，颗粒感明显，没有色根"
+   },
+   {
+    "id": "lv-yusui",
+    "name": "澳玉（绿玉髓）",
+    "how": "颜色均匀苹果绿，没有翠性"
+   },
+   {
+    "id": "dongling-yu",
+    "name": "东陵玉",
+    "how": "转动可见细小闪光片，是云母不是翠性"
+   },
+   {
+    "id": "xiu-yu",
+    "name": "岫玉",
+    "how": "较软易划伤，光泽偏蜡"
+   }
+  ],
+  "dims": {
+   "color": [
+    "阳绿",
+    "帝王绿",
+    "晴水",
+    "紫罗兰",
+    "黄翡",
+    "红翡",
+    "墨翠",
+    "白冰"
+   ],
+   "clarity": [
+    "玻璃种",
+    "冰种",
+    "糯种",
+    "豆种"
+   ],
+   "texture": [
+    "种老",
+    "种嫩",
+    "起胶",
+    "起荧"
+   ],
+   "purity": [
+    "干净",
+    "有棉",
+    "有纹"
+   ],
+   "origin": [
+    "缅甸",
+    "危地马拉"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "A货（天然）",
+    "B货（酸洗注胶）",
+    "C货（染色）",
+    "B+C货",
+    "加热",
+    "镀膜"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ],
+   "pattern": [
+    "飘花"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "种水足色正",
+    "desc": "透明度高、底子干净，颜色浓正均匀"
+   },
+   {
+    "level": 2,
+    "label": "冰糯有色",
+    "desc": "冰种或糯种，有少量棉、色带"
+   },
+   {
+    "level": 3,
+    "label": "豆种多杂",
+    "desc": "颗粒感明显，透明度低，有杂质或裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12,
+    14
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "酸洗注胶（B 货）",
+    "note": "常见，光泽偏蜡、放大有酸蚀网纹，必须标明"
+   },
+   {
+    "type": "染色（C 货）",
+    "note": "常见，颜色呈丝网状，必须标明"
+   },
+   {
+    "type": "浸蜡",
+    "note": "传统抛光后浸蜡，较普遍"
+   },
+   {
+    "type": "加热（焗色）",
+    "note": "黄褐色料加热变红翡，颜色发干"
+   },
+   {
+    "type": "镀膜",
+    "note": "表面镀绿膜冒充高色，颜色浮在表面，膜会刮掉"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "B 货、C 货属处理翡翠，按 GB/T 16552 应标为‘翡翠（处理）’"
+  },
+  "meaning": {
+   "tags": [
+    "吉祥",
+    "温润"
+   ],
+   "text": "翡翠清代以来进入中国玉文化，绿色常被看作生机与吉祥的颜色。"
+  },
+  "story": "“翡翠”原是鸟名，《说文解字》释“翡，赤羽雀也”“翠，青羽雀也”，后来借来称呼红、绿两色的缅甸硬玉。",
+  "care": "避免磕碰和高温；B 货遇热、遇化学品更容易变色。",
+  "price_band": "高",
+  "sources": [
+   "GB/T 16552-2017《珠宝玉石 名称》（摘录 https://www.chinesestandard.net/PDF.aspx/GBT16552-2017）",
+   "kb/taxonomy.json",
+   "《说文解字》",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "treatments": "mid",
+   "compliance": "mid",
+   "meaning": "mid",
+   "story": "mid",
+   "care": "mid",
+   "price_band": "mid"
+  }
+ },
+ {
+  "id": "xiu-yu",
+  "name": "岫玉",
+  "std": "蛇纹石玉",
+  "category": "jade",
+  "aliases": [
+   "岫岩玉",
+   "岫玉",
+   "蛇纹石",
+   "蛇纹玉"
+  ],
+  "summary": "以蛇纹石为主的玉石，主产辽宁岫岩，颜色多为黄绿，价格亲民。",
+  "look": "黄绿、碧绿、白色为主，半透明，蜡状到油脂光泽，质地细腻。常带白色絮状物或黑点，质地较软。",
+  "identify": [
+   "颜色多为均匀的黄绿到碧绿",
+   "常见白色云絮或黑色小点",
+   "硬度较低，表面易有细划痕",
+   "同大小比和田玉略轻，可用电子秤称重对比"
+  ],
+  "confusables": [
+   {
+    "id": "hetian-yu",
+    "name": "和田玉",
+    "how": "和田玉更硬、更重，油脂光泽更强"
+   },
+   {
+    "id": "",
+    "name": "河磨玉",
+    "how": "“河磨玉”多指岫岩产的透闪石玉（软玉），和蛇纹石岫玉不是一种料"
+   },
+   {
+    "id": "feicui",
+    "name": "翡翠",
+    "how": "翡翠有翠性闪光，硬，敲声脆"
+   },
+   {
+    "id": "qilian",
+    "name": "祁连玉",
+    "how": "同为蛇纹石玉，祁连玉颜色更深、常带黑斑"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄绿",
+    "碧绿",
+    "白"
+   ],
+   "clarity": [
+    "半透",
+    "微透"
+   ],
+   "purity": [
+    "干净",
+    "絮",
+    "黑点"
+   ],
+   "origin": [
+    "辽宁岫岩"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "浸蜡",
+    "染色",
+    "做旧"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色匀透亮",
+    "desc": "颜色均匀，透明度好，无絮无黑点"
+   },
+   {
+    "level": 2,
+    "label": "少絮少点",
+    "desc": "有少量白絮或黑点"
+   },
+   {
+    "level": 3,
+    "label": "杂多有裂",
+    "desc": "絮、黑点多，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "浸蜡",
+    "note": "抛光后浸蜡较常见"
+   },
+   {
+    "type": "做旧/染色",
+    "note": "岫玉常被染色、酸蚀做旧冒充老玉、“高古玉”，颜色浮、沁色不自然"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "温润",
+    "和顺"
+   ],
+   "text": "岫玉是中国传统玉料之一，取玉的温润和顺之意。"
+  },
+  "story": "",
+  "care": "较软，避免与硬物摩擦。",
+  "price_band": "低",
+  "sources": [
+   "kb/taxonomy.json",
+   "常识",
+   "审校 kb/data/review/batch1.json"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "treatments": "mid",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "dushan-yu",
+  "name": "独山玉",
+  "std": "独山玉",
+  "category": "jade",
+  "aliases": [
+   "南阳玉",
+   "独玉"
+  ],
+  "summary": "产自河南南阳独山的多矿物玉石，颜色多样，常被称为中国四大名玉之一。",
+  "look": "绿、白、紫、黄、黑等多色常在一块中交错，微透明到半透明，玻璃到油脂光泽，质地细密、硬度较高。",
+  "identify": [
+   "一块料里常有两三种颜色斑杂交错",
+   "绿色和白色相间最常见",
+   "透光可见细粒结构",
+   "硬度较高，不易划伤"
+  ],
+  "confusables": [
+   {
+    "id": "feicui",
+    "name": "翡翠",
+    "how": "独山玉没有翠性闪光，颜色呈斑杂状而非色根"
+   },
+   {
+    "id": "dongling-yu",
+    "name": "东陵玉",
+    "how": "东陵转动有云母闪光，颜色单一"
+   },
+   {
+    "id": "shiyingyan-yu",
+    "name": "染色石英岩",
+    "how": "颜色均匀、浮在颗粒缝里，没有独玉多色斑杂交错的过渡"
+   }
+  ],
+  "dims": {
+   "color": [
+    "绿独玉",
+    "白独玉",
+    "紫独玉",
+    "黄独玉",
+    "黑独玉",
+    "天蓝",
+    "杂色"
+   ],
+   "clarity": [
+    "半透",
+    "微透"
+   ],
+   "origin": [
+    "河南南阳独山"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色",
+    "注胶"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色纯质细",
+    "desc": "颜色正、色块分明，质地细腻，无裂"
+   },
+   {
+    "level": 2,
+    "label": "色杂质细",
+    "desc": "多色交杂但质地细"
+   },
+   {
+    "level": 3,
+    "label": "色暗有裂",
+    "desc": "颜色发暗，有裂或杂质"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "有染绿冒充绿独玉的，颜色浮在颗粒间"
+   },
+   {
+    "type": "注胶",
+    "note": "裂多的料可能注胶，裂隙里有胶状反光"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "温润",
+    "吉祥"
+   ],
+   "text": "独山玉是南阳地方名玉，取玉的温润吉祥之意。"
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "中",
+  "sources": [
+   "检索：独山玉矿物组成与致色（2024，https://www.sciengine.com/doi/pdfView/14C1032A40B84A52A720AB4461E75835）",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low"
+  }
+ },
+ {
+  "id": "dongling-yu",
+  "name": "东陵玉",
+  "std": "石英岩玉",
+  "category": "jade",
+  "aliases": [
+   "东陵石",
+   "印度玉",
+   "砂金石英岩"
+  ],
+  "summary": "含铬云母等片状矿物的石英岩，转动可见细碎闪光，以绿色最常见。",
+  "look": "绿色为主，也有蓝、红色。微透到半透明，玻璃光泽，颗粒状结构，转动时有细小亮片闪光（砂金效应）。",
+  "identify": [
+   "转动可见细碎亮片闪光，分布不均匀",
+   "放大可见绿色小片状云母",
+   "颗粒感明显，像细砂糖",
+   "颜色过于鲜艳均匀的可能染色"
+  ],
+  "confusables": [
+   {
+    "id": "jinsha",
+    "name": "金沙石（玻璃）",
+    "how": "金沙石里的金星是规则三角或六边形小片，分布均匀，常有气泡；东陵亮片不规则"
+   },
+   {
+    "id": "feicui",
+    "name": "翡翠",
+    "how": "翡翠有翠性和色根，东陵是均匀绿色加闪片"
+   },
+   {
+    "id": "lv-yusui",
+    "name": "澳玉",
+    "how": "澳玉细腻无颗粒、无闪片"
+   },
+   {
+    "id": "shiyingyan-yu",
+    "name": "马来玉",
+    "how": "马来玉是染色石英岩，没有闪片，颜色呈丝网状"
+   }
+  ],
+  "dims": {
+   "color": [
+    "绿东陵",
+    "蓝东陵",
+    "红东陵"
+   ],
+   "effect": [
+    "砂金"
+   ],
+   "clarity": [
+    "半透",
+    "微透"
+   ],
+   "origin": [
+    "印度"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色匀闪多",
+    "desc": "颜色均匀，闪片细密明显"
+   },
+   {
+    "level": 2,
+    "label": "色淡闪少",
+    "desc": "颜色偏淡，闪片较少"
+   },
+   {
+    "level": 3,
+    "label": "色杂有裂",
+    "desc": "颜色不匀，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "绿东陵多为天然；蓝、红东陵和颜色特别艳的多经染色"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "“东陵石”能否作为规范定名、规范名写“石英岩玉”还是“石英岩”尚未在标准原文中核实；“砂金石”一词与玻璃金沙石易混，展示时避免单用"
+  },
+  "meaning": {
+   "tags": [
+    "生机",
+    "吉祥"
+   ],
+   "text": "绿色闪光如春日草木，常取生机勃勃之意。"
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "低",
+  "sources": [
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "treatments": "mid",
+   "compliance": "mid",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "shiyingyan-yu",
+  "name": "石英岩玉",
+  "std": "石英岩玉",
+  "category": "jade",
+  "aliases": [
+   "京白玉",
+   "密玉",
+   "贵翠"
+  ],
+  "summary": "由细粒石英组成的玉石，京白玉、密玉、贵翠都属此类；“马来玉”是染色石英岩。",
+  "look": "粒状结构，玻璃光泽，微透到半透明。京白玉白色，密玉、贵翠偏绿或蓝绿；马来玉颜色鲜绿均匀，是染出来的。",
+  "identify": [
+   "透光看像细砂糖一样的颗粒",
+   "光泽偏玻璃感，不如翡翠、和田玉温润",
+   "马来玉颜色艳绿均匀，放大看颜色沿颗粒缝呈丝网状",
+   "天然密玉、贵翠颜色偏灰绿、深浅不匀"
+  ],
+  "confusables": [
+   {
+    "id": "feicui",
+    "name": "翡翠",
+    "how": "马来玉常冒充翡翠：翡翠有翠性和色根，马来玉颜色呈丝网状、底子过于均匀"
+   },
+   {
+    "id": "hetian-yu",
+    "name": "和田玉",
+    "how": "京白玉玻璃光泽强、颗粒感明显；和田玉油脂光泽、细腻"
+   },
+   {
+    "id": "nanhong",
+    "name": "南红",
+    "how": "“南红色”染色石英岩不是南红，颜色呈丝网状，无点状红色"
+   },
+   {
+    "id": "dongling-yu",
+    "name": "东陵玉",
+    "how": "东陵玉含云母闪片"
+   },
+   {
+    "id": "huanglong-yu",
+    "name": "黄龙玉",
+    "how": "染黄石英岩颜色均匀呆板，颗粒感强"
+   }
+  ],
+  "dims": {
+   "color": [
+    "白",
+    "绿",
+    "蓝绿",
+    "黄",
+    "红"
+   ],
+   "clarity": [
+    "半透",
+    "微透"
+   ],
+   "origin": [
+    "北京（京白玉）",
+    "河南新密（密玉）",
+    "贵州（贵翠）"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "细腻色匀",
+    "desc": "颗粒细，透明度好，颜色自然均匀"
+   },
+   {
+    "level": 2,
+    "label": "粒粗少杂",
+    "desc": "颗粒较明显，有少量杂质"
+   },
+   {
+    "level": 3,
+    "label": "干涩有裂",
+    "desc": "颗粒粗、发干，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "马来玉（染色石英岩的商业名）以及“南红色”“黄龙玉色”等鲜艳石英岩大多是染色，必须标“染色”"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "马来玉等染色料应标‘石英岩玉（染色）’，不能以翡翠、南红名义出售"
+  },
+  "meaning": {
+   "tags": [
+    "纯净",
+    "清雅"
+   ],
+   "text": "白色京白玉洁净素雅，常取纯净之意。"
+  },
+  "story": "",
+  "care": "染色料避免长时间泡水和暴晒。",
+  "price_band": "低",
+  "sources": [
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "treatments": "mid",
+   "compliance": "mid",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "huanglong-yu",
+  "name": "黄龙玉",
+  "std": "石英质玉",
+  "category": "jade",
+  "aliases": [
+   "黄龙玉",
+   "龙陵黄龙玉"
+  ],
+  "summary": "产自云南龙陵的黄色石英质玉，颜色以黄为主。",
+  "look": "黄色为主，也有红、白、黑。微透明到半透明，蜡状到油脂光泽，质地细腻。好料颜色浓黄、透度好。",
+  "identify": [
+   "颜色多为深浅不一的黄色，常带白、红色过渡",
+   "光泽介于蜡状和玻璃之间",
+   "硬度高，不易划伤",
+   "颜色过于均匀鲜黄的可能是染色石英岩"
+  ],
+  "confusables": [
+   {
+    "id": "",
+    "name": "黄蜡石",
+    "how": "黄蜡石是广东、广西等地的传统叫法，范围更宽，和龙陵黄龙玉不是一回事"
+   },
+   {
+    "id": "jinsi-yu",
+    "name": "金丝玉",
+    "how": "同为石英质玉，金丝玉产新疆，颜色更偏橙黄"
+   },
+   {
+    "id": "shiyingyan-yu",
+    "name": "染黄石英岩",
+    "how": "颗粒感强，颜色均匀呆板"
+   },
+   {
+    "id": "mila",
+    "name": "蜜蜡",
+    "how": "蜜蜡很轻、手感温；黄龙玉重、凉手"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄",
+    "红",
+    "白",
+    "黑"
+   ],
+   "clarity": [
+    "冻料",
+    "半透",
+    "微透"
+   ],
+   "origin": [
+    "云南龙陵"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色",
+    "加热"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色浓质透",
+    "desc": "颜色浓黄，透明度好，无裂"
+   },
+   {
+    "level": 2,
+    "label": "色淡少瑕",
+    "desc": "颜色偏淡，有少量杂质"
+   },
+   {
+    "level": 3,
+    "label": "色杂有裂",
+    "desc": "颜色发灰，裂纹明显"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "有染黄石英岩冒充，要标明"
+   },
+   {
+    "type": "加热",
+    "note": "红色黄龙玉多由黄色料加热而来，颜色发干"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "吉祥",
+    "温润"
+   ],
+   "text": "黄色在传统中是尊贵的颜色，常取吉祥之意。"
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "低",
+  "sources": [
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "treatments": "low",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low"
+  }
+ },
+ {
+  "id": "jinsi-yu",
+  "name": "金丝玉",
+  "std": "石英质玉",
+  "category": "jade",
+  "aliases": [
+   "金丝玉",
+   "新疆金丝玉"
+  ],
+  "summary": "产自新疆戈壁的石英质玉，名字带“玉”但不是和田玉。",
+  "look": "黄、红、白、褐色为主，微透到半透明，蜡状到玻璃光泽，质地细腻。戈壁料表面常有风蚀皮。部分料内部有丝状纹理，因此叫金丝玉。",
+  "identify": [
+   "颜色多为暖黄、橙红",
+   "光泽比和田玉更亮，带玻璃感",
+   "硬度高，不易划伤",
+   "戈壁料表面有风蚀凹坑和光亮外皮"
+  ],
+  "confusables": [
+   {
+    "id": "hetian-yu",
+    "name": "和田玉",
+    "how": "和田玉是透闪石软玉，油脂光泽、更温润；金丝玉是石英质，光泽偏玻璃"
+   },
+   {
+    "id": "huanglong-yu",
+    "name": "黄龙玉",
+    "how": "同为石英质玉，黄龙玉产云南龙陵"
+   },
+   {
+    "id": "alashan",
+    "name": "阿拉善玛瑙",
+    "how": "阿拉善料更透、多见缠丝和风景纹"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄",
+    "红",
+    "白",
+    "褐"
+   ],
+   "clarity": [
+    "冻料",
+    "半透",
+    "微透"
+   ],
+   "origin": [
+    "新疆",
+    "戈壁料"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色艳质细",
+    "desc": "颜色鲜明，质地细腻，无裂"
+   },
+   {
+    "level": 2,
+    "label": "色淡少瑕",
+    "desc": "颜色偏淡，有少量杂质"
+   },
+   {
+    "level": 3,
+    "label": "色杂有裂",
+    "desc": "颜色发灰，裂纹明显"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "有染黄、染红的，颜色浮在裂纹里"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "不能以“和田玉”名义出售"
+  },
+  "meaning": {
+   "tags": [
+    "自然",
+    "温润"
+   ],
+   "text": "戈壁中天然出产的美石，取自然温润之意。"
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "低",
+  "sources": [
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "compliance": "high",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low"
+  }
+ },
+ {
+  "id": "lantian-yu",
+  "name": "蓝田玉",
+  "std": "蓝田玉",
+  "category": "jade",
+  "aliases": [
+   "蓝田玉"
+  ],
+  "summary": "产自陕西蓝田的玉石，现代蓝田玉多为蛇纹石化大理岩，规范名就是“蓝田玉”。",
+  "look": "白、米黄、浅绿、黄绿等色交错成斑块或条带，微透明到不透明，蜡状到玻璃光泽。",
+  "identify": [
+   "多种浅色斑块、条带交错",
+   "透光可见细粒结构",
+   "硬度较低，表面易有划痕"
+  ],
+  "confusables": [
+   {
+    "id": "hetian-yu",
+    "name": "和田玉",
+    "how": "和田玉更硬、更油润，颜色更均匀"
+   },
+   {
+    "id": "xiu-yu",
+    "name": "岫玉",
+    "how": "岫玉黄绿均匀，蓝田玉色块交杂"
+   },
+   {
+    "id": "afuhan-yu",
+    "name": "阿富汗玉",
+    "how": "同含大理岩成分，阿富汗玉多为白色单一"
+   }
+  ],
+  "dims": {
+   "color": [
+    "白",
+    "米黄",
+    "浅绿",
+    "黄绿"
+   ],
+   "pattern": [
+    "色块",
+    "条带"
+   ],
+   "clarity": [
+    "微透",
+    "不透"
+   ],
+   "origin": [
+    "陕西蓝田"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色",
+    "打蜡"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色美质细",
+    "desc": "颜色搭配好看，质地细腻，无裂"
+   },
+   {
+    "level": 2,
+    "label": "色常有瑕",
+    "desc": "颜色普通，有少量杂质"
+   },
+   {
+    "level": 3,
+    "label": "色杂有裂",
+    "desc": "颜色发灰，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色/浸蜡",
+    "note": "有染色增艳和浸蜡增亮的"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "温润",
+    "雅致"
+   ],
+   "text": "蓝田玉在古诗文中常被提及，带有浓厚的文人意趣。"
+  },
+  "story": "李商隐《锦瑟》有“蓝田日暖玉生烟”的诗句，蓝田产玉因此广为人知；不过古代“蓝田玉”和今天的蓝田玉是否是同一种料，学界有不同看法。",
+  "care": "较软，避免与硬物摩擦；含大理岩成分，怕酸。",
+  "price_band": "低",
+  "sources": [
+   "检索：现代蓝田玉为蛇纹石化大理岩（青龙玉对比研究，jogg.cug.edu.cn）",
+   "kb/taxonomy.json",
+   "李商隐《锦瑟》",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "meaning": "low",
+   "story": "mid",
+   "care": "mid",
+   "price_band": "low"
+  }
+ },
+ {
+  "id": "afuhan-yu",
+  "name": "阿富汗玉",
+  "std": "大理石",
+  "category": "jade",
+  "aliases": [
+   "阿富汗玉"
+  ],
+  "summary": "名字带“玉”，其实是大理石（主要成分方解石），常被冒充和田玉。",
+  "look": "白、乳白、浅黄色，微透明到半透明，蜡状到玻璃光泽。透光可见粒状结构或层状条纹，质地较软。",
+  "identify": [
+   "透光可见较粗的颗粒和平行层纹",
+   "硬度低，表面容易出现细划痕",
+   "光泽偏干，不如和田玉油润",
+   "上手比和田玉轻，表面用钢针能划出痕（硬度约 3，只在孔口试）"
+  ],
+  "confusables": [
+   {
+    "id": "hetian-yu",
+    "name": "和田玉",
+    "how": "和田玉硬、油润、看不到层纹；阿富汗玉软、有层纹"
+   },
+   {
+    "id": "shiyingyan-yu",
+    "name": "京白玉",
+    "how": "京白玉更硬，玻璃光泽强"
+   },
+   {
+    "id": "lantian-yu",
+    "name": "蓝田玉",
+    "how": "蓝田玉多色交杂"
+   }
+  ],
+  "dims": {
+   "color": [
+    "白",
+    "乳白",
+    "浅黄"
+   ],
+   "pattern": [
+    "层纹"
+   ],
+   "clarity": [
+    "半透",
+    "微透"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "白净少纹",
+    "desc": "颜色白净，层纹不明显"
+   },
+   {
+    "level": 2,
+    "label": "有纹有杂",
+    "desc": "可见层纹或杂质"
+   },
+   {
+    "level": 3,
+    "label": "发灰有裂",
+    "desc": "颜色发灰，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "染成糖色、黄色冒充和田玉"
+   },
+   {
+    "type": "浸蜡",
+    "note": "常浸蜡增亮"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "规范名为大理石，不能以“和田玉”或“玉”的名义冒充；汉白玉也是大理石（建筑石材），和阿富汗玉不是同一种料；“雅安玉”的成分未核实，不作别名"
+  },
+  "meaning": {
+   "tags": [
+    "纯净"
+   ],
+   "text": "白色石料素雅洁净，汉白玉也是传统宫殿和石雕的常用石材。"
+  },
+  "story": "",
+  "care": "怕酸、怕磕碰，避免接触醋、清洁剂。",
+  "price_band": "低",
+  "sources": [
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "compliance": "mid",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "mid",
+   "story": "low"
+  }
+ },
+ {
+  "id": "shuhua",
+  "name": "树化玉",
+  "std": "硅化木",
+  "category": "jade",
+  "aliases": [
+   "硅化木",
+   "木化石",
+   "玉化木"
+  ],
+  "summary": "树木被二氧化硅替代形成的化石，规范名“硅化木”，玉化好的叫树化玉。",
+  "look": "保留木头的纹理、年轮和纤维，黄、褐、灰、绿等色。玉化程度高的半透明，蜡状到玻璃光泽，手掂很沉。",
+  "identify": [
+   "能看到顺纹的木质纤维、年轮或虫孔",
+   "硬度高，很沉，摸上去冰凉",
+   "玉化好的部分半透明、光泽强"
+  ],
+  "confusables": [
+   {
+    "id": "yinchen",
+    "name": "阴沉木",
+    "how": "阴沉木仍是木头，比树化玉轻得多，有木质手感和气味"
+   },
+   {
+    "id": "heitan",
+    "name": "黑檀等木珠",
+    "how": "木头轻、有木香，导管孔明显"
+   },
+   {
+    "id": "shuzhi",
+    "name": "树脂仿品",
+    "how": "很轻，有气泡"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄",
+    "褐",
+    "灰",
+    "绿"
+   ],
+   "pattern": [
+    "木纹",
+    "年轮",
+    "虫孔"
+   ],
+   "texture": [
+    "玉化",
+    "半玉化"
+   ],
+   "origin": [
+    "缅甸",
+    "印度尼西亚"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "注胶",
+    "染色",
+    "打蜡"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "玉化纹清",
+    "desc": "玉化好、半透明，木纹清晰"
+   },
+   {
+    "level": 2,
+    "label": "半玉化",
+    "desc": "局部玉化，透明度一般"
+   },
+   {
+    "level": 3,
+    "label": "石化发干",
+    "desc": "不透明，光泽发干"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12,
+    14
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "注胶/染色",
+    "note": "裂多的料常注胶，颜色艳的可能染色"
+   },
+   {
+    "type": "打蜡",
+    "note": "表面打蜡增亮较常见"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "长久",
+    "自然"
+   ],
+   "text": "木经漫长岁月化而为石，常被借喻为坚久不变。"
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "低",
+  "sources": [
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "low",
+   "grades": "low",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low"
+  }
+ },
+ {
+  "id": "taishan-yu",
+  "name": "台山玉",
+  "std": "石英质玉（含高岭石/地开石）",
+  "category": "jade",
+  "aliases": [
+   "广东台山玉",
+   "台山玉"
+  ],
+  "summary": "产自广东台山的石英质玉，研究显示主要矿物为石英和高岭石，颜色由铁致色。",
+  "look": "黄色到红色系为主，也有白、褐色；褐黄到褐红的部位含铁多、颜色更深。属细粒石英岩，结晶度比玉髓高，质地细腻。",
+  "identify": [
+   "颜色多为黄、红暖色调，深浅过渡自然",
+   "透光看是细粒结构，比玛瑙、玉髓略显颗粒",
+   "颜色过于均匀鲜艳的可能是染色石英岩"
+  ],
+  "confusables": [
+   {
+    "id": "taishan",
+    "name": "泰山玉",
+    "how": "名字只差一字：泰山玉产山东，是绿色系的蛇纹石玉；台山玉产广东，多为黄红色"
+   },
+   {
+    "id": "huanglong-yu",
+    "name": "黄龙玉",
+    "how": "同为黄色石英质玉，产地不同"
+   },
+   {
+    "id": "shiyingyan-yu",
+    "name": "染色石英岩",
+    "how": "颜色均匀呆板、浮在颗粒缝里"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黄",
+    "红",
+    "白",
+    "褐"
+   ],
+   "origin": [
+    "广东台山"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色浓质细",
+    "desc": "颜色浓、质地细腻，无明显裂"
+   },
+   {
+    "level": 2,
+    "label": "色杂有裂",
+    "desc": "颜色发杂发灰，或有裂"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "有染色石英岩冒充的说法，颜色浮在颗粒缝里"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [],
+   "text": ""
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "",
+  "sources": [
+   "中国地质大学《宝石和宝石学杂志》台山玉研究 https://jogg.cug.edu.cn/cn/article/id/83a39e46-4f2d-4a9a-a9b9-69764db16105",
+   "台山玉谱学研究 https://www.researching.cn/ArticlePdf/m00026/2020/40/3/2020-03-0956.pdf",
+   "kb/taxonomy.json"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "low",
+   "confusables": "mid",
+   "dims": "low",
+   "meaning": "low",
+   "care": "low",
+   "story": "low",
+   "std": "mid",
+   "grades": "low",
+   "treatments": "low"
+  }
+ },
+ {
+  "id": "qilian",
+  "name": "祁连玉",
+  "std": "蛇纹石玉",
+  "category": "jade",
+  "aliases": [
+   "酒泉玉",
+   "夜光杯玉",
+   "祁连玉"
+  ],
+  "summary": "产自甘肃祁连山一带的蛇纹石玉，酒泉夜光杯就用这类料。",
+  "look": "墨绿、黑绿到黄绿色，常带黑色斑点或条纹，微透明到不透明，蜡状到油脂光泽。",
+  "identify": [
+   "颜色深绿到墨绿，带黑色斑块或条纹",
+   "光泽偏蜡状",
+   "较软，表面易有划痕"
+  ],
+  "confusables": [
+   {
+    "id": "hetian-yu",
+    "name": "和田碧玉",
+    "how": "和田碧玉更硬、更油润，黑点小而散"
+   },
+   {
+    "id": "xiu-yu",
+    "name": "岫玉",
+    "how": "岫玉多为浅黄绿、透明度更高"
+   },
+   {
+    "id": "taishan",
+    "name": "泰山玉",
+    "how": "同为蛇纹石玉，外观相近，肉眼难分；祁连玉常带黑色斑块、条纹，只能结合来源判断"
+   }
+  ],
+  "dims": {
+   "color": [
+    "墨绿",
+    "黑绿",
+    "黄绿"
+   ],
+   "pattern": [
+    "黑斑",
+    "条纹"
+   ],
+   "clarity": [
+    "微透",
+    "不透"
+   ],
+   "origin": [
+    "甘肃酒泉",
+    "祁连山"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色",
+    "做旧"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色浓质细",
+    "desc": "颜色浓绿，质地细，无裂"
+   },
+   {
+    "level": 2,
+    "label": "斑杂有瑕",
+    "desc": "黑斑较多或有杂质"
+   },
+   {
+    "level": 3,
+    "label": "发灰有裂",
+    "desc": "颜色发灰，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "有染黑、染深绿的，颜色浮在表面"
+   },
+   {
+    "type": "做旧",
+    "note": "有仿古做旧的，沁色浮、痕迹均匀"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "古韵",
+    "雅致"
+   ],
+   "text": "因唐诗中的夜光杯而闻名，带有西北边塞的诗意。"
+  },
+  "story": "唐代王翰《凉州词》有“葡萄美酒夜光杯”一句。酒泉夜光杯用祁连山玉料雕成，其雕刻技艺已列入国家级非物质文化遗产。",
+  "care": "较软，避免与硬物摩擦。",
+  "price_band": "低",
+  "sources": [
+   "中国非物质文化遗产网 https://www.ihchina.cn/project_details/14007.html",
+   "王翰《凉州词》",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "meaning": "low",
+   "story": "mid",
+   "care": "mid",
+   "price_band": "low"
+  }
+ },
+ {
+  "id": "meihua",
+  "name": "梅花玉",
+  "std": "梅花玉",
+  "category": "jade",
+  "aliases": [
+   "河南梅花玉",
+   "汝阳梅花玉"
+  ],
+  "summary": "产自河南的杏仁状火山岩，黑底上散布梅花状色斑。",
+  "look": "黑色或墨绿色底，分布红、白、绿、黄色的圆点或星形斑块，像梅花。不透明，抛光后蜡状到玻璃光泽。",
+  "identify": [
+   "黑底上有界线清楚的圆形或星形色斑",
+   "色斑是玛瑙、绿帘石、绿泥石、方解石等充填气孔形成的，颜色各异",
+   "不透明，手掂较沉"
+  ],
+  "confusables": [
+   {
+    "id": "heiyao",
+    "name": "雪花黑曜石",
+    "how": "雪花是白色放射状小花，玻璃光泽强"
+   },
+   {
+    "id": "bi-shi",
+    "name": "豹纹碧石",
+    "how": "底色较浅，斑点颜色单一"
+   },
+   {
+    "id": "shuzhi",
+    "name": "树脂仿梅花玉",
+    "how": "很轻，斑点呆板、有气泡"
+   }
+  ],
+  "dims": {
+   "color": [
+    "黑底",
+    "墨绿底"
+   ],
+   "pattern": [
+    "梅花斑",
+    "星斑"
+   ],
+   "clarity": [
+    "不透"
+   ],
+   "origin": [
+    "河南汝阳"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "斑多色艳",
+    "desc": "梅花斑多而清楚，颜色丰富"
+   },
+   {
+    "level": 2,
+    "label": "斑少色单",
+    "desc": "斑点较少或颜色单一"
+   },
+   {
+    "level": 3,
+    "label": "斑散有裂",
+    "desc": "斑点模糊，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "仿品",
+    "note": "树脂或染色石仿梅花玉，斑点呆板"
+   },
+   {
+    "type": "打蜡",
+    "note": "表面打蜡增亮"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "坚韧",
+    "清雅"
+   ],
+   "text": "斑纹如梅花，借梅花傲雪的传统意象，取坚韧清雅之意。"
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "低",
+  "sources": [
+   "头条科普：梅花玉成因与充填矿物 https://www.toutiao.com/zixun/7501844138795583525/",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "meaning": "mid",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low"
+  }
+ },
+ {
+  "id": "shuimo",
+  "name": "水沫玉",
+  "std": "钠长石玉",
+  "category": "jade",
+  "aliases": [
+   "水沫子",
+   "钠长石玉"
+  ],
+  "summary": "以钠长石为主的玉石，透明度高，常被当作翡翠冰种出售。",
+  "look": "无色到白色，常带蓝绿色飘花，透明度高，像冰种翡翠。油脂到玻璃光泽，内部常有白色絮团。",
+  "identify": [
+   "内部可见白色小絮团，像水里的泡沫",
+   "没有翡翠的片状闪光（翠性）",
+   "手掂比同大小翡翠轻",
+   "光泽比翡翠略弱"
+  ],
+  "confusables": [
+   {
+    "id": "feicui",
+    "name": "冰种翡翠",
+    "how": "翡翠有翠性、更重、光泽更强；水沫玉有白色泡沫状絮团"
+   },
+   {
+    "id": "shiyingyan-yu",
+    "name": "石英岩玉",
+    "how": "石英岩颗粒感明显，无泡沫絮"
+   },
+   {
+    "id": "boli",
+    "name": "玻璃",
+    "how": "玻璃气泡是圆形的，透明度完全一致"
+   }
+  ],
+  "dims": {
+   "color": [
+    "白",
+    "无色",
+    "蓝绿飘花"
+   ],
+   "clarity": [
+    "冰种",
+    "糯种"
+   ],
+   "inclusion": [
+    "水沫",
+    "飘花"
+   ],
+   "origin": [
+    "缅甸"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色",
+    "注胶"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "冰透花美",
+    "desc": "透明度高，飘花好看，絮少"
+   },
+   {
+    "level": 2,
+    "label": "微浊絮多",
+    "desc": "透明度一般，絮团较多"
+   },
+   {
+    "level": 3,
+    "label": "浑浊有裂",
+    "desc": "发浑，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "有染蓝绿色飘花的，颜色浮在絮团旁"
+   },
+   {
+    "type": "注胶",
+    "note": "有注胶提升透明度的，光泽偏蜡"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "不能以“翡翠”名义出售"
+  },
+  "meaning": {
+   "tags": [
+    "纯净",
+    "清雅"
+   ],
+   "text": "透亮如冰水，常取清透纯净之意。"
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "中",
+  "sources": [
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "mid",
+   "compliance": "mid",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low"
+  }
+ },
+ {
+  "id": "yinzhang",
+  "name": "印章石",
+  "std": "叶蜡石/地开石等",
+  "category": "jade",
+  "aliases": [
+   "印石"
+  ],
+  "summary": "寿山、青田、昌化、巴林等印章石的统称，质软，做珠子少见。",
+  "look": "质地细腻柔软，蜡状光泽，微透到不透明，颜色多样。鸡血石是白、黄、灰色底上分布鲜红色斑块。",
+  "identify": [
+   "硬度很低，摸着滑腻有蜡感",
+   "光泽温和，像蜡",
+   "鸡血石的红色呈片状、条带状，颜色深浅自然",
+   "颜色过于均匀鲜红、手感轻的多为树脂仿品"
+  ],
+  "confusables": [
+   {
+    "id": "shuzhi",
+    "name": "树脂仿鸡血石",
+    "how": "红色均匀呆板，透明度一致，较轻，有气泡"
+   },
+   {
+    "id": "nanhong",
+    "name": "南红",
+    "how": "南红硬、玻璃到蜡状光泽，红色是点状聚集"
+   }
+  ],
+  "dims": {
+   "color": [
+    "鸡血红",
+    "黄",
+    "白",
+    "灰"
+   ],
+   "clarity": [
+    "冻地",
+    "半透",
+    "不透"
+   ],
+   "origin": [
+    "浙江昌化（昌化石、鸡血石）",
+    "内蒙古巴林（巴林石）",
+    "浙江青田（青田石）",
+    "福建寿山（寿山石）"
+   ],
+   "shape": [
+    "圆珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "浸油",
+    "仿制"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "质冻色艳",
+    "desc": "地子透润，颜色鲜明，无裂"
+   },
+   {
+    "level": 2,
+    "label": "质常有瑕",
+    "desc": "地子一般，有少量杂质"
+   },
+   {
+    "level": 3,
+    "label": "质干有裂",
+    "desc": "地子发干，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [],
+   "note": "印章石多做印章、摆件，珠子少见"
+  },
+  "treatments": [
+   {
+    "type": "浸油/打蜡",
+    "note": "印章石常浸油打蜡保持光泽"
+   },
+   {
+    "type": "仿制",
+    "note": "鸡血石有树脂仿品，要标明"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "鸡血石的红色是辰砂（含汞），贴身佩戴要提示"
+  },
+  "meaning": {
+   "tags": [
+    "雅致",
+    "文气"
+   ],
+   "text": "印章石和中国篆刻、文房传统联系紧密，常被看作文人雅玩。"
+  },
+  "story": "",
+  "care": "怕磕碰、怕高温；鸡血石的红色是辰砂，含汞，避免长期贴身、避免高温和强光。",
+  "price_band": "中",
+  "sources": [
+   "审校结论 kb/check/factcheck.md",
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "treatments": "low",
+   "meaning": "mid",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low"
+  }
+ },
+ {
+  "id": "huaillian",
+  "name": "花莲玉",
+  "std": "软玉",
+  "category": "jade",
+  "aliases": [
+   "台湾玉",
+   "台湾翠",
+   "花莲玉"
+  ],
+  "summary": "产自台湾花莲丰田一带的透闪石软玉，又叫台湾玉、台湾翠，分普通软玉、软玉猫眼和蜡光软玉，猫眼最珍贵。",
+  "look": "绿到黄绿色，半透明到微透明，油脂光泽，质地细腻温润，常带黑色小点，整体观感接近和田碧玉。纤维平行排列的料磨成弧面或圆珠会出现一道猫眼光带，俗称台湾猫眼玉。",
+  "identify": [
+   "颜色多为黄绿到绿色，油脂光泽",
+   "常见黑色小点",
+   "猫眼料转动时有一道光带移动",
+   "和其他产地碧玉肉眼难分，“台湾玉”要看来源说明"
+  ],
+  "confusables": [
+   {
+    "id": "hetian-yu",
+    "name": "和田碧玉",
+    "how": "同为透闪石软玉，外观相近，需靠产地证明区分"
+   },
+   {
+    "id": "feicui",
+    "name": "翡翠",
+    "how": "翡翠有翠性、玻璃光泽强"
+   },
+   {
+    "id": "xiu-yu",
+    "name": "岫玉",
+    "how": "岫玉更软、光泽偏蜡"
+   }
+  ],
+  "dims": {
+   "color": [
+    "绿",
+    "黄绿"
+   ],
+   "clarity": [
+    "半透",
+    "微透"
+   ],
+   "origin": [
+    "台湾花莲"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ],
+   "effect": [
+    "猫眼"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色匀质细",
+    "desc": "颜色均匀，质地细腻，黑点少"
+   },
+   {
+    "level": 2,
+    "label": "少点少杂",
+    "desc": "有少量黑点或杂质"
+   },
+   {
+    "level": 3,
+    "label": "杂多有裂",
+    "desc": "黑点多，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "产地冒充",
+    "note": "花莲矿已基本停采，市售“台湾玉”不少是其他产地软玉"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "按 GB/T 38821-2020 的思路，透闪石软玉可归入和田玉，产地另标（待核）"
+  },
+  "meaning": {
+   "tags": [
+    "温润",
+    "君子"
+   ],
+   "text": "延续中国玉文化“君子比德于玉”的说法，取玉温润、内敛之意。"
+  },
+  "story": "",
+  "care": "避免磕碰。",
+  "price_band": "中",
+  "sources": [
+   "kb/taxonomy.json",
+   "常识",
+   "台湾丰田软玉研究（《宝石和宝石学杂志》：分普通软玉、软玉猫眼、蜡光软玉，主要由透闪石组成）https://jogg.cug.edu.cn/cn/article/id/527de964-486d-4d0f-a0a7-c1de3680a161",
+   "Taiwan Today：花莲丰田旧玉矿多年停采 https://taiwantoday.tw/AMP/society/top-news/16898/old-jade-mines-provide-relief-from-summer-heat",
+   "审校 kb/data/review/batch1.json"
+  ],
+  "confidence": {
+   "summary": "high",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "compliance": "low",
+   "meaning": "mid",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low",
+   "treatments": "mid"
+  }
+ },
+ {
+  "id": "taishan",
+  "name": "泰山玉",
+  "std": "蛇纹石玉",
+  "category": "jade",
+  "aliases": [
+   "泰山碧玉",
+   "泰山玉"
+  ],
+  "summary": "产自山东泰山一带的蛇纹石玉，以深绿的“泰山碧玉”最有名。",
+  "look": "碧绿、墨绿到黑色，微透明到不透明，油脂到蜡状光泽。颜色浓重，常带黑色斑点或斑块，质地较软，手感温润。",
+  "identify": [
+   "颜色深绿到墨绿",
+   "常见黑色斑点",
+   "光泽油脂到蜡状，较软"
+  ],
+  "confusables": [
+   {
+    "id": "hetian-yu",
+    "name": "和田碧玉",
+    "how": "名字都带“碧玉”，和田碧玉是透闪石，更硬更油润"
+   },
+   {
+    "id": "taishan-yu",
+    "name": "台山玉",
+    "how": "名字只差一字，台山玉产广东，多为黄红色"
+   },
+   {
+    "id": "qilian",
+    "name": "祁连玉",
+    "how": "同为蛇纹石玉，外观相近，肉眼难分，只能结合来源判断"
+   },
+   {
+    "id": "bi-shi",
+    "name": "碧石",
+    "how": "碧石是石英质，不透明、更硬"
+   }
+  ],
+  "dims": {
+   "color": [
+    "碧绿",
+    "墨绿",
+    "黑"
+   ],
+   "clarity": [
+    "微透",
+    "不透"
+   ],
+   "pattern": [
+    "黑斑"
+   ],
+   "origin": [
+    "山东泰安"
+   ],
+   "shape": [
+    "圆珠",
+    "桶珠",
+    "算盘珠",
+    "随形"
+   ],
+   "treatment": [
+    "天然",
+    "染色",
+    "做旧"
+   ],
+   "count": [
+    "单圈",
+    "多圈",
+    "108 颗"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色浓质细",
+    "desc": "颜色浓绿均匀，质地细"
+   },
+   {
+    "level": 2,
+    "label": "少斑少杂",
+    "desc": "有少量黑斑或杂质"
+   },
+   {
+    "level": 3,
+    "label": "发灰有裂",
+    "desc": "颜色发灰，有裂"
+   }
+  ],
+  "sizes": {
+   "common": [
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "有染深绿的，颜色浮在裂纹"
+   },
+   {
+    "type": "做旧",
+    "note": "有仿古做旧的，沁色浮、痕迹均匀"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": ""
+  },
+  "meaning": {
+   "tags": [
+    "沉稳",
+    "吉祥"
+   ],
+   "text": "借“稳如泰山”的说法，取沉稳厚重之意。"
+  },
+  "story": "",
+  "care": "较软，避免与硬物摩擦。",
+  "price_band": "低",
+  "sources": [
+   "kb/taxonomy.json",
+   "常识"
+  ],
+  "confidence": {
+   "summary": "mid",
+   "look": "mid",
+   "identify": "mid",
+   "confusables": "mid",
+   "dims": "mid",
+   "grades": "low",
+   "meaning": "low",
+   "care": "mid",
+   "price_band": "low",
+   "story": "low"
+  }
+ }
+]

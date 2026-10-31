@@ -1,0 +1,23 @@
+{
+  "pages": ["pages/index/index", "pages/make/make", "pages/mine/mine"],
+  "window": {
+    "navigationBarTitleText": "盘个珠",
+    "navigationBarBackgroundColor": "#1c1512",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#1c1512"
+  },
+  "tabBar": {
+    "color": "#9a8a7a",
+    "selectedColor": "#e8b86b",
+    "backgroundColor": "#1c1512",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "盘珠" },
+      { "pagePath": "pages/make/make", "text": "串珠" },
+      { "pagePath": "pages/mine/mine", "text": "我的手串" }
+    ]
+  },
+  "usingComponents": { "bracelet": "/components/bracelet/bracelet" },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

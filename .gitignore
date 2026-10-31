@@ -1,0 +1,5 @@
+server/data.sqlite3
+server/uploads/
+__pycache__/
+_preview.html
+.DS_Store

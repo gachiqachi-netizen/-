@@ -1,0 +1,29 @@
+{
+ "passed": 179,
+ "manual": {
+  "bantong": 79,
+  "dimang": 76,
+  "lvlian": 74,
+  "taishan-yu": 70,
+  "xinghe": 79,
+  "zaohe": 79,
+  "shanhetao": 68,
+  "yanyuan": 75,
+  "taiyang": 75,
+  "yuanbao": 78,
+  "yedi": 73,
+  "xianghui": 79,
+  "taihezi": 71
+ },
+ "draft": [
+  "jiangzhen",
+  "xuelong",
+  "qianyan",
+  "yueliang",
+  "jinchan",
+  "fodu",
+  "mile",
+  "feidie"
+ ],
+ "avg": 84.6
+}

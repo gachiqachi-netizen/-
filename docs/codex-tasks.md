@@ -1,186 +1,277 @@
-# 代码审查结论与 Codex 任务清单（2026-11-04）
+# Codex 工作手册与任务清单（2026-11-04）
 
-审查对象：提交 5e4945b（微信原生小程序、用户与订单接口、AR 手部识别、测试与文档）。
-小程序的逐条问题和行号见 [review-miniprogram-2026-11-04.md](review-miniprogram-2026-11-04.md)；知识库方案的审校意见见 `kb/data/review/plans.json`。
+这份文档有三个读者：
 
-## 结论
+- **你（产品负责人）**：看第 1 节怎么派活、怎么验收，看第 5 节哪些事只能你来做。
+- **Codex**：每次开工先读第 2 节守则，再读分到的那条任务（第 4 节）。
+- **审查（Claude）**：Codex 每做完一条，按第 1.3 节审完再合并。
 
-**主体可以继续，不用推倒重来。** 后端和小程序主流程写得扎实：尺寸、颗数、价格计算和原型一致；登录、按用户隔离、下单幂等、价格复核、设计版本冲突都做了，还有测试（后端 21 项、小程序 15 项全部通过）。架构文档也如实写了还缺什么。
+审查依据：提交 5e4945b 的代码审查。小程序逐条问题和行号见 [review-miniprogram-2026-11-04.md](review-miniprogram-2026-11-04.md)；知识库方案审校意见见 `kb/data/review/plans.json`。
 
-**离提审上线还差 4 个硬伤**：正式环境接口地址写死在本机、AR 模型用的是别人的测试 CDN、小程序不展示有毒提示、列表缩略图每个都开一个 WebGL。另外有一批中等问题会影响体验和后期维护。
+---
 
-### 可以直接继续用的
+## 1. 怎么派活（给你）
 
-| 部分 | 说明 |
-|---|---|
-| 后端用户、设计、订单接口 | 会话令牌只存哈希；按用户隔离；订单幂等、同事务复核商品、十进制算钱；设计版本冲突保护；输入校验严格；报错不泄露内部信息 |
-| 部署与安全默认值 | 默认只监听本机，公网监听要显式开启；后台没口令就拒绝；AI 调用限流；上传图片校验真实格式 |
-| SQLite / PostgreSQL 双存储 | 接口一致，有迁移脚本和集成测试 |
-| 小程序尺寸与价格逻辑 | `pages/editor/logic.js`、`utils/template.js`、`pages/order/order.js` 和原型、后端一致 |
-| 登录与设计同步 | `utils/auth.js`、`utils/design.js`：并发登录合并、401 重登、按设计排队同步、版本冲突提示 |
-| 3D 组件、拍照同款确认页、AR 分包的降级 | 失败逐级回退；认珠确认页比原型还完整 |
+### 1.1 顺序
 
-### 需要优化的（按优先级拆成下面的任务）
+| 波次 | 任务 | 什么时候开始 | 能不能并行 |
+|---|---|---|---|
+| 第一波 | T1 T2 T3 T4 T16 | 现在 | 5 个都能同时开，改的文件互不重叠 |
+| 第二波 | T5–T12、T17、T18 | 第一波全部合并后 | T5、T6 改后端，二选一先做，另一个等它合并；T7–T12、T17、T18 可以同时开 |
+| 第三波 | T13 T14 T15 T19 | T13、T14 要你先定方向（见每条任务里的“待你决定”）；T15、T19 随时可做 | 可以同时开 |
 
-- **P0 上线前必须修**：环境地址、AR 模型托管、安全提示与材料清单、缩略图渲染。
-- **P1 体验和维护**：计价规则统一、新旧下单接口、按用户查询、AI 方案跟手围、页面栈、编辑器性能、拍照压缩、真机代理、包体积。
-- **P2 需要先定方向**：设计规范同步（部分视觉是你用 Codex 改的）、隐私指引、知识库方案修复。
+一条任务一个 Codex 会话。同一个会话里不要连着做多条任务。
 
-## 给 Codex 的通用要求
+### 1.2 派活时粘贴给 Codex 的话
 
-每个任务开工前先读：`README.md`、`docs/architecture.md`、`开发与上线准备.md`、本文件对应任务。
+把下面这段整段发给 Codex，只改任务编号：
 
-- 不接真实支付，不写任何真实密钥、AppSecret、令牌；需要的配置走环境变量或 `config` 文件里的占位值。
-- 只讲寓意不讲功效：任何给用户看的文字都要过 `kb/data/attributes.json` 的 `banned` 词表（“转运珠”“本命年”除外）。
-- 每个任务做完必须跑通：
+```text
+你在“串个珠”仓库工作。先完整读 docs/codex-tasks.md 的第 2 节“Codex 工作守则”，再读第 4 节里的 T3，严格按 T3 的“要做”和“验收”完成。
+只改 T3 列出的文件；需要改别的文件时先停下来说明原因。
+做完按第 2.6 节的格式汇报。
+```
+
+### 1.3 Codex 做完以后
+
+1. 看它的汇报：验收项是不是都打了勾，测试命令的输出有没有贴出来。
+2. 让我审一下：在这个对话里说“审一下 T3 的分支 codex/t3-safety”（或 PR 链接）。我会看代码、跑测试、核对验收项，给出“可以合并”或“要改哪几处”。
+3. 要改就把我的意见原样贴回给那个 Codex 会话。
+4. 可以合并后：在 GitHub 上合并 PR；如果没开 PR，就在 GitHub Desktop 里切到 main，选 Branch → Merge into current branch，再 Push。
+5. 一波全部合并后再开下一波。
+
+---
+
+## 2. Codex 工作守则（Codex 每次必读）
+
+### 2.1 先了解项目
+
+开工前读：`README.md`、`docs/architecture.md`、`开发与上线准备.md`。涉及界面的任务，再看根目录 `prototype.html` 里对应的功能（它是功能最全的参照版本）。涉及珠子知识的任务，读 `kb/SCHEMA.md`。
+
+### 2.2 环境
+
+- Python：用系统的 `python3`（3.9 及以上），后端只用标准库。PostgreSQL 相关才需要 `pip install -r server/requirements-postgres.txt`。
+- Node：这台电脑的 node 不在默认 PATH 里，用 `~/.local/toolchains/node/bin/node`（v22）。可以先执行 `export PATH="$HOME/.local/toolchains/node/bin:$PATH"`。小程序没有 package.json，不要为了跑测试新增依赖。
+- 本地后端（小程序开发用 8801 端口）：
   ```bash
-  python3 -m unittest discover -s server/tests
-  node --test miniprogram/tests/*.test.js
-  python3 kb/validate.py
+  PORT=8801 ADMIN_TOKEN=local-dev-only DISABLE_DEMO_ORDERS=1 python3 server/app.py
   ```
-  涉及方案库的再跑 `python3 kb/validate_plans.py`。新逻辑要加测试。
-- 一个任务一个提交，提交信息写清改了什么、怎么验证的。
-- 括号里的“文件”是这个任务主要改动的范围。**同一波里的任务改的文件不重叠，可以并行开多个 Codex**；不同波次按顺序做。
+  后台地址 `http://127.0.0.1:8801/admin`。`server/data.sqlite3` 是本地数据，删掉会用示例数据重建。
+- 微信开发者工具：导入 `miniprogram/` 目录。你没法操作这个工具的，就在汇报里写“需要在开发者工具里验证”的具体步骤。
+
+### 2.3 分支和提交
+
+- 从最新的 `main` 拉分支，名字用 `codex/t<编号>-<英文短名>`，例如 `codex/t3-safety`。
+- 一条任务一个分支；可以多次提交，提交信息用中文写清改了什么。
+- 能开 PR 就开 PR，标题写“T3 材料清单与安全提示”；不能开就把分支留在本地，汇报里写分支名。
+- 不要改别的任务的文件，不要顺手重构无关代码，不要改 `kb/data/` 下的数据（T15 除外）。
+
+### 2.4 硬性规定
+
+- 不接真实支付，不写任何真实的 AppSecret、密钥、令牌、手机号、地址。需要配置的地方用环境变量或占位值，并在 `开发与上线准备.md` 里说明。
+- 给用户看的文字只讲寓意不讲功效：要过 `kb/data/attributes.json` 的 `banned` 词表（“转运珠”“本命年”除外）。不确定的说法不写。
+- 金额一律按“分”算整数，和 `server/user_api.py` 一致。
+- 尺寸规则不能改：总长 = 手围×10 + max(8, 2.5×主珠直径 − 5) mm，合适区间 −4 到 +6mm；54 颗及以上按念珠处理。
+- 不删已有测试；改了行为就改对应测试并说明原因。
+- 拿不准产品意图时停下来问，不要猜着做。
+
+### 2.5 每条任务做完必须通过
+
+```bash
+python3 -m unittest discover -s server/tests
+node --test miniprogram/tests/*.test.js
+python3 kb/validate.py
+```
+
+改了方案库还要跑 `python3 kb/validate_plans.py`。新增的逻辑要加测试：后端放 `server/tests/`，小程序放 `miniprogram/tests/`（用 `node:test`，参考现有文件的写法）。
+
+### 2.6 汇报格式
+
+```text
+任务：T3 材料清单与安全提示
+分支 / PR：codex/t3-safety（PR 链接）
+改了什么：3–6 条，每条一句
+验收：
+- [x] 验收项 1 …（怎么验证的）
+- [ ] 验收项 2 …（没做到的原因）
+测试输出：三条命令的最后几行
+需要在微信开发者工具或真机上验证的步骤：…
+遗留问题 / 需要产品决定的：…
+```
 
 ---
 
-## 第一波（P0，可并行）
+## 3. 审查结论（背景）
 
-### T1 按环境配置接口地址
-文件：`miniprogram/app.js`、`miniprogram/utils/api.js`、新建 `miniprogram/config.js`、`开发与上线准备.md`
+**主体可以继续，不用推倒重来。** 后端和小程序主流程写得扎实：尺寸、颗数、价格计算和原型一致；登录、按用户隔离、下单幂等、价格复核、设计版本冲突都做了；后端 21 项、小程序 15 项测试全部通过。
 
-现状：`app.js:6` 开发版真机写死局域网 IP `192.168.2.156:8802`，体验版和正式版写死 `http://127.0.0.1:8800`，上线后所有接口都会失败。
+**离上线还差 4 个硬伤**（T1–T4）：正式环境接口地址写死本机、AR 模型挂在别人的测试 CDN、小程序不展示有毒提示、列表缩略图每个都开 WebGL。其余是体验和维护问题。
 
-要做：
-1. 新建 `config.js`，按 `envVersion`（develop / trial / release）给出 `apiBase`。develop 在开发者工具里用 `http://127.0.0.1:8801`；develop 真机用的局域网地址从 `config.local.js`（加进 `.gitignore`）读，没有就提示去配置；trial / release 只允许 `https://` 开头的地址，先放占位 `https://api.example.com` 并在启动时检查。
-2. 去掉代码里所有写死的 IP 和端口。
-3. 文档写清三种环境怎么配。
-
-验收：全仓库搜不到 `192.168.` 和非 develop 分支里的 `http://`；加一个测试，覆盖三种 envVersion 的地址选择。
-
-### T2 AR 手部模型改为自己托管并缓存
-文件：`tools/hand-tracker/build.js`、`tools/hand-tracker/runtime.ts`、`miniprogram/ar-hand/*`（重新构建）、`miniprogram/pages/ar-tryon/*`
-
-现状：`build.js:9-11` 把模型地址换成了 `cdn.static.oppenlab.com/weblf/test/...`（第三方测试目录，约 12.5MB），每次进页面重新下载。
-
-要做：
-1. 模型地址改成从配置读（默认放我们自己的对象存储域名占位），构建时不写死第三方地址。在 `tools/hand-tracker/README.md` 写清模型来源（TensorFlow.js handpose，Apache-2.0）和怎么上传到自己的存储。
-2. 首次下载后用 `wx.getFileSystemManager` 缓存到本地，之后从缓存读；版本号变了才重新下。
-3. 加载时显示进度；超过 20 秒或失败时，提示并跳转到照片试戴（`pages/tryon`）。
-
-验收：断网第二次进入仍能加载（来自缓存）；模拟加载失败能降级；构建产物里搜不到 `oppenlab`。
-
-### T3 材料清单、卖点、讲解和安全提示
-文件：`miniprogram/pages/editor/*`、`miniprogram/pages/order/*`、`miniprogram/pages/order-detail/*`、`miniprogram/utils/api.js`、`miniprogram/utils/catalog-preview.js`、`server/user_api.py`、`server/tests/test_user_api.py`
-
-现状：后端 `/api/catalog` 每颗珠子带 `points`（卖点）、`meaning`/`summary`（讲解）、`safety`（有毒提示，例如朱砂、红豆杉、相思子、元宝菩提），小程序全部没展示。原型在材料清单里用红字显示安全提示（`prototype.html` 的 `notesHtml`）。
-
-要做：
-1. 编辑器加“材料清单”：每种珠子一行，显示名称、尺寸、数量、小计、卖点（`points` 用 · 连接）、一句讲解；有 `safety` 的用红字显示。
-2. 下单确认页和订单详情：有安全提示的珠子在清单里同样红字提示，下单前在确认弹窗里再提示一次。
-3. 后端订单快照 `items` 加上 `kb`、`points`、`safety`，订单详情从快照读，不依赖当前目录。
-4. 开发版的目录快照 `catalog-preview` 改为从 `/api/catalog` 重新生成（写一个脚本放 `tools/`），保证带这些字段；或者开发版也走接口，只在接口失败时用快照。
-
-验收：含元宝菩提或朱砂的设计，在编辑器、下单页、订单详情都能看到红字提示；新增后端测试覆盖快照字段。
-
-### T4 缩略图改成静态图片
-文件：`miniprogram/components/bracelet-thumb/*`，以及用到它的页面（首页、自己串、我的、AI 配、拍照、下单）
-
-现状：`bracelet-thumb/index.js` 每个实例创建一个 WebGL 上下文。“我的”页列出全部作品和订单、AI 页恢复 20 条消息每条 3 个方案，可能同时存在几十个上下文，真机会黑块或闪退。
-
-要做：缩略图统一用一个离屏画布（2d 或单个共享 WebGL）按珠子序列画成图片，`canvasToTempFilePath` 后缓存（按珠子 id 序列做 key），组件只显示 `<image>`；渲染失败显示平面圆环占位图。3D 交互只保留在编辑器和试戴页。
-
-验收：“我的”页 50 条作品滚动不卡、不黑块（开发者工具性能面板截图附在提交说明里）；组件测试覆盖缓存和失败占位。
+可以直接沿用的：后端用户/设计/订单接口与安全默认值；SQLite 与 PostgreSQL 双存储；`pages/editor/logic.js`、`utils/template.js`、`pages/order/order.js` 的计算；`utils/auth.js`、`utils/design.js` 的登录与同步；3D 组件和拍照同款确认页的逐级降级。
 
 ---
 
-## 第二波（P1，T1–T4 合并后开始；T5、T6 改后端，T7–T12 改小程序，组内文件不重叠可并行）
+## 4. 任务
 
-### T5 计价规则只留一份
-文件：新建 `server/pricing.py`、`server/app.py`、`server/user_api.py`、`miniprogram/pages/order/*`、`prototype.html`（只改读取计价参数的地方）
+每条任务的格式：**目标 / 现状 / 改动文件 / 要做 / 验收**。
 
-现状：手工费 15、编织绳 5、礼盒 10、满 99 免运费否则 8，在旧下单接口、新下单接口、小程序、原型里各写一遍。旧演示接口 `/api/orders` 不用登录、带首单立减 10，新接口没有立减，默认两个都开着。
+### 第一波（P0，可同时开）
 
-要做：
-1. `pricing.py` 定义全部计价参数和一个 `quote(items, options)` 函数，两个下单接口都调它；`/api/catalog` 返回 `pricing` 字段，小程序和原型从这里读，不再写死。
-2. 旧演示接口默认关闭：改成只有设置 `DEMO_ORDERS=1` 才开（替代现在的 `DISABLE_DEMO_ORDERS`，文档和 Dockerfile 一起改）。
-3. 首单立减：新接口仍然不发（没接支付前不认），旧接口关掉后不再有这个分叉。
+#### T1 按环境配置接口地址
+- **目标**：开发、体验、正式三种版本都能连上对的后端。
+- **现状**：`miniprogram/app.js:6` 开发版真机写死局域网 IP `192.168.2.156:8802`，体验版和正式版写死 `http://127.0.0.1:8800`，上线后所有接口都失败。
+- **改动文件**：`miniprogram/app.js`、`miniprogram/utils/api.js`、新建 `miniprogram/config.js`、新建 `miniprogram/config.local.example.js`、`.gitignore`、`开发与上线准备.md`、`miniprogram/tests/`。
+- **要做**：
+  1. `config.js` 按 `wx.getAccountInfoSync().miniProgram.envVersion` 给出 `apiBase`：develop 在开发者工具里用 `http://127.0.0.1:8801`；develop 真机从 `config.local.js` 读局域网地址（这个文件加进 `.gitignore`，提供 `config.local.example.js` 示例），没有就在页面上提示去配置；trial 和 release 只接受 `https://` 开头的地址，先放占位 `https://api.example.com`，不是 https 时启动就报错并在控制台说明。
+  2. 删掉代码里所有写死的 IP 和端口。
+  3. `开发与上线准备.md` 写清三种环境怎么配。
+- **验收**：全仓库搜不到 `192.168.`；非 develop 分支里没有 `http://`；新增测试覆盖三种 envVersion 和 https 检查。
 
-验收：改一处计价参数，两个接口和小程序报价一起变；测试覆盖。
+#### T2 AR 手部模型自己托管并缓存
+- **目标**：试戴页不依赖第三方测试地址，第二次进入秒开，失败能降级。
+- **现状**：`tools/hand-tracker/build.js:9-11` 把模型地址换成 `cdn.static.oppenlab.com/weblf/test/...`（第三方测试目录，约 12.5MB），每次进页面重新下载。
+- **改动文件**：`tools/hand-tracker/build.js`、`tools/hand-tracker/runtime.ts`、`tools/hand-tracker/README.md`、`miniprogram/ar-hand/*`（重新构建产物）、`miniprogram/pages/ar-tryon/*`。
+- **要做**：
+  1. 模型地址改成运行时从配置读（默认值是我们自己的存储域名占位，例如 `https://static.example.com/models/handpose/v1/`），构建产物里不写死任何第三方地址。
+  2. `tools/hand-tracker/README.md` 写清：模型来源（TensorFlow.js handpose，Apache-2.0）、要上传哪些文件、目录结构、版本号怎么改。上传由负责人完成（见第 5 节）。
+  3. 首次下载后用 `wx.getFileSystemManager` 存到用户目录，之后先读缓存；配置里的版本号变了才重新下。注意小程序本地缓存上限，超出时给出提示。
+  4. 加载时显示进度百分比；超过 20 秒或失败时提示，并提供“改用照片试戴”按钮跳到 `pages/tryon`。
+- **验收**：构建产物里搜不到 `oppenlab`；模拟下载失败能降级；缓存读写逻辑有测试；汇报里写清真机验证步骤。
 
-### T6 按用户查询加索引，登录会话可清理
-文件：`server/db.py`、`server/db_postgres.py`、`server/app.py`、`server/user_api.py`、`server/tests/*`
+#### T3 材料清单、卖点、讲解和安全提示
+- **目标**：用户在编辑、下单、订单详情都能看到每种珠子的卖点、讲解和安全提示。
+- **现状**：后端 `/api/catalog` 每颗珠子带 `points`（卖点）、`meaning`/`summary`（讲解）、`safety`（有毒提示，例如朱砂、红豆杉、相思子、元宝菩提），小程序全部没展示（`pages/editor/editor.js:23` 算了 points 但没渲染）。原型的做法见 `prototype.html` 的 `notesHtml`。
+- **改动文件**：`miniprogram/pages/editor/*`、`miniprogram/pages/order/*`、`miniprogram/pages/order-detail/*`、`server/user_api.py`、`server/tests/test_user_api.py`、`miniprogram/tests/`。
+- **要做**：
+  1. 编辑器加“材料清单”区：每种珠子一行，显示名称、尺寸、数量、小计、卖点（`points` 用“ · ”连接）、一句讲解；有 `safety` 的用红字单独一行。
+  2. 下单确认页和订单详情：有安全提示的珠子同样红字提示；提交订单前的确认弹窗里再列一次。
+  3. 后端订单快照 `items` 加上 `kb`、`points`、`safety`；订单详情从快照读，不依赖当前目录。
+- **验收**：含元宝菩提或朱砂的设计，在三个页面都能看到红字提示；后端测试覆盖快照新字段；小程序测试覆盖材料清单的数据整理函数。
 
-现状：`GET /api/designs`、`/api/my/orders` 把整张表读出来再按 `userId` 过滤；过期会话永远不删，也没有退出登录。
+#### T4 缩略图改成静态图片
+- **目标**：列表页不再同时开几十个 WebGL，真机不黑块、不闪退。
+- **现状**：`miniprogram/components/bracelet-thumb/index.js` 每个实例创建一个 WebGL 上下文，“我的”页和 AI 页可能同时存在几十个。
+- **改动文件**：`miniprogram/components/bracelet-thumb/*`、新建 `miniprogram/utils/thumb-cache.js`、`miniprogram/tests/`。用到组件的页面只在必要时改属性，不改布局。
+- **要做**：用一个离屏画布（优先 `wx.createOffscreenCanvas` 2d）按珠子序列和颜色画成图片，`canvasToTempFilePath` 后按“珠子 id 序列 + 尺寸”做缓存 key；组件只显示 `<image>`；画失败显示平面圆环占位图。3D 交互只留在编辑器和试戴页。
+- **验收**：“我的”页 50 条作品滚动不卡、不黑块（附开发者工具性能面板截图）；测试覆盖缓存命中和失败占位。
 
-要做：
-1. 两个 DB 类加 `list_by_owner(table, user_id)`。SQLite 给 designs、orders 加 `user_id` 列（或 JSON 表达式索引）并建索引；PostgreSQL 建 `(doc->>'userId')` 表达式索引。迁移旧数据。
-2. 加 `POST /api/auth/logout` 删除当前会话；启动时和每天一次清理过期会话。
+#### T16 下单前刷新目录，价格以最新为准
+- **目标**：后台改价或下架后，用户下单前一定看到最新价格，不在提交时才报错。
+- **现状**：`utils/api.js:21-26` 开发版永远返回打包的目录快照（没有 `safety`），平时目录也只在进程里缓存一次（见 `docs/architecture.md` 风险 2）。
+- **改动文件**：`miniprogram/utils/api.js`、`miniprogram/utils/catalog-preview.js`、新建 `tools/refresh-catalog-preview.js`、`miniprogram/pages/order/order.js`（只改进入页面时的目录刷新）。
+- **要做**：
+  1. 开发版也优先请求 `/api/catalog`，只有请求失败时才用快照，并在页面顶部提示“正在使用离线示例数据”。
+  2. 写 `tools/refresh-catalog-preview.js`：从本地后端拉 `/api/catalog` 重写快照文件，保证带 `points`、`safety` 等字段。
+  3. 进入下单页时强制刷新目录；有珠子下架或价格变了，列出变化让用户确认后再提交。
+- **验收**：后台把某颗珠子改价后，进下单页能看到变化提示；测试覆盖“价格变化 → 提示”的逻辑。注意：订单页其余部分归 T5，本任务只改进入页面时的刷新。
 
-验收：测试覆盖只返回本人数据、退出后令牌失效、过期会话被清理；PostgreSQL 集成测试（设置 `BEADLOOP_TEST_DATABASE_URL`）通过。
+### 第二波（P1，第一波合并后开始）
 
-### T7 AI 方案跟着手围走，分享页按查看者手围重排
-文件：`miniprogram/pages/ai/*`、`miniprogram/pages/shared/*`、`miniprogram/utils/design.js`
+#### T5 计价规则只留一份，旧演示下单默认关闭
+- **目标**：改一处计价参数，所有地方一起变；只保留一条正式下单路径。
+- **现状**：手工费 15、编织绳 5、礼盒 10、满 99 免运费否则 8，在旧接口 `/api/orders`、新接口 `/api/my/orders`、小程序、原型里各写一遍。旧接口不用登录、带首单立减 10，默认开着。
+- **改动文件**：新建 `server/pricing.py`、`server/app.py`、`server/user_api.py`、`miniprogram/pages/order/*`、`prototype.html`（只改读计价参数的地方）、`Dockerfile`、`开发与上线准备.md`、`server/tests/`。
+- **要做**：
+  1. `pricing.py` 定义计价参数和 `quote(items, options)`，两个下单接口都调它；`/api/catalog` 返回 `pricing` 字段，小程序和原型从这里读。
+  2. 旧演示接口改为只有设置 `DEMO_ORDERS=1` 才开放（替代 `DISABLE_DEMO_ORDERS`），文档和 Dockerfile 同步改。
+  3. 首单立减：没接支付前任何接口都不发。
+- **验收**：测试覆盖“改参数后两个接口和 `/api/catalog` 一致”和“未设 DEMO_ORDERS 时旧接口返回 403”。
 
-现状：`pages/ai/ai.js:46` 把方案的 `count` 当成固定颗数存进设计，之后改手围不会重排；分享落地页沿用分享者手围，却写着“按你的手围串”。
+#### T6 按用户查询加索引，登录会话可清理
+- **目标**：用户多了查询不变慢；退出登录有效；过期会话不堆积。
+- **现状**：`GET /api/designs`、`/api/my/orders` 把整张表读出来再按 `userId` 过滤；过期会话从不删除，也没有退出登录。
+- **改动文件**：`server/db.py`、`server/db_postgres.py`、`server/migrate_sqlite_postgres.py`、`server/app.py`、`server/user_api.py`、`server/tests/`。
+- **要做**：
+  1. 两个 DB 类加 `list_by_owner(table, user_id)`。SQLite 给 designs、orders 加 `user_id` 列并建索引（启动时自动迁移旧数据）；PostgreSQL 建 `(doc->>'userId')` 表达式索引。
+  2. 新增 `POST /api/auth/logout`，删除当前会话；启动时清理一次过期会话，之后每 24 小时清理一次。
+- **验收**：测试覆盖“只返回本人数据”“退出后令牌失效”“过期会话被清理”；设置 `BEADLOOP_TEST_DATABASE_URL` 后 PostgreSQL 集成测试通过（没有数据库就在汇报里说明未跑）。
 
-要做：只有 `/api/plans/match` 返回 `fixed`（108 颗这类）时才存固定颗数，其他存 `special/pattern/tail` 按手围重排。分享页按查看者手围重排，文案改成“已按你的 X cm 手围重新排好”；对方没量过手围就用默认并提示可修改。方案卡片显示讲解和超预算提示（`overBudget`、`swapped`）。
+#### T7 AI 方案跟着手围走，分享页按查看者手围重排
+- **目标**：改了手围，AI 方案和朋友分享的设计都会按新手围重新算颗数。
+- **现状**：`pages/ai/ai.js:46` 把方案的 `count` 当固定颗数存进设计，之后改手围不会重排；分享落地页沿用分享者手围，文案却写“按你的手围串”。方案卡片没显示讲解和超预算提示。
+- **改动文件**：`miniprogram/pages/ai/*`、`miniprogram/pages/shared/*`、`miniprogram/utils/design.js`、`miniprogram/tests/`。
+- **要做**：只有 `/api/plans/match` 返回 `fixed`（108 颗这类）时才存固定颗数，其他存 `special/pattern/tail`，按手围重排。分享页按查看者手围重排，文案改为“已按你的 X cm 手围重新排好”，查看者没量过手围就用 15cm 并提示可修改。方案卡片显示讲解，`overBudget` 时标“略超预算”，`swapped` 非空时显示换珠说明。
+- **验收**：测试覆盖“改手围后颗数变化”“108 颗不变”“分享页按查看者手围”。
 
-验收：测试覆盖改手围后颗数变化、108 颗不变。
+#### T8 页面栈不再越压越深
+- **目标**：反复在编辑和下单之间来回，不会撞到小程序 10 层页面上限。
+- **改动文件**：新建 `miniprogram/utils/nav.js`；把各页面里打开编辑器、下单页的 `navigateTo` 换成调用它（只改这几处调用）。
+- **要做**：`openEditor`、`openOrder`：页面栈里已有目标页就 `navigateBack` 到它，否则在栈深 ≥8 时用 `redirectTo`；下单成功后 `reLaunch` 到订单详情。
+- **验收**：测试模拟“编辑 → 下单 → 返回编辑”20 次，栈深不超过 10。
 
-### T8 页面栈不再越压越深
-文件：新建 `miniprogram/utils/nav.js`，以及用 `navigateTo` 重开编辑器、下单页的页面
+#### T9 编辑器和 AR 性能
+- **改动文件**：`miniprogram/pages/editor/*`（除 T3 加的材料清单外的渲染逻辑）、`miniprogram/components/bracelet3d/*`、`miniprogram/pages/ar-tryon/*`。
+- **要做**：编辑操作只 setData 变化的字段，不传整份材料列表；3D 视图加减珠子时增量更新，不全部重建；AR 推理复用帧缓冲，把每帧的拷贝从 4 次降到 1 次以内。
+- **验收**：连续添加 30 颗珠子不明显掉帧；附开发者工具性能截图和改动前后的 setData 数据量对比。
 
-要做：封装 `openEditor`、`openOrder`：栈里已有同一页就 `navigateBack` 到它，否则在接近 10 层时用 `redirectTo`。下单完成后 `reLaunch` 到订单详情。
+#### T10 拍照上传前压缩
+- **改动文件**：`miniprogram/pages/photo/*`、`miniprogram/tests/`。
+- **要做**：选图后用 `wx.compressImage` 或画布把长边缩到 1024px、质量 0.8 左右再转 base64；超过 1MB 继续压。上传超时给明确提示，并走现有的本地颜色识别降级。
+- **验收**：5MB 原图上传体积 ≤1MB；测试覆盖尺寸计算函数。
 
-验收：来回“编辑 → 下单 → 返回编辑”20 次不报栈满；测试覆盖。
+#### T11 真机测试代理放行完整接口
+- **改动文件**：`tools/phone-test-proxy.py`。
+- **要做**：白名单加上 `/api/plans/match`、`/api/ai/*`、`/api/shares`、`/api/kb/*`、`/api/auth/*`；文件头写清只用于局域网开发、不能对公网开放。
+- **验收**：用代理在真机上走通 AI 配、拍照同款、分享（写清验证步骤）。
 
-### T9 编辑器和 AR 性能
-文件：`miniprogram/pages/editor/*`、`miniprogram/components/bracelet3d/*`、`miniprogram/pages/ar-tryon/*`
+#### T12 包体积和分包
+- **改动文件**：`miniprogram/project.config.json`、`miniprogram/app.json`（以及移动页面目录时被影响的跳转路径）。
+- **要做**：`packOptions.ignore` 排除 `tests/`；`minified` 改为 true；试戴、分享落地页、订单详情移到分包，主包只留首页、自己串、AI 配、我的、编辑器、下单。
+- **验收**：开发者工具“详情 → 本地代码”的主包体积比现在（约 0.85MB）小，附截图；所有跳转路径更新后小程序测试通过。
 
-要做：编辑操作只 setData 变化的字段（不要整份材料列表）；3D 视图加减一颗珠子时增量更新，不全部重建；AR 每次推理复用帧缓冲，减少帧拷贝（现在复制 4 次）。
+#### T17 用户文字内容安全
+- **目标**：用户写的设计名、分享标题，以及 AI 生成的文字，过微信内容安全检查，避免审核和合规问题。
+- **改动文件**：新建 `server/content_security.py`、`server/user_api.py`（保存设计和创建分享时调用）、`server/plans.py` 不改、`server/tests/`。
+- **要做**：封装微信 `msgSecCheck`（需要 access_token，用 `WECHAT_APP_ID`/`WECHAT_APP_SECRET` 换取并缓存）；没配置凭证时跳过检查并记日志；检查不通过返回 400 和友好提示。AI 返回的文字同样检查，不通过就丢弃该条。
+- **验收**：测试用假的检查函数覆盖“通过 / 不通过 / 未配置”三种情况。
 
-验收：连续添加 30 颗珠子在开发者工具里无明显掉帧；附性能截图。
+#### T18 尺寸规则测试补齐
+- **目标**：尺寸规则有专门的测试守住，以后谁改都会被发现。
+- **改动文件**：新建 `miniprogram/tests/size-rule.test.js`、新建 `server/tests/test_sizing.py`。
+- **要做**：手围 13–19cm、珠径 6/8/10/12/14mm 的组合，检查一键铺满后长度都在 −4 到 +6mm 区间（做不到的组合要和原型、`kb/data/rules.json` 的说法一致）；54 颗以上按念珠处理；小程序和后端 `plans.py` 的 `_fill` 对同一输入结果一致。
+- **验收**：新测试通过；如发现小程序和后端结果不一致，在汇报里列出，不要自行改算法。
 
-### T10 拍照上传前压缩
-文件：`miniprogram/pages/photo/*`
+### 第三波（P2）
 
-要做：选图后用 `wx.compressImage` 或画布把长边缩到 1024px、质量 0.8 左右再转 base64；大于 1MB 继续压。上传超时给明确提示并保留本地颜色识别的降级。
+#### T13 视觉和设计规范同步
+- **待你决定**：这次提交把视觉改了：托盘底色接近纯白、卡片加边框、语音按钮用 emoji 🎙、编辑页把“名称与寓意”“按颗数串”折叠、“去下单”前加了“完成设计”页。原设计规范是托盘用浅色绒布渐变、卡片不加边框、不用 emoji 当图标。请在派这条任务时告诉 Codex：保留新视觉（更新规范）还是改回原规范，或者逐项说明。
+- **改动文件**：`prototype.html` 的样式、`miniprogram/app.wxss` 和各页面 `.wxss`、`docs/` 下新建 `design-tokens.md`。
+- **要做**：按你的决定统一原型和小程序的颜色、边框、圆角 token，写进 `docs/design-tokens.md`；无论哪种决定，emoji 图标都换成线性 SVG 图标（24px 网格、1.5px 描边、圆角端点）。
+- **验收**：原型和小程序同一页面截图对比，附在汇报里。
 
-验收：5MB 原图上传体积 ≤1MB；测试覆盖压缩函数。
+#### T14 隐私授权
+- **改动文件**：`miniprogram/app.json`、`miniprogram/app.js`、用到相机、相册、剪贴板的页面、新建 `miniprogram/components/privacy-popup/*`、`开发与上线准备.md`。
+- **要做**：接入 `wx.onNeedPrivacyAuthorization`，首次用相机、相册、剪贴板前弹授权说明，用户拒绝时给出能继续使用的路径；在 `开发与上线准备.md` 列出要在公众平台填写的隐私条目（手串照片会发到识别服务；手腕画面只在本机处理；收货信息用于发货）。
+- **验收**：开发者工具里清除授权后能看到弹窗，拒绝后功能有降级提示。公众平台的填写由你完成。
 
-### T11 真机测试代理放行完整接口
-文件：`tools/phone-test-proxy.py`
+#### T15 知识库方案修复
+- **改动文件**：`kb/data/plans/*.json`、`kb/data/rules.json`、`kb/validate_plans.py`、`kb/SCHEMA.md`、`server/seed.py`（只往 `EXTRA` 里补珠子）。
+- **要做**：
+  1. `kb/validate_plans.py` 是上一轮写了一半的检查脚本，未验证：先跑通，补全检查项（格式和标签取值、品种存在且可用、尺寸、主珠统一、禁用词、珍珠挨硬石、绿松石配木珠或菩提、孩子款 <8mm、替代比原料贵、重复方案、同名方案）。
+  2. 按 `kb/data/review/plans.json` 改 100 条方案：合并 15 组雷同方案并补缺口（乔迁、教师节、康复、父亲节母亲节、孩子、同事、爸爸、老师、男友高档、18 子、手绳、多宝、复古；“老师”先加进 SCHEMA 的 audience 取值）；修正违反串法禁忌的搭配；孩子款主珠 ≥8mm、不用易碎和染色材质；替代珠不能比原料贵；同料预算档统一；删掉讲解里的内部说明和误导名字；讲解里“转运珠”叫“路路通”；108 颗补三通佛头，10mm 以上写挂颈或手持。
+  3. `rules.json` 按审校意见重算颗数和珠径（例子写明 15cm 手围）。
+  4. 新用到但示例料包没有的品种，补到 `server/seed.py` 的 `EXTRA`。
+- **验收**：`validate_plans.py`、`validate.py` 都通过；本地起后端，用 `/api/plans/match` 抽测“送男朋友生日 200 以内”“给妈妈母亲节”“孩子生日 50 以内”，结果贴进汇报。
 
-要做：白名单加上 `/api/plans/match`、`/api/ai/*`、`/api/shares`、`/api/kb/*`，并在文件头写清只用于局域网开发。
-
-验收：真机能走通 AI 配、拍照、分享。
-
-### T12 包体积和分包
-文件：`miniprogram/project.config.json`、`miniprogram/app.json`
-
-要做：`packOptions.ignore` 排除 `tests/` 和开发用目录快照；开启代码压缩；试戴、分享、订单详情移到分包，主包只留首页、自己串、AI 配、我的、编辑器。
-
-验收：上传前预览的主包体积比现在（约 0.85MB）小，附截图。
+#### T19 文档和行为对齐
+- **改动文件**：`README.md`、`server/README.md`、`miniprogram/README.md`、`docs/architecture.md`、`开发与上线准备.md`。
+- **要做**：把各 README 里和当前代码不一致的地方改掉（端口 8800/8801、ADMIN_TOKEN 必填、演示下单开关、H5 和小程序的差异）；`architecture.md` 的“下一步”按本清单的完成情况更新。只改文档。
+- **验收**：按文档从零启动后端和小程序能走通。
 
 ---
 
-## 第三波（P2，先找产品负责人确认再做）
+## 5. 只能你本人做的事
 
-### T13 视觉和设计规范同步（需要先定方向）
-这次提交把原型和小程序的视觉改了：托盘底色接近纯白、卡片加边框、语音按钮用了 emoji 🎙、编辑页把“名称与寓意”“按颗数串”折叠、“去下单”前加了“完成设计”页。设计规范里写的是托盘用浅色绒布渐变、不用 emoji 当图标。
+这些需要你的账号、钱或决定，Codex 和我都替代不了。左边列是会卡住哪条任务。
 
-- 先确定保留哪套。保留新改动的，就更新设计规范（`docs/` 和线上的设计规范页）；不保留的就改回。
-- 不管哪套，emoji 图标都换成线性图标（24px 网格、1.5px 描边）。
-
-### T14 隐私保护指引和权限
-文件：`miniprogram/app.json`、用到相机、相册、剪贴板的页面
-
-要做：按微信要求接入 `wx.onNeedPrivacyAuthorization` / `requirePrivacyAuthorize` 流程，首次用相机、相册、剪贴板前弹授权说明；在 `开发与上线准备.md` 列出要在公众平台填的隐私指引条目（手串照片会发到识别服务、手腕画面只在本机处理）。公众平台上的填写由负责人手动完成。
-
-### T15 知识库方案修复
-文件：`kb/data/plans/*.json`、`kb/data/rules.json`、`kb/validate_plans.py`、`kb/SCHEMA.md`
-
-`kb/validate_plans.py` 是上一轮写了一半的检查脚本，未验证，先跑通并补全。然后按 `kb/data/review/plans.json` 的意见改 100 条方案：合并 15 组雷同方案并补缺口（乔迁、教师节、康复、父亲节母亲节、孩子、同事、爸爸、老师、男友高档、18 子、手绳、多宝、复古）；修正违反串法禁忌的搭配（珍珠挨硬石、绿松石配木珠或菩提、染色料挨白珠）；孩子款主珠 ≥8mm；替代珠不能比原料贵；同料预算档统一；删掉讲解里的内部说明和误导名字；“转运珠”在讲解里叫“路路通”；108 颗补三通佛头、10mm 以上写挂颈或手持。`rules.json` 按审校意见重算颗数和珠径。新用到但示例料包（`server/seed.py`）没有的品种，补到 `EXTRA` 里。
-
-验收：`python3 kb/validate_plans.py` 和 `python3 kb/validate.py` 都通过；用 `/api/plans/match` 抽测“送男朋友生日 200 以内”“给妈妈母亲节”“孩子生日 50 以内”三句，结果贴在提交说明里。
+| 事情 | 卡住的任务 | 说明 |
+|---|---|---|
+| 决定视觉方向 | T13 | 保留新视觉还是改回原规范（见 T13） |
+| 注册小程序主体并认证、拿到正式 AppID | 真机验收、T17、上线 | AppSecret 只放服务器环境变量，不发给任何人，不进仓库 |
+| 买域名、备案、配 HTTPS，开服务器或云托管 | T1 的正式地址、上线 | 定下来后把 `https://` 地址填进 `miniprogram/config.js` |
+| 开对象存储（例如腾讯云 COS），上传 AR 模型 | T2 | 按 `tools/hand-tracker/README.md` 上传，并把域名加到小程序的合法域名 |
+| 在公众平台填隐私保护指引、配置合法域名 | T14、上线 | T14 会列出要填的条目 |
+| 选 AI 服务并提供 Key（放服务器环境变量） | AI 配、拍照识别的真实效果 | 不配也能用本地规则，效果差一些 |
+| 申请微信支付商户号 | 正式收款 | 在这之前订单一律“待支付”，不发货 |
+| 真机验收（iOS 和 Android 各一台） | 每一波结束时 | 按每条任务汇报里的“真机验证步骤”走一遍 |
+| 审方案库前 50 条 | T15 之后 | 方案讲解代表品牌口吻，建议你亲自过一遍 |

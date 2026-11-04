@@ -1,0 +1,17 @@
+<view class="chat-page">
+  <view wx:if="{{messages.length}}" class="chat-tools"><text>按 {{wrist}}cm 手围配</text><text class="clear" bindtap="clear">清空对话</text></view>
+  <view wx:if="{{!messages.length}}" class="welcome">
+    <view class="welcome-title">想做一条什么样的手串？</view>
+    <view class="sub">告诉我送给谁、想表达什么祝福。</view>
+    <view class="examples"><button data-text="送女朋友，希望她考研顺利" bindtap="example">送女朋友，希望她考研顺利</button><button data-text="送爸妈，保平安" bindtap="example">送爸妈，保平安</button><button data-text="想要好运，100 以内" bindtap="example">想要好运，100 以内</button></view>
+  </view>
+  <view wx:for="{{messages}}" wx:key="index" wx:for-item="message" wx:for-index="mi" class="message {{message.role}}">
+    <view class="bubble">{{message.text}}</view>
+    <scroll-view wx:if="{{message.results.length}}" scroll-x class="candidates"><view class="candidates-inner"><view wx:for="{{message.results}}" wx:key="id" wx:for-item="result" wx:for-index="ri" class="candidate">
+      <view class="tray"><bracelet-thumb beads="{{result.beads}}" catalog="{{catalog}}"/></view>
+      <view class="candidate-body"><view class="candidate-title">{{result.name}} <text wx:if="{{result.src==='plan'}}" class="badge">精选方案</text><text wx:if="{{result.src==='tpl'}}" class="badge">热门款</text></view><view class="tags"><text wx:for="{{result.tags}}" wx:key="*this" wx:for-item="tag" class="tag">{{tag}}</text></view><view class="meaning">{{result.meaning}}</view><view class="candidate-foot"><text>¥{{result.price}}</text><button size="mini" data-message="{{mi}}" data-index="{{ri}}" bindtap="use">用这条</button></view></view>
+    </view></view></scroll-view>
+  </view>
+  <view wx:if="{{busy}}" class="message assistant"><view class="bubble">正在配…</view></view><view wx:if="{{error}}" class="error">{{error}}</view>
+  <view class="composer"><scroll-view wx:if="{{hasResults}}" scroll-x class="refines"><view class="refines-inner"><button wx:for="{{refines}}" wx:key="*this" data-text="{{item}}" bindtap="refine">{{item}}</button></view></scroll-view><view class="askbox"><button class="voice" bindtap="voice" aria-label="语音输入">🎙</button><input value="{{text}}" bindinput="input" placeholder="给谁、想送什么祝福…" maxlength="200" confirm-type="send" bindconfirm="submit"/><button class="send" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">↑</button></view></view>
+</view>

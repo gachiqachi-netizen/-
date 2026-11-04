@@ -5,7 +5,7 @@ import threading
 
 import seed
 
-TABLES = ("beads", "templates", "banners", "orders")
+TABLES = ("beads", "templates", "banners", "orders", "users", "sessions", "designs", "order_requests", "shares")
 
 
 class DB:
@@ -54,6 +54,73 @@ class DB:
             self.conn.commit()
         doc["id"] = rid
         return doc
+
+    def update_design_if_version(self, rid, user_id, expected, doc):
+        """Atomically check ownership and revision and update a design on this connection."""
+        with self.lock:
+            self.conn.execute('BEGIN IMMEDIATE')
+            try:
+                row = self.conn.execute('SELECT doc FROM designs WHERE id = ?', (rid,)).fetchone()
+                old = json.loads(row[0]) if row else None
+                if not old or old.get('userId') != user_id:
+                    self.conn.rollback()
+                    return 'missing', None
+                if old.get('updatedAt') != expected:
+                    self.conn.rollback()
+                    return 'conflict', None
+                doc = dict(doc)
+                doc.pop('id', None)
+                for field in ('special', 'pattern', 'tail', 'fixed', 'source', 'tplId', 'meaning', 'edited'):
+                    if field not in doc and field in old:
+                        doc[field] = old[field]
+                doc['createdAt'] = old.get('createdAt', doc['updatedAt'])
+                doc['updatedAt'] = max(doc['updatedAt'], old['updatedAt'] + 1)
+                self.conn.execute('UPDATE designs SET doc = ? WHERE id = ?',
+                                  (json.dumps(doc, ensure_ascii=False), rid))
+                self.conn.commit()
+                doc['id'] = rid
+                return 'updated', doc
+            except Exception:
+                self.conn.rollback()
+                raise
+
+    def idempotent_order(self, request_id, fingerprint, order=None):
+        """Resolve or create a request and order together in one write transaction."""
+        with self.lock:
+            self.conn.execute('BEGIN IMMEDIATE')
+            try:
+                row = self.conn.execute('SELECT doc FROM order_requests WHERE id = ?', (request_id,)).fetchone()
+                if row:
+                    record = json.loads(row[0])
+                    if record['fingerprint'] != fingerprint:
+                        self.conn.rollback()
+                        return 'conflict', None
+                    stored = self.conn.execute('SELECT doc FROM orders WHERE id = ?', (record['orderId'],)).fetchone()
+                    if not stored:
+                        raise RuntimeError('订单记录缺失')
+                    result = json.loads(stored[0])
+                    self.conn.commit()
+                    return 'existing', result
+                if order is None:
+                    self.conn.rollback()
+                    return 'missing', None
+                # Recheck the catalog in the same write transaction as insertion,
+                # so a concurrent admin update cannot alter the confirmed items.
+                for item in order['items']:
+                    row = self.conn.execute('SELECT doc FROM beads WHERE id = ?', (item['id'],)).fetchone()
+                    bead = json.loads(row[0]) if row else None
+                    if not bead or not bead.get('onSale', True) or any(bead.get(k) != item.get(k) for k in ('name', 'mm', 'price', 'photo')):
+                        self.conn.rollback()
+                        return 'price_changed', None
+                no = order['no']
+                self.conn.execute('INSERT INTO orders (id, doc) VALUES (?, ?)', (no, json.dumps(order, ensure_ascii=False)))
+                record = {'orderId': no, 'fingerprint': fingerprint}
+                self.conn.execute('INSERT INTO order_requests (id, doc) VALUES (?, ?)', (request_id, json.dumps(record)))
+                self.conn.commit()
+                return 'created', order
+            except Exception:
+                self.conn.rollback()
+                raise
 
     def delete(self, table, rid):
         assert table in TABLES

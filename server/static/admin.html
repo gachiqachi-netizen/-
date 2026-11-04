@@ -90,6 +90,9 @@ td .num { font-family: var(--font-num); }
 .tag { display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 6px; background: var(--tray); color: var(--ink-2); margin-right: 4px; }
 .toast { position: fixed; left: 50%; top: 80px; transform: translateX(-50%); background: rgba(31,27,26,.9); color: #fff; padding: 8px 16px; border-radius: 10px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
 .toast.show { opacity: 1; }
+[hidden] { display: none !important; }
+.login-overlay { position: fixed; inset: 0; z-index: 100; background: #0005; display: grid; place-items: center; }
+.login-box { background: white; padding: 28px; border-radius: 16px; width: min(380px, 90vw); display: grid; gap: 16px; }
 </style>
 </head>
 <body>
@@ -103,21 +106,56 @@ td .num { font-family: var(--font-num); }
   <aside class="panel" id="panel"><div class="empty">在左边选一条，或者点“新建”</div></aside>
 </main>
 <div class="toast" id="toast"></div>
+<div id="adminLogin" class="login-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+<form id="loginForm" class="login-box">
+<h2 id="loginTitle">登录管理后台</h2>
+<label for="adminPassword">后台口令</label>
+<input id="adminPassword" type="password" autocomplete="current-password" required>
+<div id="loginError" class="err" role="alert"></div>
+<button id="loginSubmit" class="btn" type="submit">登录</button>
+</form></div>
 
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const MATS = { wood: '木质', bodhi: '菩提', stone: '玉石', crystal: '水晶', metal: '金属配件' };
-const STATUS = ['待串制', '串制中', '已发货', '已完成', '已取消'];
+let orderQuery = '';
 let tab = 'beads', data = { beads: [], templates: [], banners: [], orders: [] }, editing = null, filter = 'all';
 let token = ''; try { token = localStorage.getItem('cgz_admin_token') || ''; } catch {}
 let toastT; const toast = t => { $('toast').textContent = t; $('toast').classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => $('toast').classList.remove('show'), 1800); };
 
-async function api(method, url, body) {
-  const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token }, body: body ? JSON.stringify(body) : undefined });
-  if (r.status === 401) {
-    const t = window.prompt ? window.prompt('请输入后台口令（启动服务时设置的 ADMIN_TOKEN）') : '';
-    if (t) { token = t; try { localStorage.setItem('cgz_admin_token', t); } catch {} return api(method, url, body); }
+let loginPromise = null;
+function requireAdminLogin() {
+  if (loginPromise) return loginPromise;
+  loginPromise = new Promise(resolve => {
+    $('adminLogin').hidden = false;
+    $('adminPassword').focus();
+    $('loginForm').onsubmit = async event => {
+      event.preventDefault();
+      const candidate = $('adminPassword').value.trim();
+      if (!candidate || $('loginSubmit').disabled) return;
+      $('loginSubmit').disabled = true; $('loginError').textContent = '';
+      try {
+        const response = await fetch('/api/admin/orders', {headers: {'X-Admin-Token': candidate}});
+        if (!response.ok) throw new Error(response.status === 401 ? '口令不正确，或服务尚未配置后台口令' : '登录失败，请稍后重试');
+        token = candidate;
+        try { localStorage.setItem('cgz_admin_token', token); } catch {}
+        $('adminPassword').value = '';
+        $('adminLogin').hidden = true;
+        loginPromise = null;
+        resolve();
+      } catch (error) { $('loginError').textContent = error.message; }
+      finally { $('loginSubmit').disabled = false; }
+    };
+  });
+  return loginPromise;
+}
+async function api(method, url, body, retried = false) {
+  const sentToken = token;
+  const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'X-Admin-Token': sentToken }, body: body ? JSON.stringify(body) : undefined });
+  if (r.status === 401 && !retried) {
+    if (sentToken === token) await requireAdminLogin();
+    return api(method, url, body, true);
   }
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.error || ('请求失败 ' + r.status));
@@ -413,19 +451,26 @@ function editBanner(b) {
 }
 
 function renderOrders() {
-  $('bar').innerHTML = `<h2 class="grow">订单（${data.orders.length}）</h2><button class="btn ghost" id="reload">刷新</button>`;
-  $('bar').onclick = async e => { if (e.target.id === 'reload') { await load('orders'); renderOrders(); toast('已刷新'); } };
-  if (!data.orders.length) { $('list').innerHTML = '<div class="panel"><div class="empty">还没有订单。用户在前台下单后会出现在这里。</div></div>'; return; }
+  $('bar').innerHTML = `<h2 class="grow">订单（${data.orders.length}）</h2><input id="orderSearch" type="search" aria-label="搜索订单" placeholder="搜索订单号或收件人" value="${esc(orderQuery)}" style="max-width:240px"><button class="btn ghost" id="reload">刷新</button>`;
+  $('bar').onclick = async e => { if (e.target.id === 'reload') { try { await load('orders'); renderOrders(); toast('已刷新'); } catch (err) { toast(err.message); } } };
+  $('orderSearch').oninput = e => { orderQuery = e.target.value; renderOrderList(); };
+  renderOrderList();
+}
+function renderOrderList() {
+  const q = orderQuery.trim().toLowerCase();
+  const orders = data.orders.filter(o => !q || [o.no, o.person].some(v => String(v || '').toLowerCase().includes(q)));
+  if (!orders.length) { $('list').innerHTML = `<div class="panel"><div class="empty">${data.orders.length ? '没有找到匹配的订单。' : '还没有订单。用户在前台下单后会出现在这里。'}</div></div>`; return; }
   $('list').innerHTML = `<div style="overflow-x:auto"><table><thead><tr><th>订单</th><th>手串</th><th>尺寸</th><th>金额</th><th>收货</th><th>状态</th></tr></thead><tbody>` +
-    data.orders.map(o => { const cnt = {}; o.beads.forEach(id => cnt[id] = (cnt[id] || 0) + 1);
-      return `<tr><td><div class="num">${o.no}</div><div class="sub" style="color:var(--ink-3)">${new Date(o.createdAt).toLocaleString('zh-CN')}</div></td>
-      <td><div style="display:flex;gap:10px;align-items:center">${ringHtml(o.beads, 64)}<div><b>${esc(o.name)}</b><div style="color:var(--ink-2)">${Object.keys(cnt).map(id => esc((BEAD(id)?.name || id) + ' ' + (BEAD(id)?.mm || '') + 'mm×' + cnt[id])).join('<br>')}</div></div></div></td>
-      <td class="num">手围 ${o.wrist}cm<br>总长 ${o.length || lengthOf(o.beads)}mm<br>${o.beads.length} 颗 · ${o.cord ? '编织绳' : '弹力线'}${o.gift ? ' · 礼盒' : ''}</td>
-      <td class="num">¥${o.total}<div style="color:var(--ink-3)">珠子 ¥${o.goods} · 运费 ¥${o.ship}${o.promo ? ' · 立减 ¥' + o.promo : ''}</div></td>
+    orders.map(o => { const ids = Array.isArray(o.beads) ? o.beads : []; const cnt = new Map();
+      const materials = Array.isArray(o.items) && o.items.length ? o.items : ids.map(id => ({id, name: BEAD(id)?.name || id, mm: BEAD(id)?.mm}));
+      materials.forEach(item => { const key = JSON.stringify([item.id, item.name, item.mm, item.price]); const entry = cnt.get(key) || { item, n: 0 }; entry.n++; cnt.set(key, entry); });
+      const rows = [...cnt.values()].map(({ item, n }) => esc(`${item.name || item.id} ${item.mm ?? ''}mm × ${n}${item.price != null ? ' · ¥' + item.price + '/颗' : ''}`)).join('<br>');
+      return `<tr><td><div class="num">${esc(o.no)}</div><div class="sub" style="color:var(--ink-3)">${esc(new Date(o.createdAt).toLocaleString('zh-CN'))}</div></td>
+      <td><div style="display:flex;gap:10px;align-items:center">${ids.length && ids.every(id => BEAD(id)) ? ringHtml(ids, 64) : ''}<div><b>${esc(o.name)}</b><div style="color:var(--ink-2)">${rows}</div></div></div></td>
+      <td class="num">手围 ${esc(o.wrist)}cm<br>总长 ${esc(o.length ?? '—')}mm<br>${ids.length} 颗 · ${o.cord ? '编织绳' : '弹力线'}${o.gift ? ' · 礼盒' : ''}</td>
+      <td class="num">¥${esc(o.total)}<div style="color:var(--ink-3)">珠子 ¥${esc(o.goods)} · 手工费 ¥${esc((Math.round((Number(o.total) + Number(o.promo || 0) - Number(o.goods) - Number(o.ship)) * 100) - (o.cord ? 500 : 0) - (o.gift ? 1000 : 0)) / 100)}${o.cord ? ' · 编织绳 ¥5' : ''}${o.gift ? ' · 礼盒 ¥10' : ''} · 运费 ¥${esc(o.ship)}${o.promo ? ' · 立减 ¥' + esc(o.promo) : ''}</div></td>
       <td>${esc(o.person)} <span class="num">${esc(o.phone)}</span><br><span style="color:var(--ink-2)">${esc(o.addr)}</span></td>
-      <td><select data-no="${o.no}">${STATUS.map(s => `<option ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td></tr>`; }).join('') + `</tbody></table></div>`;
-  $('list').onchange = async e => { const no = e.target.dataset.no; if (!no) return;
-    try { await api('PUT', '/api/admin/orders/' + no, { status: e.target.value }); toast('状态已改为「' + e.target.value + '」'); await load('orders'); } catch (err) { toast(err.message); } };
+      <td>${esc(o.status || '未知')}${o.status === '待支付' ? '<div class="sub">等待支付</div>' : ''}</td></tr>`; }).join('') + `</tbody></table></div>`;
 }
 
 // ---------- 保存 / 删除 ----------

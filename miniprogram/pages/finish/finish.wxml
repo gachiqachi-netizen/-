@@ -1,0 +1,23 @@
+<view class="wrap" wx:if="{{design}}">
+  <view class="card">
+    <view class="title">设计完成</view>
+    <view class="preview"><bracelet3d height="320" wx:if="{{catalog.length && !renderFallback}}" beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}" bind:unavailable="renderUnavailable"/><view wx:if="{{renderFallback}}" wx:for="{{items}}" wx:key="id" class="bead" style="left:{{item.x}}%;top:{{item.y}}%;background:{{item.color}}"></view></view>
+    <view class="row"><view>{{design.name}}</view><view>¥{{price}}</view></view>
+    <view class="sub">手围 {{design.wrist}}cm · {{design.beads.length}} 颗 · 估算串长 {{length}}cm</view>
+    <view class="sub">预计商品价含手工费，运费和优惠将在订单中确认。</view>
+    <view class="error" wx:if="{{previewWarning}}">{{previewWarning}}</view>
+  </view>
+  <view class="finish-main-actions">  <button class="finish-secondary" bindtap="edit">返回修改</button>
+  <button class="finish-secondary" bindtap="tryon">照片试戴</button>
+<button class="finish-secondary" bindtap="saveDesign">保存设计</button></view><view class="sub">{{saveNote}}</view>
+  <view class="card review-card" wx:if="{{design.beads.length >= 6}}">
+    <view class="row"><view class="title">AI 帮你看看</view><button class="review-action" loading="{{loading}}" bindtap="review">看看这条</button></view>
+    <view class="sub" wx:if="{{!review}}">串好了？让 AI 看看搭配和寓意，给你一两条能一键采纳的小建议。</view>
+    <view class="sub" wx:if="{{review}}">{{review}}</view>
+    <view wx:for="{{suggestions}}" wx:key="index" class="suggestion"><view>{{item.text}}</view><button wx:if="{{!item.applied}}" data-index="{{index}}" bindtap="apply">用这个建议</button><view wx:else class="sub">已采纳</view></view>
+    <button class="review-action" wx:if="{{canUndo}}" bindtap="undo">撤销上次调整</button>
+    <view class="sub" wx:if="{{saveNote}}">{{saveNote}}</view><view class="error" wx:if="{{error}}">{{error}}</view>
+  </view>
+  <view class="error" wx:if="{{shareError}}">{{shareError}}</view>
+  <view class="finish-bar"><view class="finish-sum"><view class="sum-price">¥{{price}}</view><text>预计商品价</text></view><button class="ghost" bindtap="share">分享</button><button class="primary" bindtap="order">去下单</button></view>
+</view>

@@ -1,0 +1,7 @@
+<view class="wrap login-page">
+  <view class="title">登录串个珠</view>
+  <view class="sub">使用微信登录后，可以同步设计、查看订单。</view>
+  <button class="primary login-button" bindtap="login" loading="{{busy}}" disabled="{{busy}}">微信登录</button>
+  <view class="error" wx:if="{{error}}">{{error}}</view>
+  <view class="sub">暂不登录也可以设计手串；未同步的设计保存在本机。</view>
+</view>

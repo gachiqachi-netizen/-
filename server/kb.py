@@ -32,7 +32,9 @@ def _load():
     beads, errors = {}, []
     for f in [f for f in files if os.sep + "beads" + os.sep in f]:
         try:
-            for b in json.load(open(f, encoding="utf-8")):
+            with open(f, encoding="utf-8") as source:
+                entries = json.load(source)
+            for b in entries:
                 if isinstance(b, dict) and b.get("id"):
                     beads[b["id"]] = b
         except Exception as e:   # 一个文件坏了不影响别的
@@ -41,7 +43,8 @@ def _load():
     ap = os.path.join(ROOT, "attributes.json")
     if os.path.exists(ap):
         try:
-            attrs = json.load(open(ap, encoding="utf-8"))
+            with open(ap, encoding="utf-8") as source:
+                attrs = json.load(source)
         except Exception as e:
             errors.append(f"attributes.json: {e}")
     banned = [x["word"] for x in attrs.get("banned", []) if x.get("word")] or FALLBACK_BANNED

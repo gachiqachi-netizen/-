@@ -1,0 +1,23 @@
+<view class="order-page">
+  <view wx:if="{{!order && design}}" class="order-content">
+    <view class="order-card">
+      <view class="design-summary"><view class="order-preview"><bracelet-thumb wx:if="{{!previewFallback && catalogReady}}" beads="{{design.beads}}" catalog="{{catalog}}" bind:unavailable="unavailable"/><view wx:if="{{previewFallback}}" wx:for="{{preview}}" wx:key="index" class="preview-bead" style="left:{{item.x}}%;top:{{item.y}}%;background:{{item.color}}"></view></view><view class="summary-info"><view class="design-name">{{design.name}}</view><view class="caption">手围 {{design.wrist}}cm · {{design.beads.length}} 颗</view></view></view>
+      <view class="section-title">材料明细</view>
+      <view class="material-list"><view wx:for="{{items}}" wx:key="id" class="material-line"><view class="material-thumb"><image wx:if="{{item.photo}}" src="{{item.photo}}" mode="aspectFill" class="material-image"/><view wx:else class="material-dot" style="background:radial-gradient(circle at 30% 25%,#fff,{{item.color}})"></view></view><view class="material-info"><view>{{item.name}} {{item.mm}}mm</view><view class="caption">¥{{item.unit}} × {{item.qty}}</view></view><view class="amount">¥{{item.subtotal}}</view></view></view>
+      <view wx:if="{{missing.length}}" class="error">部分材料已下架或不可用，请返回修改设计。</view>
+      <view class="opt"><text>材料小计</text><text>¥{{goods}}</text></view>
+    </view>
+    <view class="order-card">
+      <view class="opt"><text>手围 / 珠串总长</text><view class="value-link" bindtap="wrist">{{design.wrist}}cm / {{length}}cm <text class="muted">修改 ›</text></view></view>
+      <view wx:if="{{fit && fit !== '长度基本合适'}}" class="fit-warning"><text>{{fit}}</text><text class="value-link" bindtap="edit">回去调整 ›</text></view>
+      <view class="opt"><text>穿绳</text><view class="cords"><button class="cord {{cord===0?'chosen':''}}" data-cord="0" bindtap="setCord">弹力线</button><button class="cord {{cord===1?'chosen':''}}" data-cord="1" bindtap="setCord">编织绳 +¥5</button></view></view>
+      <view class="opt"><text>礼盒包装 +¥10</text><switch checked="{{gift}}" color="#c8302e" bindchange="setGift"/></view>
+      <view class="opt"><text>手工串制</text><text>¥15</text></view>
+      <view class="opt"><text>运费</text><text>{{ship==='0.00'?'包邮':'¥'+ship+'（满 ¥99 包邮）'}}</text></view>
+    </view>
+    <view class="order-card form-card"><view class="section-title">收货信息</view><input class="form-input" placeholder="收货人" value="{{person}}" data-key="person" bindinput="input"/><input class="form-input" type="number" placeholder="手机号" value="{{phone}}" data-key="phone" bindinput="input"/><input class="form-input" placeholder="详细地址" value="{{addr}}" data-key="addr" bindinput="input"/><view class="error" wx:if="{{error}}">{{error}}</view><view class="caption muted">当前支付尚未接入，提交后仅创建待支付订单，请勿付款。</view></view>
+    <view class="order-bar"><view class="order-total"><text class="total-price">¥{{total}}</text><text class="caption muted">合计（含运费）</text></view><button class="submit" loading="{{busy}}" disabled="{{busy || !catalogReady || missing.length}}" bindtap="submit">提交订单</button></view>
+  </view>
+  <view wx:elif="{{order}}" class="order-card done"><view class="section-title">订单已创建</view><view>订单号 {{order.no}}</view><view>应付 ¥{{order.total}}</view><view>状态：{{order.status}}</view><view class="caption muted">支付尚未接入，请勿付款。</view><button class="submit" bindtap="home">回首页</button><button bindtap="mine">查看我的订单</button></view>
+  <view wx:else class="order-card">未找到设计，请返回重新选择。</view>
+</view>

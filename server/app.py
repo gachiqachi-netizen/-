@@ -3,16 +3,21 @@
   http://127.0.0.1:8800/        前台（小程序原型）
   http://127.0.0.1:8800/admin   网页后台（珠子 / 模板 / 宣传位 / 订单）
 
-可选环境变量：PORT、ADMIN_TOKEN（设置后后台接口需要口令）、AI 相关见 ai/__init__.py。
+环境变量：PORT、SERVER_HOST、DATA_DIR；后台接口需要配置 ADMIN_TOKEN，未配置时拒绝访问；AI 相关见 ai/__init__.py。
 """
 import base64
+import binascii
 import json
 import os
 import re
+import secrets
 import sys
 import time
+import threading
+import math
 import traceback
 import uuid
+import user_api
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
@@ -25,14 +30,40 @@ import plans  # noqa: E402
 from db import DB  # noqa: E402
 
 PORT = int(os.environ.get("PORT", "8800"))
+HOST = os.environ.get("SERVER_HOST", "127.0.0.1").strip()
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
-UPLOADS = os.path.join(HERE, "uploads")
+DATA_DIR = os.environ.get("DATA_DIR") or HERE
+UPLOADS = os.environ.get("UPLOADS_DIR") or os.path.join(DATA_DIR, "uploads")
 FRONT = os.path.join(HERE, "..", "prototype.html")   # 前台就是原型页面，加上接口地址后直接用
 os.makedirs(UPLOADS, exist_ok=True)
-db = DB(os.path.join(HERE, "data.sqlite3"))
+if os.environ.get("DATABASE_URL"):
+    from db_postgres import PostgresDB
+    db = PostgresDB(os.environ["DATABASE_URL"])
+else:
+    db = DB(os.environ.get("DATABASE_PATH") or os.path.join(DATA_DIR, "data.sqlite3"))
 
 ORDER_STATUS = ["待串制", "串制中", "已发货", "已完成", "已取消"]
 MAX_UPLOAD = 6 * 1024 * 1024
+AI_SLOTS = threading.BoundedSemaphore(4)
+
+def validate_bind(host, admin_token, public_enabled, demo_disabled):
+    # Public binding is an explicit opt-in, but is not a substitute for TLS,
+    # production storage, authentication, rate limiting or security review.
+    if host not in ("127.0.0.1", "localhost", "::1"):
+        if not public_enabled or not admin_token or not demo_disabled:
+            raise ValueError("非本机监听需设置 ALLOW_PUBLIC_BIND=1、ADMIN_TOKEN 并禁用演示下单")
+
+def input_wrist(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 8 <= value <= 30:
+        raise ValueError("手围须在 8–30cm 之间")
+    return value
+
+def text_history(value):
+    if value is None:
+        return []
+    if not isinstance(value, list) or any(not isinstance(x, str) for x in value):
+        raise ValueError("对话记录格式不正确")
+    return [x[:200] for x in value[-6:]]
 
 
 def page_skeleton(body, head=""):
@@ -71,7 +102,18 @@ def image_part(data_url):
     m = re.match(r"data:(image/(?:png|jpeg|webp));base64,(.+)$", data_url or "", re.S)
     if not m:
         raise ValueError("图片格式不对")
-    return m.group(1), m.group(2)
+    try:
+        raw = base64.b64decode(m.group(2), validate=True)
+    except (ValueError, binascii.Error):
+        raise ValueError("图片内容无效")
+    if len(raw) > MAX_UPLOAD:
+        raise ValueError("图片太大，请小于 6MB")
+    typ = m.group(1)
+    if not ((typ == "image/png" and raw.startswith(b'\x89PNG\r\n\x1a\n')) or
+            (typ == "image/jpeg" and raw.startswith(b'\xff\xd8\xff')) or
+            (typ == "image/webp" and raw.startswith(b'RIFF') and raw[8:12] == b'WEBP')):
+        raise ValueError("图片内容与格式不符")
+    return typ, m.group(2)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -79,7 +121,8 @@ class Handler(BaseHTTPRequestHandler):
 
     # ---------- 工具 ----------
     def log_message(self, fmt, *args):
-        sys.stderr.write("%s %s\n" % (self.command, fmt % args))
+        message = re.sub(r'/api/shares/[A-Za-z0-9_-]{43}', '/api/shares/[redacted]', fmt % args)
+        sys.stderr.write("%s %s\n" % (self.command, message))
 
     def send(self, code, body, ctype="application/json; charset=utf-8"):
         if isinstance(body, (dict, list)):
@@ -94,13 +137,26 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def body(self):
-        n = int(self.headers.get("Content-Length") or 0)
-        if n > MAX_UPLOAD * 2:
+        try:
+            n = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            raise ValueError("请求长度不正确")
+        if n < 0 or n > MAX_UPLOAD * 2:
             raise ValueError("请求太大")
-        return json.loads(self.rfile.read(n) or b"{}")
+        try:
+            data = json.loads(self.rfile.read(n) or b"{}")
+        except (ValueError, UnicodeDecodeError):
+            raise ValueError("请求必须是有效的 JSON")
+        if not isinstance(data, dict):
+            raise ValueError("请求内容必须是 JSON 对象")
+        return data
 
     def admin_ok(self):
-        return not ADMIN_TOKEN or self.headers.get("X-Admin-Token") == ADMIN_TOKEN
+        supplied = self.headers.get("X-Admin-Token") or ""
+        return bool(ADMIN_TOKEN) and secrets.compare_digest(supplied.encode('utf-8'), ADMIN_TOKEN.encode('utf-8'))
+
+    def user(self):
+        return user_api.owner(db, self.headers.get("Authorization"))
 
     # ---------- 路由 ----------
     def do_GET(self):
@@ -121,6 +177,8 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/catalog":
                 beads, tpls, banners = on_sale_catalog()
                 return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status()})
+            if path == "/api/promotions/status":
+                return self.send(200, user_api.promotion_status())
             if path == "/api/kb/status":
                 return self.send(200, kb.status())
             if path == "/api/kb/index":
@@ -135,6 +193,18 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, b) if b else self.send(404, {"error": "知识库里没有这个品种"})
             if path == "/api/ai/status":
                 return self.send(200, ai.status())
+            m = re.fullmatch(r"/api/shares/([A-Za-z0-9_-]{43})", path)
+            if m:
+                shared = user_api.read_share(db, m.group(1))
+                return self.send(200, shared) if shared else self.send(404, {"error": "分享不存在"})
+            if path in ("/api/designs", "/api/my/orders"):
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                table = "designs" if path == "/api/designs" else "orders"
+                rows = [user_api.public_design(row) for row in db.list(table) if row.get("userId") == uid]
+                rows.sort(key=lambda row: row.get("updatedAt", row.get("createdAt", 0)), reverse=True)
+                return self.send(200, rows)
             m = re.match(r"^/api/admin/(beads|templates|banners|orders)$", path)
             if m:
                 if not self.admin_ok():
@@ -146,33 +216,61 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(404, {"error": "not_found"})
         except Exception as e:
             traceback.print_exc()
-            return self.send(500, {"error": str(e)})
+            return self.send(500, {"error": "服务暂时不可用，请稍后重试"})
 
     def do_POST(self):
         path = urlparse(self.path).path
         try:
             data = self.body()
             # ----- 前台 -----
+            if path == "/api/auth/wechat":
+                status, result = user_api.login(db, data.get("code"))
+                return self.send(status, result)
+            if path == "/api/shares":
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                return self.send(201, user_api.create_share(db, data, uid))
+            if path in ("/api/designs", "/api/my/orders"):
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                if path == "/api/my/orders":
+                    return self.send(201, user_api.make_order(db, data, uid))
+                design = user_api.design_data(data, uid)
+                design["createdAt"] = design["updatedAt"]
+                return self.send(201, user_api.public_design(db.put("designs", uuid.uuid4().hex, design)))
             if path == "/api/plans/match":   # AI 配：先查方案库，再按手围和预算微调
                 beads, _, _ = on_sale_catalog()
                 text = str(data.get("text") or "")[:200]
-                history = [str(h)[:200] for h in data.get("history") or []][-6:]
+                history = text_history(data.get("history"))
+                wrist = input_wrist(data.get("wrist", 15))
+                exclude = data.get("exclude") or []
+                if not isinstance(exclude, list) or len(exclude) > 100 or any(not isinstance(x, str) or len(x) > 100 for x in exclude):
+                    raise ValueError("排除方案格式不正确")
                 tags, by = None, "rules"
                 if ai.provider():
                     try:
                         vocab = {k: sorted({v for p in plans.all_plans() for v in (p.get(k) or [])}) for k in ("audience", "occasion", "meaning", "style")}
-                        t = ai.extract_tags(text, history, vocab)
+                        if not AI_SLOTS.acquire(blocking=False):
+                            return self.send(429, {"error": "请求较多，请稍后重试"})
+                        try:
+                            t = ai.extract_tags(text, history, vocab)
+                        finally:
+                            AI_SLOTS.release()
                         if t:
                             local = plans.extract(text, history)
                             tags = {**local, **{k: v for k, v in t.items() if v}}
                             by = "ai"
                     except Exception:
-                        traceback.print_exc()
-                out = plans.match(text, beads, float(data.get("wrist") or 15), history, set(data.get("exclude") or []), tags)
+                        sys.stderr.write("AI tag extraction failed; using local matching\n")
+                out = plans.match(text, beads, wrist, history, set(exclude), tags)
                 out["by"] = by
                 return self.send(200, out)
             if path == "/api/orders":
-                beads = {b["id"]: b for b in db.list("beads")}
+                if os.environ.get("DISABLE_DEMO_ORDERS") == "1":
+                    return self.send(403, {"error": "演示下单已关闭"})
+                beads = {b["id"]: b for b in db.list("beads") if b.get("onSale", True)}
                 ids = data.get("beads") or []
                 if len(ids) < 6 or any(x not in beads for x in ids):
                     return self.send(400, {"error": "手串里有珠子已下架，请回去调整"})
@@ -213,15 +311,35 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(400, {"error": err})
                 return self.send(200, db.put(m.group(1), rid, data))
             return self.send(404, {"error": "not_found"})
+        except user_api.IdempotencyConflict as e:
+            return self.send(409, {"error": str(e), "code": "idempotency_conflict"})
+        except user_api.PriceChanged:
+            return self.send(409, {"error": "商品价格或规格已变化，请刷新并重新确认订单", "code": "price_changed"})
         except ValueError as e:
             return self.send(400, {"error": str(e)})
         except Exception as e:
             traceback.print_exc()
-            return self.send(500, {"error": str(e)})
+            return self.send(500, {"error": "服务暂时不可用，请稍后重试"})
 
     def do_PUT(self):
         path = urlparse(self.path).path
         try:
+            design_match = re.fullmatch(r"/api/designs/([a-f0-9]{32})", path)
+            if design_match:
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                data = self.body()
+                expected = data.get("expectedUpdatedAt")
+                if type(expected) is not int or expected < 0:
+                    return self.send(400, {"error": "请提供设计版本 expectedUpdatedAt"})
+                design = user_api.design_data(data, uid)
+                status, saved = db.update_design_if_version(design_match.group(1), uid, expected, design)
+                if status == 'missing':
+                    return self.send(404, {"error": "设计不存在"})
+                if status == 'conflict':
+                    return self.send(409, {"error": "设计已在其他设备修改，请重新获取后处理冲突", "code": "design_conflict"})
+                return self.send(200, user_api.public_design(saved))
             m = re.match(r"^/api/admin/(beads|templates|banners|orders)/([\w-]+)$", path)
             if not m:
                 return self.send(404, {"error": "not_found"})
@@ -233,6 +351,8 @@ class Handler(BaseHTTPRequestHandler):
                 o = db.get("orders", rid)
                 if not o:
                     return self.send(404, {"error": "订单不存在"})
+                if o.get("userId") and o.get("status") == "待支付" and data.get("status") != "已取消":
+                    return self.send(400, {"error": "待支付订单不能进入履约"})
                 if data.get("status") not in ORDER_STATUS:
                     return self.send(400, {"error": "状态不对"})
                 o["status"] = data["status"]
@@ -241,12 +361,24 @@ class Handler(BaseHTTPRequestHandler):
             if err:
                 return self.send(400, {"error": err})
             return self.send(200, db.put(table, rid, data))
+        except ValueError as e:
+            return self.send(400, {"error": str(e)})
         except Exception as e:
             traceback.print_exc()
-            return self.send(500, {"error": str(e)})
+            return self.send(500, {"error": "服务暂时不可用，请稍后重试"})
 
     def do_DELETE(self):
         path = urlparse(self.path).path
+        design_match = re.fullmatch(r"/api/designs/([a-f0-9]{32})", path)
+        if design_match:
+            uid = self.user()
+            if not uid:
+                return self.send(401, {"error": "请先登录"})
+            old = db.get("designs", design_match.group(1))
+            if not old or old.get("userId") != uid:
+                return self.send(404, {"error": "设计不存在"})
+            db.delete("designs", design_match.group(1))
+            return self.send(200, {"ok": True})
         m = re.match(r"^/api/admin/(beads|templates|banners)/([\w-]+)$", path)
         if not m:
             return self.send(404, {"error": "not_found"})
@@ -257,20 +389,36 @@ class Handler(BaseHTTPRequestHandler):
 
     # ---------- AI ----------
     def ai_route(self, path, data):
+        if path not in ("/api/ai/design", "/api/ai/photo", "/api/ai/review"):
+            return self.send(404, {"error": "not_found"})
         beads, _, _ = on_sale_catalog()
-        wrist = data.get("wrist") or 15
+        try:
+            wrist = input_wrist(data.get("wrist", 15))
+            history = text_history(data.get("history"))
+            chosen = data.get("beads") or []
+            if not isinstance(chosen, list) or len(chosen) > 500 or any(not isinstance(x, str) or len(x) > 100 for x in chosen):
+                raise ValueError("珠子数据格式不正确")
+            image = image_part(data.get("image")) if path == "/api/ai/photo" else None
+        except ValueError as e:
+            return self.send(400, {"error": str(e)})
+        if not ai.provider():
+            return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
+        if not AI_SLOTS.acquire(blocking=False):
+            return self.send(429, {"error": "请求较多，请稍后重试"})
         try:
             if path == "/api/ai/design":
-                out = ai.design(beads, str(data.get("text") or "")[:200], [str(h)[:200] for h in data.get("history") or []], wrist)
+                out = ai.design(beads, str(data.get("text") or "")[:200], history, wrist)
             elif path == "/api/ai/photo":
-                out = ai.photo(beads, image_part(data.get("image")))
+                out = ai.photo(beads, image)
             elif path == "/api/ai/review":
-                out = ai.review(beads, [x for x in data.get("beads") or []], wrist, bool(data.get("fitOk")))
+                out = ai.review(beads, chosen, wrist, bool(data.get("fitOk")))
             else:
                 return self.send(404, {"error": "not_found"})
         except Exception as e:   # AI 出错不让前台报错：返回 502，前台用本地规则
-            traceback.print_exc()
-            return self.send(502, {"error": f"AI 暂时没答上来：{e}"})
+            sys.stderr.write("AI provider request failed\n")
+            return self.send(502, {"error": "AI 暂时不可用，请稍后重试"})
+        finally:
+            AI_SLOTS.release()
         if out is None:
             return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
         return self.send(200, out)
@@ -316,6 +464,7 @@ def validate(table, d):
 
 
 if __name__ == "__main__":
-    print(f"串个珠本地服务已启动：http://127.0.0.1:{PORT}/   后台：http://127.0.0.1:{PORT}/admin")
+    validate_bind(HOST, ADMIN_TOKEN, os.environ.get("ALLOW_PUBLIC_BIND") == "1", os.environ.get("DISABLE_DEMO_ORDERS") == "1")
+    print(f"串个珠服务已启动：{HOST}:{PORT}")
     print("AI：", ai.status())
-    ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()
+    ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()

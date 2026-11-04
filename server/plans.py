@@ -25,13 +25,15 @@ def _load():
     plans = []
     for f in files:
         try:
-            plans += [p for p in json.load(open(f, encoding="utf-8")) if isinstance(p, dict) and p.get("id")]
+            with open(f, encoding="utf-8") as source:
+                plans += [p for p in json.load(source) if isinstance(p, dict) and p.get("id")]
         except Exception:
             pass
     rules = {}
     if os.path.exists(rp):
         try:
-            rules = json.load(open(rp, encoding="utf-8"))
+            with open(rp, encoding="utf-8") as source:
+                rules = json.load(source)
         except Exception:
             rules = {}
     _cache.update(stamp=stamp, plans=plans, rules=rules)

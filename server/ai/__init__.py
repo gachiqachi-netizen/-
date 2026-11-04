@@ -25,8 +25,8 @@ def provider():
             _provider = OpenAICompatProvider()
         else:
             _provider_err = "未配置 AI 模型"
-    except Exception as e:   # 没装 SDK、缺环境变量等
-        _provider_err = f"AI 初始化失败：{e}"
+    except Exception:   # Do not expose configuration details or secrets in the public status endpoint.
+        _provider_err = "AI 初始化失败，请检查服务配置"
     return _provider
 
 

@@ -1,0 +1,8 @@
+.git
+.playwright-cli
+server/data.sqlite3*
+server/uploads
+server/__pycache__
+server/tests
+**/__pycache__
+miniprogram

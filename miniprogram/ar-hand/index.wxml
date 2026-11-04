@@ -1,0 +1,20 @@
+<view class="page">
+ <view class="stage" style="height:{{height}}px">
+  <canvas type="2d" id="picture" class="picture" style="width:{{pictureWidth || width}}px;height:{{pictureHeight || height}}px"/>
+  <photo-ring wx:if="{{beads.length && catalog.length && !renderFailed}}" class="overlay" viewport-width="{{width}}" viewport-height="{{height}}" style="display:block;width:{{width}}px;height:{{height}}px;opacity:{{tracked ? 1 : 0}}" beads="{{beads}}" catalog="{{catalog}}" size="{{size}}" angle="{{angle}}" tilt="{{tilt}}" hide-back="{{false}}" xpos="{{x}}" ypos="{{y}}" bind:unavailable="overlayError"/>
+ </view>
+ <view class="status">{{status}}</view>
+ <view class="controls" wx:if="{{!error}}">
+  <button disabled="{{!tracked && !frozen}}" bindtap="toggleFreeze">{{frozen ? '继续实时试戴' : '定格查看'}}</button>
+  <view class="scale-row"><text>手串大小 {{scalePercent}}%</text><slider min="70" max="220" value="{{scalePercent}}" bindchanging="setScale" bindchange="setScale" activeColor="#c8302e"/></view>
+ </view>
+ <view class="hint">{{diag}}</view>
+ <view class="hint">请将手背和手腕完整放入画面，缓慢移动。相机画面仅在本机识别。当前验证跟随效果，尚未实现真实遮挡及尺寸校准。</view>
+ <view wx:if="{{error}}" class="error">{{error}}</view>
+ <button wx:if="{{!error}}" bindtap="switchCamera">切换前后摄像头</button>
+ <button wx:if="{{error}}" bindtap="retry">重新尝试</button>
+ <button wx:if="{{error}}" open-type="openSetting">打开权限设置</button>
+ <button bindtap="copyDiagnostic">复制诊断信息</button>
+ <camera wx:if="{{cameraMounted}}" class="capture" device-position="{{position}}" flash="off" frame-size="medium" bindinitdone="cameraReady" binderror="cameraError"/>
+ <canvas class="compute" type="webgl" id="compute"/>
+</view>

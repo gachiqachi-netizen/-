@@ -1,0 +1,1 @@
+<view class="viewer"><canvas type="webgl" id="bracelet3d" class="canvas"></canvas></view>

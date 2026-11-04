@@ -3,3 +3,15 @@ server/uploads/
 __pycache__/
 _preview.html
 .DS_Store
+node_modules/
+.env
+.env.*
+!.env.example
+*.sqlite3*
+*.sqlite
+*.pem
+*.key
+project.private.config.json
+.playwright-cli/
+output/
+*.log

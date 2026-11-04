@@ -1,10 +1,10 @@
 <title>串个珠</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-/* 按《串个珠设计规范》：白瓷底、绒布托盘展示珠子、红绳红只用于主按钮/选中/价格；系统字体 + DIN 数字；375 宽手机单栏 */
+/* 串个珠视觉基线：白色页面、浅色展示区；红色用于主要操作、选中和价格。 */
 :root {
-  --ground: #f7f6f4; --surface: #ffffff; --tray: #efece8; --tray-deep: #e3ded8; --line: #e6e2dd; --line-strong: #8f8781;
-  --ink: #1f1b1a; --ink-2: #5e5753; --ink-3: #736b66;
+  --ground: #ffffff; --surface: #ffffff; --tray: #faf9f8; --tray-deep: #f3f2f0; --line: #eceae8; --line-strong: #b5afab;
+  --ink: #211e1d; --ink-2: #57514e; --ink-3: #68615e;
   --brand: #c8302e; --brand-pressed: #a82522; --brand-tint: #fbecea; --on-brand: #ffffff;
   --wealth: #7d5a12; --wealth-tint: #f8f0dc; --love: #b23565; --love-tint: #fbe9f0; --study: #6a45a8; --study-tint: #f0eaf8;
   --safe: #22705a; --safe-tint: #e4f3ec; --career: #2a55a0; --career-tint: #e6eef9; --guard: #3b3634; --guard-tint: #eceae8;
@@ -65,7 +65,7 @@ main { flex: 1; padding: var(--space-4) max(var(--space-4), env(safe-area-inset-
 :is(.btn, .chip, .cell, .entry, .tpl, .item, nav button, .back, .wristpill, .skin, .step):focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* 卡片：surface 底，不加阴影 */
-.card { background: var(--surface); border-radius: var(--radius-md); padding: var(--space-4); display: grid; gap: var(--space-3); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-4); display: grid; gap: var(--space-3); }
 .row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
 
 /* 寓意标签 */
@@ -150,7 +150,7 @@ nav button.center.on .ci { background: var(--brand); }
 nav button.center.on .ci svg { stroke: var(--on-brand); }
 /* 自己串：起点网格 */
 .starts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
-.start { border: 0; padding: 0; background: var(--surface); border-radius: var(--radius-md); overflow: hidden; text-align: left; cursor: pointer; display: grid; color: var(--ink); }
+.start { border: 1px solid var(--line); padding: 0; background: var(--surface); border-radius: var(--radius-md); overflow: hidden; text-align: left; cursor: pointer; display: grid; color: var(--ink); }
 .start .traybox { aspect-ratio: 1; background: radial-gradient(circle at 50% 42%, var(--tray), var(--tray-deep)); display: grid; place-items: center; }
 .start .traybox img { width: 92%; }
 .start .body { padding: var(--space-3); display: grid; gap: var(--space-1); }
@@ -221,6 +221,17 @@ nav button.center.on .ci svg { stroke: var(--on-brand); }
 .askbox input[type=text] { width: 100%; height: 44px; box-sizing: border-box; border: 0; border-radius: var(--radius-pill); background: var(--tray); padding: 0 52px 0 var(--space-4); font: 400 15px/22px var(--font-sans); color: var(--ink); }
 .askbox input[type=text]::placeholder { color: var(--ink-2); }
 .askbox input[type=text]:focus { outline: 2px solid var(--ink); outline-offset: 0; }
+.askbox input[type=text] { padding-left:52px; }
+.voice-btn { position:absolute; left:4px; top:4px; width:36px; height:36px; border:0; border-radius:50%; background:var(--surface); color:var(--ink); cursor:pointer; font-size:18px; }
+.voice-btn[aria-pressed="true"] { color:var(--brand); background:var(--brand-tint); }
+.guide-card { border:1px solid var(--line); border-radius:var(--radius-md); padding:var(--space-4); display:grid; gap:var(--space-3); background:var(--surface); }
+.guide-title { font-weight:600; } .guide-row { display:grid; gap:var(--space-2); } .guide-row .chips { flex-wrap:wrap; }
+.guide-template { width:100%; border:1px solid var(--line); background:var(--surface); border-radius:var(--radius-md); padding:12px; text-align:left; color:var(--ink); cursor:pointer; }
+.guide-note { font:400 12px/18px var(--font-sans); color:var(--ink-2); }
+.ai-welcome { padding:32px 4px 12px; display:grid; gap:10px; }
+.ai-welcome h2 { font-size:20px; line-height:28px; }
+.ai-prompts { display:flex; flex-wrap:wrap; gap:8px; }
+.ai-prompts button { border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 13px; font:400 14px/20px var(--font-sans); text-align:left; cursor:pointer; }
 .send { position: absolute; right: 4px; top: 4px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--ink); display: grid; place-items: center; cursor: pointer; }
 .send svg { width: 20px; height: 20px; stroke: var(--surface); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 /* 拍照做同款 */
@@ -257,7 +268,8 @@ nav button.center.on .ci svg { stroke: var(--on-brand); }
 .sugg .done { font: 400 13px/18px var(--font-sans); color: var(--fit-ok); white-space: nowrap; }
 .review-note { font: 400 12px/17px var(--font-sans); color: var(--ink-3); }
 /* 工作台 */
-.resume { border: 0; text-align: left; cursor: pointer; background: var(--brand-tint); color: var(--brand-pressed); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font: 400 13px/18px var(--font-sans); }
+.resume { border: 1px solid var(--line); text-align: left; cursor: pointer; background: var(--surface); color: var(--ink); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); display:flex; align-items:center; justify-content:space-between; gap:12px; font: 400 13px/18px var(--font-sans); }
+.resume-info { display:grid; gap:4px; min-width:0; } .resume-info b { font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .resume-action { color:var(--brand); white-space:nowrap; font-weight:600; }
 .resume b { font-weight: 600; }
 .studio-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
 .act { height: 64px; border: 0; border-radius: var(--radius-md); background: var(--surface); display: grid; justify-items: center; align-content: center; gap: 2px; cursor: pointer; color: var(--ink); font: 400 13px/18px var(--font-sans); }
@@ -424,6 +436,16 @@ nav button.on { color: var(--brand); font-weight: 600; }
 .toast.show { opacity: 1; }
 @media (max-width: 340px) { .entry-ai__head { grid-template-columns: 1fr; } .entry-ai .traybox { display: none; } }
 @media (max-width: 360px) { .palette { grid-template-columns: repeat(3, minmax(0, 1fr)); } .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* 制作工作区：预览留在视野内，材料列表可连续浏览 */
+#v-editor { gap: var(--space-2); }
+#v-editor #studioStage { position: sticky; top: calc(48px + env(safe-area-inset-top, 0px)); z-index: 3; height: clamp(170px, 28vh, 230px); aspect-ratio: auto; }
+#v-editor .studio-controls { display: grid; gap: var(--space-2); }
+#v-editor .studio-details summary { cursor: pointer; font-weight: 600; }
+#v-editor .studio-details[open] { display: grid; gap: var(--space-3); }
+#v-editor #catChips, #v-editor #sizeChips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+#v-editor #catChips .chip, #v-editor #sizeChips .chip { flex: none; }
+#v-editor #catChips::-webkit-scrollbar, #v-editor #sizeChips::-webkit-scrollbar { display: none; }
 @media (prefers-reduced-motion: reduce) { .toast, .lenfill, .cell .traybox { transition: none; } }
 </style>
 
@@ -462,7 +484,7 @@ nav button.on { color: var(--brand); font-weight: 600; }
       <div class="chat" id="chat"></div>
       <form class="composer" id="aiPanel" novalidate>
         <div class="chips" id="wishChips"></div>
-        <div class="askbox"><input type="text" id="wish" maxlength="40" placeholder="送谁、什么寓意、喜欢什么颜色…" aria-label="跟 AI 说你想要的手串">
+        <div class="askbox"><button class="voice-btn" type="button" id="voiceWish" aria-label="语音输入" aria-pressed="false">🎙</button><input type="text" id="wish" maxlength="200" placeholder="给谁、想送什么祝福…" aria-label="跟 AI 说你想要的手串">
           <button class="send" type="submit" id="aiGo" aria-label="发送"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div>
       </form>
     </section>
@@ -480,18 +502,17 @@ nav button.on { color: var(--brand); font-weight: 600; }
         <div class="viewtoggle"><button class="chip on" data-mode="ring">手串</button><button class="chip" data-mode="wrist">戴在手上</button></div>
         <div class="hud"><span>拖动旋转 · 点珠子可以换</span><span id="hudInfo"></span></div>
       </div>
-      <div class="card">
+      <div class="studio-controls">
+        <div class="meter" id="meter"><div class="lentrack"><div class="lenzone"></div><div class="lenfill"></div></div><div class="fittext"></div></div>
+        <div class="seltools" id="selTools"></div>
+        <details id="countDetails" hidden><summary class="caption ink2">按颗数串</summary><div class="countrow" id="countRow"></div></details>
+      </div>
+      <details class="studio-details card">
+        <summary>手串名称与寓意</summary>
         <input class="nameinput" id="dName" maxlength="12" aria-label="手串名字">
         <div class="tags" id="dTags"></div>
         <div class="meaning" id="dMeaning"></div>
-        <div class="meter" id="meter"><div class="lentrack"><div class="lenzone"></div><div class="lenfill"></div></div><div class="fittext"></div></div>
-        <div class="seltools" id="selTools"></div>
-        <div class="countrow" id="countRow"></div>
-      </div>
-      <div class="card review" id="reviewCard" hidden>
-        <div class="row"><h2>AI 帮你看看</h2><button class="btn ghost sm" id="reviewGo" type="button">看看这条</button></div>
-        <div class="review-body" id="reviewBody"></div>
-      </div>
+      </details>
       <div class="card">
         <div class="row"><h2>选珠</h2><span class="caption muted" id="palHint">点珠子加到手串上</span></div>
         <div class="chips" id="catChips"></div>
@@ -502,8 +523,18 @@ nav button.on { color: var(--brand); font-weight: 600; }
       <div class="bottombar">
         <div class="sum"><b>¥<span id="dPrice">0</span></b><span id="dSpec"></span></div>
         <button class="btn ghost" id="toShare">分享</button>
-        <button class="btn" id="toOrder">去下单</button>
+        <button class="btn" id="toOrder">完成设计</button>
       </div>
+    </section>
+
+    <section class="view" id="v-finished" hidden>
+      <div class="card"><h2>设计完成</h2><img id="finishedPreview" alt="当前手串预览" style="width:100%;height:180px;object-fit:contain;border-radius:12px;background:var(--tray)"><div class="row"><b id="finishedName"></b><b id="finishedPrice"></b></div><div class="caption ink2" id="finishedInfo"></div><div class="caption muted">预计商品价含手工费，运费和优惠将在订单中确认。</div></div>
+      <div class="card review" id="reviewCard" hidden>
+        <div class="row"><h2 id="reviewTitle">AI 帮你看看</h2><button class="btn ghost sm" id="reviewGo" type="button">看看这条</button></div>
+        <div class="review-body" id="reviewBody"></div>
+      </div>
+      <button class="btn ghost block" type="button" id="finishedEdit">返回修改</button>
+      <div class="bottombar"><div class="sum"><b>¥<span class="tryPrice"></span></b><span>预计商品价</span></div><button class="btn ghost" data-nav="share">分享</button><button class="btn" data-nav="order">去下单</button></div>
     </section>
 
     <!-- 量手围 -->
@@ -568,7 +599,7 @@ nav button.on { color: var(--brand); font-weight: 600; }
 
     <!-- 下单 -->
     <section class="view" id="v-order" hidden>
-      <div class="card"><div class="design-name" id="oName"></div><div class="lines" id="oLines"></div></div>
+      <div class="card"><div class="row"><img id="oPreview" alt="手串预览" style="width:100px;height:100px;object-fit:contain;border-radius:12px;background:var(--tray)"><div><div class="design-name" id="oName"></div><div class="caption ink2" id="oSummary"></div></div></div><h2>材料明细</h2><div class="lines" id="oLines"></div><div class="opt"><span>材料小计</span><span id="oGoods"></span></div></div>
       <div class="card">
         <div class="opt"><span>手围 / 珠串总长</span><button class="btn text" type="button" id="oWristBtn" style="padding:0;height:auto;color:var(--ink)"><span id="oWrist" class="num"></span>&nbsp;<span style="color:var(--ink-2)">修改 ›</span></button></div>
         <div class="fittext" id="oFit" hidden style="justify-content:space-between"></div>
@@ -1024,6 +1055,7 @@ function renderCountRow(b) {
   const counts = COUNT_RULES.length ? [...new Set(COUNT_RULES.map(c => c.count))].sort((x, y) => x - y) : COUNT_FALLBACK;
   const n = b.filter(id => !isAcc(id)).length;
   $('countRow').hidden = !b.length;
+  $('countDetails').hidden = !b.length;
   $('countRow').innerHTML = b.length ? `<span class="lbl">按颗数串</span>` + counts.map(c => `<button type="button" class="chip${c === n ? ' on' : ''}" data-count="${c}">${c} 颗</button>`).join('') : '';
 }
 function setCount(n) {
@@ -1162,7 +1194,7 @@ function localReview(b) {
 async function runReview() {
   const b = design.beads.slice(), key = b.join(',');
   review = { did: design.id, key, loading: true }; renderReview();
-  let r = null;
+  let r = null, source = 'ai';
   if (API) {
     try { const j = await apiJson('/ai/review', { beads: b, wrist, fitOk: fitOf(b).ok }); r = { praise: j.praise, meaning: j.meaning, sugg: (j.sugg || []).filter(s => validSugg(s, b)) }; } catch (e) {}
   }
@@ -1176,17 +1208,18 @@ async function runReview() {
         sugg: (Array.isArray(j.sugg) ? j.sugg : []).map(s => ({ ...s, text: String(s.text || '').slice(0, 60) })).filter(s => validSugg(s, b)).slice(0, 2) };
     } catch (e) {}
   }
-  if (!r) r = localReview(b);
+  if (!r) { r = localReview(b); source = 'local'; }
   if (!design || design.id !== review.did) return;
-  review = { did: design.id, key, ...r };
+  review = { did: design.id, key, source, ...r };
   design.aiMeaning = r.meaning; saveSoon();
   renderReview();
 }
 function renderReview() {
   const card = $('reviewCard'), b = design.beads, mine = review && review.did === design.id;
-  card.hidden = !(mine || (b.length >= 6 && fitOf(b).ok));
+  card.hidden = b.length < 6;
   if (card.hidden) return;
   const go = $('reviewGo'), body = $('reviewBody');
+  $('reviewTitle').textContent = mine && review.source === 'local' ? '搭配参考' : 'AI 帮你看看';
   if (!mine) { go.hidden = false; go.textContent = '看看这条'; body.innerHTML = '<p class="mean">串好了？让 AI 看看搭配和寓意，给你一两条能一键采纳的小建议。</p>'; return; }
   if (review.loading) { go.hidden = true; body.innerHTML = '<p class="mean">AI 正在看你的手串…</p>'; return; }
   // 撤销后恢复建议状态：回到点评时的样子就全部可采纳；回到某条建议采纳后的样子，就只保留它之前采纳的
@@ -1196,18 +1229,31 @@ function renderReview() {
   if (hit) review.sugg.forEach(x => { if (x.applied && x.order > hit.order) x.applied = false; });
   const stale = ![review.key, ...review.sugg.filter(x => x.applied).map(x => x.afterKey)].includes(cur);
   go.hidden = !stale; go.textContent = '再看一次';
-  body.innerHTML = `<p class="praise">${esc(review.praise)}</p>` + (review.meaning ? `<p class="mean"><b>寓意</b>　${esc(review.meaning)}</p>` : '') +
+  body.innerHTML = (review.source === 'local' ? '<p class="review-note">当前为本地规则提供的基础建议。</p>' : '') + `<p class="praise">${esc(review.praise)}</p>` + (review.meaning ? `<p class="mean"><b>寓意</b>　${esc(review.meaning)}</p>` : '') +
     review.sugg.map((s, i) => `<div class="sugg"><p>${esc(s.text)}</p>${s.applied ? '<span class="done">✓ 已采纳</span>' : `<button class="btn ghost sm" type="button" data-sugg="${i}"${stale ? ' disabled' : ''}>用这个建议</button>`}</div>`).join('') +
+    (review.undoBeads && review.undoAfter === cur ? '<button class="btn ghost sm" type="button" data-review-undo="1">撤销上次调整</button>' : '') +
     (!review.sugg.length ? '<p class="review-note">这条已经很完整了，可以直接下单。</p>' : '') +
     (stale ? '<p class="review-note">珠子改过了，建议可能不准，点「再看一次」。</p>' : '');
 }
 $('reviewGo').onclick = runReview;
 $('reviewBody').onclick = e => {
+  if (e.target.dataset.reviewUndo) { if (review.undoBeads && review.undoAfter === design.beads.join(',')) { const prev = review.undoBeads; review.undoBeads = null; commit(prev); renderFinished(); toast('已撤销上次调整'); } return; }
   const i = e.target.dataset.sugg; if (i === undefined) return;
   const s = review.sugg[+i], nb = applyOp(design.beads, s);
+  review.undoBeads = design.beads.slice(); review.undoAfter = nb.join(',');
   s.applied = true; s.order = Date.now(); s.afterKey = nb.join(','); commit(nb);
-  toast('已采纳，不喜欢可以点「撤销」');
+  renderFinished(); toast('已采纳，可撤销上次调整');
 };
+
+function renderFinished() {
+  $('finishedPreview').src = thumb(design.beads);
+  $('finishedName').textContent = design.name || '我的手串';
+  $('finishedPrice').textContent = `¥${priceOf(design.beads) + 15}`;
+  const f = fitOf(design.beads);
+  $('finishedInfo').textContent = `手围 ${wrist}cm · ${design.beads.length} 颗 · 总长 ${lengthOf(design.beads)}mm · ${f.ok ? '长度合适' : f.text.replace(/<[^>]+>/g, '')}`;
+  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceOf(design.beads) + 15);
+  renderReview();
+}
 
 // ================= AI 配寓意 =================
 let sampleFn = null;
@@ -1344,12 +1390,8 @@ const EXAMPLES = [
   { text: '想要好运，100 以内', ids: ['hy8', 'hy8', 'hy8', 'zy6'] }
 ];
 function aiHeroHtml() {
-  const art = [['fj8', 'fj8', 'cm8', 'sp4'], ['zt8', 'zt8', 'nh8', 'zt8', 'gp'], ['ls8', 'xy8', 'xy8', 'sp4z']]
-    .map(ids => ids.filter(id => ITEM[id])).filter(ids => ids.length).map(ids => `<img src="${thumb(fill([], ids), 264, -0.9)}" alt="">`).join('');
-  const ex = EXAMPLES.map(e => { const ids = e.ids.filter(id => ITEM[id]);
-    return `<button class="example" type="button" data-ex="${esc(e.text)}"><span class="traybox">${ids.length ? `<img src="${thumb(fill([], ids), 200, -0.8)}" alt="">` : ''}</span><span class="body"><q>${esc(e.text)}</q><span class="go">点一下，让 AI 配 ›</span></span></button>`; }).join('');
-  return `<div class="ai-hero"><div class="ai-hero__art">${art}</div><h2>说一句话，AI 帮你配手串</h2><p>送谁、什么寓意、喜欢什么颜色都行。按你的 ${wrist}cm 手围配 3 条给你挑，不满意可以接着说。</p></div>
-    <div class="section-head"><h2>大家常这样说</h2></div><div class="examples">${ex}</div>`;
+  const ex = [EXAMPLES[0], EXAMPLES[2], EXAMPLES[3]].map(e => `<button type="button" data-ex="${esc(e.text)}">${esc(e.text)}</button>`).join('');
+  return `<div class="ai-welcome"><h2>想做一条什么样的手串？</h2><div class="caption ink2">告诉我送给谁、想表达什么祝福。</div><div class="ai-prompts">${ex}</div></div>`;
 }
 async function askAi(text) {
   if (!text || chatBusy) return;
@@ -1360,10 +1402,22 @@ async function askAi(text) {
 }
 const scrollChat = () => setTimeout(() => { const last = $('chat').lastElementChild; last && last.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
 $('chat').onclick = e => {
-  const ex = e.target.closest('[data-ex]'); if (ex) return askAi(ex.dataset.ex);
+  const ex = e.target.closest('[data-ex]'); if (ex) { $('wish').value = ex.dataset.ex; $('wish').focus(); return; }
   const u = e.target.dataset.use; if (!u) return;
   const [mi, ci] = u.split('.').map(Number), d = chat[mi].cands[ci];
   openEditor(d.src, { ...clone(d), beads: fill(d.special || [], d.pattern, d.tail, d.fixed) }, d.fixed ? `按 ${d.fixed} 颗串好了，多圈绕腕` : '放到托盘上了，可以接着改');
+};
+let speechInput = null;
+$('voiceWish').onclick = () => {
+  if (speechInput) { speechInput.stop(); return; }
+  const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Speech) { toast('当前浏览器不支持语音输入，请使用键盘语音或文字输入'); return; }
+  const rec = new Speech(); speechInput = rec; rec.lang = 'zh-CN'; rec.interimResults = false;
+  rec.onstart = () => { $('voiceWish').setAttribute('aria-pressed', 'true'); toast('正在听，请说出你的想法'); };
+  rec.onresult = e => { const words = Array.from(e.results).map(r => r[0].transcript).join(''); $('wish').value = [$('wish').value.trim(), words].filter(Boolean).join('，').slice(0, 200); };
+  rec.onerror = () => toast('语音不可用，请检查麦克风权限或使用文字输入');
+  rec.onend = () => { speechInput = null; $('voiceWish').setAttribute('aria-pressed', 'false'); };
+  try { rec.start(); } catch (_) { speechInput = null; toast('语音暂不可用，请使用文字输入'); }
 };
 // 读图、压缩
 const loadImg = file => new Promise((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = () => rej(new Error('图片打不开')); img.src = URL.createObjectURL(file); });
@@ -1657,6 +1711,9 @@ let cord = 0;
 function orderTotal() { const sub = priceOf(design.beads) + 15 + CORDS[cord][1] + ($('gift').checked ? 10 : 0), ship = sub >= 99 ? 0 : 8, promo = orders.length ? 0 : 10; return { ship, promo, sum: Math.max(0, sub + ship - promo) }; }
 function buildOrder() {
   $('oName').textContent = design.name || '我的手串';
+  $('oPreview').src = thumb(design.beads);
+  $('oSummary').textContent = `手围 ${wrist}cm · ${design.beads.length} 颗`;
+  $('oGoods').textContent = `¥${priceOf(design.beads)}`;
   const counts = {}; design.beads.forEach(id => counts[id] = (counts[id] || 0) + 1);
   $('oLines').innerHTML = Object.keys(counts).map(id => { const it = ITEM[id];
     return `<div class="line"><span class="thumb"><img src="${beadThumb(id)}" alt=""${ITEM[id] && ITEM[id].photo ? ' class="real"' : ''}></span><span class="main"><b>${esc(label(it))}</b><span class="caption muted num">¥${it.price} × ${counts[id]}</span></span><span class="amt">¥${it.price * counts[id]}</span></div>`; }).join('');
@@ -1775,7 +1832,7 @@ function renderDiy() {
   $('diyWrist').textContent = wrist + 'cm';
   const last = designs.find(d => d.id === store.get('draftId', '') && validIds(d.beads) && d.edited && !d.ordered);
   $('resumeCard').hidden = !last;
-  if (last) { $('resumeCard').innerHTML = `继续上次的「<b>${esc(last.name)}</b>」 · ¥${priceOf(last.beads) + 15} ›`; $('resumeCard').onclick = () => openEditor(last.source, clone(last)); }
+  if (last) { $('resumeCard').innerHTML = `<span class="resume-info"><span class="caption muted">上次的设计</span><b>${esc(last.name)}</b><span class="caption muted">${last.beads.length} 颗 · ¥${priceOf(last.beads) + 15}</span></span><span class="resume-action">继续设计 ›</span>`; $('resumeCard').onclick = () => openEditor(last.source, clone(last)); }
   $('starts').innerHTML = `<button class="start blank" type="button" data-start="blank"><span class="traybox"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke-dasharray="2.5 3"/><path d="M12 8.5v7M8.5 12h7"/></svg></span><span class="body"><span class="nm">从空白开始</span><span class="go">一颗颗挑，挑好主珠一键铺满</span></span></button>` +
     `<button class="start" type="button" data-start="photo"><span class="traybox">${CAMERA_SVG}</span><span class="body"><span class="nm">照着照片串</span><span class="go">拍一张喜欢的手串，认出珠子帮你串好</span></span></button>` +
     validTemplates().map(t => { const beads = fill(t.special, t.pattern, t.tail);
@@ -1891,7 +1948,7 @@ $('kDel').onclick = async () => {
 };
 
 // ================= 页面切换 =================
-const TITLES = { home: '串个珠', diy: '自己串', ai: 'AI 配', same: '拍照做同款', editor: '设计手串', wrist: '量手围', try: '3D 试戴', share: '分享', shared: '朋友分享的手串', order: '确认订单', done: '下单成功', mine: '我的', admin: '料包管理', kit: '编辑珠子' };
+const TITLES = { home: '串个珠', diy: '自己串', ai: 'AI 配', same: '拍照做同款', editor: '设计手串', finished: '完成设计', wrist: '量手围', try: '3D 试戴', share: '分享', shared: '朋友分享的手串', order: '确认订单', done: '下单成功', mine: '我的', admin: '料包管理', kit: '编辑珠子' };
 const TABS = ['home', 'diy', 'ai', 'mine'];
 let stack = ['home'];
 function show(v) {
@@ -1907,6 +1964,7 @@ function show(v) {
   if (v === 'same') renderSame();
   if (v === 'ai') { renderChat(); if (chat.length) scrollChat(); }
   if (v === 'editor') { viewer.mount($('studioStage')); renderKits(); renderStudio(true); }
+  if (v === 'finished') renderFinished();
   if (v === 'wrist') renderWrist();
   if (v === 'shared') renderShared();
   if (v === 'mine') { renderMine(); $('mineWrist').textContent = `${wrist}cm ›`; $('adminLink').hidden = !(canAdmin || API); }
@@ -1922,7 +1980,8 @@ $('back').onclick = back;
 document.querySelector('nav').onclick = e => { const t = e.target.closest('[data-tab]'); if (!t) return; ['diy', 'ai'].includes(t.dataset.tab) ? goTab(t.dataset.tab) : go(t.dataset.tab); };
 document.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => b.dataset.nav === 'order' ? gotoOrder() : go(b.dataset.nav));
 $('toShare').onclick = () => { saveDesign(true); go('share'); };
-$('toOrder').onclick = gotoOrder;
+$('toOrder').onclick = () => { saveDesign(true); go('finished'); };
+$('finishedEdit').onclick = back;
 $('newKit').onclick = () => openKit(null);
 $('adminLink').onclick = () => API ? window.open('/admin', '_blank') : go('admin');   // 本地服务有独立的网页后台
 $('mineWrist').onclick = () => go('wrist');

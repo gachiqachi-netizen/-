@@ -1,0 +1,23 @@
+.wrap{padding:32rpx 32rpx calc(156rpx + env(safe-area-inset-bottom));background:#fff;box-sizing:border-box}
+.card{margin:0 0 32rpx;padding:32rpx;border:1rpx solid #e6e2dd;border-radius:24rpx;background:#fff}
+.title{font-size:32rpx;line-height:48rpx;font-weight:600}
+.card .row{margin-top:24rpx}
+.preview{position:relative;width:100%;height:460rpx;margin:24rpx 0;background:#f9f8f7;border-radius:24rpx;overflow:hidden}
+.bead{position:absolute;width:20rpx;height:20rpx;border-radius:50%;transform:translate(-50%,-50%);box-shadow:inset -2rpx -2rpx 4rpx #0002}
+.sub{font-size:26rpx;line-height:36rpx;color:#5e5753;margin-top:16rpx}
+.suggestion{display:flex;align-items:center;justify-content:space-between;gap:16rpx;border-top:1rpx solid #e6e2dd;margin-top:24rpx;padding-top:24rpx;font-size:28rpx}
+.suggestion button,.review-action{border:1rpx solid #8f8781;border-radius:999rpx;background:#fff;font-size:26rpx;line-height:64rpx;padding:0 24rpx;margin:0;flex:none}
+.review-card{border-color:#fbecea}.error{font-size:24rpx;margin-top:12rpx}
+.finish-secondary{height:88rpx;line-height:88rpx;border:1rpx solid #8f8781;background:#fff;border-radius:999rpx;font-size:30rpx;font-weight:600;margin:0 0 20rpx}
+.finish-bar{position:fixed;z-index:4;bottom:0;left:0;right:0;background:#fff;box-shadow:0 -8rpx 32rpx rgba(31,27,26,.06);padding:20rpx 32rpx calc(20rpx + env(safe-area-inset-bottom));display:flex;align-items:center;gap:16rpx}
+.finish-sum{flex:1;min-width:0}.finish-sum .sum-price{display:block;color:#c8302e;font-size:32rpx}.finish-sum text{font-size:22rpx;color:#68625f}.finish-bar button{margin:0;border-radius:999rpx;height:80rpx;line-height:80rpx;padding:0 24rpx;font-size:28rpx;font-weight:600}.finish-bar .ghost{background:#fff;border:1rpx solid #8f8781}.finish-bar .primary{background:#c8302e;color:#fff}
+/* Keep native button defaults from squeezing the order summary on phones. */
+.finish-bar{box-sizing:border-box}
+.finish-sum{flex:1 1 0;width:0;min-width:0}
+.finish-sum text{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.finish-bar button{width:auto;min-width:0;flex:0 0 auto;box-sizing:border-box}
+.finish-bar .ghost{width:132rpx;padding:0}
+.finish-bar .primary{width:176rpx;padding:0}
+.review-action{width:auto;max-width:260rpx;flex:0 0 auto}
+
+.preview{height:320rpx}.finish-main-actions{display:flex;gap:12rpx;flex-wrap:wrap}.finish-main-actions .finish-secondary{flex:1;width:auto;min-width:180rpx;font-size:26rpx;height:76rpx;line-height:76rpx}

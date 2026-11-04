@@ -12,11 +12,14 @@ function networkError(error) {
   return new Error(message)
 }
 function request(path, data, method) {
-  const base = getApp().globalData.apiBase
+  const g = getApp().globalData
+  if (g.configError || !g.apiBase) return Promise.reject(new Error(g.configError || '服务地址尚未配置'))
+  const base = g.apiBase
   return new Promise((resolve, reject) => wx.request({url: base + '/api' + path, method: method || (data ? 'POST' : 'GET'), data, success(r) { if (r.statusCode >= 200 && r.statusCode < 300) resolve(r.data); else reject(new Error((r.data && r.data.error) || '服务暂不可用')) }, fail(error) { reject(networkError(error)) } }))
 }
 function catalog(force) {
   const g = getApp().globalData
+  if (g.configError || !g.apiBase) return Promise.reject(new Error(g.configError || '服务地址尚未配置'))
   if (!force && g.catalog) return Promise.resolve(g.catalog)
   const info = wx.getAccountInfoSync && wx.getAccountInfoSync()
   if (info && info.miniProgram && info.miniProgram.envVersion === 'develop') {

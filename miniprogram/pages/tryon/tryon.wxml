@@ -1,4 +1,4 @@
-<view class="tryon-page">
+<view class="tryon-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
   <button class="ghost" bindtap="openAR">实时 AR 试戴（测试）</button>
   <view class="chips mode-chips"><button class="mode {{mode==='photo'?'on':''}}" data-mode="photo" bindtap="toggle">拍我的手</button><button class="mode {{mode==='model'?'on':''}}" data-mode="model" bindtap="toggle">3D 模型手</button></view>
   <view wx:if="{{mode==='photo'}}">

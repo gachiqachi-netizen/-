@@ -13,17 +13,32 @@ function networkError(error) {
 }
 function request(path, data, method) {
   const base = getApp().globalData.apiBase
-  return new Promise((resolve, reject) => wx.request({url: base + '/api' + path, method: method || (data ? 'POST' : 'GET'), data, success(r) { if (r.statusCode >= 200 && r.statusCode < 300) resolve(r.data); else reject(new Error((r.data && r.data.error) || '服务暂不可用')) }, fail(error) { reject(networkError(error)) } }))
+  return new Promise((resolve, reject) => wx.request({url: base + '/api' + path, method: method || (data ? 'POST' : 'GET'), data, timeout:10000, success(r) { if (r.statusCode >= 200 && r.statusCode < 300) resolve(r.data); else reject(new Error((r.data && r.data.error) || '服务暂不可用')) }, fail(error) { reject(networkError(error)) } }))
 }
+function showCatalogSource(offline) {
+  if (typeof getCurrentPages !== 'function') return
+  getCurrentPages().forEach(page => { if (page && page.setData) page.setData({catalogOffline:offline}) })
+}
+let catalogGeneration = 0
 function catalog(force) {
   const g = getApp().globalData
-  if (!force && g.catalog) return Promise.resolve(g.catalog)
   const info = wx.getAccountInfoSync && wx.getAccountInfoSync()
-  if (info && info.miniProgram && info.miniProgram.envVersion === 'develop') {
-    g.catalogOffline = true
-    g.catalog = require('./catalog-preview')
+  const develop = info && info.miniProgram && info.miniProgram.envVersion === 'develop'
+  if (!force && !develop && g.catalog && !g.catalogOffline) {
+    showCatalogSource(false)
     return Promise.resolve(g.catalog)
   }
-  return request('/catalog').then(data => { g.catalogOffline = false; g.catalog = data; return data })
+  const generation = ++catalogGeneration
+  return request('/catalog').then(data => {
+    if (!data || !Array.isArray(data.beads)) throw new Error('材料目录格式不正确')
+    if (generation === catalogGeneration) { g.catalogOffline = false; g.catalog = data; showCatalogSource(false) }
+    return data
+  }).catch(error => {
+    // Checkout uses force=true: an offline example must never authorize an order.
+    if (!develop || force) throw error
+    const snapshot = require('./catalog-preview')
+    if (generation === catalogGeneration) { g.catalogOffline = true; g.catalog = snapshot; showCatalogSource(true) }
+    return snapshot
+  })
 }
 module.exports = {request,catalog,networkError}

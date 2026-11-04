@@ -1,1 +1,2268 @@
-module.exports = {"beads": [{"name": "小叶紫檀", "mm": 8, "price": 3, "mat": "wood", "c": ["#a3442f", "#3d110b"], "tags": ["富贵", "沉稳", "古朴"], "kb": "xiaoye-zitan", "attrs": {"origin": "印度"}, "order": 10, "onSale": true, "id": "zt8", "kbName": "小叶紫檀", "meaning": "紫檀在明清是宫廷家具和文房的名贵用材，传统上被看作木中上品，寓意沉稳、富贵。", "summary": "檀香紫檀的心材，产自印度南部，是红木国标紫檀木类里唯一的树种。", "points": ["印度"]}, {"name": "小叶紫檀", "mm": 10, "price": 4, "mat": "wood", "c": ["#a3442f", "#3d110b"], "tags": ["富贵", "沉稳", "古朴"], "kb": "xiaoye-zitan", "attrs": {"origin": "印度"}, "order": 20, "onSale": true, "id": "zt10", "kbName": "小叶紫檀", "meaning": "紫檀在明清是宫廷家具和文房的名贵用材，传统上被看作木中上品，寓意沉稳、富贵。", "summary": "檀香紫檀的心材，产自印度南部，是红木国标紫檀木类里唯一的树种。", "points": ["印度"]}, {"name": "金刚菩提", "mm": 10, "price": 3, "mat": "wood", "c": ["#bf7442", "#5e2a12"], "tags": ["坚韧", "吉祥"], "kb": "jingang", "attrs": {}, "order": 30, "onSale": true, "id": "jg10", "kbName": "金刚菩提", "meaning": "“金刚”取坚固不坏之意，金刚菩提在南亚和藏地传统里常做念珠。", "summary": "杜英属植物的果核（Li 等 2014 记为 Elaeocarpus angustifolius，常称圆果杜英），表面沟壑起伏，按瓣数区分，主要产自尼泊尔和印尼。", "points": []}, {"name": "星月菩提", "mm": 8, "price": 1, "mat": "bodhi", "c": ["#f6eed8", "#b8935a"], "tags": ["清净", "圆满"], "kb": "xingyue", "attrs": {"color": "顺白"}, "order": 40, "onSale": true, "id": "xy8", "kbName": "星月菩提", "meaning": "星点环绕一轮月，传统上常做念珠，取“众星拱月”的圆满之象。", "summary": "黄藤的种子车磨成珠，白底布满黑色星点，孔口有一个圆形凹坑像月亮。", "points": ["顺白"]}, {"name": "南红", "mm": 8, "price": 12, "mat": "stone", "c": ["#ec5a3f", "#8e1a10"], "tags": ["红火", "吉祥", "喜庆"], "kb": "nanhong", "attrs": {"origin": "保山", "color": "柿子红"}, "order": 50, "onSale": true, "id": "nh8", "kbName": "南红", "meaning": "南红颜色正红，古称赤玉。传统上以红色寓意红火吉祥，常用作年节、喜庆题材。", "summary": "产自云南保山、四川凉山、甘肃迭部的红色玛瑙，颜色和矿口决定价格。", "points": ["保山", "柿子红"]}, {"name": "南红佛头", "mm": 12, "price": 18, "mat": "stone", "c": ["#ec5a3f", "#7a140b"], "tags": ["红火", "吉祥", "喜庆"], "kb": "nanhong", "attrs": {"origin": "保山", "shape": "佛头"}, "order": 60, "onSale": true, "id": "ft12", "kbName": "南红", "meaning": "南红颜色正红，古称赤玉。传统上以红色寓意红火吉祥，常用作年节、喜庆题材。", "summary": "产自云南保山、四川凉山、甘肃迭部的红色玛瑙，颜色和矿口决定价格。", "points": ["保山"]}, {"name": "蜜蜡", "mm": 10, "price": 18, "mat": "stone", "c": ["#ffd35c", "#d4870b"], "tags": ["富贵", "温润"], "kb": "mila", "attrs": {}, "order": 70, "onSale": true, "id": "ml10", "kbName": "蜜蜡", "meaning": "", "summary": "不透明或半透明的琥珀，色泽温润，是藏式和文玩里的常见材料。", "points": []}, {"name": "青金石", "mm": 8, "price": 5, "mat": "stone", "c": ["#3f63d6", "#14236b"], "tags": ["庄重", "尊贵", "天空"], "kb": "qingjin", "attrs": {}, "order": 80, "onSale": true, "id": "qj8", "kbName": "青金石", "meaning": "颜色深如夜空，古代研磨作群青颜料，清代祭天礼仪也用青金石朝珠，传统上象征庄重和尊贵。", "summary": "以青金石矿物为主的蓝色玉石，深蓝带金色星点，古代用作群青颜料。", "points": []}, {"name": "绿松石", "mm": 8, "price": 6, "mat": "stone", "c": ["#5fd0c4", "#1e7f78"], "tags": ["吉祥", "天空", "古朴"], "kb": "lvsong", "attrs": {}, "order": 90, "onSale": true, "id": "ls8", "kbName": "绿松石", "meaning": "绿松石在中原和藏地都有几千年的佩戴传统，颜色像晴空，常被当作吉祥美好的象征。", "summary": "含铜的磷酸盐矿物，天蓝到蓝绿色，常带铁线，是藏式和文玩里的主力配珠。", "points": []}, {"name": "绿松石", "mm": 6, "price": 4, "mat": "stone", "c": ["#5fd0c4", "#1e7f78"], "tags": ["吉祥", "天空", "古朴"], "kb": "lvsong", "attrs": {}, "order": 100, "onSale": true, "id": "ls6", "kbName": "绿松石", "meaning": "绿松石在中原和藏地都有几千年的佩戴传统，颜色像晴空，常被当作吉祥美好的象征。", "summary": "含铜的磷酸盐矿物，天蓝到蓝绿色，常带铁线，是藏式和文玩里的主力配珠。", "points": []}, {"name": "黑曜石", "mm": 8, "price": 3, "mat": "stone", "c": ["#55556a", "#0b0b10"], "tags": ["沉稳", "内敛"], "kb": "heiyao", "attrs": {"color": "乌金"}, "order": 110, "onSale": true, "id": "hy8", "kbName": "黑曜石", "meaning": "颜色深沉、光泽内敛，一般取沉稳、低调的意象，男款和情侣款用得多。", "summary": "火山喷发形成的天然火山玻璃，整体黑色，部分有金银光泽或彩虹圈。", "points": ["乌金"]}, {"name": "白水晶", "mm": 8, "price": 2, "mat": "crystal", "c": ["#ffffff", "#bfcadb"], "tags": ["纯净", "明澈"], "kb": "bai-shuijing", "attrs": {"purity": "净体"}, "order": 120, "onSale": true, "id": "bj8", "kbName": "白水晶", "meaning": "古人把水晶叫“水精”“水玉”，取其清澈如水，常用来比喻纯净、明澈。", "summary": "无色透明的石英单晶，最常见的水晶，常做主珠、佛头和隔珠。", "points": ["净体"]}, {"name": "粉晶", "mm": 8, "price": 3, "mat": "crystal", "c": ["#ffe0e7", "#e08aa0"], "tags": ["温柔", "浪漫"], "kb": "fen-jing", "attrs": {"origin": "马达加斯加"}, "order": 130, "onSale": true, "id": "fj8", "kbName": "粉晶", "meaning": "粉色柔和明亮，传统上常用来寓意温柔与浪漫，也常作为送给亲友的心意之选。", "summary": "粉色的石英，规范名芙蓉石，用户几乎只叫粉晶，偏女性的热门款。", "points": ["马达加斯加"]}, {"name": "紫水晶", "mm": 8, "price": 4, "mat": "crystal", "c": ["#e2c7ff", "#6b3fa0"], "tags": ["尊贵", "吉祥"], "kb": "zi-jing", "attrs": {}, "order": 140, "onSale": true, "id": "zj8", "kbName": "紫水晶", "meaning": "紫色在中国传统里是尊贵之色，有“紫气东来”的吉祥说法；西方把紫晶列为二月生辰石。", "summary": "紫色的石英，颜色从浅薰衣草紫到深葡萄紫，水晶里最常见的彩色品种之一。", "points": []}, {"name": "草莓晶", "mm": 8, "price": 6, "mat": "crystal", "c": ["#ffc7c7", "#c2414f"], "tags": ["甜蜜", "恋爱"], "kb": "caomei-jing", "attrs": {}, "order": 150, "onSale": true, "id": "cm8", "kbName": "草莓晶", "meaning": "", "summary": "水晶里含红色片状或点状包体，像草莓籽，市面染色和玻璃仿品很多。", "points": []}, {"name": "金色转运珠", "mm": 6, "price": 10, "mat": "metal", "c": ["#fff1b8", "#a87a1c"], "tags": ["顺遂", "吉祥"], "kb": "zhuanyun", "attrs": {"color": "金色"}, "order": 160, "onSale": true, "id": "zy6", "kbName": "转运珠", "meaning": "旧称“路路通”，取路路通达、诸事顺遂的吉祥说法；名字只是市场叫法，不代表任何效果。", "summary": "串在手绳或手串上的金属通孔小珠，市场统称这个名字，材质从足金到合金都有。", "points": ["金色"]}, {"name": "银色隔珠", "mm": 4, "price": 1, "mat": "metal", "c": ["#ffffff", "#8a8f98"], "tags": ["点缀"], "kb": "gezhu", "attrs": {"color": "银色"}, "order": 170, "onSale": true, "id": "sp4", "kbName": "隔珠隔片", "meaning": "", "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。", "points": ["银色"]}, {"name": "铜色隔珠", "mm": 4, "price": 1, "mat": "metal", "c": ["#f0c79a", "#8a5424"], "tags": ["点缀"], "kb": "gezhu", "attrs": {}, "order": 180, "onSale": true, "id": "sp4z", "kbName": "隔珠隔片", "meaning": "", "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。", "points": []}, {"name": "金色隔片", "mm": 2, "price": 1, "mat": "metal", "c": ["#fff1b8", "#a87a1c"], "tags": ["点缀"], "spacer": true, "kb": "gezhu", "attrs": {"color": "金色"}, "order": 190, "onSale": true, "id": "gp", "kbName": "隔珠隔片", "meaning": "", "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。", "points": ["金色"]}, {"name": "和田玉", "mm": 8, "price": 15, "mat": "stone", "c": ["#ece8d6", "#9d9b86"], "tags": ["君子", "温润"], "kb": "hetian-yu", "attrs": {}, "order": 200, "onSale": true, "id": "hetian-yu-8", "kbName": "和田玉", "meaning": "中国玉文化有“君子比德于玉”的传统，常用和田玉的温润比喻人的品格。", "summary": "以透闪石为主的软玉，油润细腻。“和田玉”是矿物名，不代表产地。", "points": []}, {"name": "和田玉", "mm": 10, "price": 22, "mat": "stone", "c": ["#ece8d6", "#9d9b86"], "tags": ["君子", "温润"], "kb": "hetian-yu", "attrs": {}, "order": 210, "onSale": true, "id": "hetian-yu-10", "kbName": "和田玉", "meaning": "中国玉文化有“君子比德于玉”的传统，常用和田玉的温润比喻人的品格。", "summary": "以透闪石为主的软玉，油润细腻。“和田玉”是矿物名，不代表产地。", "points": []}, {"name": "月光石", "mm": 6, "price": 4, "mat": "crystal", "c": ["#f1f5fa", "#a5b8cf"], "tags": ["温柔", "浪漫"], "kb": "yueguang-shi", "attrs": {}, "order": 220, "onSale": true, "id": "yueguang-shi-6", "kbName": "月光石", "meaning": "光晕像月光，常用来寓意温柔、浪漫；西方把月光石列为六月生辰石之一。", "summary": "有月光效应的长石，转动时表面下浮着一层蓝色或白色光晕。", "points": []}, {"name": "月光石", "mm": 8, "price": 6, "mat": "crystal", "c": ["#f1f5fa", "#a5b8cf"], "tags": ["温柔", "浪漫"], "kb": "yueguang-shi", "attrs": {}, "order": 230, "onSale": true, "id": "yueguang-shi-8", "kbName": "月光石", "meaning": "光晕像月光，常用来寓意温柔、浪漫；西方把月光石列为六月生辰石之一。", "summary": "有月光效应的长石，转动时表面下浮着一层蓝色或白色光晕。", "points": []}, {"name": "虎眼石", "mm": 8, "price": 2, "mat": "stone", "c": ["#d99c3f", "#5a3510"], "tags": ["勇气", "坚毅"], "kb": "huyan-shi", "attrs": {}, "order": 240, "onSale": true, "id": "huyan-shi-8", "kbName": "虎眼石", "meaning": "光带像老虎的眼睛，传统上常用来寓意勇气和坚毅，是偏男款的常见选择。", "summary": "纤维状石英质玉，转动时有一道会移动的光带，按颜色分黄虎眼、蓝虎眼（蓝色品种俗称鹰眼石）、红虎眼。", "points": []}, {"name": "虎眼石", "mm": 10, "price": 3, "mat": "stone", "c": ["#d99c3f", "#5a3510"], "tags": ["勇气", "坚毅"], "kb": "huyan-shi", "attrs": {}, "order": 250, "onSale": true, "id": "huyan-shi-10", "kbName": "虎眼石", "meaning": "光带像老虎的眼睛，传统上常用来寓意勇气和坚毅，是偏男款的常见选择。", "summary": "纤维状石英质玉，转动时有一道会移动的光带，按颜色分黄虎眼、蓝虎眼（蓝色品种俗称鹰眼石）、红虎眼。", "points": []}, {"name": "虎眼石", "mm": 12, "price": 4, "mat": "stone", "c": ["#d99c3f", "#5a3510"], "tags": ["勇气", "坚毅"], "kb": "huyan-shi", "attrs": {}, "order": 260, "onSale": true, "id": "huyan-shi-12", "kbName": "虎眼石", "meaning": "光带像老虎的眼睛，传统上常用来寓意勇气和坚毅，是偏男款的常见选择。", "summary": "纤维状石英质玉，转动时有一道会移动的光带，按颜色分黄虎眼、蓝虎眼（蓝色品种俗称鹰眼石）、红虎眼。", "points": []}, {"name": "珍珠", "mm": 6, "price": 4, "mat": "stone", "c": ["#fbf7f0", "#d6ccbf"], "tags": ["圆满", "纯净"], "kb": "zhenzhu", "attrs": {}, "order": 270, "onSale": true, "id": "zhenzhu-6", "kbName": "珍珠", "meaning": "珍珠圆润柔光，传统上常取圆满、纯洁之意。", "summary": "贝类体内形成的有机宝石，市售基本是养殖珍珠，可直接叫珍珠。", "points": []}, {"name": "珍珠", "mm": 7, "price": 5, "mat": "stone", "c": ["#fbf7f0", "#d6ccbf"], "tags": ["圆满", "纯净"], "kb": "zhenzhu", "attrs": {}, "order": 280, "onSale": true, "id": "zhenzhu-7", "kbName": "珍珠", "meaning": "珍珠圆润柔光，传统上常取圆满、纯洁之意。", "summary": "贝类体内形成的有机宝石，市售基本是养殖珍珠，可直接叫珍珠。", "points": []}, {"name": "珍珠", "mm": 8, "price": 7, "mat": "stone", "c": ["#fbf7f0", "#d6ccbf"], "tags": ["圆满", "纯净"], "kb": "zhenzhu", "attrs": {}, "order": 290, "onSale": true, "id": "zhenzhu-8", "kbName": "珍珠", "meaning": "珍珠圆润柔光，传统上常取圆满、纯洁之意。", "summary": "贝类体内形成的有机宝石，市售基本是养殖珍珠，可直接叫珍珠。", "points": []}, {"name": "红玛瑙", "mm": 6, "price": 1, "mat": "stone", "c": ["#d44c3b", "#6e1610"], "tags": ["红火", "吉祥"], "kb": "putong-manao", "attrs": {}, "order": 300, "onSale": true, "id": "putong-manao-6", "kbName": "普通玛瑙", "meaning": "", "summary": "不讲产地的普通玛瑙珠，红、黑、白、绿、蓝各色都有，鲜艳的多为染色。", "points": []}, {"name": "红玛瑙", "mm": 8, "price": 1.5, "mat": "stone", "c": ["#d44c3b", "#6e1610"], "tags": ["红火", "吉祥"], "kb": "putong-manao", "attrs": {}, "order": 310, "onSale": true, "id": "putong-manao-8", "kbName": "普通玛瑙", "meaning": "", "summary": "不讲产地的普通玛瑙珠，红、黑、白、绿、蓝各色都有，鲜艳的多为染色。", "points": []}, {"name": "红玛瑙", "mm": 10, "price": 2, "mat": "stone", "c": ["#d44c3b", "#6e1610"], "tags": ["红火", "吉祥"], "kb": "putong-manao", "attrs": {}, "order": 320, "onSale": true, "id": "putong-manao-10", "kbName": "普通玛瑙", "meaning": "", "summary": "不讲产地的普通玛瑙珠，红、黑、白、绿、蓝各色都有，鲜艳的多为染色。", "points": []}, {"name": "红玛瑙", "mm": 12, "price": 3, "mat": "stone", "c": ["#d44c3b", "#6e1610"], "tags": ["红火", "吉祥"], "kb": "putong-manao", "attrs": {}, "order": 330, "onSale": true, "id": "putong-manao-12", "kbName": "普通玛瑙", "meaning": "", "summary": "不讲产地的普通玛瑙珠，红、黑、白、绿、蓝各色都有，鲜艳的多为染色。", "points": []}, {"name": "绿玉髓", "mm": 8, "price": 6, "mat": "stone", "c": ["#a3d9a3", "#3f8f55"], "tags": ["清新", "生机"], "kb": "lv-yusui", "attrs": {}, "order": 340, "onSale": true, "id": "lv-yusui-8", "kbName": "绿玉髓", "meaning": "", "summary": "苹果绿色的玉髓，常叫“澳玉”，名字里有“玉”但不是翡翠或和田玉。", "points": []}, {"name": "拉长石", "mm": 8, "price": 4, "mat": "crystal", "c": ["#8d99a8", "#2f3c50"], "tags": ["神秘", "多彩"], "kb": "lachang-shi", "attrs": {}, "order": 350, "onSale": true, "id": "lachang-shi-8", "kbName": "拉长石", "meaning": "转动时彩光忽隐忽现，像极光，常用来寓意神秘、变化与多彩。", "summary": "灰黑底子的长石，在某个角度会闪出大片蓝、绿、金等彩光，也叫光谱石、黑月光。", "points": []}, {"name": "拉长石", "mm": 10, "price": 6, "mat": "crystal", "c": ["#8d99a8", "#2f3c50"], "tags": ["神秘", "多彩"], "kb": "lachang-shi", "attrs": {}, "order": 360, "onSale": true, "id": "lachang-shi-10", "kbName": "拉长石", "meaning": "转动时彩光忽隐忽现，像极光，常用来寓意神秘、变化与多彩。", "summary": "灰黑底子的长石，在某个角度会闪出大片蓝、绿、金等彩光，也叫光谱石、黑月光。", "points": []}, {"name": "海蓝宝", "mm": 6, "price": 4, "mat": "crystal", "c": ["#d2eaf3", "#6aa6c4"], "tags": ["清澈", "宽广"], "kb": "hailanbao", "attrs": {}, "order": 370, "onSale": true, "id": "hailanbao-6", "kbName": "海蓝宝", "meaning": "颜色像海水，常用来寓意清澈、宽广；西方把海蓝宝列为三月生辰石。", "summary": "浅蓝到蓝绿色的绿柱石，规范名海蓝宝石，常见冰种和带雨丝的料。", "points": []}, {"name": "海蓝宝", "mm": 8, "price": 6, "mat": "crystal", "c": ["#d2eaf3", "#6aa6c4"], "tags": ["清澈", "宽广"], "kb": "hailanbao", "attrs": {}, "order": 380, "onSale": true, "id": "hailanbao-8", "kbName": "海蓝宝", "meaning": "颜色像海水，常用来寓意清澈、宽广；西方把海蓝宝列为三月生辰石。", "summary": "浅蓝到蓝绿色的绿柱石，规范名海蓝宝石，常见冰种和带雨丝的料。", "points": []}, {"name": "海蓝宝", "mm": 10, "price": 9, "mat": "crystal", "c": ["#d2eaf3", "#6aa6c4"], "tags": ["清澈", "宽广"], "kb": "hailanbao", "attrs": {}, "order": 390, "onSale": true, "id": "hailanbao-10", "kbName": "海蓝宝", "meaning": "颜色像海水，常用来寓意清澈、宽广；西方把海蓝宝列为三月生辰石。", "summary": "浅蓝到蓝绿色的绿柱石，规范名海蓝宝石，常见冰种和带雨丝的料。", "points": []}, {"name": "东陵玉", "mm": 8, "price": 1.5, "mat": "stone", "c": ["#79bb8c", "#2c6b45"], "tags": ["生机", "自然"], "kb": "dongling-yu", "attrs": {}, "order": 400, "onSale": true, "id": "dongling-yu-8", "kbName": "东陵玉", "meaning": "", "summary": "含铬云母等片状矿物的石英岩，转动可见细碎闪光，以绿色最常见。", "points": []}, {"name": "东陵玉", "mm": 10, "price": 2, "mat": "stone", "c": ["#79bb8c", "#2c6b45"], "tags": ["生机", "自然"], "kb": "dongling-yu", "attrs": {}, "order": 410, "onSale": true, "id": "dongling-yu-10", "kbName": "东陵玉", "meaning": "", "summary": "含铬云母等片状矿物的石英岩，转动可见细碎闪光，以绿色最常见。", "points": []}, {"name": "黄水晶", "mm": 8, "price": 3, "mat": "crystal", "c": ["#fff2b3", "#d6a23a"], "tags": ["温暖", "尊贵"], "kb": "huang-shuijing", "attrs": {}, "order": 420, "onSale": true, "id": "huang-shuijing-8", "kbName": "黄水晶", "meaning": "黄色在中国传统里是尊贵之色；西方把黄水晶列为十一月生辰石之一。", "summary": "黄色的石英。市面上大部分由紫晶加热而来，注意“黄晶”这个叫法会和托帕石混。", "points": []}, {"name": "黄水晶", "mm": 10, "price": 4, "mat": "crystal", "c": ["#fff2b3", "#d6a23a"], "tags": ["温暖", "尊贵"], "kb": "huang-shuijing", "attrs": {}, "order": 430, "onSale": true, "id": "huang-shuijing-10", "kbName": "黄水晶", "meaning": "黄色在中国传统里是尊贵之色；西方把黄水晶列为十一月生辰石之一。", "summary": "黄色的石英。市面上大部分由紫晶加热而来，注意“黄晶”这个叫法会和托帕石混。", "points": []}, {"name": "黑檀", "mm": 10, "price": 3, "mat": "wood", "c": ["#4c3b2e", "#120c08"], "tags": ["沉稳", "古朴"], "kb": "heitan", "attrs": {}, "order": 440, "onSale": true, "id": "heitan-10", "kbName": "黑檀", "meaning": "色黑如墨，传统上取其沉稳庄重。", "summary": "市售黑檀手串多是苏拉威西乌木（条纹乌木类），也有乌木和厚瓣乌木，都是柿属。", "points": []}, {"name": "茶晶", "mm": 6, "price": 2, "mat": "crystal", "c": ["#cbab8c", "#5a3d27"], "tags": ["沉稳"], "kb": "cha-jing", "attrs": {}, "order": 450, "onSale": true, "id": "cha-jing-6", "kbName": "茶晶", "meaning": "茶色低调内敛，不张扬，常用来寓意沉稳、踏实，适合喜欢素净风格的人。", "summary": "茶色到黑褐色的石英，规范名烟晶，颜色最深的叫墨晶。", "points": []}, {"name": "茶晶", "mm": 8, "price": 2.5, "mat": "crystal", "c": ["#cbab8c", "#5a3d27"], "tags": ["沉稳"], "kb": "cha-jing", "attrs": {}, "order": 460, "onSale": true, "id": "cha-jing-8", "kbName": "茶晶", "meaning": "茶色低调内敛，不张扬，常用来寓意沉稳、踏实，适合喜欢素净风格的人。", "summary": "茶色到黑褐色的石英，规范名烟晶，颜色最深的叫墨晶。", "points": []}, {"name": "茶晶", "mm": 10, "price": 3, "mat": "crystal", "c": ["#cbab8c", "#5a3d27"], "tags": ["沉稳"], "kb": "cha-jing", "attrs": {}, "order": 470, "onSale": true, "id": "cha-jing-10", "kbName": "茶晶", "meaning": "茶色低调内敛，不张扬，常用来寓意沉稳、踏实，适合喜欢素净风格的人。", "summary": "茶色到黑褐色的石英，规范名烟晶，颜色最深的叫墨晶。", "points": []}, {"name": "茶晶", "mm": 12, "price": 4, "mat": "crystal", "c": ["#cbab8c", "#5a3d27"], "tags": ["沉稳"], "kb": "cha-jing", "attrs": {}, "order": 480, "onSale": true, "id": "cha-jing-12", "kbName": "茶晶", "meaning": "茶色低调内敛，不张扬，常用来寓意沉稳、踏实，适合喜欢素净风格的人。", "summary": "茶色到黑褐色的石英，规范名烟晶，颜色最深的叫墨晶。", "points": []}, {"name": "萤石", "mm": 8, "price": 3, "mat": "crystal", "c": ["#c8b8ee", "#4c8f86"], "tags": ["多彩", "清新"], "kb": "ying-shi", "attrs": {}, "order": 490, "onSale": true, "id": "ying-shi-8", "kbName": "萤石", "meaning": "颜色一层层叠起来像彩虹，紫绿相间，一般取多彩、清新、活泼的意象。", "summary": "氟化钙矿物，绿紫相间、色带分明，质软，做珠子很常见。", "points": []}, {"name": "缠丝玛瑙", "mm": 10, "price": 4, "mat": "stone", "c": ["#e8c8aa", "#8a3b20"], "tags": ["圆满", "恒久"], "kb": "chansi", "attrs": {}, "order": 500, "onSale": true, "id": "chansi-10", "kbName": "缠丝玛瑙", "meaning": "", "summary": "带有平行条带（缠丝）的玛瑙，红白、黑白相间最常见。", "points": []}, {"name": "岫玉", "mm": 8, "price": 2, "mat": "stone", "c": ["#d1e4b8", "#6f8f4c"], "tags": ["温润", "平安"], "kb": "xiu-yu", "attrs": {}, "order": 510, "onSale": true, "id": "xiu-yu-8", "kbName": "岫玉", "meaning": "", "summary": "以蛇纹石为主的玉石，主产辽宁岫岩，颜色多为黄绿，价格亲民。", "points": []}, {"name": "黄杨木", "mm": 6, "price": 1, "mat": "wood", "c": ["#f1d58c", "#b4842e"], "tags": ["长寿", "雅致"], "kb": "huangyang", "attrs": {}, "order": 520, "onSale": true, "id": "huangyang-6", "kbName": "黄杨木", "meaning": "黄杨生长极慢，民间有“千年矮”之称，传统上寓意长寿。", "summary": "黄杨属木材（小叶黄杨 Buxus sinica 等），颜色浅黄、质地细腻，是传统小件雕刻用材。", "points": []}, {"name": "黄杨木", "mm": 10, "price": 2, "mat": "wood", "c": ["#f1d58c", "#b4842e"], "tags": ["长寿", "雅致"], "kb": "huangyang", "attrs": {}, "order": 530, "onSale": true, "id": "huangyang-10", "kbName": "黄杨木", "meaning": "黄杨生长极慢，民间有“千年矮”之称，传统上寓意长寿。", "summary": "黄杨属木材（小叶黄杨 Buxus sinica 等），颜色浅黄、质地细腻，是传统小件雕刻用材。", "points": []}, {"name": "檀香", "mm": 8, "price": 3, "mat": "wood", "c": ["#cb955c", "#6b4220"], "tags": ["清雅", "古韵"], "kb": "tanxiang", "attrs": {}, "order": 540, "onSale": true, "id": "tanxiang-8", "kbName": "檀香", "meaning": "檀香是传统的寺院供香和文人用香，常取清雅、庄重的意象。", "summary": "檀香属（Santalum）树木的芯材，老山檀为 S. album；浅黄色、纹理细直，自带温润奶香，是传统寺院和文人用香。", "points": []}, {"name": "檀香", "mm": 12, "price": 5, "mat": "wood", "c": ["#cb955c", "#6b4220"], "tags": ["清雅", "古韵"], "kb": "tanxiang", "attrs": {}, "order": 550, "onSale": true, "id": "tanxiang-12", "kbName": "檀香", "meaning": "檀香是传统的寺院供香和文人用香，常取清雅、庄重的意象。", "summary": "檀香属（Santalum）树木的芯材，老山檀为 S. album；浅黄色、纹理细直，自带温润奶香，是传统寺院和文人用香。", "points": []}, {"name": "桃木", "mm": 6, "price": 0.5, "mat": "wood", "c": ["#cb8960", "#6a3a20"], "tags": ["吉祥", "平安"], "kb": "tao-mu", "attrs": {}, "order": 560, "onSale": true, "id": "tao-mu-6", "kbName": "桃木", "meaning": "古人过年在门上挂桃木板“桃符”，桃木由此成为常见的年俗吉祥题材。", "summary": "桃树的木材，木色浅、质地一般，是民俗题材常用的木料。", "points": []}, {"name": "葡萄石", "mm": 8, "price": 5, "mat": "crystal", "c": ["#e0f4c2", "#8cbf5a"], "tags": ["清新", "丰收"], "kb": "putao-shi", "attrs": {}, "order": 570, "onSale": true, "id": "putao-shi-8", "kbName": "葡萄石", "meaning": "颜色像一串还没熟透的青葡萄，常取清新、丰收、生机勃勃的意象。", "summary": "黄绿色半透明矿物，质感像果冻，常带黑色针状包体。", "points": []}, {"name": "金发晶", "mm": 8, "price": 8, "mat": "crystal", "c": ["#fff5d2", "#c9a24a"], "tags": ["光明", "阳光"], "kb": "fa-jing", "attrs": {}, "order": 580, "onSale": true, "id": "fa-jing-8", "kbName": "发晶", "meaning": "金色发丝在晶体里像一道道阳光，常用来寓意光明、积极。", "summary": "水晶里长了发丝状或针状矿物包体，按发丝颜色分金发、钛晶、红发、黑发等。", "points": []}, {"name": "金发晶", "mm": 10, "price": 12, "mat": "crystal", "c": ["#fff5d2", "#c9a24a"], "tags": ["光明", "阳光"], "kb": "fa-jing", "attrs": {}, "order": 590, "onSale": true, "id": "fa-jing-10", "kbName": "发晶", "meaning": "金色发丝在晶体里像一道道阳光，常用来寓意光明、积极。", "summary": "水晶里长了发丝状或针状矿物包体，按发丝颜色分金发、钛晶、红发、黑发等。", "points": []}, {"name": "战国红", "mm": 10, "price": 8, "mat": "stone", "c": ["#e8b24c", "#a3261c"], "tags": ["红火", "吉祥", "古韵"], "kb": "zhanguo-hong", "attrs": {}, "order": 600, "onSale": true, "id": "zhanguo-hong-10", "kbName": "战国红", "meaning": "红黄两色相间，形色近似战国时期的红缟玛瑙，常作为带古意的红色题材，取红火吉祥之意。", "summary": "红黄缟纹相间的玛瑙，因形色接近战国墓葬出土的红缟玛瑙而得名。", "points": []}, {"name": "天河石", "mm": 8, "price": 3, "mat": "stone", "c": ["#aae3d7", "#3f9c8e"], "tags": ["清新"], "kb": "tianhe-shi", "attrs": {}, "order": 610, "onSale": true, "id": "tianhe-shi-8", "kbName": "天河石", "meaning": "蓝绿色清新明快，像湖水一样，常用来寓意清新、希望和新的开始。", "summary": "蓝绿色的微斜长石，英文 amazonite，常有白色格子纹，也叫亚马逊石。", "points": []}, {"name": "水草玛瑙", "mm": 8, "price": 2, "mat": "stone", "c": ["#eaf0ea", "#6f8f6a"], "tags": ["自然", "生机"], "kb": "shuicao", "attrs": {}, "order": 620, "onSale": true, "id": "shuicao-8", "kbName": "水草玛瑙", "meaning": "", "summary": "玛瑙里长着像水草、苔藓一样的包裹体，看起来像水中风景。", "points": []}, {"name": "凤眼菩提", "mm": 10, "price": 1, "mat": "bodhi", "c": ["#dab68c", "#7a5230"], "tags": ["吉祥"], "kb": "fengyan", "attrs": {}, "order": 630, "onSale": true, "id": "fengyan-10", "kbName": "凤眼菩提", "meaning": "以凤凰之眼命名，传统上取吉祥之意。", "summary": "枣属植物的果核，每颗有一个形似凤眼的凹痕；Li 等（2014）记为 Ziziphus abyssinica 的二室果核，市场多说产自尼泊尔。", "points": []}, {"name": "凤眼菩提", "mm": 12, "price": 1.5, "mat": "bodhi", "c": ["#dab68c", "#7a5230"], "tags": ["吉祥"], "kb": "fengyan", "attrs": {}, "order": 640, "onSale": true, "id": "fengyan-12", "kbName": "凤眼菩提", "meaning": "以凤凰之眼命名，传统上取吉祥之意。", "summary": "枣属植物的果核，每颗有一个形似凤眼的凹痕；Li 等（2014）记为 Ziziphus abyssinica 的二室果核，市场多说产自尼泊尔。", "points": []}, {"name": "佛头三通", "mm": 12, "price": 6, "mat": "stone", "c": ["#d8b48c", "#7a5a32"], "tags": ["圆满"], "kb": "fotou", "attrs": {}, "order": 650, "onSale": true, "id": "fotou-12", "kbName": "佛头三通", "meaning": "念珠从佛头起数、数到佛头为一圈，文化上取“圆满”之意。", "summary": "佛珠和手串收尾的组件：三孔的三通加上塔形的佛塔，合称佛头。", "points": []}, {"name": "黑曜石", "mm": 10, "price": 4, "mat": "stone", "c": ["#55556a", "#0b0b10"], "tags": ["沉稳", "内敛"], "kb": "heiyao", "attrs": {"color": "乌金"}, "order": 660, "onSale": true, "id": "hy8-10", "kbName": "黑曜石", "meaning": "颜色深沉、光泽内敛，一般取沉稳、低调的意象，男款和情侣款用得多。", "summary": "火山喷发形成的天然火山玻璃，整体黑色，部分有金银光泽或彩虹圈。", "points": ["乌金"]}, {"name": "黑曜石", "mm": 12, "price": 5, "mat": "stone", "c": ["#55556a", "#0b0b10"], "tags": ["沉稳", "内敛"], "kb": "heiyao", "attrs": {"color": "乌金"}, "order": 670, "onSale": true, "id": "hy8-12", "kbName": "黑曜石", "meaning": "颜色深沉、光泽内敛，一般取沉稳、低调的意象，男款和情侣款用得多。", "summary": "火山喷发形成的天然火山玻璃，整体黑色，部分有金银光泽或彩虹圈。", "points": ["乌金"]}, {"name": "南红", "mm": 10, "price": 18, "mat": "stone", "c": ["#ec5a3f", "#8e1a10"], "tags": ["红火", "吉祥", "喜庆"], "kb": "nanhong", "attrs": {"origin": "保山", "color": "柿子红"}, "order": 680, "onSale": true, "id": "nh8-10", "kbName": "南红", "meaning": "南红颜色正红，古称赤玉。传统上以红色寓意红火吉祥，常用作年节、喜庆题材。", "summary": "产自云南保山、四川凉山、甘肃迭部的红色玛瑙，颜色和矿口决定价格。", "points": ["保山", "柿子红"]}, {"name": "白水晶", "mm": 6, "price": 1.5, "mat": "crystal", "c": ["#ffffff", "#bfcadb"], "tags": ["纯净", "明澈"], "kb": "bai-shuijing", "attrs": {"purity": "净体"}, "order": 690, "onSale": true, "id": "bj8-6", "kbName": "白水晶", "meaning": "古人把水晶叫“水精”“水玉”，取其清澈如水，常用来比喻纯净、明澈。", "summary": "无色透明的石英单晶，最常见的水晶，常做主珠、佛头和隔珠。", "points": ["净体"]}, {"name": "白水晶", "mm": 10, "price": 3, "mat": "crystal", "c": ["#ffffff", "#bfcadb"], "tags": ["纯净", "明澈"], "kb": "bai-shuijing", "attrs": {"purity": "净体"}, "order": 700, "onSale": true, "id": "bj8-10", "kbName": "白水晶", "meaning": "古人把水晶叫“水精”“水玉”，取其清澈如水，常用来比喻纯净、明澈。", "summary": "无色透明的石英单晶，最常见的水晶，常做主珠、佛头和隔珠。", "points": ["净体"]}, {"name": "星月菩提", "mm": 10, "price": 1.5, "mat": "bodhi", "c": ["#f6eed8", "#b8935a"], "tags": ["清净", "圆满"], "kb": "xingyue", "attrs": {"color": "顺白"}, "order": 710, "onSale": true, "id": "xy8-10", "kbName": "星月菩提", "meaning": "星点环绕一轮月，传统上常做念珠，取“众星拱月”的圆满之象。", "summary": "黄藤的种子车磨成珠，白底布满黑色星点，孔口有一个圆形凹坑像月亮。", "points": ["顺白"]}, {"name": "金刚菩提", "mm": 12, "price": 4, "mat": "wood", "c": ["#bf7442", "#5e2a12"], "tags": ["坚韧", "吉祥"], "kb": "jingang", "attrs": {}, "order": 720, "onSale": true, "id": "jg10-12", "kbName": "金刚菩提", "meaning": "“金刚”取坚固不坏之意，金刚菩提在南亚和藏地传统里常做念珠。", "summary": "杜英属植物的果核（Li 等 2014 记为 Elaeocarpus angustifolius，常称圆果杜英），表面沟壑起伏，按瓣数区分，主要产自尼泊尔和印尼。", "points": []}, {"name": "粉晶", "mm": 6, "price": 2, "mat": "crystal", "c": ["#ffe0e7", "#e08aa0"], "tags": ["温柔", "浪漫"], "kb": "fen-jing", "attrs": {"origin": "马达加斯加"}, "order": 730, "onSale": true, "id": "fj8-6", "kbName": "粉晶", "meaning": "粉色柔和明亮，传统上常用来寓意温柔与浪漫，也常作为送给亲友的心意之选。", "summary": "粉色的石英，规范名芙蓉石，用户几乎只叫粉晶，偏女性的热门款。", "points": ["马达加斯加"]}, {"name": "紫水晶", "mm": 10, "price": 5, "mat": "crystal", "c": ["#e2c7ff", "#6b3fa0"], "tags": ["尊贵", "吉祥"], "kb": "zi-jing", "attrs": {}, "order": 740, "onSale": true, "id": "zj8-10", "kbName": "紫水晶", "meaning": "紫色在中国传统里是尊贵之色，有“紫气东来”的吉祥说法；西方把紫晶列为二月生辰石。", "summary": "紫色的石英，颜色从浅薰衣草紫到深葡萄紫，水晶里最常见的彩色品种之一。", "points": []}, {"name": "蜜蜡", "mm": 8, "price": 12, "mat": "stone", "c": ["#ffd35c", "#d4870b"], "tags": ["富贵", "温润"], "kb": "mila", "attrs": {}, "order": 750, "onSale": true, "id": "ml10-8", "kbName": "蜜蜡", "meaning": "", "summary": "不透明或半透明的琥珀，色泽温润，是藏式和文玩里的常见材料。", "points": []}, {"name": "蜜蜡", "mm": 12, "price": 26, "mat": "stone", "c": ["#ffd35c", "#d4870b"], "tags": ["富贵", "温润"], "kb": "mila", "attrs": {}, "order": 760, "onSale": true, "id": "ml10-12", "kbName": "蜜蜡", "meaning": "", "summary": "不透明或半透明的琥珀，色泽温润，是藏式和文玩里的常见材料。", "points": []}, {"name": "小叶紫檀", "mm": 12, "price": 6, "mat": "wood", "c": ["#a3442f", "#3d110b"], "tags": ["富贵", "沉稳", "古朴"], "kb": "xiaoye-zitan", "attrs": {"origin": "印度"}, "order": 770, "onSale": true, "id": "zt10-12", "kbName": "小叶紫檀", "meaning": "紫檀在明清是宫廷家具和文房的名贵用材，传统上被看作木中上品，寓意沉稳、富贵。", "summary": "檀香紫檀的心材，产自印度南部，是红木国标紫檀木类里唯一的树种。", "points": ["印度"]}, {"name": "小叶紫檀", "mm": 6, "price": 2, "mat": "wood", "c": ["#a3442f", "#3d110b"], "tags": ["富贵", "沉稳", "古朴"], "kb": "xiaoye-zitan", "attrs": {"origin": "印度"}, "order": 780, "onSale": true, "id": "zt8-6", "kbName": "小叶紫檀", "meaning": "紫檀在明清是宫廷家具和文房的名贵用材，传统上被看作木中上品，寓意沉稳、富贵。", "summary": "檀香紫檀的心材，产自印度南部，是红木国标紫檀木类里唯一的树种。", "points": ["印度"]}, {"name": "绿松石", "mm": 10, "price": 8, "mat": "stone", "c": ["#5fd0c4", "#1e7f78"], "tags": ["吉祥", "天空", "古朴"], "kb": "lvsong", "attrs": {}, "order": 790, "onSale": true, "id": "ls8-10", "kbName": "绿松石", "meaning": "绿松石在中原和藏地都有几千年的佩戴传统，颜色像晴空，常被当作吉祥美好的象征。", "summary": "含铜的磷酸盐矿物，天蓝到蓝绿色，常带铁线，是藏式和文玩里的主力配珠。", "points": []}, {"name": "绿松石", "mm": 12, "price": 10, "mat": "stone", "c": ["#5fd0c4", "#1e7f78"], "tags": ["吉祥", "天空", "古朴"], "kb": "lvsong", "attrs": {}, "order": 800, "onSale": true, "id": "ls8-12", "kbName": "绿松石", "meaning": "绿松石在中原和藏地都有几千年的佩戴传统，颜色像晴空，常被当作吉祥美好的象征。", "summary": "含铜的磷酸盐矿物，天蓝到蓝绿色，常带铁线，是藏式和文玩里的主力配珠。", "points": []}, {"name": "青金石", "mm": 10, "price": 7, "mat": "stone", "c": ["#3f63d6", "#14236b"], "tags": ["庄重", "尊贵", "天空"], "kb": "qingjin", "attrs": {}, "order": 810, "onSale": true, "id": "qj8-10", "kbName": "青金石", "meaning": "颜色深如夜空，古代研磨作群青颜料，清代祭天礼仪也用青金石朝珠，传统上象征庄重和尊贵。", "summary": "以青金石矿物为主的蓝色玉石，深蓝带金色星点，古代用作群青颜料。", "points": []}, {"name": "银色隔珠", "mm": 3, "price": 0.5, "mat": "metal", "c": ["#ffffff", "#8a8f98"], "tags": ["点缀"], "kb": "gezhu", "attrs": {"color": "银色"}, "order": 820, "onSale": true, "id": "sp4-3", "kbName": "隔珠隔片", "meaning": "", "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。", "points": ["银色"]}, {"name": "银色隔珠", "mm": 6, "price": 1.5, "mat": "metal", "c": ["#ffffff", "#8a8f98"], "tags": ["点缀"], "kb": "gezhu", "attrs": {"color": "银色"}, "order": 830, "onSale": true, "id": "sp4-6", "kbName": "隔珠隔片", "meaning": "", "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。", "points": ["银色"]}, {"name": "金色转运珠", "mm": 8, "price": 14, "mat": "metal", "c": ["#fff1b8", "#a87a1c"], "tags": ["顺遂", "吉祥"], "kb": "zhuanyun", "attrs": {"color": "金色"}, "order": 840, "onSale": true, "id": "zy6-8", "kbName": "转运珠", "meaning": "旧称“路路通”，取路路通达、诸事顺遂的吉祥说法；名字只是市场叫法，不代表任何效果。", "summary": "串在手绳或手串上的金属通孔小珠，市场统称这个名字，材质从足金到合金都有。", "points": ["金色"]}], "templates": [{"name": "好运连连", "meaning": "蜜蜡温润富贵，转运珠添一点亮色，黑曜石沉稳压住整串。寓意好运连连。", "special": ["zy6"], "pattern": ["ml10", "hy8", "hy8"], "tail": [], "order": 10, "onSale": true, "cover": "", "id": "t1"}, {"name": "甜蜜粉晶", "meaning": "粉晶温柔，草莓晶添甜蜜，银隔珠点亮整串。送女朋友不会错。", "special": ["cm8"], "pattern": ["fj8", "fj8", "sp4", "fj8", "cm8", "sp4"], "tail": [], "order": 20, "onSale": true, "cover": "", "id": "t2"}, {"name": "金榜题名", "meaning": "紫水晶寓意智慧，白水晶清透干净，考试季戴上图个好兆头。", "special": [], "pattern": ["zj8", "bj8", "bj8", "sp4"], "tail": [], "order": 30, "onSale": true, "cover": "", "id": "t3"}, {"name": "岁岁平安", "meaning": "星月菩提朴素耐看，绿松石寓意平安，适合送长辈或出远门的人。", "special": ["ls6"], "pattern": ["xy8", "xy8", "xy8", "ls6"], "tail": [], "order": 40, "onSale": true, "cover": "", "id": "t4"}, {"name": "沉稳之选", "meaning": "小叶紫檀沉稳，南红佛头寓意圆满。男生通勤百搭。", "special": ["ft12", "gp"], "pattern": ["zt10"], "tail": ["gp"], "order": 50, "onSale": true, "cover": "", "id": "t5"}, {"name": "步步高升", "meaning": "青金石深蓝沉稳，寓意事业顺遂，适合升职季和新工作。", "special": ["zy6"], "pattern": ["qj8", "qj8", "qj8", "ls8"], "tail": [], "order": 60, "onSale": true, "cover": "", "id": "t6"}], "banners": [{"tag": "考试季", "title": "金榜题名手串", "sub": "紫水晶配白水晶，考前戴上安心", "tpl": "t3", "go": "", "newUser": false, "order": 10, "on": true, "id": "b1"}, {"tag": "新人礼", "title": "首单立减 ¥10", "sub": "自己设计的手串，师傅手工串好寄到家", "tpl": "", "go": "diy", "newUser": true, "order": 20, "on": true, "id": "b2"}, {"tag": "送礼", "title": "甜蜜粉晶", "sub": "粉晶加草莓晶，送女朋友不会错", "tpl": "t2", "go": "", "newUser": false, "order": 30, "on": true, "id": "b3"}], "ai": {"enabled": false, "reason": "未配置 AI 模型"}}
+// Generated by tools/refresh-catalog-preview.js; development fallback only.
+module.exports = {
+  "beads": [
+    {
+      "name": "小叶紫檀",
+      "mm": 8,
+      "price": 3,
+      "mat": "wood",
+      "c": [
+        "#a3442f",
+        "#3d110b"
+      ],
+      "tags": [
+        "富贵",
+        "沉稳",
+        "古朴"
+      ],
+      "kb": "xiaoye-zitan",
+      "attrs": {
+        "origin": "印度"
+      },
+      "order": 10,
+      "onSale": true,
+      "id": "zt8",
+      "kbName": "小叶紫檀",
+      "meaning": "紫檀在明清是宫廷家具和文房的名贵用材，传统上被看作木中上品，寓意沉稳、富贵。",
+      "summary": "檀香紫檀的心材，产自印度南部，是红木国标紫檀木类里唯一的树种。",
+      "points": [
+        "印度"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "小叶紫檀",
+      "mm": 10,
+      "price": 4,
+      "mat": "wood",
+      "c": [
+        "#a3442f",
+        "#3d110b"
+      ],
+      "tags": [
+        "富贵",
+        "沉稳",
+        "古朴"
+      ],
+      "kb": "xiaoye-zitan",
+      "attrs": {
+        "origin": "印度"
+      },
+      "order": 20,
+      "onSale": true,
+      "id": "zt10",
+      "kbName": "小叶紫檀",
+      "meaning": "紫檀在明清是宫廷家具和文房的名贵用材，传统上被看作木中上品，寓意沉稳、富贵。",
+      "summary": "檀香紫檀的心材，产自印度南部，是红木国标紫檀木类里唯一的树种。",
+      "points": [
+        "印度"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "金刚菩提",
+      "mm": 10,
+      "price": 3,
+      "mat": "wood",
+      "c": [
+        "#bf7442",
+        "#5e2a12"
+      ],
+      "tags": [
+        "坚韧",
+        "吉祥"
+      ],
+      "kb": "jingang",
+      "attrs": {},
+      "order": 30,
+      "onSale": true,
+      "id": "jg10",
+      "kbName": "金刚菩提",
+      "meaning": "“金刚”取坚固不坏之意，金刚菩提在南亚和藏地传统里常做念珠。",
+      "summary": "杜英属植物的果核（Li 等 2014 记为 Elaeocarpus angustifolius，常称圆果杜英），表面沟壑起伏，按瓣数区分，主要产自尼泊尔和印尼。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "星月菩提",
+      "mm": 8,
+      "price": 1,
+      "mat": "bodhi",
+      "c": [
+        "#f6eed8",
+        "#b8935a"
+      ],
+      "tags": [
+        "清净",
+        "圆满"
+      ],
+      "kb": "xingyue",
+      "attrs": {
+        "color": "顺白"
+      },
+      "order": 40,
+      "onSale": true,
+      "id": "xy8",
+      "kbName": "星月菩提",
+      "meaning": "星点环绕一轮月，传统上常做念珠，取“众星拱月”的圆满之象。",
+      "summary": "黄藤的种子车磨成珠，白底布满黑色星点，孔口有一个圆形凹坑像月亮。",
+      "points": [
+        "顺白"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "南红",
+      "mm": 8,
+      "price": 12,
+      "mat": "stone",
+      "c": [
+        "#ec5a3f",
+        "#8e1a10"
+      ],
+      "tags": [
+        "红火",
+        "吉祥",
+        "喜庆"
+      ],
+      "kb": "nanhong",
+      "attrs": {
+        "origin": "保山",
+        "color": "柿子红"
+      },
+      "order": 50,
+      "onSale": true,
+      "id": "nh8",
+      "kbName": "南红",
+      "meaning": "南红颜色正红，古称赤玉。传统上以红色寓意红火吉祥，常用作年节、喜庆题材。",
+      "summary": "产自云南保山、四川凉山、甘肃迭部的红色玛瑙，颜色和矿口决定价格。",
+      "points": [
+        "保山",
+        "柿子红"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "南红佛头",
+      "mm": 12,
+      "price": 18,
+      "mat": "stone",
+      "c": [
+        "#ec5a3f",
+        "#7a140b"
+      ],
+      "tags": [
+        "红火",
+        "吉祥",
+        "喜庆"
+      ],
+      "kb": "nanhong",
+      "attrs": {
+        "origin": "保山",
+        "shape": "佛头"
+      },
+      "order": 60,
+      "onSale": true,
+      "id": "ft12",
+      "kbName": "南红",
+      "meaning": "南红颜色正红，古称赤玉。传统上以红色寓意红火吉祥，常用作年节、喜庆题材。",
+      "summary": "产自云南保山、四川凉山、甘肃迭部的红色玛瑙，颜色和矿口决定价格。",
+      "points": [
+        "保山"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "蜜蜡",
+      "mm": 10,
+      "price": 18,
+      "mat": "stone",
+      "c": [
+        "#ffd35c",
+        "#d4870b"
+      ],
+      "tags": [
+        "富贵",
+        "温润"
+      ],
+      "kb": "mila",
+      "attrs": {},
+      "order": 70,
+      "onSale": true,
+      "id": "ml10",
+      "kbName": "蜜蜡",
+      "meaning": "",
+      "summary": "不透明或半透明的琥珀，色泽温润，是藏式和文玩里的常见材料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "青金石",
+      "mm": 8,
+      "price": 5,
+      "mat": "stone",
+      "c": [
+        "#3f63d6",
+        "#14236b"
+      ],
+      "tags": [
+        "庄重",
+        "尊贵",
+        "天空"
+      ],
+      "kb": "qingjin",
+      "attrs": {},
+      "order": 80,
+      "onSale": true,
+      "id": "qj8",
+      "kbName": "青金石",
+      "meaning": "颜色深如夜空，古代研磨作群青颜料，清代祭天礼仪也用青金石朝珠，传统上象征庄重和尊贵。",
+      "summary": "以青金石矿物为主的蓝色玉石，深蓝带金色星点，古代用作群青颜料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "绿松石",
+      "mm": 8,
+      "price": 6,
+      "mat": "stone",
+      "c": [
+        "#5fd0c4",
+        "#1e7f78"
+      ],
+      "tags": [
+        "吉祥",
+        "天空",
+        "古朴"
+      ],
+      "kb": "lvsong",
+      "attrs": {},
+      "order": 90,
+      "onSale": true,
+      "id": "ls8",
+      "kbName": "绿松石",
+      "meaning": "绿松石在中原和藏地都有几千年的佩戴传统，颜色像晴空，常被当作吉祥美好的象征。",
+      "summary": "含铜的磷酸盐矿物，天蓝到蓝绿色，常带铁线，是藏式和文玩里的主力配珠。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "绿松石",
+      "mm": 6,
+      "price": 4,
+      "mat": "stone",
+      "c": [
+        "#5fd0c4",
+        "#1e7f78"
+      ],
+      "tags": [
+        "吉祥",
+        "天空",
+        "古朴"
+      ],
+      "kb": "lvsong",
+      "attrs": {},
+      "order": 100,
+      "onSale": true,
+      "id": "ls6",
+      "kbName": "绿松石",
+      "meaning": "绿松石在中原和藏地都有几千年的佩戴传统，颜色像晴空，常被当作吉祥美好的象征。",
+      "summary": "含铜的磷酸盐矿物，天蓝到蓝绿色，常带铁线，是藏式和文玩里的主力配珠。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "黑曜石",
+      "mm": 8,
+      "price": 3,
+      "mat": "stone",
+      "c": [
+        "#55556a",
+        "#0b0b10"
+      ],
+      "tags": [
+        "沉稳",
+        "内敛"
+      ],
+      "kb": "heiyao",
+      "attrs": {
+        "color": "乌金"
+      },
+      "order": 110,
+      "onSale": true,
+      "id": "hy8",
+      "kbName": "黑曜石",
+      "meaning": "颜色深沉、光泽内敛，一般取沉稳、低调的意象，男款和情侣款用得多。",
+      "summary": "火山喷发形成的天然火山玻璃，整体黑色，部分有金银光泽或彩虹圈。",
+      "points": [
+        "乌金"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "白水晶",
+      "mm": 8,
+      "price": 2,
+      "mat": "crystal",
+      "c": [
+        "#ffffff",
+        "#bfcadb"
+      ],
+      "tags": [
+        "纯净",
+        "明澈"
+      ],
+      "kb": "bai-shuijing",
+      "attrs": {
+        "purity": "净体"
+      },
+      "order": 120,
+      "onSale": true,
+      "id": "bj8",
+      "kbName": "白水晶",
+      "meaning": "古人把水晶叫“水精”“水玉”，取其清澈如水，常用来比喻纯净、明澈。",
+      "summary": "无色透明的石英单晶，最常见的水晶，常做主珠、佛头和隔珠。",
+      "points": [
+        "净体"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "粉晶",
+      "mm": 8,
+      "price": 3,
+      "mat": "crystal",
+      "c": [
+        "#ffe0e7",
+        "#e08aa0"
+      ],
+      "tags": [
+        "温柔",
+        "浪漫"
+      ],
+      "kb": "fen-jing",
+      "attrs": {
+        "origin": "马达加斯加"
+      },
+      "order": 130,
+      "onSale": true,
+      "id": "fj8",
+      "kbName": "粉晶",
+      "meaning": "粉色柔和明亮，传统上常用来寓意温柔与浪漫，也常作为送给亲友的心意之选。",
+      "summary": "粉色的石英，规范名芙蓉石，用户几乎只叫粉晶，偏女性的热门款。",
+      "points": [
+        "马达加斯加"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "紫水晶",
+      "mm": 8,
+      "price": 4,
+      "mat": "crystal",
+      "c": [
+        "#e2c7ff",
+        "#6b3fa0"
+      ],
+      "tags": [
+        "尊贵",
+        "吉祥"
+      ],
+      "kb": "zi-jing",
+      "attrs": {},
+      "order": 140,
+      "onSale": true,
+      "id": "zj8",
+      "kbName": "紫水晶",
+      "meaning": "紫色在中国传统里是尊贵之色，有“紫气东来”的吉祥说法；西方把紫晶列为二月生辰石。",
+      "summary": "紫色的石英，颜色从浅薰衣草紫到深葡萄紫，水晶里最常见的彩色品种之一。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "草莓晶",
+      "mm": 8,
+      "price": 6,
+      "mat": "crystal",
+      "c": [
+        "#ffc7c7",
+        "#c2414f"
+      ],
+      "tags": [
+        "甜蜜",
+        "恋爱"
+      ],
+      "kb": "caomei-jing",
+      "attrs": {},
+      "order": 150,
+      "onSale": true,
+      "id": "cm8",
+      "kbName": "草莓晶",
+      "meaning": "",
+      "summary": "水晶里含红色片状或点状包体，像草莓籽，市面染色和玻璃仿品很多。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "金色转运珠",
+      "mm": 6,
+      "price": 10,
+      "mat": "metal",
+      "c": [
+        "#fff1b8",
+        "#a87a1c"
+      ],
+      "tags": [
+        "顺遂",
+        "吉祥"
+      ],
+      "kb": "zhuanyun",
+      "attrs": {
+        "color": "金色"
+      },
+      "order": 160,
+      "onSale": true,
+      "id": "zy6",
+      "kbName": "转运珠",
+      "meaning": "旧称“路路通”，取路路通达、诸事顺遂的吉祥说法；名字只是市场叫法，不代表任何效果。",
+      "summary": "串在手绳或手串上的金属通孔小珠，市场统称这个名字，材质从足金到合金都有。",
+      "points": [
+        "金色"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "银色隔珠",
+      "mm": 4,
+      "price": 1,
+      "mat": "metal",
+      "c": [
+        "#ffffff",
+        "#8a8f98"
+      ],
+      "tags": [
+        "点缀"
+      ],
+      "kb": "gezhu",
+      "attrs": {
+        "color": "银色"
+      },
+      "order": 170,
+      "onSale": true,
+      "id": "sp4",
+      "kbName": "隔珠隔片",
+      "meaning": "",
+      "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。",
+      "points": [
+        "银色"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "铜色隔珠",
+      "mm": 4,
+      "price": 1,
+      "mat": "metal",
+      "c": [
+        "#f0c79a",
+        "#8a5424"
+      ],
+      "tags": [
+        "点缀"
+      ],
+      "kb": "gezhu",
+      "attrs": {},
+      "order": 180,
+      "onSale": true,
+      "id": "sp4z",
+      "kbName": "隔珠隔片",
+      "meaning": "",
+      "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "金色隔片",
+      "mm": 2,
+      "price": 1,
+      "mat": "metal",
+      "c": [
+        "#fff1b8",
+        "#a87a1c"
+      ],
+      "tags": [
+        "点缀"
+      ],
+      "spacer": true,
+      "kb": "gezhu",
+      "attrs": {
+        "color": "金色"
+      },
+      "order": 190,
+      "onSale": true,
+      "id": "gp",
+      "kbName": "隔珠隔片",
+      "meaning": "",
+      "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。",
+      "points": [
+        "金色"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "和田玉",
+      "mm": 8,
+      "price": 15,
+      "mat": "stone",
+      "c": [
+        "#ece8d6",
+        "#9d9b86"
+      ],
+      "tags": [
+        "君子",
+        "温润"
+      ],
+      "kb": "hetian-yu",
+      "attrs": {},
+      "order": 200,
+      "onSale": true,
+      "id": "hetian-yu-8",
+      "kbName": "和田玉",
+      "meaning": "中国玉文化有“君子比德于玉”的传统，常用和田玉的温润比喻人的品格。",
+      "summary": "以透闪石为主的软玉，油润细腻。“和田玉”是矿物名，不代表产地。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "和田玉",
+      "mm": 10,
+      "price": 22,
+      "mat": "stone",
+      "c": [
+        "#ece8d6",
+        "#9d9b86"
+      ],
+      "tags": [
+        "君子",
+        "温润"
+      ],
+      "kb": "hetian-yu",
+      "attrs": {},
+      "order": 210,
+      "onSale": true,
+      "id": "hetian-yu-10",
+      "kbName": "和田玉",
+      "meaning": "中国玉文化有“君子比德于玉”的传统，常用和田玉的温润比喻人的品格。",
+      "summary": "以透闪石为主的软玉，油润细腻。“和田玉”是矿物名，不代表产地。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "月光石",
+      "mm": 6,
+      "price": 4,
+      "mat": "crystal",
+      "c": [
+        "#f1f5fa",
+        "#a5b8cf"
+      ],
+      "tags": [
+        "温柔",
+        "浪漫"
+      ],
+      "kb": "yueguang-shi",
+      "attrs": {},
+      "order": 220,
+      "onSale": true,
+      "id": "yueguang-shi-6",
+      "kbName": "月光石",
+      "meaning": "光晕像月光，常用来寓意温柔、浪漫；西方把月光石列为六月生辰石之一。",
+      "summary": "有月光效应的长石，转动时表面下浮着一层蓝色或白色光晕。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "月光石",
+      "mm": 8,
+      "price": 6,
+      "mat": "crystal",
+      "c": [
+        "#f1f5fa",
+        "#a5b8cf"
+      ],
+      "tags": [
+        "温柔",
+        "浪漫"
+      ],
+      "kb": "yueguang-shi",
+      "attrs": {},
+      "order": 230,
+      "onSale": true,
+      "id": "yueguang-shi-8",
+      "kbName": "月光石",
+      "meaning": "光晕像月光，常用来寓意温柔、浪漫；西方把月光石列为六月生辰石之一。",
+      "summary": "有月光效应的长石，转动时表面下浮着一层蓝色或白色光晕。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "虎眼石",
+      "mm": 8,
+      "price": 2,
+      "mat": "stone",
+      "c": [
+        "#d99c3f",
+        "#5a3510"
+      ],
+      "tags": [
+        "勇气",
+        "坚毅"
+      ],
+      "kb": "huyan-shi",
+      "attrs": {},
+      "order": 240,
+      "onSale": true,
+      "id": "huyan-shi-8",
+      "kbName": "虎眼石",
+      "meaning": "光带像老虎的眼睛，传统上常用来寓意勇气和坚毅，是偏男款的常见选择。",
+      "summary": "纤维状石英质玉，转动时有一道会移动的光带，按颜色分黄虎眼、蓝虎眼（蓝色品种俗称鹰眼石）、红虎眼。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "虎眼石",
+      "mm": 10,
+      "price": 3,
+      "mat": "stone",
+      "c": [
+        "#d99c3f",
+        "#5a3510"
+      ],
+      "tags": [
+        "勇气",
+        "坚毅"
+      ],
+      "kb": "huyan-shi",
+      "attrs": {},
+      "order": 250,
+      "onSale": true,
+      "id": "huyan-shi-10",
+      "kbName": "虎眼石",
+      "meaning": "光带像老虎的眼睛，传统上常用来寓意勇气和坚毅，是偏男款的常见选择。",
+      "summary": "纤维状石英质玉，转动时有一道会移动的光带，按颜色分黄虎眼、蓝虎眼（蓝色品种俗称鹰眼石）、红虎眼。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "虎眼石",
+      "mm": 12,
+      "price": 4,
+      "mat": "stone",
+      "c": [
+        "#d99c3f",
+        "#5a3510"
+      ],
+      "tags": [
+        "勇气",
+        "坚毅"
+      ],
+      "kb": "huyan-shi",
+      "attrs": {},
+      "order": 260,
+      "onSale": true,
+      "id": "huyan-shi-12",
+      "kbName": "虎眼石",
+      "meaning": "光带像老虎的眼睛，传统上常用来寓意勇气和坚毅，是偏男款的常见选择。",
+      "summary": "纤维状石英质玉，转动时有一道会移动的光带，按颜色分黄虎眼、蓝虎眼（蓝色品种俗称鹰眼石）、红虎眼。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "珍珠",
+      "mm": 6,
+      "price": 4,
+      "mat": "stone",
+      "c": [
+        "#fbf7f0",
+        "#d6ccbf"
+      ],
+      "tags": [
+        "圆满",
+        "纯净"
+      ],
+      "kb": "zhenzhu",
+      "attrs": {},
+      "order": 270,
+      "onSale": true,
+      "id": "zhenzhu-6",
+      "kbName": "珍珠",
+      "meaning": "珍珠圆润柔光，传统上常取圆满、纯洁之意。",
+      "summary": "贝类体内形成的有机宝石，市售基本是养殖珍珠，可直接叫珍珠。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "珍珠",
+      "mm": 7,
+      "price": 5,
+      "mat": "stone",
+      "c": [
+        "#fbf7f0",
+        "#d6ccbf"
+      ],
+      "tags": [
+        "圆满",
+        "纯净"
+      ],
+      "kb": "zhenzhu",
+      "attrs": {},
+      "order": 280,
+      "onSale": true,
+      "id": "zhenzhu-7",
+      "kbName": "珍珠",
+      "meaning": "珍珠圆润柔光，传统上常取圆满、纯洁之意。",
+      "summary": "贝类体内形成的有机宝石，市售基本是养殖珍珠，可直接叫珍珠。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "珍珠",
+      "mm": 8,
+      "price": 7,
+      "mat": "stone",
+      "c": [
+        "#fbf7f0",
+        "#d6ccbf"
+      ],
+      "tags": [
+        "圆满",
+        "纯净"
+      ],
+      "kb": "zhenzhu",
+      "attrs": {},
+      "order": 290,
+      "onSale": true,
+      "id": "zhenzhu-8",
+      "kbName": "珍珠",
+      "meaning": "珍珠圆润柔光，传统上常取圆满、纯洁之意。",
+      "summary": "贝类体内形成的有机宝石，市售基本是养殖珍珠，可直接叫珍珠。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "红玛瑙",
+      "mm": 6,
+      "price": 1,
+      "mat": "stone",
+      "c": [
+        "#d44c3b",
+        "#6e1610"
+      ],
+      "tags": [
+        "红火",
+        "吉祥"
+      ],
+      "kb": "putong-manao",
+      "attrs": {},
+      "order": 300,
+      "onSale": true,
+      "id": "putong-manao-6",
+      "kbName": "普通玛瑙",
+      "meaning": "",
+      "summary": "不讲产地的普通玛瑙珠，红、黑、白、绿、蓝各色都有，鲜艳的多为染色。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "红玛瑙",
+      "mm": 8,
+      "price": 1.5,
+      "mat": "stone",
+      "c": [
+        "#d44c3b",
+        "#6e1610"
+      ],
+      "tags": [
+        "红火",
+        "吉祥"
+      ],
+      "kb": "putong-manao",
+      "attrs": {},
+      "order": 310,
+      "onSale": true,
+      "id": "putong-manao-8",
+      "kbName": "普通玛瑙",
+      "meaning": "",
+      "summary": "不讲产地的普通玛瑙珠，红、黑、白、绿、蓝各色都有，鲜艳的多为染色。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "红玛瑙",
+      "mm": 10,
+      "price": 2,
+      "mat": "stone",
+      "c": [
+        "#d44c3b",
+        "#6e1610"
+      ],
+      "tags": [
+        "红火",
+        "吉祥"
+      ],
+      "kb": "putong-manao",
+      "attrs": {},
+      "order": 320,
+      "onSale": true,
+      "id": "putong-manao-10",
+      "kbName": "普通玛瑙",
+      "meaning": "",
+      "summary": "不讲产地的普通玛瑙珠，红、黑、白、绿、蓝各色都有，鲜艳的多为染色。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "红玛瑙",
+      "mm": 12,
+      "price": 3,
+      "mat": "stone",
+      "c": [
+        "#d44c3b",
+        "#6e1610"
+      ],
+      "tags": [
+        "红火",
+        "吉祥"
+      ],
+      "kb": "putong-manao",
+      "attrs": {},
+      "order": 330,
+      "onSale": true,
+      "id": "putong-manao-12",
+      "kbName": "普通玛瑙",
+      "meaning": "",
+      "summary": "不讲产地的普通玛瑙珠，红、黑、白、绿、蓝各色都有，鲜艳的多为染色。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "绿玉髓",
+      "mm": 8,
+      "price": 6,
+      "mat": "stone",
+      "c": [
+        "#a3d9a3",
+        "#3f8f55"
+      ],
+      "tags": [
+        "清新",
+        "生机"
+      ],
+      "kb": "lv-yusui",
+      "attrs": {},
+      "order": 340,
+      "onSale": true,
+      "id": "lv-yusui-8",
+      "kbName": "绿玉髓",
+      "meaning": "",
+      "summary": "苹果绿色的玉髓，常叫“澳玉”，名字里有“玉”但不是翡翠或和田玉。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "拉长石",
+      "mm": 8,
+      "price": 4,
+      "mat": "crystal",
+      "c": [
+        "#8d99a8",
+        "#2f3c50"
+      ],
+      "tags": [
+        "神秘",
+        "多彩"
+      ],
+      "kb": "lachang-shi",
+      "attrs": {},
+      "order": 350,
+      "onSale": true,
+      "id": "lachang-shi-8",
+      "kbName": "拉长石",
+      "meaning": "转动时彩光忽隐忽现，像极光，常用来寓意神秘、变化与多彩。",
+      "summary": "灰黑底子的长石，在某个角度会闪出大片蓝、绿、金等彩光，也叫光谱石、黑月光。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "拉长石",
+      "mm": 10,
+      "price": 6,
+      "mat": "crystal",
+      "c": [
+        "#8d99a8",
+        "#2f3c50"
+      ],
+      "tags": [
+        "神秘",
+        "多彩"
+      ],
+      "kb": "lachang-shi",
+      "attrs": {},
+      "order": 360,
+      "onSale": true,
+      "id": "lachang-shi-10",
+      "kbName": "拉长石",
+      "meaning": "转动时彩光忽隐忽现，像极光，常用来寓意神秘、变化与多彩。",
+      "summary": "灰黑底子的长石，在某个角度会闪出大片蓝、绿、金等彩光，也叫光谱石、黑月光。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "海蓝宝",
+      "mm": 6,
+      "price": 4,
+      "mat": "crystal",
+      "c": [
+        "#d2eaf3",
+        "#6aa6c4"
+      ],
+      "tags": [
+        "清澈",
+        "宽广"
+      ],
+      "kb": "hailanbao",
+      "attrs": {},
+      "order": 370,
+      "onSale": true,
+      "id": "hailanbao-6",
+      "kbName": "海蓝宝",
+      "meaning": "颜色像海水，常用来寓意清澈、宽广；西方把海蓝宝列为三月生辰石。",
+      "summary": "浅蓝到蓝绿色的绿柱石，规范名海蓝宝石，常见冰种和带雨丝的料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "海蓝宝",
+      "mm": 8,
+      "price": 6,
+      "mat": "crystal",
+      "c": [
+        "#d2eaf3",
+        "#6aa6c4"
+      ],
+      "tags": [
+        "清澈",
+        "宽广"
+      ],
+      "kb": "hailanbao",
+      "attrs": {},
+      "order": 380,
+      "onSale": true,
+      "id": "hailanbao-8",
+      "kbName": "海蓝宝",
+      "meaning": "颜色像海水，常用来寓意清澈、宽广；西方把海蓝宝列为三月生辰石。",
+      "summary": "浅蓝到蓝绿色的绿柱石，规范名海蓝宝石，常见冰种和带雨丝的料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "海蓝宝",
+      "mm": 10,
+      "price": 9,
+      "mat": "crystal",
+      "c": [
+        "#d2eaf3",
+        "#6aa6c4"
+      ],
+      "tags": [
+        "清澈",
+        "宽广"
+      ],
+      "kb": "hailanbao",
+      "attrs": {},
+      "order": 390,
+      "onSale": true,
+      "id": "hailanbao-10",
+      "kbName": "海蓝宝",
+      "meaning": "颜色像海水，常用来寓意清澈、宽广；西方把海蓝宝列为三月生辰石。",
+      "summary": "浅蓝到蓝绿色的绿柱石，规范名海蓝宝石，常见冰种和带雨丝的料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "东陵玉",
+      "mm": 8,
+      "price": 1.5,
+      "mat": "stone",
+      "c": [
+        "#79bb8c",
+        "#2c6b45"
+      ],
+      "tags": [
+        "生机",
+        "自然"
+      ],
+      "kb": "dongling-yu",
+      "attrs": {},
+      "order": 400,
+      "onSale": true,
+      "id": "dongling-yu-8",
+      "kbName": "东陵玉",
+      "meaning": "",
+      "summary": "含铬云母等片状矿物的石英岩，转动可见细碎闪光，以绿色最常见。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "东陵玉",
+      "mm": 10,
+      "price": 2,
+      "mat": "stone",
+      "c": [
+        "#79bb8c",
+        "#2c6b45"
+      ],
+      "tags": [
+        "生机",
+        "自然"
+      ],
+      "kb": "dongling-yu",
+      "attrs": {},
+      "order": 410,
+      "onSale": true,
+      "id": "dongling-yu-10",
+      "kbName": "东陵玉",
+      "meaning": "",
+      "summary": "含铬云母等片状矿物的石英岩，转动可见细碎闪光，以绿色最常见。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "黄水晶",
+      "mm": 8,
+      "price": 3,
+      "mat": "crystal",
+      "c": [
+        "#fff2b3",
+        "#d6a23a"
+      ],
+      "tags": [
+        "温暖",
+        "尊贵"
+      ],
+      "kb": "huang-shuijing",
+      "attrs": {},
+      "order": 420,
+      "onSale": true,
+      "id": "huang-shuijing-8",
+      "kbName": "黄水晶",
+      "meaning": "黄色在中国传统里是尊贵之色；西方把黄水晶列为十一月生辰石之一。",
+      "summary": "黄色的石英。市面上大部分由紫晶加热而来，注意“黄晶”这个叫法会和托帕石混。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "黄水晶",
+      "mm": 10,
+      "price": 4,
+      "mat": "crystal",
+      "c": [
+        "#fff2b3",
+        "#d6a23a"
+      ],
+      "tags": [
+        "温暖",
+        "尊贵"
+      ],
+      "kb": "huang-shuijing",
+      "attrs": {},
+      "order": 430,
+      "onSale": true,
+      "id": "huang-shuijing-10",
+      "kbName": "黄水晶",
+      "meaning": "黄色在中国传统里是尊贵之色；西方把黄水晶列为十一月生辰石之一。",
+      "summary": "黄色的石英。市面上大部分由紫晶加热而来，注意“黄晶”这个叫法会和托帕石混。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "黑檀",
+      "mm": 10,
+      "price": 3,
+      "mat": "wood",
+      "c": [
+        "#4c3b2e",
+        "#120c08"
+      ],
+      "tags": [
+        "沉稳",
+        "古朴"
+      ],
+      "kb": "heitan",
+      "attrs": {},
+      "order": 440,
+      "onSale": true,
+      "id": "heitan-10",
+      "kbName": "黑檀",
+      "meaning": "色黑如墨，传统上取其沉稳庄重。",
+      "summary": "市售黑檀手串多是苏拉威西乌木（条纹乌木类），也有乌木和厚瓣乌木，都是柿属。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "茶晶",
+      "mm": 6,
+      "price": 2,
+      "mat": "crystal",
+      "c": [
+        "#cbab8c",
+        "#5a3d27"
+      ],
+      "tags": [
+        "沉稳"
+      ],
+      "kb": "cha-jing",
+      "attrs": {},
+      "order": 450,
+      "onSale": true,
+      "id": "cha-jing-6",
+      "kbName": "茶晶",
+      "meaning": "茶色低调内敛，不张扬，常用来寓意沉稳、踏实，适合喜欢素净风格的人。",
+      "summary": "茶色到黑褐色的石英，规范名烟晶，颜色最深的叫墨晶。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "茶晶",
+      "mm": 8,
+      "price": 2.5,
+      "mat": "crystal",
+      "c": [
+        "#cbab8c",
+        "#5a3d27"
+      ],
+      "tags": [
+        "沉稳"
+      ],
+      "kb": "cha-jing",
+      "attrs": {},
+      "order": 460,
+      "onSale": true,
+      "id": "cha-jing-8",
+      "kbName": "茶晶",
+      "meaning": "茶色低调内敛，不张扬，常用来寓意沉稳、踏实，适合喜欢素净风格的人。",
+      "summary": "茶色到黑褐色的石英，规范名烟晶，颜色最深的叫墨晶。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "茶晶",
+      "mm": 10,
+      "price": 3,
+      "mat": "crystal",
+      "c": [
+        "#cbab8c",
+        "#5a3d27"
+      ],
+      "tags": [
+        "沉稳"
+      ],
+      "kb": "cha-jing",
+      "attrs": {},
+      "order": 470,
+      "onSale": true,
+      "id": "cha-jing-10",
+      "kbName": "茶晶",
+      "meaning": "茶色低调内敛，不张扬，常用来寓意沉稳、踏实，适合喜欢素净风格的人。",
+      "summary": "茶色到黑褐色的石英，规范名烟晶，颜色最深的叫墨晶。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "茶晶",
+      "mm": 12,
+      "price": 4,
+      "mat": "crystal",
+      "c": [
+        "#cbab8c",
+        "#5a3d27"
+      ],
+      "tags": [
+        "沉稳"
+      ],
+      "kb": "cha-jing",
+      "attrs": {},
+      "order": 480,
+      "onSale": true,
+      "id": "cha-jing-12",
+      "kbName": "茶晶",
+      "meaning": "茶色低调内敛，不张扬，常用来寓意沉稳、踏实，适合喜欢素净风格的人。",
+      "summary": "茶色到黑褐色的石英，规范名烟晶，颜色最深的叫墨晶。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "萤石",
+      "mm": 8,
+      "price": 3,
+      "mat": "crystal",
+      "c": [
+        "#c8b8ee",
+        "#4c8f86"
+      ],
+      "tags": [
+        "多彩",
+        "清新"
+      ],
+      "kb": "ying-shi",
+      "attrs": {},
+      "order": 490,
+      "onSale": true,
+      "id": "ying-shi-8",
+      "kbName": "萤石",
+      "meaning": "颜色一层层叠起来像彩虹，紫绿相间，一般取多彩、清新、活泼的意象。",
+      "summary": "氟化钙矿物，绿紫相间、色带分明，质软，做珠子很常见。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "缠丝玛瑙",
+      "mm": 10,
+      "price": 4,
+      "mat": "stone",
+      "c": [
+        "#e8c8aa",
+        "#8a3b20"
+      ],
+      "tags": [
+        "圆满",
+        "恒久"
+      ],
+      "kb": "chansi",
+      "attrs": {},
+      "order": 500,
+      "onSale": true,
+      "id": "chansi-10",
+      "kbName": "缠丝玛瑙",
+      "meaning": "",
+      "summary": "带有平行条带（缠丝）的玛瑙，红白、黑白相间最常见。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "岫玉",
+      "mm": 8,
+      "price": 2,
+      "mat": "stone",
+      "c": [
+        "#d1e4b8",
+        "#6f8f4c"
+      ],
+      "tags": [
+        "温润",
+        "平安"
+      ],
+      "kb": "xiu-yu",
+      "attrs": {},
+      "order": 510,
+      "onSale": true,
+      "id": "xiu-yu-8",
+      "kbName": "岫玉",
+      "meaning": "",
+      "summary": "以蛇纹石为主的玉石，主产辽宁岫岩，颜色多为黄绿，价格亲民。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "黄杨木",
+      "mm": 6,
+      "price": 1,
+      "mat": "wood",
+      "c": [
+        "#f1d58c",
+        "#b4842e"
+      ],
+      "tags": [
+        "长寿",
+        "雅致"
+      ],
+      "kb": "huangyang",
+      "attrs": {},
+      "order": 520,
+      "onSale": true,
+      "id": "huangyang-6",
+      "kbName": "黄杨木",
+      "meaning": "黄杨生长极慢，民间有“千年矮”之称，传统上寓意长寿。",
+      "summary": "黄杨属木材（小叶黄杨 Buxus sinica 等），颜色浅黄、质地细腻，是传统小件雕刻用材。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "黄杨木",
+      "mm": 10,
+      "price": 2,
+      "mat": "wood",
+      "c": [
+        "#f1d58c",
+        "#b4842e"
+      ],
+      "tags": [
+        "长寿",
+        "雅致"
+      ],
+      "kb": "huangyang",
+      "attrs": {},
+      "order": 530,
+      "onSale": true,
+      "id": "huangyang-10",
+      "kbName": "黄杨木",
+      "meaning": "黄杨生长极慢，民间有“千年矮”之称，传统上寓意长寿。",
+      "summary": "黄杨属木材（小叶黄杨 Buxus sinica 等），颜色浅黄、质地细腻，是传统小件雕刻用材。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "檀香",
+      "mm": 8,
+      "price": 3,
+      "mat": "wood",
+      "c": [
+        "#cb955c",
+        "#6b4220"
+      ],
+      "tags": [
+        "清雅",
+        "古韵"
+      ],
+      "kb": "tanxiang",
+      "attrs": {},
+      "order": 540,
+      "onSale": true,
+      "id": "tanxiang-8",
+      "kbName": "檀香",
+      "meaning": "檀香是传统的寺院供香和文人用香，常取清雅、庄重的意象。",
+      "summary": "檀香属（Santalum）树木的芯材，老山檀为 S. album；浅黄色、纹理细直，自带温润奶香，是传统寺院和文人用香。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "檀香",
+      "mm": 12,
+      "price": 5,
+      "mat": "wood",
+      "c": [
+        "#cb955c",
+        "#6b4220"
+      ],
+      "tags": [
+        "清雅",
+        "古韵"
+      ],
+      "kb": "tanxiang",
+      "attrs": {},
+      "order": 550,
+      "onSale": true,
+      "id": "tanxiang-12",
+      "kbName": "檀香",
+      "meaning": "檀香是传统的寺院供香和文人用香，常取清雅、庄重的意象。",
+      "summary": "檀香属（Santalum）树木的芯材，老山檀为 S. album；浅黄色、纹理细直，自带温润奶香，是传统寺院和文人用香。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "桃木",
+      "mm": 6,
+      "price": 0.5,
+      "mat": "wood",
+      "c": [
+        "#cb8960",
+        "#6a3a20"
+      ],
+      "tags": [
+        "吉祥",
+        "平安"
+      ],
+      "kb": "tao-mu",
+      "attrs": {},
+      "order": 560,
+      "onSale": true,
+      "id": "tao-mu-6",
+      "kbName": "桃木",
+      "meaning": "古人过年在门上挂桃木板“桃符”，桃木由此成为常见的年俗吉祥题材。",
+      "summary": "桃树的木材，木色浅、质地一般，是民俗题材常用的木料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "葡萄石",
+      "mm": 8,
+      "price": 5,
+      "mat": "crystal",
+      "c": [
+        "#e0f4c2",
+        "#8cbf5a"
+      ],
+      "tags": [
+        "清新",
+        "丰收"
+      ],
+      "kb": "putao-shi",
+      "attrs": {},
+      "order": 570,
+      "onSale": true,
+      "id": "putao-shi-8",
+      "kbName": "葡萄石",
+      "meaning": "颜色像一串还没熟透的青葡萄，常取清新、丰收、生机勃勃的意象。",
+      "summary": "黄绿色半透明矿物，质感像果冻，常带黑色针状包体。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "金发晶",
+      "mm": 8,
+      "price": 8,
+      "mat": "crystal",
+      "c": [
+        "#fff5d2",
+        "#c9a24a"
+      ],
+      "tags": [
+        "光明",
+        "阳光"
+      ],
+      "kb": "fa-jing",
+      "attrs": {},
+      "order": 580,
+      "onSale": true,
+      "id": "fa-jing-8",
+      "kbName": "发晶",
+      "meaning": "金色发丝在晶体里像一道道阳光，常用来寓意光明、积极。",
+      "summary": "水晶里长了发丝状或针状矿物包体，按发丝颜色分金发、钛晶、红发、黑发等。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "金发晶",
+      "mm": 10,
+      "price": 12,
+      "mat": "crystal",
+      "c": [
+        "#fff5d2",
+        "#c9a24a"
+      ],
+      "tags": [
+        "光明",
+        "阳光"
+      ],
+      "kb": "fa-jing",
+      "attrs": {},
+      "order": 590,
+      "onSale": true,
+      "id": "fa-jing-10",
+      "kbName": "发晶",
+      "meaning": "金色发丝在晶体里像一道道阳光，常用来寓意光明、积极。",
+      "summary": "水晶里长了发丝状或针状矿物包体，按发丝颜色分金发、钛晶、红发、黑发等。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "战国红",
+      "mm": 10,
+      "price": 8,
+      "mat": "stone",
+      "c": [
+        "#e8b24c",
+        "#a3261c"
+      ],
+      "tags": [
+        "红火",
+        "吉祥",
+        "古韵"
+      ],
+      "kb": "zhanguo-hong",
+      "attrs": {},
+      "order": 600,
+      "onSale": true,
+      "id": "zhanguo-hong-10",
+      "kbName": "战国红",
+      "meaning": "红黄两色相间，形色近似战国时期的红缟玛瑙，常作为带古意的红色题材，取红火吉祥之意。",
+      "summary": "红黄缟纹相间的玛瑙，因形色接近战国墓葬出土的红缟玛瑙而得名。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "天河石",
+      "mm": 8,
+      "price": 3,
+      "mat": "stone",
+      "c": [
+        "#aae3d7",
+        "#3f9c8e"
+      ],
+      "tags": [
+        "清新"
+      ],
+      "kb": "tianhe-shi",
+      "attrs": {},
+      "order": 610,
+      "onSale": true,
+      "id": "tianhe-shi-8",
+      "kbName": "天河石",
+      "meaning": "蓝绿色清新明快，像湖水一样，常用来寓意清新、希望和新的开始。",
+      "summary": "蓝绿色的微斜长石，英文 amazonite，常有白色格子纹，也叫亚马逊石。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "水草玛瑙",
+      "mm": 8,
+      "price": 2,
+      "mat": "stone",
+      "c": [
+        "#eaf0ea",
+        "#6f8f6a"
+      ],
+      "tags": [
+        "自然",
+        "生机"
+      ],
+      "kb": "shuicao",
+      "attrs": {},
+      "order": 620,
+      "onSale": true,
+      "id": "shuicao-8",
+      "kbName": "水草玛瑙",
+      "meaning": "",
+      "summary": "玛瑙里长着像水草、苔藓一样的包裹体，看起来像水中风景。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "凤眼菩提",
+      "mm": 10,
+      "price": 1,
+      "mat": "bodhi",
+      "c": [
+        "#dab68c",
+        "#7a5230"
+      ],
+      "tags": [
+        "吉祥"
+      ],
+      "kb": "fengyan",
+      "attrs": {},
+      "order": 630,
+      "onSale": true,
+      "id": "fengyan-10",
+      "kbName": "凤眼菩提",
+      "meaning": "以凤凰之眼命名，传统上取吉祥之意。",
+      "summary": "枣属植物的果核，每颗有一个形似凤眼的凹痕；Li 等（2014）记为 Ziziphus abyssinica 的二室果核，市场多说产自尼泊尔。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "凤眼菩提",
+      "mm": 12,
+      "price": 1.5,
+      "mat": "bodhi",
+      "c": [
+        "#dab68c",
+        "#7a5230"
+      ],
+      "tags": [
+        "吉祥"
+      ],
+      "kb": "fengyan",
+      "attrs": {},
+      "order": 640,
+      "onSale": true,
+      "id": "fengyan-12",
+      "kbName": "凤眼菩提",
+      "meaning": "以凤凰之眼命名，传统上取吉祥之意。",
+      "summary": "枣属植物的果核，每颗有一个形似凤眼的凹痕；Li 等（2014）记为 Ziziphus abyssinica 的二室果核，市场多说产自尼泊尔。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "佛头三通",
+      "mm": 12,
+      "price": 6,
+      "mat": "stone",
+      "c": [
+        "#d8b48c",
+        "#7a5a32"
+      ],
+      "tags": [
+        "圆满"
+      ],
+      "kb": "fotou",
+      "attrs": {},
+      "order": 650,
+      "onSale": true,
+      "id": "fotou-12",
+      "kbName": "佛头三通",
+      "meaning": "念珠从佛头起数、数到佛头为一圈，文化上取“圆满”之意。",
+      "summary": "佛珠和手串收尾的组件：三孔的三通加上塔形的佛塔，合称佛头。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "黑曜石",
+      "mm": 10,
+      "price": 4,
+      "mat": "stone",
+      "c": [
+        "#55556a",
+        "#0b0b10"
+      ],
+      "tags": [
+        "沉稳",
+        "内敛"
+      ],
+      "kb": "heiyao",
+      "attrs": {
+        "color": "乌金"
+      },
+      "order": 660,
+      "onSale": true,
+      "id": "hy8-10",
+      "kbName": "黑曜石",
+      "meaning": "颜色深沉、光泽内敛，一般取沉稳、低调的意象，男款和情侣款用得多。",
+      "summary": "火山喷发形成的天然火山玻璃，整体黑色，部分有金银光泽或彩虹圈。",
+      "points": [
+        "乌金"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "黑曜石",
+      "mm": 12,
+      "price": 5,
+      "mat": "stone",
+      "c": [
+        "#55556a",
+        "#0b0b10"
+      ],
+      "tags": [
+        "沉稳",
+        "内敛"
+      ],
+      "kb": "heiyao",
+      "attrs": {
+        "color": "乌金"
+      },
+      "order": 670,
+      "onSale": true,
+      "id": "hy8-12",
+      "kbName": "黑曜石",
+      "meaning": "颜色深沉、光泽内敛，一般取沉稳、低调的意象，男款和情侣款用得多。",
+      "summary": "火山喷发形成的天然火山玻璃，整体黑色，部分有金银光泽或彩虹圈。",
+      "points": [
+        "乌金"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "南红",
+      "mm": 10,
+      "price": 18,
+      "mat": "stone",
+      "c": [
+        "#ec5a3f",
+        "#8e1a10"
+      ],
+      "tags": [
+        "红火",
+        "吉祥",
+        "喜庆"
+      ],
+      "kb": "nanhong",
+      "attrs": {
+        "origin": "保山",
+        "color": "柿子红"
+      },
+      "order": 680,
+      "onSale": true,
+      "id": "nh8-10",
+      "kbName": "南红",
+      "meaning": "南红颜色正红，古称赤玉。传统上以红色寓意红火吉祥，常用作年节、喜庆题材。",
+      "summary": "产自云南保山、四川凉山、甘肃迭部的红色玛瑙，颜色和矿口决定价格。",
+      "points": [
+        "保山",
+        "柿子红"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "白水晶",
+      "mm": 6,
+      "price": 1.5,
+      "mat": "crystal",
+      "c": [
+        "#ffffff",
+        "#bfcadb"
+      ],
+      "tags": [
+        "纯净",
+        "明澈"
+      ],
+      "kb": "bai-shuijing",
+      "attrs": {
+        "purity": "净体"
+      },
+      "order": 690,
+      "onSale": true,
+      "id": "bj8-6",
+      "kbName": "白水晶",
+      "meaning": "古人把水晶叫“水精”“水玉”，取其清澈如水，常用来比喻纯净、明澈。",
+      "summary": "无色透明的石英单晶，最常见的水晶，常做主珠、佛头和隔珠。",
+      "points": [
+        "净体"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "白水晶",
+      "mm": 10,
+      "price": 3,
+      "mat": "crystal",
+      "c": [
+        "#ffffff",
+        "#bfcadb"
+      ],
+      "tags": [
+        "纯净",
+        "明澈"
+      ],
+      "kb": "bai-shuijing",
+      "attrs": {
+        "purity": "净体"
+      },
+      "order": 700,
+      "onSale": true,
+      "id": "bj8-10",
+      "kbName": "白水晶",
+      "meaning": "古人把水晶叫“水精”“水玉”，取其清澈如水，常用来比喻纯净、明澈。",
+      "summary": "无色透明的石英单晶，最常见的水晶，常做主珠、佛头和隔珠。",
+      "points": [
+        "净体"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "星月菩提",
+      "mm": 10,
+      "price": 1.5,
+      "mat": "bodhi",
+      "c": [
+        "#f6eed8",
+        "#b8935a"
+      ],
+      "tags": [
+        "清净",
+        "圆满"
+      ],
+      "kb": "xingyue",
+      "attrs": {
+        "color": "顺白"
+      },
+      "order": 710,
+      "onSale": true,
+      "id": "xy8-10",
+      "kbName": "星月菩提",
+      "meaning": "星点环绕一轮月，传统上常做念珠，取“众星拱月”的圆满之象。",
+      "summary": "黄藤的种子车磨成珠，白底布满黑色星点，孔口有一个圆形凹坑像月亮。",
+      "points": [
+        "顺白"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "金刚菩提",
+      "mm": 12,
+      "price": 4,
+      "mat": "wood",
+      "c": [
+        "#bf7442",
+        "#5e2a12"
+      ],
+      "tags": [
+        "坚韧",
+        "吉祥"
+      ],
+      "kb": "jingang",
+      "attrs": {},
+      "order": 720,
+      "onSale": true,
+      "id": "jg10-12",
+      "kbName": "金刚菩提",
+      "meaning": "“金刚”取坚固不坏之意，金刚菩提在南亚和藏地传统里常做念珠。",
+      "summary": "杜英属植物的果核（Li 等 2014 记为 Elaeocarpus angustifolius，常称圆果杜英），表面沟壑起伏，按瓣数区分，主要产自尼泊尔和印尼。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "粉晶",
+      "mm": 6,
+      "price": 2,
+      "mat": "crystal",
+      "c": [
+        "#ffe0e7",
+        "#e08aa0"
+      ],
+      "tags": [
+        "温柔",
+        "浪漫"
+      ],
+      "kb": "fen-jing",
+      "attrs": {
+        "origin": "马达加斯加"
+      },
+      "order": 730,
+      "onSale": true,
+      "id": "fj8-6",
+      "kbName": "粉晶",
+      "meaning": "粉色柔和明亮，传统上常用来寓意温柔与浪漫，也常作为送给亲友的心意之选。",
+      "summary": "粉色的石英，规范名芙蓉石，用户几乎只叫粉晶，偏女性的热门款。",
+      "points": [
+        "马达加斯加"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "紫水晶",
+      "mm": 10,
+      "price": 5,
+      "mat": "crystal",
+      "c": [
+        "#e2c7ff",
+        "#6b3fa0"
+      ],
+      "tags": [
+        "尊贵",
+        "吉祥"
+      ],
+      "kb": "zi-jing",
+      "attrs": {},
+      "order": 740,
+      "onSale": true,
+      "id": "zj8-10",
+      "kbName": "紫水晶",
+      "meaning": "紫色在中国传统里是尊贵之色，有“紫气东来”的吉祥说法；西方把紫晶列为二月生辰石。",
+      "summary": "紫色的石英，颜色从浅薰衣草紫到深葡萄紫，水晶里最常见的彩色品种之一。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "蜜蜡",
+      "mm": 8,
+      "price": 12,
+      "mat": "stone",
+      "c": [
+        "#ffd35c",
+        "#d4870b"
+      ],
+      "tags": [
+        "富贵",
+        "温润"
+      ],
+      "kb": "mila",
+      "attrs": {},
+      "order": 750,
+      "onSale": true,
+      "id": "ml10-8",
+      "kbName": "蜜蜡",
+      "meaning": "",
+      "summary": "不透明或半透明的琥珀，色泽温润，是藏式和文玩里的常见材料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "蜜蜡",
+      "mm": 12,
+      "price": 26,
+      "mat": "stone",
+      "c": [
+        "#ffd35c",
+        "#d4870b"
+      ],
+      "tags": [
+        "富贵",
+        "温润"
+      ],
+      "kb": "mila",
+      "attrs": {},
+      "order": 760,
+      "onSale": true,
+      "id": "ml10-12",
+      "kbName": "蜜蜡",
+      "meaning": "",
+      "summary": "不透明或半透明的琥珀，色泽温润，是藏式和文玩里的常见材料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "小叶紫檀",
+      "mm": 12,
+      "price": 6,
+      "mat": "wood",
+      "c": [
+        "#a3442f",
+        "#3d110b"
+      ],
+      "tags": [
+        "富贵",
+        "沉稳",
+        "古朴"
+      ],
+      "kb": "xiaoye-zitan",
+      "attrs": {
+        "origin": "印度"
+      },
+      "order": 770,
+      "onSale": true,
+      "id": "zt10-12",
+      "kbName": "小叶紫檀",
+      "meaning": "紫檀在明清是宫廷家具和文房的名贵用材，传统上被看作木中上品，寓意沉稳、富贵。",
+      "summary": "檀香紫檀的心材，产自印度南部，是红木国标紫檀木类里唯一的树种。",
+      "points": [
+        "印度"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "小叶紫檀",
+      "mm": 6,
+      "price": 2,
+      "mat": "wood",
+      "c": [
+        "#a3442f",
+        "#3d110b"
+      ],
+      "tags": [
+        "富贵",
+        "沉稳",
+        "古朴"
+      ],
+      "kb": "xiaoye-zitan",
+      "attrs": {
+        "origin": "印度"
+      },
+      "order": 780,
+      "onSale": true,
+      "id": "zt8-6",
+      "kbName": "小叶紫檀",
+      "meaning": "紫檀在明清是宫廷家具和文房的名贵用材，传统上被看作木中上品，寓意沉稳、富贵。",
+      "summary": "檀香紫檀的心材，产自印度南部，是红木国标紫檀木类里唯一的树种。",
+      "points": [
+        "印度"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "绿松石",
+      "mm": 10,
+      "price": 8,
+      "mat": "stone",
+      "c": [
+        "#5fd0c4",
+        "#1e7f78"
+      ],
+      "tags": [
+        "吉祥",
+        "天空",
+        "古朴"
+      ],
+      "kb": "lvsong",
+      "attrs": {},
+      "order": 790,
+      "onSale": true,
+      "id": "ls8-10",
+      "kbName": "绿松石",
+      "meaning": "绿松石在中原和藏地都有几千年的佩戴传统，颜色像晴空，常被当作吉祥美好的象征。",
+      "summary": "含铜的磷酸盐矿物，天蓝到蓝绿色，常带铁线，是藏式和文玩里的主力配珠。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "绿松石",
+      "mm": 12,
+      "price": 10,
+      "mat": "stone",
+      "c": [
+        "#5fd0c4",
+        "#1e7f78"
+      ],
+      "tags": [
+        "吉祥",
+        "天空",
+        "古朴"
+      ],
+      "kb": "lvsong",
+      "attrs": {},
+      "order": 800,
+      "onSale": true,
+      "id": "ls8-12",
+      "kbName": "绿松石",
+      "meaning": "绿松石在中原和藏地都有几千年的佩戴传统，颜色像晴空，常被当作吉祥美好的象征。",
+      "summary": "含铜的磷酸盐矿物，天蓝到蓝绿色，常带铁线，是藏式和文玩里的主力配珠。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "青金石",
+      "mm": 10,
+      "price": 7,
+      "mat": "stone",
+      "c": [
+        "#3f63d6",
+        "#14236b"
+      ],
+      "tags": [
+        "庄重",
+        "尊贵",
+        "天空"
+      ],
+      "kb": "qingjin",
+      "attrs": {},
+      "order": 810,
+      "onSale": true,
+      "id": "qj8-10",
+      "kbName": "青金石",
+      "meaning": "颜色深如夜空，古代研磨作群青颜料，清代祭天礼仪也用青金石朝珠，传统上象征庄重和尊贵。",
+      "summary": "以青金石矿物为主的蓝色玉石，深蓝带金色星点，古代用作群青颜料。",
+      "points": [],
+      "safety": ""
+    },
+    {
+      "name": "银色隔珠",
+      "mm": 3,
+      "price": 0.5,
+      "mat": "metal",
+      "c": [
+        "#ffffff",
+        "#8a8f98"
+      ],
+      "tags": [
+        "点缀"
+      ],
+      "kb": "gezhu",
+      "attrs": {
+        "color": "银色"
+      },
+      "order": 820,
+      "onSale": true,
+      "id": "sp4-3",
+      "kbName": "隔珠隔片",
+      "meaning": "",
+      "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。",
+      "points": [
+        "银色"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "银色隔珠",
+      "mm": 6,
+      "price": 1.5,
+      "mat": "metal",
+      "c": [
+        "#ffffff",
+        "#8a8f98"
+      ],
+      "tags": [
+        "点缀"
+      ],
+      "kb": "gezhu",
+      "attrs": {
+        "color": "银色"
+      },
+      "order": 830,
+      "onSale": true,
+      "id": "sp4-6",
+      "kbName": "隔珠隔片",
+      "meaning": "",
+      "summary": "串在主珠之间的扁珠、薄片或花边圈，用来分隔、点缀和调长度。",
+      "points": [
+        "银色"
+      ],
+      "safety": ""
+    },
+    {
+      "name": "金色转运珠",
+      "mm": 8,
+      "price": 14,
+      "mat": "metal",
+      "c": [
+        "#fff1b8",
+        "#a87a1c"
+      ],
+      "tags": [
+        "顺遂",
+        "吉祥"
+      ],
+      "kb": "zhuanyun",
+      "attrs": {
+        "color": "金色"
+      },
+      "order": 840,
+      "onSale": true,
+      "id": "zy6-8",
+      "kbName": "转运珠",
+      "meaning": "旧称“路路通”，取路路通达、诸事顺遂的吉祥说法；名字只是市场叫法，不代表任何效果。",
+      "summary": "串在手绳或手串上的金属通孔小珠，市场统称这个名字，材质从足金到合金都有。",
+      "points": [
+        "金色"
+      ],
+      "safety": ""
+    }
+  ],
+  "templates": [
+    {
+      "name": "好运连连",
+      "meaning": "蜜蜡温润富贵，转运珠添一点亮色，黑曜石沉稳压住整串。寓意好运连连。",
+      "special": [
+        "zy6"
+      ],
+      "pattern": [
+        "ml10",
+        "hy8",
+        "hy8"
+      ],
+      "tail": [],
+      "order": 10,
+      "onSale": true,
+      "cover": "",
+      "id": "t1"
+    },
+    {
+      "name": "甜蜜粉晶",
+      "meaning": "粉晶温柔，草莓晶添甜蜜，银隔珠点亮整串。送女朋友不会错。",
+      "special": [
+        "cm8"
+      ],
+      "pattern": [
+        "fj8",
+        "fj8",
+        "sp4",
+        "fj8",
+        "cm8",
+        "sp4"
+      ],
+      "tail": [],
+      "order": 20,
+      "onSale": true,
+      "cover": "",
+      "id": "t2"
+    },
+    {
+      "name": "金榜题名",
+      "meaning": "紫水晶寓意智慧，白水晶清透干净，考试季戴上图个好兆头。",
+      "special": [],
+      "pattern": [
+        "zj8",
+        "bj8",
+        "bj8",
+        "sp4"
+      ],
+      "tail": [],
+      "order": 30,
+      "onSale": true,
+      "cover": "",
+      "id": "t3"
+    },
+    {
+      "name": "岁岁平安",
+      "meaning": "星月菩提朴素耐看，绿松石寓意平安，适合送长辈或出远门的人。",
+      "special": [
+        "ls6"
+      ],
+      "pattern": [
+        "xy8",
+        "xy8",
+        "xy8",
+        "ls6"
+      ],
+      "tail": [],
+      "order": 40,
+      "onSale": true,
+      "cover": "",
+      "id": "t4"
+    },
+    {
+      "name": "沉稳之选",
+      "meaning": "小叶紫檀沉稳，南红佛头寓意圆满。男生通勤百搭。",
+      "special": [
+        "ft12",
+        "gp"
+      ],
+      "pattern": [
+        "zt10"
+      ],
+      "tail": [
+        "gp"
+      ],
+      "order": 50,
+      "onSale": true,
+      "cover": "",
+      "id": "t5"
+    },
+    {
+      "name": "步步高升",
+      "meaning": "青金石深蓝沉稳，寓意事业顺遂，适合升职季和新工作。",
+      "special": [
+        "zy6"
+      ],
+      "pattern": [
+        "qj8",
+        "qj8",
+        "qj8",
+        "ls8"
+      ],
+      "tail": [],
+      "order": 60,
+      "onSale": true,
+      "cover": "",
+      "id": "t6"
+    }
+  ],
+  "banners": [
+    {
+      "tag": "考试季",
+      "title": "金榜题名手串",
+      "sub": "紫水晶配白水晶，考前戴上安心",
+      "tpl": "t3",
+      "go": "",
+      "newUser": false,
+      "order": 10,
+      "on": true,
+      "id": "b1"
+    },
+    {
+      "tag": "新人礼",
+      "title": "首单立减 ¥10",
+      "sub": "自己设计的手串，师傅手工串好寄到家",
+      "tpl": "",
+      "go": "diy",
+      "newUser": true,
+      "order": 20,
+      "on": true,
+      "id": "b2"
+    },
+    {
+      "tag": "送礼",
+      "title": "甜蜜粉晶",
+      "sub": "粉晶加草莓晶，送女朋友不会错",
+      "tpl": "t2",
+      "go": "",
+      "newUser": false,
+      "order": 30,
+      "on": true,
+      "id": "b3"
+    }
+  ],
+  "ai": {
+    "enabled": false,
+    "reason": "离线示例"
+  }
+}

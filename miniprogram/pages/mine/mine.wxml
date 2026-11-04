@@ -1,4 +1,4 @@
-<view class="mine-page">
+<view class="mine-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
   <view class="wrist-card" bindtap="wrist"><text>我的手围</text><text class="wrist-value">{{wrist}}cm ›</text></view>
   <view class="section-title">我的订单</view>
   <view wx:if="{{!loggedIn}}" class="empty-note">登录后查看订单 <text class="link" bindtap="goLogin">微信登录 ›</text></view>

@@ -1,2 +1,2 @@
 // Keep existing entry links; use native camera + local TFJS, never VKSession.
-Page({onLoad(){wx.redirectTo({url:'/ar-hand/index',fail:e=>wx.showModal({title:'AR 页面加载失败',content:e.errMsg,showCancel:false})})}});
+Page({data:{error:''},onLoad(){wx.redirectTo({url:'/ar-hand/index',fail:()=>this.setData({error:'AR 页面暂时无法打开，可以改用照片试戴。'})})},photoTryon(){wx.redirectTo({url:'/pages/tryon/tryon'})}});

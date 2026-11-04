@@ -133,7 +133,7 @@ python3 kb/validate.py
 - **改动文件**：`tools/hand-tracker/build.js`、`tools/hand-tracker/runtime.ts`、`tools/hand-tracker/README.md`、`miniprogram/ar-hand/*`（重新构建产物）、`miniprogram/pages/ar-tryon/*`。
 - **要做**：
   1. 模型地址改成运行时从配置读（默认值是我们自己的存储域名占位，例如 `https://static.example.com/models/handpose/v1/`），构建产物里不写死任何第三方地址。
-  2. `tools/hand-tracker/README.md` 写清：模型来源（TensorFlow.js handpose，Apache-2.0）、要上传哪些文件、目录结构、版本号怎么改。上传由负责人完成（见第 5 节）。
+  2. 模型文件用 `python3 tools/hand-tracker/download_models.py` 从 TensorFlow Hub 官方地址下载（已写好），上传后的目录结构固定为：`<模型根地址>/handpose/v1/handdetector/model.json`（加两个 .bin 分片）、`<模型根地址>/handpose/v1/handskeleton/model.json`（加两个 .bin 分片）、`<模型根地址>/handpose/v1/anchors.json`。代码按这个结构拼地址，`<模型根地址>` 和版本号 `v1` 从配置读。`tools/hand-tracker/README.md` 写清模型来源（TensorFlow.js handpose，Apache-2.0）和这个结构。上传由负责人完成（见第 5 节）。
   3. 首次下载后用 `wx.getFileSystemManager` 存到用户目录，之后先读缓存；配置里的版本号变了才重新下。注意小程序本地缓存上限，超出时给出提示。
   4. 加载时显示进度百分比；超过 20 秒或失败时提示，并提供“改用照片试戴”按钮跳到 `pages/tryon`。
 - **验收**：构建产物里搜不到 `oppenlab`；模拟下载失败能降级；缓存读写逻辑有测试；汇报里写清真机验证步骤。

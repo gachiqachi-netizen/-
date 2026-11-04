@@ -1,1 +1,1 @@
-<view class="viewer"><canvas type="webgl" id="bracelet3d" class="canvas"></canvas></view>
+<image class="thumbnail" src="{{src}}" mode="aspectFit" lazy-load="{{true}}" binderror="imageError" aria-label="手串配色示意图" />

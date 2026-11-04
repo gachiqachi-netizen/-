@@ -51,7 +51,8 @@
 ### 2.2 环境
 
 - Python：用系统的 `python3`（3.9 及以上），后端只用标准库。PostgreSQL 相关才需要 `pip install -r server/requirements-postgres.txt`。
-- Node：这台电脑的 node 不在默认 PATH 里，用 `~/.local/toolchains/node/bin/node`（v22）。可以先执行 `export PATH="$HOME/.local/toolchains/node/bin:$PATH"`。小程序没有 package.json，不要为了跑测试新增依赖。
+- Node：需要 v18 及以上（`node --version` 确认）。不在 PATH 里就先找到它的位置加进 PATH；负责人那台 Mac 上的位置是 `~/.local/toolchains/node/bin`。小程序没有 package.json，不要为了跑测试新增依赖。
+- AR 手部模型：`tools/hand-tracker/models/` 不进 git。没有这个目录时运行 `python3 tools/hand-tracker/download_models.py` 从官方地址下载（约 12.7MB）；本地后端会在 `/models/` 下提供这些文件。
 - 本地后端（小程序开发用 8801 端口）：
   ```bash
   PORT=8801 ADMIN_TOKEN=local-dev-only DISABLE_DEMO_ORDERS=1 python3 server/app.py
@@ -132,7 +133,7 @@ python3 kb/validate.py
 - **现状**：`tools/hand-tracker/build.js:9-11` 把模型地址换成 `cdn.static.oppenlab.com/weblf/test/...`（第三方测试目录，约 12.5MB），每次进页面重新下载。
 - **改动文件**：`tools/hand-tracker/build.js`、`tools/hand-tracker/runtime.ts`、`tools/hand-tracker/README.md`、`miniprogram/ar-hand/*`（重新构建产物）、`miniprogram/pages/ar-tryon/*`。
 - **要做**：
-  1. 模型地址改成运行时从配置读（默认值是我们自己的存储域名占位，例如 `https://static.example.com/models/handpose/v1/`），构建产物里不写死任何第三方地址。
+  1. 模型根地址改成运行时从配置读，构建产物里不写死任何第三方地址：**开发版默认用本地后端 `apiBase + '/models'`**（后端已提供 `/models/` 地址，文件来自 `tools/hand-tracker/models/`，没有这个目录就先运行下载脚本）；体验版和正式版用对象存储域名，先放占位 `https://static.example.com`，等负责人上传后再填。
   2. 模型文件用 `python3 tools/hand-tracker/download_models.py` 从 TensorFlow Hub 官方地址下载（已写好），上传后的目录结构固定为：`<模型根地址>/handpose/v1/handdetector/model.json`（加两个 .bin 分片）、`<模型根地址>/handpose/v1/handskeleton/model.json`（加两个 .bin 分片）、`<模型根地址>/handpose/v1/anchors.json`。代码按这个结构拼地址，`<模型根地址>` 和版本号 `v1` 从配置读。`tools/hand-tracker/README.md` 写清模型来源（TensorFlow.js handpose，Apache-2.0）和这个结构。上传由负责人完成（见第 5 节）。
   3. 首次下载后用 `wx.getFileSystemManager` 存到用户目录，之后先读缓存；配置里的版本号变了才重新下。注意小程序本地缓存上限，超出时给出提示。
   4. 加载时显示进度百分比；超过 20 秒或失败时提示，并提供“改用照片试戴”按钮跳到 `pages/tryon`。

@@ -34,6 +34,7 @@ HOST = os.environ.get("SERVER_HOST", "127.0.0.1").strip()
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
 DATA_DIR = os.environ.get("DATA_DIR") or HERE
 UPLOADS = os.environ.get("UPLOADS_DIR") or os.path.join(DATA_DIR, "uploads")
+MODELS = os.environ.get("MODELS_DIR") or os.path.join(HERE, "..", "tools", "hand-tracker", "models")   # 本地开发用的 AR 模型
 FRONT = os.path.join(HERE, "..", "prototype.html")   # 前台就是原型页面，加上接口地址后直接用
 os.makedirs(UPLOADS, exist_ok=True)
 if os.environ.get("DATABASE_URL"):
@@ -174,6 +175,13 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(404, {"error": "not_found"})
                 ext = name.rsplit(".", 1)[-1]
                 return self.send(200, open(fp, "rb").read(), {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp"}.get(ext, "application/octet-stream"))
+            if path.startswith("/models/"):   # 本地开发：AR 手部模型由本机提供，上线后改用对象存储
+                rel = os.path.normpath(path[len("/models/"):]).replace("\\", "/")
+                fp = os.path.join(MODELS, rel)
+                if rel.startswith("..") or os.path.isabs(rel) or not os.path.isfile(fp) or rel.rsplit(".", 1)[-1] not in ("json", "bin"):
+                    return self.send(404, {"error": "not_found"})
+                with open(fp, "rb") as f:
+                    return self.send(200, f.read(), "application/json" if fp.endswith(".json") else "application/octet-stream")
             if path == "/api/catalog":
                 beads, tpls, banners = on_sale_catalog()
                 return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status()})

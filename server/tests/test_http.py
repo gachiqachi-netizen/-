@@ -58,6 +58,22 @@ class HTTPTest(unittest.TestCase):
         with response:
             return response.status, json.loads(response.read())
 
+    def test_local_model_files_served_without_escaping_folder(self):
+        folder = os.path.join(self.temp.name, 'models')
+        os.makedirs(os.path.join(folder, 'handpose', 'v1'))
+        with open(os.path.join(folder, 'handpose', 'v1', 'anchors.json'), 'w') as f:
+            f.write('[[1, 2]]')
+        with open(os.path.join(self.temp.name, 'secret.json'), 'w') as f:
+            f.write('{"secret": true}')
+        old = app.MODELS
+        try:
+            app.MODELS = folder
+            self.assertEqual(self.request('/models/handpose/v1/anchors.json'), (200, [[1, 2]]))
+            for path in ('/models/../secret.json', '/models/handpose/../../secret.json', '/models/handpose/v1/missing.json', '/models/%2e%2e/secret.json'):
+                self.assertEqual(self.request(path)[0], 404, path)
+        finally:
+            app.MODELS = old
+
     def test_admin_and_user_routes_fail_closed(self):
         self.assertEqual(self.request('/api/admin/orders')[0], 401)
         self.assertEqual(self.request('/api/admin/orders', admin='test-admin')[0], 200)

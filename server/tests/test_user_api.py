@@ -63,6 +63,38 @@ class UserAPITest(unittest.TestCase):
         saved = self.db.get('orders', order['no'])
         self.assertEqual(saved['items'][0]['name'], b['name'])
 
+    def test_toxic_materials_keep_real_knowledge_warnings(self):
+        for kid in ('yuanbao', 'zhusha'):
+            bead = self.db.list('beads')[0]
+            bead['kb'] = kid
+            self.db.put('beads', bead['id'], bead)
+            req = {'requestId': 'safety-real-' + kid, 'beads': [bead['id']] * 6,
+                   'wrist': 15, 'person': '测试', 'phone': '1' + '0' * 10,
+                   'addr': '测试占位', 'confirmedQuote': self.quote(bead)}
+            saved = user_api.make_order(self.db, req, 'test-owner')['items'][0]
+            self.assertEqual(saved['kb'], kid)
+            self.assertTrue(saved['safety'])
+            self.assertTrue(saved['meaning'])
+
+    def test_order_material_knowledge_snapshot_is_frozen(self):
+        b = self.db.list('beads')[0]
+        req = {'requestId': 'safety-snapshot-001', 'name': '测试', 'beads': [b['id']] * 6,
+               'wrist': 15, 'person': '测试', 'phone': '1' + '0' * 10, 'addr': '测试占位',
+               'confirmedQuote': self.quote(b)}
+        knowledge = {**b, 'kb': 'test-material', 'points': ['圆珠', '红色'],
+                     'meaning': '寓意美好', 'summary': '材料说明', 'safety': '不可入口'}
+        with patch.object(user_api.kb, 'enrich', return_value=knowledge):
+            order = user_api.make_order(self.db, req, 'u-safety')
+        knowledge['points'].append('新说明')
+        knowledge['safety'] = '已修改'
+        saved = self.db.get('orders', order['no'])['items'][0]
+        self.assertEqual(saved['kb'], 'test-material')
+        self.assertEqual(saved['points'], ['圆珠', '红色'])
+        self.assertEqual(saved['safety'], '不可入口')
+        self.assertEqual(saved['meaning'], '寓意美好')
+        self.assertEqual(saved['summary'], '材料说明')
+        self.assertEqual(saved['unitPriceFen'], round(b['price'] * 100))
+
     def test_order_idempotency_across_connections(self):
         bead = self.db.list('beads')[0]
         req = {'requestId': 'concurrent-order-01', 'beads': [bead['id']] * 6, 'wrist': 15,

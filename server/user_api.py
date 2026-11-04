@@ -1,4 +1,5 @@
 """WeChat identity and owner-scoped prototype APIs; payment integration is intentionally separate."""
+import kb
 import hashlib
 import json
 import os
@@ -162,7 +163,11 @@ def make_order(db, data, uid):
     actual = {i: (int(Decimal(str(beads[i]['price'])) * 100), beads[i]['mm']) for i in set(ids)}
     if quoted != actual or Decimal(quote['totalFen']) != total * 100:
         raise PriceChanged()
-    snapshot = [{'id': i, 'name': beads[i]['name'], 'mm': beads[i]['mm'], 'price': beads[i]['price'], 'photo': beads[i].get('photo')} for i in ids]
+    enriched = {i: kb.enrich(beads[i]) for i in set(ids)}
+    snapshot = [{**{key: enriched[i].get(key, [] if key == 'points' else '')
+                    for key in ('id', 'name', 'mm', 'price', 'photo', 'kb', 'points', 'meaning', 'summary', 'safety')},
+                 'photo': beads[i].get('photo'),
+                 'unitPriceFen': int(Decimal(str(beads[i]['price'])) * 100)} for i in ids]
     no = 'CGZ' + time.strftime('%y%m%d') + uuid.uuid4().hex[:12].upper()
     order = {'no': no, 'userId': uid, 'name': str(data.get('name') or '我的手串')[:60], 'beads': ids, 'items': snapshot,
              'wrist': wrist, 'length': sum(Decimal(str(beads[i].get('mm', 0))) for i in ids).__float__(),

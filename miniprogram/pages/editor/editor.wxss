@@ -13,3 +13,5 @@
 .material-grid{display:flex;flex-wrap:wrap;gap:0;padding:0 8rpx 16rpx;box-sizing:border-box}
 .material{flex:none;width:calc(33.333333% - 12rpx);margin:6rpx;padding:12rpx 6rpx;box-sizing:border-box}
 .quick-tools button{line-height:1.4;min-height:0}
+
+.material-safety{color:#c62828;white-space:pre-line;font-size:24rpx;line-height:1.5;overflow-wrap:break-word}.material-explanation{font-size:24rpx;line-height:1.5;color:#57534e}.material-row{padding:20rpx 0;border-bottom:1rpx solid #eee}.material-sheet{max-height:65vh;box-sizing:border-box}.material-summary{flex-shrink:0;padding:8rpx 24rpx;font-size:24rpx}.material-summary .material-safety{max-height:72rpx;overflow:auto}

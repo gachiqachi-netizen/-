@@ -8,10 +8,10 @@ function validBase(value, httpsOnly) {
   return (httpsOnly ? /^https:\/\/[^\s/?#]+(?:\/[^\s?#]*)?$/ : /^https?:\/\/[^\s/?#]+(?:\/[^\s?#]*)?$/).test(value) && !value.includes('@')
 }
 function placeholderBase(value) {
-  try {
-    const host = new URL(value).hostname.toLowerCase()
-    return host === 'example.com' || host.endsWith('.example.com') || host === 'example.org' || host.endsWith('.example.org') || host === 'example.net' || host.endsWith('.example.net') || host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.invalid') || host.endsWith('.test')
-  } catch (_) { return false }
+  const match = /^https?:\/\/([^/?#]+)/i.exec(value)
+  if (!match) return false
+  const host = match[1].replace(/:\d+$/, '').toLowerCase()
+  return host === 'example.com' || host.endsWith('.example.com') || host === 'example.org' || host.endsWith('.example.org') || host === 'example.net' || host.endsWith('.example.net') || host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.invalid') || host.endsWith('.test')
 }
 function resolveConfig(envVersion, platform, local, deployments = environments) {
   if (!['develop', 'trial', 'release'].includes(envVersion)) throw new Error('无法确定小程序版本，请重新编译后重试')

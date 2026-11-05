@@ -22,6 +22,7 @@ function createModelLoader(wxApi, config, onProgress = () => {}, options = {}) {
   const marker = dir + '/complete.json';
   const active = new Set();
   let cancelled = false, bytes = 0, count = 0, lastProgress = -1, files = [];
+  let markActivity = () => {};
   const limit = options.limitBytes || LIMIT_BYTES;
   const timeout = options.timeoutMs || LOAD_TIMEOUT;
   const progress = value => {
@@ -72,6 +73,7 @@ function createModelLoader(wxApi, config, onProgress = () => {}, options = {}) {
       function finish(error) {
         if (settled) return;
         settled = true; active.delete(pending);
+        if (!error) markActivity();
         if (error) { unlink(partial); reject(error); } else resolve();
       }
       pending.task = wxApi.downloadFile({
@@ -96,6 +98,7 @@ function createModelLoader(wxApi, config, onProgress = () => {}, options = {}) {
       if (!settled) active.add(pending);
       if (pending.task && pending.task.onProgressUpdate) pending.task.onProgressUpdate(info => {
         if (cancelled || settled) return;
+        markActivity();
         if (bytes + (info.totalBytesExpectedToWrite || 0) > limit) {
           finish(new Error('手部模型缓存空间不足，请清理存储或改用照片试戴'));
           try { pending.task.abort(); } catch (_) {}
@@ -111,19 +114,32 @@ function createModelLoader(wxApi, config, onProgress = () => {}, options = {}) {
     try {
       if (!exists(root)) fs.mkdirSync(root, true);
       // A version is immutable. Only retain one complete version to bound this cache.
-      for (const old of fs.readdirSync(root)) if (/^[\w-]+$/.test(old)) fs.rmdirSync(root + '/' + old, true);
+      for (const old of fs.readdirSync(root)) if (old !== config.version && /^[\w-]+$/.test(old)) fs.rmdirSync(root + '/' + old, true);
       fs.mkdirSync(dir + '/handdetector', true); fs.mkdirSync(dir + '/handskeleton', true);
     } catch (_) { throw new Error('手部模型缓存空间不可用，请清理存储或改用照片试戴'); }
+    files = []; bytes = 0; count = 0;
+    const retain = name => {
+      const path = pathFor(name);
+      try {
+        const size = fs.statSync(path).size;
+        if (!size || bytes + size > limit) throw new Error('invalid size');
+        if (/\.json$/.test(name)) readJSON(path);
+        files.push({name,size}); bytes += size; count++;
+        progress(Math.min(99,count / 7 * 100)); markActivity();
+        return true;
+      } catch (_) { unlink(path); return false; }
+    };
+    const ensure = async name => { if (!retain(name)) await download(name); };
     for (const kind of ['handdetector','handskeleton']) {
-      await download(kind + '/model.json');
+      await ensure(kind + '/model.json');
       const model = readJSON(pathFor(kind + '/model.json'));
       if (!Array.isArray(model.weightsManifest)) throw new Error('手部模型文件无效');
       for (const group of model.weightsManifest) {
         if (!Array.isArray(group.paths)) throw new Error('手部模型文件无效');
-        for (const shard of group.paths) await download(kind + '/' + shard);
+        for (const shard of group.paths) await ensure(kind + '/' + shard);
       }
     }
-    await download('anchors.json');
+    await ensure('anchors.json');
     if (!Array.isArray(readJSON(pathFor('anchors.json')))) throw new Error('手部模型文件无效');
     if (cancelled) throw new Error('模型加载已取消');
     try { fs.writeFileSync(marker, JSON.stringify({version:config.version,files}), 'utf8'); }
@@ -131,10 +147,22 @@ function createModelLoader(wxApi, config, onProgress = () => {}, options = {}) {
     progress(100);
   }
   async function prepare() {
-    let timer;
-    try { await Promise.race([populate(), new Promise((_, reject) => {
-      timer = setTimeout(() => { cancel(); reject(new Error('手部模型加载超过 20 秒，可重试或改用照片试戴')); }, timeout);
-    })]); } catch (error) { cancel(); throw error; } finally { clearTimeout(timer); }
+    let timer, timedOut = false;
+    const stalled = new Promise((_, reject) => {
+      const reset = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          timedOut = true;
+          cancel();
+          reject(new Error('手部模型下载连续 20 秒无进度，可重试或改用照片试戴'));
+        }, timeout);
+      };
+      markActivity = reset;
+      reset();
+    });
+    try { await Promise.race([populate(), stalled]); }
+    catch (error) { cancel(); if (timedOut) throw new Error('手部模型下载连续 20 秒无进度，可重试或改用照片试戴'); throw error; }
+    finally { clearTimeout(timer); markActivity = () => {}; }
   }
   async function fetch(url) {
     if (cancelled) throw new Error('模型加载已取消');

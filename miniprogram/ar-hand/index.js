@@ -1,6 +1,6 @@
 const {createTracker}=require('./runtime');
 const {placement,smooth}=require('./geometry');
-const {resolveModelConfig,LOAD_TIMEOUT}=require('./model-cache');
+const {resolveModelConfig}=require('./model-cache');
 const store=require('../utils/design');
 const api=require('../utils/api');
 Page({
@@ -9,7 +9,7 @@ Page({
  onReady(){this.initialize()},
  onShow(){this._hidden=false;if(this._tracker&&this._cameraReady)this.startFrames()},
  onHide(){this._hidden=true;this.stopFrames();this.setData({tracked:false})},
- onUnload(){this._closed=true;if(this._modelControl&&this._modelControl.cancel)this._modelControl.cancel();clearTimeout(this._modelTimer);this.stopFrames();if(!this._busy)this.disposeTracker()},
+ onUnload(){this._closed=true;if(this._modelControl&&this._modelControl.cancel)this._modelControl.cancel();this.stopFrames();if(!this._busy)this.disposeTracker()},
  async initialize(){
   if(this._loading||this._closed)return;
   if(!this.data.beads.length){this.fail('请返回先选择一条手串');return}
@@ -21,15 +21,13 @@ Page({
    this._output=output;this._ctx=output.getContext('2d');
    const env=wx.getAccountInfoSync?wx.getAccountInfoSync().miniProgram.envVersion:'develop';
    const config=resolveModelConfig(getApp().globalData||{},env);
-   const control=this._modelControl={};let expired=false;
-   const loading=createTracker(canvas,{config,control,onProgress:percent=>{if(!this._closed&&!expired)this.setData({modelProgress:percent})}});
-   loading.then(tracker=>{if(expired||this._closed)tracker.dispose()},()=>{});
-   this._tracker=await Promise.race([loading,new Promise((_,reject)=>{
-    this._modelTimer=setTimeout(()=>{expired=true;if(control.cancel)control.cancel();reject(new Error('手部模型加载超过 20 秒，可重试或改用照片试戴'))},LOAD_TIMEOUT);
-   })]);
+   const control=this._modelControl={};
+   const loading=createTracker(canvas,{config,control,onProgress:percent=>{if(!this._closed)this.setData({modelProgress:percent})}});
+   loading.then(tracker=>{if(this._closed)tracker.dispose()},()=>{});
+   this._tracker=await loading;
    if(this._closed){this.disposeTracker();return}
    if(!this.data.renderFailed)this.setData({cameraMounted:true,status:'模型已加载，正在打开相机…'});
-  }catch(e){this.fail(e.message||e.errMsg||String(e))}finally{clearTimeout(this._modelTimer);this._loading=false;if(!this._closed)this.setData({modelLoading:false})}
+  }catch(e){this.fail(e.message||e.errMsg||String(e))}finally{this._loading=false;if(!this._closed)this.setData({modelLoading:false})}
  },
  photoTryon(){if(this._modelControl&&this._modelControl.cancel)this._modelControl.cancel();this.stopFrames();wx.redirectTo({url:'/pages/tryon/tryon'})},
  cameraReady(){this._cameraReady=true;this.setData({status:'相机已启动，等待视频帧…'});this.startFrames()},

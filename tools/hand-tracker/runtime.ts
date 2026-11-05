@@ -3,7 +3,7 @@ import * as webgl from '@tensorflow/tfjs-backend-webgl';
 import * as handpose from './vendor/handpose';
 import {setupWechatPlatform} from './vendor/wechat_platform';
 
-import {createModelLoader} from '../../miniprogram/ar-hand/model-cache';
+import {createModelLoader,LOAD_TIMEOUT} from '../../miniprogram/ar-hand/model-cache';
 
 let backendOwner = null;
 
@@ -21,9 +21,17 @@ export async function createTracker(canvas, options) {
  let model;
  try {
   setupWechatPlatform({tf,webgl,canvas,fetchFunc:loader.fetch});
-  await tf.setBackend('wechat-webgl');checkCancelled();
-  await tf.ready();checkCancelled();
-  model=await handpose.load({maxContinuousChecks:8,detectionConfidence:0.8});
+  let timer: any;
+  const initialize = async () => {
+   await tf.setBackend('wechat-webgl');checkCancelled();
+   await tf.ready();checkCancelled();
+   return handpose.load({maxContinuousChecks:8,detectionConfidence:0.8});
+  };
+  try {
+   model=await Promise.race([initialize(),new Promise((_,reject)=>{
+    timer=setTimeout(()=>{cancelled=true;loader.cancel();reject(new Error('手部识别初始化超过 20 秒，可重试或改用照片试戴'))},LOAD_TIMEOUT);
+   })]);
+  } finally {clearTimeout(timer);}
  } catch(error){loader.cancel();removeOwnedBackend();throw error;}
  let disposed=false;
  const tracker = {

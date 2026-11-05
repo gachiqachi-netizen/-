@@ -9,8 +9,10 @@ test('开发工具使用本机8801，手机配置独立', () => {
 })
 test('体验和正式只使用自己的HTTPS配置', () => {
   for (const env of ['trial', 'release']) {
-    assert.equal(resolveConfig(env, 'ios', {apiBase:'http://local.invalid'}).apiBase, 'https://api.example.com')
-    assert.equal(resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://api.example.com',modelBase:'https://static.example.com',modelVersion:'v2'}}).modelVersion,'v2')
+    assert.throws(() => resolveConfig(env, 'ios'), /正式环境地址未配置/)
+    assert.throws(() => resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://api.example.com',modelBase:'https://static.real.cn'}}), /正式环境地址未配置/)
+    assert.throws(() => resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://api.real.cn',modelBase:'https://static.example.com'}}), /正式环境地址未配置/)
+    assert.equal(resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://api.real.cn',modelBase:'https://static.real.cn',modelVersion:'v2'}}).modelVersion,'v2')
     assert.throws(() => resolveConfig(env, 'ios', null, {[env]:{apiBase:'http://invalid',modelBase:'https://static.example.com'}}), /HTTPS/)
     assert.throws(() => resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://',modelBase:'https://static.example.com'}}), /HTTPS/)
   }

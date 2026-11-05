@@ -120,7 +120,7 @@ python3 kb/validate.py
 
 #### T1 按环境配置接口地址
 - **目标**：开发、体验、正式三种版本都能连上对的后端。
-- **现状**：`miniprogram/app.js:6` 开发版真机写死局域网 IP `192.168.2.156:8802`，体验版和正式版写死 `http://127.0.0.1:8800`，上线后所有接口都失败。
+- **现状**：`miniprogram/app.js:6` 开发版真机写死局域网 IP `旧局域网地址`，体验版和正式版写死 `http://127.0.0.1:8800`，上线后所有接口都失败。
 - **改动文件**：`miniprogram/app.js`、`miniprogram/utils/api.js`、新建 `miniprogram/config.js`、新建 `miniprogram/config.local.example.js`、`.gitignore`、`开发与上线准备.md`、`miniprogram/tests/`。
 - **要做**：
   1. `config.js` 按 `wx.getAccountInfoSync().miniProgram.envVersion` 给出 `apiBase`：develop 在开发者工具里用 `http://127.0.0.1:8801`；develop 真机从 `config.local.js` 读局域网地址（这个文件加进 `.gitignore`，提供 `config.local.example.js` 示例），没有就在页面上提示去配置；trial 和 release 只接受 `https://` 开头的地址，先放占位 `https://api.example.com`，不是 https 时启动就报错并在控制台说明。

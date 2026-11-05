@@ -1,7 +1,12 @@
-// Temporary LAN bridge allows login and owner-scoped design/order reads.
-// Published/trial builds never use the private network address.
-const info = wx.getAccountInfoSync ? wx.getAccountInfoSync() : null
-const develop = info && info.miniProgram && info.miniProgram.envVersion === 'develop'
-const platform = wx.getDeviceInfo ? wx.getDeviceInfo().platform : wx.getSystemInfoSync().platform
-const apiBase = develop && platform !== 'devtools' ? 'http://192.168.2.156:8802' : 'http://127.0.0.1:8800'
-App({ globalData: { apiBase, catalog: null } })
+const {loadConfig} = require('./config')
+let config = {}, configError = ''
+try { config = loadConfig(wx) } catch (error) {
+  configError = error.message
+  console.error('小程序环境配置失败：' + configError)
+}
+App({
+  globalData: {...config, configError, catalog: null},
+  onLaunch() {
+    if (configError) wx.showModal({title: '环境配置未完成', content: configError, showCancel: false})
+  }
+})

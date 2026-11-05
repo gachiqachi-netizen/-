@@ -1,28 +1,37 @@
 const {createTracker}=require('./runtime');
 const {placement,smooth}=require('./geometry');
+const {resolveModelConfig,LOAD_TIMEOUT}=require('./model-cache');
 const store=require('../utils/design');
 const api=require('../utils/api');
 Page({
- data:{frozen:false,scalePercent:135,renderFailed:false,width:320,height:440,beads:[],catalog:[],cameraMounted:false,position:'back',tracked:false,status:'正在准备独立手部识别…',error:'',diag:'TFJS 独立识别 · 不使用微信视觉会话',x:160,y:220,size:30,angle:0,tilt:45},
+ data:{modelProgress:0,modelLoading:false,frozen:false,scalePercent:135,renderFailed:false,width:320,height:440,beads:[],catalog:[],cameraMounted:false,position:'back',tracked:false,status:'正在准备独立手部识别…',error:'',diag:'TFJS 独立识别 · 不使用微信视觉会话',x:160,y:220,size:30,angle:0,tilt:45},
  onLoad(){const info=wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync(),d=store.current();this.setData({width:info.windowWidth-32,height:Math.min(520,Math.round(info.windowHeight*.60)),beads:d&&d.beads||[]});api.catalog().then(c=>{if(!this._closed)this.setData({catalog:c.beads||[]})}).catch(()=>this.fail('材料加载失败，请返回后重试'));},
  onReady(){this.initialize()},
  onShow(){this._hidden=false;if(this._tracker&&this._cameraReady)this.startFrames()},
  onHide(){this._hidden=true;this.stopFrames();this.setData({tracked:false})},
- onUnload(){this._closed=true;this.stopFrames();if(!this._busy)this.disposeTracker()},
+ onUnload(){this._closed=true;if(this._modelControl&&this._modelControl.cancel)this._modelControl.cancel();clearTimeout(this._modelTimer);this.stopFrames();if(!this._busy)this.disposeTracker()},
  async initialize(){
   if(this._loading||this._closed)return;
   if(!this.data.beads.length){this.fail('请返回先选择一条手串');return}
-  this._loading=true;this.setData({error:'',status:'正在加载手部模型（首次需要下载）…'});
+  this._loading=true;this.setData({error:'',modelProgress:0,modelLoading:true,status:'正在加载手部模型…'});
   try {
    await new Promise((resolve,reject)=>wx.authorize({scope:'scope.camera',success:resolve,fail:()=>reject(new Error('请允许摄像头权限后重试'))}));
    const canvas=await new Promise((resolve,reject)=>this.createSelectorQuery().select('#compute').fields({node:true}).exec(r=>r&&r[0]&&r[0].node?resolve(r[0].node):reject(new Error('识别画布创建失败'))));
    const output=await new Promise((resolve,reject)=>this.createSelectorQuery().select('#picture').fields({node:true}).exec(r=>r&&r[0]&&r[0].node?resolve(r[0].node):reject(new Error('画面画布创建失败'))));
    this._output=output;this._ctx=output.getContext('2d');
-   this._tracker=await createTracker(canvas);
+   const env=wx.getAccountInfoSync?wx.getAccountInfoSync().miniProgram.envVersion:'develop';
+   const config=resolveModelConfig(getApp().globalData||{},env);
+   const control=this._modelControl={};let expired=false;
+   const loading=createTracker(canvas,{config,control,onProgress:percent=>{if(!this._closed&&!expired)this.setData({modelProgress:percent})}});
+   loading.then(tracker=>{if(expired||this._closed)tracker.dispose()},()=>{});
+   this._tracker=await Promise.race([loading,new Promise((_,reject)=>{
+    this._modelTimer=setTimeout(()=>{expired=true;if(control.cancel)control.cancel();reject(new Error('手部模型加载超过 20 秒，可重试或改用照片试戴'))},LOAD_TIMEOUT);
+   })]);
    if(this._closed){this.disposeTracker();return}
    if(!this.data.renderFailed)this.setData({cameraMounted:true,status:'模型已加载，正在打开相机…'});
-  }catch(e){this.fail(e.message||e.errMsg||String(e))}finally{this._loading=false}
+  }catch(e){this.fail(e.message||e.errMsg||String(e))}finally{clearTimeout(this._modelTimer);this._loading=false;if(!this._closed)this.setData({modelLoading:false})}
  },
+ photoTryon(){if(this._modelControl&&this._modelControl.cancel)this._modelControl.cancel();this.stopFrames();wx.redirectTo({url:'/pages/tryon/tryon'})},
  cameraReady(){this._cameraReady=true;this.setData({status:'相机已启动，等待视频帧…'});this.startFrames()},
  cameraError(e){this.fail('相机启动失败：'+((e.detail||{}).errMsg||'未知原因'))},
  startFrames(){if(this.data.renderFailed||this._listener||this._hidden||this._closed||!this._tracker)return;

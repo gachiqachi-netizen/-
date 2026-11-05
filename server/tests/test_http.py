@@ -18,6 +18,15 @@ from user_api import token_hash
 
 
 class HTTPTest(unittest.TestCase):
+    def test_dev_login_requires_switch_and_returns_session(self):
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop('DEV_LOGIN', None)
+            self.assertEqual(self.request('/api/auth/dev', 'POST', {'name': 'dev'})[0], 404)
+        with patch.dict(os.environ, {'DEV_LOGIN': '1'}):
+            status, result = self.request('/api/auth/dev', 'POST', {'name': 'dev'})
+            self.assertEqual(status, 200)
+            self.assertIn('token', result)
+            self.assertEqual(self.request('/api/designs', token=result['token'])[0], 200)
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()

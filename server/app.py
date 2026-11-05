@@ -234,6 +234,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/auth/wechat":
                 status, result = user_api.login(db, data.get("code"))
                 return self.send(status, result)
+            if path == "/api/auth/dev":
+                status, result = user_api.dev_login(db, data.get("name"))
+                return self.send(status, result)
             if path == "/api/shares":
                 uid = self.user()
                 if not uid:

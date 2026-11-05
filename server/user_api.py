@@ -49,6 +49,19 @@ def login(db, code):
     return 200, {'token': token, 'expiresAt': expires}
 
 
+def dev_login(db, name):
+    if os.environ.get('DEV_LOGIN') != '1':
+        return 404, {'error': 'not_found'}
+    if not isinstance(name, str) or not 1 <= len(name.strip()) <= 40:
+        return 400, {'error': '开发测试名称无效'}
+    uid = 'dev:' + hashlib.sha256(name.strip().encode()).hexdigest()
+    db.put('users', uid, db.get('users', uid) or {'createdAt': int(time.time() * 1000)})
+    token = secrets.token_urlsafe(32)
+    expires = int(time.time()) + SESSION_SECONDS
+    db.put('sessions', token_hash(token), {'userId': uid, 'expiresAt': expires})
+    return 200, {'token': token, 'expiresAt': expires}
+
+
 def owner(db, header):
     match = re.fullmatch(r'Bearer ([A-Za-z0-9_-]{32,128})', header or '')
     if not match:

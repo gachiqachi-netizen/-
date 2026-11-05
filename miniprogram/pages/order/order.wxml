@@ -1,4 +1,4 @@
-<view class="order-page">
+<view class="order-page"><view wx:if="{{quoteChanges.length}}" style="padding:24rpx;background:#fff8e8;color:#8a491d;"><view wx:for="{{quoteChanges}}" wx:key="*this">{{item}}</view><button wx:if="{{quotePending && !missing.length}}" bindtap="confirmQuote">确认新价格</button><button wx:if="{{missing.length}}" bindtap="edit">返回修改设计</button></view><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
   <view wx:if="{{!order && design}}" class="order-content">
     <view class="order-card">
       <view class="design-summary"><view class="order-preview"><bracelet-thumb wx:if="{{!previewFallback && catalogReady}}" beads="{{design.beads}}" catalog="{{catalog}}" bind:unavailable="unavailable"/><view wx:if="{{previewFallback}}" wx:for="{{preview}}" wx:key="index" class="preview-bead" style="left:{{item.x}}%;top:{{item.y}}%;background:{{item.color}}"></view></view><view class="summary-info"><view class="design-name">{{design.name}}</view><view class="caption">手围 {{design.wrist}}cm · {{design.beads.length}} 颗</view></view></view>
@@ -16,7 +16,7 @@
       <view class="opt"><text>运费</text><text>{{ship==='0.00'?'包邮':'¥'+ship+'（满 ¥99 包邮）'}}</text></view>
     </view>
     <view class="order-card form-card"><view class="section-title">收货信息</view><input class="form-input" placeholder="收货人" value="{{person}}" data-key="person" bindinput="input"/><input class="form-input" type="number" placeholder="手机号" value="{{phone}}" data-key="phone" bindinput="input"/><input class="form-input" placeholder="详细地址" value="{{addr}}" data-key="addr" bindinput="input"/><view class="error" wx:if="{{error}}">{{error}}</view><view class="caption muted">当前支付尚未接入，提交后仅创建待支付订单，请勿付款。</view></view>
-    <view class="order-bar"><view class="order-total"><text class="total-price">¥{{total}}</text><text class="caption muted">合计（含运费）</text></view><button class="submit" loading="{{busy}}" disabled="{{busy || !catalogReady || missing.length}}" bindtap="submit">提交订单</button></view>
+    <view class="order-bar"><view class="order-total"><text class="total-price">¥{{total}}</text><text class="caption muted">合计（含运费）</text></view><button class="submit" loading="{{busy}}" disabled="{{busy || !catalogReady || missing.length || quotePending}}" bindtap="submit">提交订单</button></view>
   </view>
   <view wx:elif="{{order}}" class="order-card done"><view class="section-title">订单已创建</view><view>订单号 {{order.no}}</view><view>应付 ¥{{order.total}}</view><view>状态：{{order.status}}</view><view class="caption muted">支付尚未接入，请勿付款。</view><button class="submit" bindtap="home">回首页</button><button bindtap="mine">查看我的订单</button></view>
   <view wx:else class="order-card">未找到设计，请返回重新选择。</view>

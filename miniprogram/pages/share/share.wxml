@@ -1,4 +1,4 @@
-<view class="share-page">
+<view class="share-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
   <view wx:if="{{loading}}" class="sub">正在生成分享卡片…</view>
   <view wx:if="{{!preview && design}}">
     <view class="snapshot-stage"><bracelet3d id="share3d" beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}" bind:rendered="snapshotReady" bind:unavailable="snapshotUnavailable"/></view><canvas canvas-id="shareCard" class="share-card" style="width:{{width}}px;height:{{height}}px"></canvas>

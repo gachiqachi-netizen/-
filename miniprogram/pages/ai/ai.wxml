@@ -1,4 +1,4 @@
-<view class="chat-page">
+<view class="chat-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
   <view wx:if="{{messages.length}}" class="chat-tools"><text>按 {{wrist}}cm 手围配</text><text class="clear" bindtap="clear">清空对话</text></view>
   <view wx:if="{{!messages.length}}" class="welcome">
     <view class="welcome-title">想做一条什么样的手串？</view>

@@ -1,4 +1,4 @@
-<view class="same-page">
+<view class="same-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
   <block wx:if="{{!photo && !busy}}"><view class="same-drop" bindtap="choose"><view class="camera">◎</view><view class="drop-title">拍一张喜欢的手串</view><view class="sub">朋友戴的、店里看到的、网上存的图都行</view></view>
     <view class="same-card"><view class="strong">怎么做同款</view><view class="step"><view class="number">1</view><view>认出照片里的珠子<view class="sub">主珠、配珠、金属点缀，从我们的料包里找最像的</view></view></view><view class="step"><view class="number">2</view><view>你看一眼，不对就换<view class="sub">每种珠子都给几颗相近的备选</view></view></view><view class="step"><view class="number">3</view><view>按你的 {{wrist}}cm 手围串好<view class="sub">放到托盘上，还能接着改</view></view></view></view><view class="tips">手串占画面一半以上、背景干净，认得更准。颜色以实物为准。选择照片后会发送至识别服务。</view>
     <view class="bottom"><button class="primary full" bindtap="choose">拍照或从相册选</button></view></block>

@@ -1,4 +1,4 @@
-<view class="diy">
+<view class="diy"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
   <view class="wrist-row"><text>长度按 <text class="strong">{{wrist}}cm</text> 手围计算</text><text class="change" bindtap="wrist">改手围</text></view>
   <view class="resume" wx:if="{{resume}}" bindtap="resume"><view><view class="small muted">上次的设计</view><view class="resume-name">{{resume.name}}</view><view class="small muted">{{resume.beads.length}} 颗 · ¥{{resumePrice}}</view></view><text class="resume-action">继续设计 ›</text></view>
   <view class="section-head"><text class="heading">选个起点</text><text class="small muted">挑好主珠能一键铺满一圈</text></view>

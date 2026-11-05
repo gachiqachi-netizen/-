@@ -68,6 +68,7 @@ test('AR model download failure exits loading state and provides photo navigatio
 test('slow download with continuing progress is not cut off by initial deadline',async()=>{
  const f=fixture(), original=f.wxApi.downloadFile;
  f.wxApi.downloadFile=o=>{
+  assert.equal(Object.hasOwn(o,'timeout'),false,'单文件下载不能设置总时限');
   const task=original(o);
   let tick;const before=task.onProgressUpdate;
   task.onProgressUpdate=fn=>{before(fn);tick=setInterval(()=>fn({progress:25,totalBytesExpectedToWrite:8}),4)};
@@ -76,7 +77,7 @@ test('slow download with continuing progress is not cut off by initial deadline'
   o.success=result=>{clearInterval(tick);success(result)};o.fail=error=>{clearInterval(tick);fail(error)};
   return task;
  };
- f.wxApi.delay=15;
+ f.wxApi.delay=35;
  await createModelLoader(f.wxApi,config,()=>{},{timeoutMs:8}).prepare();
  assert.equal(f.calls.length,7);
 });

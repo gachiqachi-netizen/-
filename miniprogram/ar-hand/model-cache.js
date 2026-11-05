@@ -78,7 +78,7 @@ function createModelLoader(wxApi, config, onProgress = () => {}, options = {}) {
       }
       pending.task = wxApi.downloadFile({
         url: config.base + '/handpose/' + config.version + '/' + name,
-        filePath: partial, timeout,
+        filePath: partial,
         success(result) {
           if (cancelled) return finish(new Error('模型加载已取消'));
           if (result.statusCode !== 200) return finish(new Error('手部模型下载失败，请重试或改用照片试戴'));

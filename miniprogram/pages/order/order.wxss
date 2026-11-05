@@ -3,3 +3,5 @@
 .cords{flex:1;min-width:0}
 .cords .cord{width:auto;min-width:0;flex:0 0 auto;box-sizing:border-box}
 .order-page{padding-bottom:calc(180rpx + env(safe-area-inset-bottom))}
+
+.material-safety{color:#c62828;white-space:pre-line;font-size:24rpx;line-height:1.5;overflow-wrap:break-word}.material-explanation{font-size:24rpx;line-height:1.5;color:#57534e}.material-row{padding:20rpx 0;border-bottom:1rpx solid #eee}.material-sheet{max-height:65vh;box-sizing:border-box}.material-summary{flex-shrink:0;padding:8rpx 24rpx;font-size:24rpx}.material-summary .material-safety{max-height:72rpx;overflow:auto}

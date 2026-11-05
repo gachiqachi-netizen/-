@@ -1,3 +1,4 @@
+const materials=require('./materials')
 const api=require('../../utils/api'), store=require('../../utils/design'), logic=require('./logic'), templates=require('../../utils/template')
 const CATS={wood:'木质',bodhi:'菩提',jade:'玉石',stone:'玉石',crystal:'水晶',metal:'金属配件'}
 Page({
@@ -20,10 +21,10 @@ Page({
     const selectedItem=map[d.beads[this.data.selected]]
     const missingItems=d.beads.map((id,index)=>({id,index})).filter(x=>!map[x.id])
     const countMap={},tags=[]; d.beads.forEach(id=>{const bead=map[id];if(!bead)return;countMap[id]=(countMap[id]||0)+1;(bead.tags||[]).forEach(t=>{if(t!=='点缀'&&!tags.includes(t))tags.push(t)})})
-    const notes=Object.keys(countMap).map(id=>{const b=map[id];return {id,name:b.name,mm:b.mm,count:countMap[id],meaning:b.meaning||'',points:(b.points||[]).join(' · '),price:(Number(b.price||0)*countMap[id]).toFixed(2)}})
+    const notes=materials.fromCatalog(d.beads,this.data.catalog)
     const last=[...d.beads].reverse().find(id=>{const b=map[id];return b&&!b.spacer&&b.mat!=='metal'}), next=last?logic.fill(d.beads,this.data.catalog,d.wrist,last):[]
     const max=result.target*1.25, diff=result.length-result.target, fitOK=!result.missing&&d.beads.length>0&&(d.beads.length>=54||(diff>=-4&&diff<=6))
-    this.setData({items,missingItems,price:result.missing?'--':(result.price+(d.beads.length?15:0)).toFixed(2),length:result.missing?'--':(result.length/10).toFixed(1),fit:result.fit,missing:result.missing,filtered,sizes,size,tags:tags.slice(0,4),notes,meterFill:Math.min(100,result.length/max*100),meterZoneLeft:(result.target-4)/max*100,meterZoneWidth:10/max*100,fitOK,fillCount:Math.max(0,next.length-d.beads.length),fillLabel:last?`${map[last].name} ${map[last].mm}mm`:'',hasPattern:!!(d.pattern&&d.pattern.length),selectedLabel:selectedItem?`${selectedItem.name} ${selectedItem.mm}mm`:this.data.selected>=0?'已下架材料':'',canUndo:!!(this.history&&this.history.length)})
+    this.setData({items,missingItems,price:result.missing?'--':(result.price+(d.beads.length?15:0)).toFixed(2),length:result.missing?'--':(result.length/10).toFixed(1),fit:result.fit,missing:result.missing,filtered,sizes,size,tags:tags.slice(0,4),notes,safetyNotice:materials.safetyLines(notes),meterFill:Math.min(100,result.length/max*100),meterZoneLeft:(result.target-4)/max*100,meterZoneWidth:10/max*100,fitOK,fillCount:Math.max(0,next.length-d.beads.length),fillLabel:last?`${map[last].name} ${map[last].mm}mm`:'',hasPattern:!!(d.pattern&&d.pattern.length),selectedLabel:selectedItem?`${selectedItem.name} ${selectedItem.mm}mm`:this.data.selected>=0?'已下架材料':'',canUndo:!!(this.history&&this.history.length)})
     store.selected(d)
   },
   changeBeads(next, selected){ const d=this.data.design;this.history=this.history||[];this.history.push(d.beads.slice());if(this.history.length>60)this.history.shift();d.beads=next;this.setData({design:d,selected:selected==null?-1:selected});this.update();this.saveDraftSoon() },

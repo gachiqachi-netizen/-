@@ -1,3 +1,4 @@
+const materials=require('../editor/materials')
 const auth=require('../../utils/auth'),store=require('../../utils/design'),api=require('../../utils/api'), sizing=require('../editor/logic')
 // Store only a compact fingerprint and request ID; the shipping address is not persisted here.
 function fingerprint(text){let a=2166136261,b=2246822519;for(let i=0;i<text.length;i++){const c=text.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b^c,3266489917)}return (a>>>0).toString(16)+'-'+(b>>>0).toString(16)+'-'+text.length}
@@ -6,7 +7,7 @@ function requestId(payload){const key=fingerprint(JSON.stringify(payload)),pendi
 Page({
   data:{design:null,person:'',phone:'',addr:'',error:'',busy:false,order:null,cord:0,gift:false,items:[],preview:[],missing:[],goods:'0.00',ship:'0.00',total:'0.00',catalogReady:false,length:'0.0',catalog:[],fit:'',previewFallback:false},
   onShow(){const design=store.current();this.setData({design,cord:design&&design.cord===1?1:0,catalogReady:false});if(!design)return;api.catalog(true).then(c=>{this.catalog=c.beads||[];this.calculate()}).catch(e=>this.setData({catalogReady:false,error:'材料信息加载失败，请返回后重试：'+e.message}))},
-  calculate(){const {design,cord,gift}=this.data;if(!design)return;const map=Object.fromEntries(this.catalog.map(b=>[b.id,b])), counts={},missing=[];let goods=0,length=0;design.beads.forEach(id=>{const bead=map[id];if(!bead){if(!missing.includes(id))missing.push(id);return}counts[id]=(counts[id]||0)+1;goods+=Math.round(Number(bead.price)*100);length+=Number(bead.mm)||0});const preview=design.beads.map((id,i)=>{const a=2*Math.PI*i/design.beads.length-Math.PI/2,b=map[id];return {x:50+36*Math.cos(a),y:50+36*Math.sin(a),color:b&&b.c&&b.c[0]||'#aaa'}});const items=Object.keys(counts).map(id=>({id,name:map[id].name,mm:map[id].mm,qty:counts[id],unit:Number(map[id].price).toFixed(2),color:(map[id].c||[])[0]||'#aaa',photo:map[id].photo?(/^https?:/.test(map[id].photo)?map[id].photo:getApp().globalData.apiBase+map[id].photo):'',subtotal:(Math.round(Number(map[id].price)*100)*counts[id]/100).toFixed(2)}));const sub=goods+1500+(cord===1?500:0)+(gift?1000:0),ship=sub>=9900?0:800;const fit=sizing.stats(design.beads,this.catalog,design.wrist).fit;this.setData({catalogReady:true,catalog:this.catalog,fit,items,preview,missing,goods:(goods/100).toFixed(2),ship:(ship/100).toFixed(2),total:((sub+ship)/100).toFixed(2),length:(length/10).toFixed(1)})},
+  calculate(){const {design,cord,gift}=this.data;if(!design)return;const map=Object.fromEntries(this.catalog.map(b=>[b.id,b])), counts={},missing=[];let goods=0,length=0;design.beads.forEach(id=>{const bead=map[id];if(!bead){if(!missing.includes(id))missing.push(id);return}counts[id]=(counts[id]||0)+1;goods+=Math.round(Number(bead.price)*100);length+=Number(bead.mm)||0});const preview=design.beads.map((id,i)=>{const a=2*Math.PI*i/design.beads.length-Math.PI/2,b=map[id];return {x:50+36*Math.cos(a),y:50+36*Math.sin(a),color:b&&b.c&&b.c[0]||'#aaa'}});const items=materials.fromCatalog(design.beads,this.catalog).map(b=>({...b,color:(b.c||[])[0]||'#aaa',photo:b.photo?(/^https?:/.test(b.photo)?b.photo:getApp().globalData.apiBase+b.photo):''}));const sub=goods+1500+(cord===1?500:0)+(gift?1000:0),ship=sub>=9900?0:800;const fit=sizing.stats(design.beads,this.catalog,design.wrist).fit;this.setData({catalogReady:true,catalog:this.catalog,fit,items,preview,missing,goods:(goods/100).toFixed(2),ship:(ship/100).toFixed(2),total:((sub+ship)/100).toFixed(2),length:(length/10).toFixed(1)})},
   input(e){this.setData({[e.currentTarget.dataset.key]:e.detail.value})},
   setCord(e){this.setData({cord:Number(e.currentTarget.dataset.cord)},()=>this.calculate())},
   setGift(e){this.setData({gift:!!e.detail.value},()=>this.calculate())},
@@ -33,7 +34,13 @@ Page({
         if(!result.confirm){this.setData({error:'尚未确认尺寸，请调整设计后再提交。'});return}
         if(before!==JSON.stringify({design:this.data.design,cord:this.data.cord,gift:this.data.gift,person:this.data.person,phone:this.data.phone,addr:this.data.addr})){this.setData({error:'订单信息已更改，请重新核对。'});return}
       }
-      const confirmedQuote={totalFen:Math.round(Number(this.data.total)*100),items:this.data.items.map(item=>({id:item.id,unitPriceFen:Math.round(Number(item.unit)*100),mm:Number(item.mm)}))}
+      const warnings=materials.safetyLines(this.data.items)
+      if(warnings){
+        const result=await new Promise(resolve=>wx.showModal({title:'请确认材料安全提示',content:warnings,confirmText:'已阅读并确认',cancelText:'返回修改',success:resolve,fail:()=>resolve({confirm:false})}))
+        if(!result.confirm){this.setData({error:'请确认材料安全提示后再提交，或返回修改材料。'});return}
+        if(before!==JSON.stringify({design:this.data.design,cord:this.data.cord,gift:this.data.gift,person:this.data.person,phone:this.data.phone,addr:this.data.addr})){this.setData({error:'订单信息已更改，请重新核对。'});return}
+      }
+      const confirmedQuote={totalFen:Math.round(Number(this.data.total)*100),items:this.data.items.map(item=>({id:item.id,unitPriceFen:item.unitPriceFen,mm:Number(item.mm)}))}
       const payload={name:design.name,beads:design.beads,wrist:design.wrist,cord,gift,person:person.trim(),phone:phone.trim(),addr:addr.trim(),confirmedQuote}
       payload.requestId=requestId(payload)
       const order=await auth.authorized('/my/orders',payload)

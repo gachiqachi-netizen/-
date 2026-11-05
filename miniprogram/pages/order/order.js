@@ -33,7 +33,7 @@ Page({
   },
   confirmQuote(){if(this.data.missing.length)return;this.setData({quotePending:false,catalogReady:true})},
 
-  calculate(){const {design,cord,gift}=this.data;if(!design)return;const map=Object.fromEntries(this.catalog.map(b=>[b.id,b])), counts={},missing=[];let goods=0,length=0;design.beads.forEach(id=>{const bead=map[id];if(!bead){if(!missing.includes(id))missing.push(id);return}counts[id]=(counts[id]||0)+1;goods+=Math.round(Number(bead.price)*100);length+=Number(bead.mm)||0});const preview=design.beads.map((id,i)=>{const a=2*Math.PI*i/design.beads.length-Math.PI/2,b=map[id];return {x:50+36*Math.cos(a),y:50+36*Math.sin(a),color:b&&b.c&&b.c[0]||'#aaa'}});const items=Object.keys(counts).map(id=>({id,name:map[id].name,mm:map[id].mm,qty:counts[id],unit:Number(map[id].price).toFixed(2),color:(map[id].c||[])[0]||'#aaa',photo:map[id].photo?(/^https?:/.test(map[id].photo)?map[id].photo:getApp().globalData.apiBase+map[id].photo):'',subtotal:(Math.round(Number(map[id].price)*100)*counts[id]/100).toFixed(2)}));const sub=goods+1500+(cord===1?500:0)+(gift?1000:0),ship=sub>=9900?0:800;const fit=sizing.stats(design.beads,this.catalog,design.wrist).fit;this.setData({catalogReady:true,catalog:this.catalog,fit,items,preview,missing,goods:(goods/100).toFixed(2),ship:(ship/100).toFixed(2),total:((sub+ship)/100).toFixed(2),length:(length/10).toFixed(1)})},
+  calculate(){const {design,cord,gift}=this.data;if(!design||!Array.isArray(this.catalog))return;const map=Object.fromEntries(this.catalog.map(b=>[b.id,b])), counts={},missing=[];let goods=0,length=0;design.beads.forEach(id=>{const bead=map[id];if(!bead){if(!missing.includes(id))missing.push(id);return}counts[id]=(counts[id]||0)+1;goods+=Math.round(Number(bead.price)*100);length+=Number(bead.mm)||0});const preview=design.beads.map((id,i)=>{const a=2*Math.PI*i/design.beads.length-Math.PI/2,b=map[id];return {x:50+36*Math.cos(a),y:50+36*Math.sin(a),color:b&&b.c&&b.c[0]||'#aaa'}});const items=Object.keys(counts).map(id=>({id,name:map[id].name,mm:map[id].mm,qty:counts[id],unit:Number(map[id].price).toFixed(2),color:(map[id].c||[])[0]||'#aaa',photo:map[id].photo?(/^https?:/.test(map[id].photo)?map[id].photo:getApp().globalData.apiBase+map[id].photo):'',subtotal:(Math.round(Number(map[id].price)*100)*counts[id]/100).toFixed(2)}));const sub=goods+1500+(cord===1?500:0)+(gift?1000:0),ship=sub>=9900?0:800;const fit=sizing.stats(design.beads,this.catalog,design.wrist).fit;this.setData({catalogReady:!this.data.quotePending,catalog:this.catalog,fit,items,preview,missing,goods:(goods/100).toFixed(2),ship:(ship/100).toFixed(2),total:((sub+ship)/100).toFixed(2),length:(length/10).toFixed(1)})},
   input(e){this.setData({[e.currentTarget.dataset.key]:e.detail.value})},
   setCord(e){this.setData({cord:Number(e.currentTarget.dataset.cord)},()=>this.calculate())},
   setGift(e){this.setData({gift:!!e.detail.value},()=>this.calculate())},
@@ -42,6 +42,7 @@ Page({
   unavailable(){this.setData({previewFallback:true})},
   async submit(){
     const {design,person,phone,addr,cord,gift,catalogReady,missing}=this.data
+    if(this.data.quotePending)return this.setData({error:'请先确认新价格'})
     if(this.data.busy||this.data.order)return
     if(!design)return this.setData({error:'未找到设计，请返回重新选择'})
     if(!catalogReady||missing.length)return this.setData({error:'部分材料已下架或不可用，请返回修改设计'})

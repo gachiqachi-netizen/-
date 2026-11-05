@@ -18,6 +18,15 @@ test('体验和正式只使用自己的HTTPS配置', () => {
   }
   assert.throws(() => resolveConfig('unknown', 'ios'), /版本/)
 })
+test('没有全局 URL 时仍拦截占位域名', () => {
+  const original = globalThis.URL
+  try {
+    delete globalThis.URL
+    for (const env of ['trial', 'release']) {
+      assert.throws(() => resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://api.example.com:443/path',modelBase:'https://static.real.cn'}}), /正式环境地址未配置/)
+    }
+  } finally { globalThis.URL = original }
+})
 test('实际配置入口可在未提供本地文件时启动开发工具', () => {
   assert.equal(loadConfig({getAccountInfoSync:()=>({miniProgram:{envVersion:'develop'}}),getDeviceInfo:()=>({platform:'devtools'})}).apiBase,'http://127.0.0.1:8801')
 })

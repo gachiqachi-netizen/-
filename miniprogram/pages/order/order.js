@@ -10,7 +10,8 @@ Page({
   async onShow(){
     const design=store.current(), oldCatalog=this.catalog||(getApp().globalData.catalog||{}).beads||[]
     const generation=this.quoteGeneration=(this.quoteGeneration||0)+1
-    this.setData({design,cord:design&&design.cord===1?1:0,catalogReady:false,quoteChanges:[],quotePending:true,error:''})
+    this.confirmationsDone=false
+    this.setData({design,cord:design&&design.cord===1?1:0,catalogReady:false,quoteChanges:[],quotePending:true,error:'',needLogin:false})
     if(!design)return
     try {
       const c=await api.catalog(true)
@@ -59,15 +60,13 @@ Page({
       this.catalog=c.beads||[];this.calculate()
       if(this.data.missing.length){this.setData({error:'部分材料已下架或不可用，请返回修改设计。'});return}
       if(this.data.total!==oldTotal || JSON.stringify(this.data.items)!==oldItems){this.setData({error:'材料信息或价格已更新，请核对后重新提交。'});return}
-      if(this.data.fit !== '长度基本合适') {
-        const result=await new Promise(resolve=>wx.showModal({title:'请确认制作尺寸',content:'手围 '+design.wrist+'cm，珠串总长 '+this.data.length+'cm。'+this.data.fit+'。如需单圈建议返回调整；多圈请先核实实际佩戴尺寸。',confirmText:'确认此尺寸',cancelText:'返回调整',success:resolve,fail:()=>resolve({confirm:false})}));
-        if(!result.confirm){this.setData({error:'尚未确认尺寸，请调整设计后再提交。'});return}
-        if(before!==JSON.stringify({design:this.data.design,cord:this.data.cord,gift:this.data.gift,person:this.data.person,phone:this.data.phone,addr:this.data.addr})){this.setData({error:'订单信息已更改，请重新核对。'});return}
-      }
       const warnings=materials.safetyLines(this.data.items)
-      if(warnings){
-        const result=await new Promise(resolve=>wx.showModal({title:'请确认材料安全提示',content:warnings,confirmText:'已阅读并确认',cancelText:'返回修改',success:resolve,fail:()=>resolve({confirm:false})}))
-        if(!result.confirm){this.setData({error:'你选择了返回修改。确认已阅读材料安全提示后，可以再次提交。'});return}
+      const sizeNote=this.data.fit!=='长度基本合适'?'手围 '+design.wrist+'cm，珠串总长 '+this.data.length+'cm。'+this.data.fit+'。如需单圈建议返回调整；多圈请先核实实际佩戴尺寸。':''
+      // 尺寸与安全提示合并为一个弹窗，每次进入页面最多弹一次；取消后再次提交视为已知情
+      if((warnings||sizeNote)&&!this.confirmationsDone){
+        this.confirmationsDone=true
+        const result=await new Promise(resolve=>wx.showModal({title:warnings&&sizeNote?'请确认制作尺寸与材料安全':(warnings?'请确认材料安全提示':'请确认制作尺寸'),content:[sizeNote,warnings].filter(Boolean).join('\n\n'),confirmText:'确认并下单',cancelText:'返回修改',success:resolve,fail:()=>resolve({confirm:false})}))
+        if(!result.confirm){this.setData({error:warnings?'你选择了返回修改。确认已阅读材料安全提示后，可以再次提交。':'尚未确认尺寸，请调整设计后再提交。'});return}
         if(before!==JSON.stringify({design:this.data.design,cord:this.data.cord,gift:this.data.gift,person:this.data.person,phone:this.data.phone,addr:this.data.addr})){this.setData({error:'订单信息已更改，请重新核对。'});return}
       }
       const confirmedQuote={totalFen:Math.round(Number(this.data.total)*100),items:this.data.items.map(item=>({id:item.id,unitPriceFen:item.unitPriceFen,mm:Number(item.mm)}))}

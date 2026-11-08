@@ -3,8 +3,8 @@ const assert = require('assert')
 let definition
 global.Page = value => { definition = value }
 const storage = {}
-let confirmSize=true
-global.wx = { showModal: options=>options.success({confirm:confirmSize}), getStorageSync: key => storage[key], setStorageSync: (key, value) => { storage[key] = value } }
+let confirmSize=true, navigated=''
+global.wx = { showModal: options=>options.success({confirm:confirmSize}), getStorageSync: key => storage[key], setStorageSync: (key, value) => { storage[key] = value }, navigateTo: options => { navigated = options.url } }
 const api = require('../utils/api'), auth = require('../utils/auth')
 require('../pages/order/order')
 function page() {
@@ -30,6 +30,10 @@ async function run() {
   p = page(); p.catalog = catalog(3).beads; p.calculate(); let refresh=0;api.catalog = async () => catalog(++refresh===1?3:5)
   auth.authorized = async () => { const e=new Error('价格已变化');e.code='price_changed';throw e }
   await p.submit();assert.strictEqual(p.data.total,'53.00');assert.strictEqual(p.data.catalogReady,true);assert.match(p.data.error,/核对/)
+  p = page(); p.catalog = catalog(3).beads; p.calculate(); api.catalog = async () => catalog(3)
+  auth.authorized = async () => { const e = new Error('请先登录'); e.status = 401; throw e }
+  await p.submit(); assert.strictEqual(p.data.needLogin, true); assert.match(p.data.error, /需要先登录/)
+  p.goLogin(); assert.strictEqual(navigated, '/pages/login/login')
   console.log('订单目录更新、失联、下架和重试检查通过')
 }
 run().catch(err => { console.error(err); process.exitCode = 1 })

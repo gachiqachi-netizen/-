@@ -162,6 +162,17 @@ class HTTPTest(unittest.TestCase):
             self.assertEqual(status, 200)
             self.assertEqual(result['by'], 'rules')
 
+    def test_dev_login_rejects_production_database(self):
+        with patch.dict(os.environ, {'DEV_LOGIN': '1', 'DATABASE_URL': 'postgres://example.invalid/db'}):
+            with self.assertRaises(SystemExit):
+                app.ensure_dev_login_local()
+        with patch.dict(os.environ, {'DEV_LOGIN': '1'}, clear=False):
+            os.environ.pop('DATABASE_URL', None)
+            app.ensure_dev_login_local()
+        with patch.dict(os.environ, {'DATABASE_URL': 'postgres://example.invalid/db'}, clear=False):
+            os.environ.pop('DEV_LOGIN', None)
+            app.ensure_dev_login_local()
+
     def test_server_bind_requires_explicit_safe_config(self):
         app.validate_bind('127.0.0.1', '', False, False)
         with self.assertRaises(ValueError):

@@ -5,7 +5,7 @@ function fingerprint(text){let a=2166136261,b=2246822519;for(let i=0;i<text.leng
 const KEY='cgz_pending_order_request'
 function requestId(payload){const key=fingerprint(JSON.stringify(payload)),pending=wx.getStorageSync(KEY)||{};if(pending[key])return pending[key];const id='order_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)+'_'+Math.random().toString(36).slice(2);pending[key]=id;wx.setStorageSync(KEY,pending);return id}
 Page({
-  data:{design:null,person:'',phone:'',addr:'',error:'',busy:false,order:null,cord:0,gift:false,items:[],preview:[],missing:[],goods:'0.00',ship:'0.00',total:'0.00',catalogReady:false,length:'0.0',catalog:[],fit:'',previewFallback:false},
+  data:{design:null,person:'',phone:'',addr:'',error:'',busy:false,order:null,cord:0,gift:false,items:[],preview:[],missing:[],goods:'0.00',ship:'0.00',total:'0.00',catalogReady:false,length:'0.0',catalog:[],fit:'',previewFallback:false,needLogin:false},
 
   async onShow(){
     const design=store.current(), oldCatalog=this.catalog||(getApp().globalData.catalog||{}).beads||[]
@@ -52,7 +52,7 @@ Page({
     if(!person.trim()||!phone.trim()||!addr.trim())return this.setData({error:'请填写完整收货信息'})
     if(!/^1\d{10}$/.test(phone.trim()))return this.setData({error:'请输入有效的 11 位手机号'})
     const before=JSON.stringify({design,cord,gift,person,phone,addr}), oldTotal=this.data.total, oldItems=JSON.stringify(this.data.items)
-    this.setData({busy:true,error:'',catalogReady:false})
+    this.setData({busy:true,error:'',catalogReady:false,needLogin:false})
     try {
       const c=await api.catalog(true)
       if(before!==JSON.stringify({design:this.data.design,cord:this.data.cord,gift:this.data.gift,person:this.data.person,phone:this.data.phone,addr:this.data.addr})) { this.catalog=c.beads||[];this.calculate();this.setData({error:'订单信息已更改，请检查后重新提交。'});return }
@@ -67,7 +67,7 @@ Page({
       const warnings=materials.safetyLines(this.data.items)
       if(warnings){
         const result=await new Promise(resolve=>wx.showModal({title:'请确认材料安全提示',content:warnings,confirmText:'已阅读并确认',cancelText:'返回修改',success:resolve,fail:()=>resolve({confirm:false})}))
-        if(!result.confirm){this.setData({error:'请确认材料安全提示后再提交，或返回修改材料。'});return}
+        if(!result.confirm){this.setData({error:'你选择了返回修改。确认已阅读材料安全提示后，可以再次提交。'});return}
         if(before!==JSON.stringify({design:this.data.design,cord:this.data.cord,gift:this.data.gift,person:this.data.person,phone:this.data.phone,addr:this.data.addr})){this.setData({error:'订单信息已更改，请重新核对。'});return}
       }
       const confirmedQuote={totalFen:Math.round(Number(this.data.total)*100),items:this.data.items.map(item=>({id:item.id,unitPriceFen:item.unitPriceFen,mm:Number(item.mm)}))}
@@ -76,7 +76,9 @@ Page({
       const order=await auth.authorized('/my/orders',payload)
       const pending=wx.getStorageSync(KEY)||{};Object.keys(pending).forEach(k=>{if(pending[k]===payload.requestId)delete pending[k]});wx.setStorageSync(KEY,pending);this.setData({order})
     } catch(e) {
-      if(e.code==='price_changed') {
+      if(e.status===401) {
+        this.setData({catalogReady:true,needLogin:true,error:'需要先登录才能下单'})
+      } else if(e.code==='price_changed') {
         try { const c=await api.catalog(true);this.catalog=c.beads||[];this.calculate();this.setData({error:'材料或价格已变化，请核对更新后的订单，再决定是否提交。'}) }
         catch(_) { this.setData({catalogReady:false,error:'材料或价格已变化，刷新失败，请重新进入订单页核对。'}) }
       } else this.setData({catalogReady:false,error:e.code==='idempotency_conflict'?'订单请求有冲突，请先查看我的订单并联系客服确认。':(e.message||'提交失败')+'。请重新进入订单页核对后重试，或到我的订单查看。'})
@@ -84,5 +86,6 @@ Page({
     finally { this.setData({busy:false}) }
   },
   mine(){wx.switchTab({url:'/pages/mine/mine'})},
+  goLogin(){wx.navigateTo({url:'/pages/login/login'})},
   home(){wx.switchTab({url:'/pages/home/home'})}
 })

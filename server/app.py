@@ -37,6 +37,11 @@ UPLOADS = os.environ.get("UPLOADS_DIR") or os.path.join(DATA_DIR, "uploads")
 MODELS = os.environ.get("MODELS_DIR") or os.path.join(HERE, "..", "tools", "hand-tracker", "models")   # 本地开发用的 AR 模型
 FRONT = os.path.join(HERE, "..", "prototype.html")   # 前台就是原型页面，加上接口地址后直接用
 os.makedirs(UPLOADS, exist_ok=True)
+def ensure_dev_login_local():
+    # 开发测试登录只签 dev: 前缀的本地账号，绝不能出现在生产数据库上。
+    if os.environ.get("DEV_LOGIN") == "1" and os.environ.get("DATABASE_URL"):
+        raise SystemExit("DEV_LOGIN=1 只能用于本地开发，不能和 DATABASE_URL 同时设置")
+ensure_dev_login_local()
 if os.environ.get("DATABASE_URL"):
     from db_postgres import PostgresDB
     db = PostgresDB(os.environ["DATABASE_URL"])

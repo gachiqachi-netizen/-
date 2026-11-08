@@ -18,7 +18,7 @@ test('safety confirmation cancellation blocks submission, acceptance permits ord
  try{
   delete require.cache[require.resolve('../pages/order/order')];require('../pages/order/order')
   const p={...definition,data:{...definition.data,design:{name:'测试',beads:Array(20).fill(bead.id),wrist:15},person:'测试',phone:'1'+'0'.repeat(10),addr:'测试占位'},catalog:[bead],setData(data){Object.assign(this.data,data)}}
-  p.calculate();await p.submit();assert.equal(posts,0);assert.match(warning,/测试材料：不可入口/)
+  p.calculate();await p.submit();assert.equal(posts,0);assert.match(warning,/测试材料：不可入口/);assert.match(p.data.error,/你选择了返回修改/)
   accepted=true;await p.submit();assert.equal(posts,1)
  }finally{api.catalog=oldCatalog;auth.authorized=oldAuth}
 })

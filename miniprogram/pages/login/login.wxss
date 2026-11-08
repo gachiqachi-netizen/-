@@ -1,3 +1,4 @@
 .login-page { padding-top: 80rpx; }
 .login-page .title { margin-bottom: 16rpx; }
 .login-button { margin: 48rpx 0 24rpx; }
+.dev-tip { margin-top: 32rpx; font-size: 22rpx; color: #9b5b18; }

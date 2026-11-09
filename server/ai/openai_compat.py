@@ -9,6 +9,7 @@
 import json
 import os
 import re
+import urllib.error
 import urllib.request
 
 
@@ -40,8 +41,24 @@ class OpenAICompatProvider:
         }
         req = urllib.request.Request(self.base + "/chat/completions", data=json.dumps(body).encode(),
                                      headers={"Content-Type": "application/json", "Authorization": "Bearer " + self.key})
-        with urllib.request.urlopen(req, timeout=60) as r:
-            out = json.loads(r.read())
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                out = json.loads(r.read())
+        except urllib.error.HTTPError as exc:
+            # Keep credentials out of logs, but preserve the provider's error code/message
+            # so model permission and unsupported-parameter failures are diagnosable.
+            try:
+                payload = json.loads(exc.read())
+                detail = payload.get("error") or payload
+                if isinstance(detail, dict):
+                    code = str(detail.get("code") or "")[:80]
+                    message = str(detail.get("message") or "")[:300]
+                    detail = ": ".join(x for x in (code, message) if x)
+                else:
+                    detail = str(detail)[:300]
+            except Exception:
+                detail = ""
+            raise RuntimeError(f"百炼请求失败 HTTP {exc.code}" + (f": {detail}" if detail else "")) from None
         text = out["choices"][0]["message"]["content"]
         text = re.sub(r"^```(?:json)?|```$", "", text.strip()).strip()
         return json.loads(text)

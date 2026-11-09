@@ -431,7 +431,7 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 return self.send(404, {"error": "not_found"})
         except Exception as e:   # AI 出错不让前台报错：返回 502，前台用本地规则
-            sys.stderr.write("AI provider request failed\n")
+            sys.stderr.write(f"AI provider request failed: {type(e).__name__}: {e}\n")
             return self.send(502, {"error": "AI 暂时不可用，请稍后重试"})
         finally:
             AI_SLOTS.release()

@@ -157,12 +157,21 @@ def design(beads, text, history, wrist):
               "给 3 条不同的手串，和之前给过的不要重复。每条至少 2 种不同名称的珠子，主珠直径一致。"
               "pattern 是循环花型（3-8 颗），special 是只出现一次的开头珠（0-2 颗）。用户提了预算时，按大约 20 颗估算，别超预算。\n"
               "reply 是一句 20-40 字的口语回应；meaning 20-40 字。")
-    out = p.json(prompt, DESIGNS_SCHEMA)
     ids = {b["id"] for b in beads}
     names = {b["id"]: b["name"] for b in beads}
+    out = p.json(prompt, DESIGNS_SCHEMA)
     designs = _valid_designs(out.get("designs"), ids, 2, names)
     if not designs:
-        raise RuntimeError("AI 给的珠子不在料包里")
+        # JSON-only mode guarantees syntax, not that a model copies opaque SKU ids
+        # exactly. Retry once with a compact allow-list; never accept invented ids.
+        allowed = ", ".join(f'{b["id"]}={b["name"]}' for b in beads)
+        retry_prompt = (prompt + "\n\n上一次结果未通过商品目录校验，请重新输出。"
+                        "special 和 pattern 的每个值必须是下列完整 id 之一，不能写珠子名称、颜色、对象或新 id：\n"
+                        + allowed)
+        out = p.json(retry_prompt, DESIGNS_SCHEMA)
+        designs = _valid_designs(out.get("designs"), ids, 2, names)
+        if not designs:
+            raise RuntimeError("AI 给的珠子不在料包里")
     return {"reply": clean(out.get("reply"), 60), "designs": designs, "by": p.name}
 
 

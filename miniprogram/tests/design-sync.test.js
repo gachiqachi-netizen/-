@@ -24,6 +24,13 @@ async function main() {
   assert.equal(calls[1].body.tplId, 't1')
   assert.equal(store.list()[0].cloudUpdatedAt, 200)
   assert.deepEqual(store.current().beads, ['a','b'])
+  // 旧内存对象写回存储不得回滚云端版本号（409 根因）
+  const stale={id:'local-1',name:'手串',wrist:15,beads:['a','b'],cloudId:'cloud-1',cloudUpdatedAt:100}
+  store.save(stale); store.selected(stale)
+  assert.equal(store.list()[0].cloudUpdatedAt, 200)
+  assert.equal(store.current().cloudUpdatedAt, 200)
+  await store.sync(stale)
+  assert.equal(calls[2].body.expectedUpdatedAt, 200)
   console.log('设计同步队列与版本传递通过')
 }
 main().catch(err => { console.error(err); process.exitCode = 1 })

@@ -127,15 +127,14 @@ class AdminCommerceHTTPTest(unittest.TestCase):
         status_code, rec = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'approve'}, admin='test-admin')
         self.assertEqual(status_code, 200)
         self.assertEqual(rec['status'], 'approved')
-        # 确认收到退货 → refunding
-        status_code, rec = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'receive'}, admin='test-admin')
-        self.assertEqual(status_code, 200)
-        self.assertEqual(rec['status'], 'refunding')
-        # 完成 → completed
-        status_code, rec = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'complete'}, admin='test-admin')
-        self.assertEqual(rec['status'], 'completed')
+        # 无真实退款渠道：退款类售后不得推进到 refunding / completed
+        status_code, body = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'receive'}, admin='test-admin')
+        self.assertEqual(status_code, 400)
+        self.assertIn('真实退款服务尚未接入', body['error'])
+        status_code, body = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'complete'}, admin='test-admin')
+        self.assertEqual(status_code, 400)
         order = app.db.get('orders', no)
-        self.assertEqual(order['afterSaleStatus'], 'completed')
+        self.assertEqual(order['afterSaleStatus'], 'approved')
         self.assertTrue(order['statusHistory'])
 
     def test_terms_publish_and_audit(self):

@@ -211,9 +211,9 @@ class CrossStateConstraintTest(unittest.TestCase):
     def test_cumulative_refund_cannot_exceed_paid(self):
         no = self.make_order('sm-refund-000004')['no']
         self.set_paid(no, paid_fen=1000)
-        # 已有一笔完成退款 500，再退 600 会超实付
+        # 已有 500 分可信退款回调确认（refundedFen），再退 600 会超实付
         self.db.put('after_sales', 'AS-CUM', {'no': 'AS-CUM', 'orderNo': no, 'type': '仅退款',
-                                              'status': 'completed', 'refundFen': 500})
+                                              'status': 'completed', 'refundedFen': 500, 'reservedFen': 0})
         order = self.db.get('orders', no)
         with self.assertRaises(ValueError):
             commerce._check_refund_constraints(order, 600, self.db)

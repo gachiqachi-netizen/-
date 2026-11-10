@@ -229,13 +229,12 @@ class AdminCommerceTest(unittest.TestCase):
         self.assertEqual(rec['status'], 'approved')
         self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'approved')
 
-        rec = commerce.transition_after_sale(self.db, as_no, 'receive')
-        self.assertEqual(rec['status'], 'refunding')
-        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'refunding')
-
-        rec = commerce.transition_after_sale(self.db, as_no, 'complete')
-        self.assertEqual(rec['status'], 'completed')
-        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'completed')
+        # 无真实退款渠道：退款类售后 approved 后不得推进到 refunding / completed
+        with self.assertRaises(ValueError):
+            commerce.transition_after_sale(self.db, as_no, 'receive')
+        with self.assertRaises(ValueError):
+            commerce.transition_after_sale(self.db, as_no, 'complete')
+        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'approved')
 
         history = self.db.get('orders', no)['statusHistory']
         self.assertTrue(any(h.get('group') == 'afterSaleStatus' for h in history))

@@ -320,23 +320,43 @@ def archive_template(db, rid, actor=ACTOR):
 # ---------------------------------------------------------------- 跨状态约束
 
 def _paid_fen(order):
-    """实付金额（整数分）。统一字段为 paidFen（Agent C），旧数据回退 totalFen。"""
+    """实付金额（整数分）。统一字段为 paidFen（Agent C）。
+
+    未支付订单 totalFen>0 但 paidFen 缺省，绝不能回退到 totalFen：
+    缺 paidFen 时视为 0（尚未实付）。
+    """
     paid = order.get("paidFen")
     if paid is None:
-        paid = order.get("totalFen", 0)
+        return 0
     return int(paid or 0)
 
 
-def _order_refunded_fen(db, order_no):
-    """该订单累计已退款（整数分）：退款类售后中「退款中/已完成」的金额之和。"""
+# 有效售后（非终态）：仍预占退款额度。终态 rejected/completed/closed 不再预占。
+_ACTIVE_AFTER_SALE_STATUSES = ("requested", "reviewing", "approved", "returning", "refunding")
+
+
+def _order_reserved_fen(db, order_no):
+    """该订单所有「有效售后」（非终态）预占的退款额度之和。"""
     total = 0
     for a in db.list("after_sales"):
         if a.get("orderNo") != order_no:
             continue
         if a.get("type") not in ("仅退款", "退货退款"):
             continue
-        if a.get("status") in ("refunding", "completed"):
-            total += int(a.get("refundFen") or 0)
+        if a.get("status") in _ACTIVE_AFTER_SALE_STATUSES:
+            total += int(a.get("reservedFen") or 0)
+    return total
+
+
+def _order_refunded_fen(db, order_no):
+    """该订单累计可信退款回调确认的金额之和（当前无真实回调，恒为 0）。"""
+    total = 0
+    for a in db.list("after_sales"):
+        if a.get("orderNo") != order_no:
+            continue
+        if a.get("type") not in ("仅退款", "退货退款"):
+            continue
+        total += int(a.get("refundedFen") or 0)
     return total
 
 
@@ -374,17 +394,27 @@ def _has_paid(order):
     return paid is not None and int(paid or 0) > 0
 
 
-def _check_refund_constraints(order, refund_fen, db):
-    """校验退款类售后的金额与支付约束，违反抛 ValueError。"""
+def _check_refund_amount(order, refund_fen, reserved_fen, refunded_fen):
+    """纯金额校验：新申请金额不得超过可退额度 paidFen - reservedFen - refundedFen。"""
     groups = status.derive_status(order)
     if groups["paymentStatus"] == "refunded":
         raise ValueError("该订单已完成退款，不能再次退款")
     if not _has_paid(order):
         raise ValueError("未支付订单不能退款")
-    cap = _paid_fen(order)  # 实付上限：paidFen 回退 totalFen
-    already = _order_refunded_fen(db, order.get("no"))
-    if already + refund_fen > cap:
-        raise ValueError("退款总额不能超过实付金额")
+    paid = _paid_fen(order)
+    if refund_fen > paid - reserved_fen - refunded_fen:
+        raise ValueError("退款金额不能超过可退额度")
+
+
+def _check_refund_constraints(order, refund_fen, db):
+    """校验退款类售后的金额约束（按订单号从库中读取该订单的售后）。
+
+    依据订单实付 paidFen（不是 payableFen/totalFen）：
+    availableRefundFen = paidFen - reservedFen - refundedFen。
+    """
+    reserved = _order_reserved_fen(db, order.get("no"))
+    refunded = _order_refunded_fen(db, order.get("no"))
+    _check_refund_amount(order, refund_fen, reserved, refunded)
 
 
 def allowed_order_transitions(order):
@@ -576,37 +606,131 @@ def _after_sale_no():
     return "AS" + time.strftime("%y%m%d") + uuid.uuid4().hex[:6].upper()
 
 
-def create_after_sale(db, data, actor=ACTOR):
-    order_no = str(data.get("orderNo") or "").strip()
-    order = db.get("orders", order_no)
-    if not order:
-        raise ValueError("订单不存在")
+def _normalize_idempotency_key(value):
+    """幂等键：可选，16–128 位 [A-Za-z0-9_-]，非法抛 ValueError。返回原字符串或 None。"""
+    if value is None:
+        return None
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9_-]{16,128}", value):
+        raise ValueError("幂等键格式不正确")
+    return value
+
+
+def _build_after_sale_rec(order_no, atype, reason, requested_fen, reserved_fen, idempotency_key, data, actor):
+    rec = {"no": _after_sale_no(), "orderNo": order_no, "type": atype, "reason": reason,
+           "userNote": str(data.get("userNote") or "")[:500],
+           "requestedFen": requested_fen, "reservedFen": reserved_fen, "refundedFen": 0,
+           "refundFen": requested_fen,  # 兼容读取 fallback（旧字段名）
+           "returnLogistics": {}, "result": "", "status": "requested",
+           "createdAt": _now(), "updatedAt": _now(),
+           "history": [status.history_entry(actor, "afterSaleStatus", "none", "requested", reason)]}
+    if idempotency_key:
+        rec["idempotencyKey"] = idempotency_key
+    return rec
+
+
+def _validate_new_after_sale(order, sales, atype, requested_fen):
+    """校验创建售后的业务约束，返回该笔售后应预占的 reservedFen。"""
     if status.derive_status(order)["afterSaleStatus"] != "none":
         raise ValueError("该订单已有进行中的售后")
+    if atype in ("仅退款", "退货退款"):
+        reserved = 0
+        refunded = 0
+        for a in sales:
+            if a.get("type") not in ("仅退款", "退货退款"):
+                continue
+            if a.get("status") in _ACTIVE_AFTER_SALE_STATUSES:
+                reserved += int(a.get("reservedFen") or 0)
+            refunded += int(a.get("refundedFen") or 0)
+        _check_refund_amount(order, requested_fen, reserved, refunded)
+        return requested_fen
+    return 0
+
+
+def create_after_sale(db, data, actor=ACTOR):
+    order_no = str(data.get("orderNo") or "").strip()
+    idempotency_key = _normalize_idempotency_key(data.get("idempotencyKey"))
     atype = data.get("type")
     if atype not in status.AFTER_SALE_TYPES:
         raise ValueError("售后类型不正确")
     reason = str(data.get("reason") or "").strip()[:200]
     if not reason:
         raise ValueError("请填写售后原因")
-    refund_fen = money.parse_fen(data.get("refundFen"))
-    if atype in ("仅退款", "退货退款"):
-        _check_refund_constraints(order, refund_fen, db)
+    requested_fen = money.parse_fen(data.get("refundFen"))
 
-    no = _after_sale_no()
-    rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
-           "userNote": str(data.get("userNote") or "")[:500],
-           "refundFen": refund_fen, "returnLogistics": {},
-           "result": "", "status": "requested",
-           "createdAt": _now(), "updatedAt": _now(),
-           "history": [status.history_entry(actor, "afterSaleStatus", "none", "requested", reason)]}
-    db.put("after_sales", no, rec)
+    # 原子性：查订单 + 查幂等 + 校验额度 + 写售后 + 更新订单 afterSaleStatus 在同一把锁内完成。
+    # SQLite 用 db.lock + db.conn 直接读改写（避免嵌套获取 db.lock 死锁）；
+    # PostgreSQL 回退 get/list/put，FOR UPDATE 事务锁由 Agent B 的 db_postgres 事务接口补齐。
+    if hasattr(db, "lock") and hasattr(db, "conn"):
+        with db.lock:
+            rec, created = _create_after_sale_locked(
+                db, order_no, idempotency_key, atype, reason, requested_fen, data, actor)
+    else:
+        rec, created = _create_after_sale_plain(
+            db, order_no, idempotency_key, atype, reason, requested_fen, data, actor)
+    if created:
+        audit(db, actor, "create", "after_sale", rec["no"], f"订单 {order_no} · {atype}")
+    return rec
+
+
+def _read_sales_conn(conn, order_no):
+    out = []
+    for rid, raw in conn.execute("SELECT id, doc FROM after_sales").fetchall():
+        d = json.loads(raw)
+        d["id"] = rid
+        if d.get("orderNo") == order_no:
+            out.append(d)
+    return out
+
+
+def _create_after_sale_locked(db, order_no, idempotency_key, atype, reason, requested_fen, data, actor):
+    conn = db.conn
+    row = conn.execute("SELECT doc FROM orders WHERE id = ?", (order_no,)).fetchone()
+    if not row:
+        raise ValueError("订单不存在")
+    order = json.loads(row[0])
+    order["id"] = order_no
+
+    sales = _read_sales_conn(conn, order_no)
+    if idempotency_key:
+        for a in sales:
+            if a.get("idempotencyKey") == idempotency_key:
+                out = dict(a)
+                out["idempotent"] = True
+                return out, False
+
+    reserved_fen = _validate_new_after_sale(order, sales, atype, requested_fen)
+    rec = _build_after_sale_rec(order_no, atype, reason, requested_fen, reserved_fen, idempotency_key, data, actor)
+    conn.execute("INSERT OR REPLACE INTO after_sales (id, doc) VALUES (?, ?)",
+                 (rec["no"], json.dumps(rec, ensure_ascii=False)))
 
     order["afterSaleStatus"] = "requested"
-    append_history(order, actor, "afterSaleStatus", "none", "requested", f"创建售后 {no}")
+    append_history(order, actor, "afterSaleStatus", "none", "requested", f"创建售后 {rec['no']}")
+    doc = dict(order)
+    doc.pop("id", None)
+    conn.execute("INSERT OR REPLACE INTO orders (id, doc, user_id) VALUES (?, ?, ?)",
+                 (order_no, json.dumps(doc, ensure_ascii=False), doc.get("userId")))
+    conn.commit()
+    return rec, True
+
+
+def _create_after_sale_plain(db, order_no, idempotency_key, atype, reason, requested_fen, data, actor):
+    order = db.get("orders", order_no)
+    if not order:
+        raise ValueError("订单不存在")
+    sales = [a for a in db.list("after_sales") if a.get("orderNo") == order_no]
+    if idempotency_key:
+        for a in sales:
+            if a.get("idempotencyKey") == idempotency_key:
+                out = dict(a)
+                out["idempotent"] = True
+                return out, False
+    reserved_fen = _validate_new_after_sale(order, sales, atype, requested_fen)
+    rec = _build_after_sale_rec(order_no, atype, reason, requested_fen, reserved_fen, idempotency_key, data, actor)
+    db.put("after_sales", rec["no"], rec)
+    order["afterSaleStatus"] = "requested"
+    append_history(order, actor, "afterSaleStatus", "none", "requested", f"创建售后 {rec['no']}")
     db.put("orders", order_no, order)
-    audit(db, actor, "create", "after_sale", no, f"订单 {order_no} · {atype}")
-    return rec
+    return rec, True
 
 
 def _after_sale_target(action, current, atype):
@@ -630,11 +754,13 @@ def _after_sale_target(action, current, atype):
         if atype == "补发":
             raise ValueError("补发类型没有退货收货环节")
         if current in ("approved", "returning"):
-            return "refunding"
+            # 无真实退款渠道：退款类售后不得推进到 refunding
+            raise ValueError("真实退款服务尚未接入，不能标记退款完成")
         raise ValueError("当前状态不能确认收到退货")
     if action == "complete":
         if current == "refunding":
-            return "completed"
+            # 无真实退款渠道：退款类售后不得推进到 completed
+            raise ValueError("真实退款服务尚未接入，不能标记退款完成")
         if current == "approved" and atype == "补发":
             return "completed"
         raise ValueError("当前状态不能完成售后")
@@ -659,6 +785,9 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
 
     rec["status"] = target
     rec["updatedAt"] = _now()
+    if target in ("rejected", "closed"):
+        # 终态释放退款预占额度（rejected/closed 不再占用可退额度）
+        rec["reservedFen"] = 0
     if result is not None:
         rec["result"] = str(result)[:500]
     if return_logistics:

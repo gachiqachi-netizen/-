@@ -161,7 +161,7 @@ class AdminCommerceTest(unittest.TestCase):
         self.db.put('orders', 'legacy-01', {'status': '待串制'})
         derived = status.derive_status(self.db.get('orders', 'legacy-01'))
         self.assertEqual(derived['orderStatus'], 'confirmed')
-        self.assertEqual(derived['paymentStatus'], 'paid')
+        self.assertEqual(derived['paymentStatus'], 'unpaid')
         self.assertEqual(derived['fulfillmentStatus'], 'unfulfilled')
         self.assertEqual(derived['afterSaleStatus'], 'none')
 

@@ -13,7 +13,8 @@ import time
 
 # 四组独立状态（英文枚举 = 存储值）
 ORDER_STATUSES = ["pending_confirmation", "confirmed", "cancelled", "completed", "closed"]
-PAYMENT_STATUSES = ["unpaid", "paying", "paid", "failed", "partially_refunded", "refunded"]
+# 支付状态 8 态（对齐验收标准）。支付状态只能由支付回调推进，后台不可手工修改。
+PAYMENT_STATUSES = ["unpaid", "paying", "paid", "pay_failed", "refunding", "refunded", "refund_failed", "closed"]
 FULFILLMENT_STATUSES = ["unfulfilled", "producing", "ready_to_ship", "shipped", "delivered", "exception", "returned"]
 AFTER_SALE_STATUSES = ["none", "requested", "approved", "rejected", "returning", "refunding", "completed", "closed"]
 
@@ -29,8 +30,8 @@ ORDER_STATUS_LABELS = {
     "completed": "已完成", "closed": "已关闭",
 }
 PAYMENT_STATUS_LABELS = {
-    "unpaid": "待支付", "paying": "支付中", "paid": "已支付", "failed": "支付失败",
-    "partially_refunded": "部分退款", "refunded": "已退款",
+    "unpaid": "待支付", "paying": "支付中", "paid": "已支付", "pay_failed": "支付失败",
+    "refunding": "退款中", "refunded": "已退款", "refund_failed": "退款失败", "closed": "已关闭",
 }
 FULFILLMENT_STATUS_LABELS = {
     "unfulfilled": "待履约", "producing": "制作中", "ready_to_ship": "待发货",
@@ -105,17 +106,31 @@ AFTER_SALE_TRANSITIONS = {
     "closed": set(),
 }
 
-# 旧 status 字段 → 四组英文枚举。旧演示单无真实支付，视为已支付仅用于展示。
+# 支付状态合法迁移（同状态视为幂等）。终态 refunded / closed / pay_failed 不再变；
+# refund_failed 可重试退款（回到 refunding）。
+PAYMENT_TRANSITIONS = {
+    "unpaid": {"paying", "paid", "closed"},
+    "paying": {"paid", "pay_failed"},
+    "paid": {"refunding", "closed"},
+    "refunding": {"refunded", "refund_failed"},
+    "refund_failed": {"refunding", "closed"},
+    "refunded": set(),
+    "closed": set(),
+    "pay_failed": set(),
+}
+
+# 旧 status 字段 → 四组英文枚举。旧演示单无真实支付回调，paymentStatus 一律 unpaid，
+# 绝不显示为已支付（防止旧演示单被当成已支付）。
 LEGACY_STATUS_MAP = {
     "待支付": {"orderStatus": "pending_confirmation", "paymentStatus": "unpaid",
                "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
-    "待串制": {"orderStatus": "confirmed", "paymentStatus": "paid",
+    "待串制": {"orderStatus": "confirmed", "paymentStatus": "unpaid",
                "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
-    "串制中": {"orderStatus": "confirmed", "paymentStatus": "paid",
+    "串制中": {"orderStatus": "confirmed", "paymentStatus": "unpaid",
                "fulfillmentStatus": "producing", "afterSaleStatus": "none"},
-    "已发货": {"orderStatus": "confirmed", "paymentStatus": "paid",
+    "已发货": {"orderStatus": "confirmed", "paymentStatus": "unpaid",
                "fulfillmentStatus": "shipped", "afterSaleStatus": "none"},
-    "已完成": {"orderStatus": "completed", "paymentStatus": "paid",
+    "已完成": {"orderStatus": "completed", "paymentStatus": "unpaid",
                "fulfillmentStatus": "delivered", "afterSaleStatus": "none"},
     "已取消": {"orderStatus": "cancelled", "paymentStatus": "unpaid",
                "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
@@ -138,7 +153,8 @@ def derive_status(order):
 
 
 def _table(group):
-    return {"orderStatus": ORDER_TRANSITIONS, "fulfillmentStatus": FULFILLMENT_TRANSITIONS,
+    return {"orderStatus": ORDER_TRANSITIONS, "paymentStatus": PAYMENT_TRANSITIONS,
+            "fulfillmentStatus": FULFILLMENT_TRANSITIONS,
             "afterSaleStatus": AFTER_SALE_TRANSITIONS}.get(group)
 
 

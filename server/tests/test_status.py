@@ -16,10 +16,10 @@ class StatusModelTest(unittest.TestCase):
     def test_derive_legacy_status(self):
         cases = {
             "待支付": ("pending_confirmation", "unpaid", "unfulfilled", "none"),
-            "待串制": ("confirmed", "paid", "unfulfilled", "none"),
-            "串制中": ("confirmed", "paid", "producing", "none"),
-            "已发货": ("confirmed", "paid", "shipped", "none"),
-            "已完成": ("completed", "paid", "delivered", "none"),
+            "待串制": ("confirmed", "unpaid", "unfulfilled", "none"),
+            "串制中": ("confirmed", "unpaid", "producing", "none"),
+            "已发货": ("confirmed", "unpaid", "shipped", "none"),
+            "已完成": ("completed", "unpaid", "delivered", "none"),
             "已取消": ("cancelled", "unpaid", "unfulfilled", "none"),
         }
         for legacy, expected in cases.items():

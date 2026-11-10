@@ -8,6 +8,7 @@ import time
 import uuid
 
 import kb
+import payments
 import status
 
 ACTOR = "admin"
@@ -351,10 +352,10 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
     order = db.get("orders", no)
     if not order:
         raise KeyError("订单不存在")
-    if group not in ("orderStatus", "fulfillmentStatus"):
-        raise ValueError("只能变更订单状态或履约状态")
     if group == "paymentStatus":
         raise ValueError("支付状态不可手工修改")
+    if group not in ("orderStatus", "fulfillmentStatus"):
+        raise ValueError("只能变更订单状态或履约状态")
     current = status.derive_status(order)
     from_ = current[group]
     status.validate_transition(group, from_, to_)
@@ -455,8 +456,8 @@ def create_after_sale(db, data, actor=ACTOR):
     refund_fen = data.get("refundFen")
     if isinstance(refund_fen, bool) or not isinstance(refund_fen, int) or refund_fen < 0:
         raise ValueError("退款金额必须是不小于 0 的整数分")
-    if atype in ("仅退款", "退货退款") and refund_fen > fen(order.get("total", 0)):
-        raise ValueError("退款金额不能超过订单金额")
+    if atype in ("仅退款", "退货退款"):
+        payments.validate_refund_amount(order, refund_fen)
 
     no = _after_sale_no()
     rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
@@ -515,6 +516,8 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
     current = rec["status"]
     target = _after_sale_target(action, current, rec["type"])
     status.validate_transition("afterSaleStatus", current, target)
+    # 支付域退款（paid → refunding → refunded/refund_failed）走 payments.handle_refund；
+    # 当前未接真实微信退款，故此处只推进售后域状态，不伪造订单 paymentStatus 的退款流转。
 
     rec["status"] = target
     rec["updatedAt"] = _now()

@@ -382,6 +382,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         path = urlparse(self.path).path
         try:
+            if path == "/api/payments/notify":
+                # 支付回调边界：未接真实微信支付，任何回调一律 501，不解析回调报文。
+                return self.send(501, {"error": "未接真实支付"})
             data = self.body()
             if path == "/api/admin/session":
                 return self.admin_login(data)

@@ -117,11 +117,30 @@ class RefundTruthTest(unittest.TestCase):
         self.assertTrue(rec2.get('idempotent'))
         sales = [a for a in self.db.list('after_sales') if a.get('orderNo') == no]
         self.assertEqual(len(sales), 1)
+        # 同一幂等键改金额不是重试，必须拒绝，不能静默返回旧记录
+        with self.assertRaises(ValueError) as ctx:
+            commerce.create_after_sale(self.db, {'orderNo': no, 'type': '仅退款',
+                                                 'reason': '不想要了', 'refundFen': 200,
+                                                 'idempotencyKey': key})
+        self.assertIn('幂等键已用', str(ctx.exception))
+        self.assertEqual(len([a for a in self.db.list('after_sales') if a.get('orderNo') == no]), 1)
         # 非法幂等键抛错
         with self.assertRaises(ValueError):
             commerce.create_after_sale(self.db, {'orderNo': no, 'type': '仅退款',
                                                  'reason': 'x', 'refundFen': 0,
                                                  'idempotencyKey': 'short'})
+
+    def test_refund_amount_must_be_positive_but_resend_can_be_zero(self):
+        no = self.make_order('rt-positive-000001')['no']
+        self.set_paid(no, paid_fen=1000)
+        for atype in ('仅退款', '退货退款'):
+            with self.assertRaises(ValueError) as ctx:
+                commerce.create_after_sale(self.db, {'orderNo': no, 'type': atype,
+                                                     'reason': '退款', 'refundFen': 0})
+            self.assertIn('必须大于 0', str(ctx.exception))
+        resend = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '补发',
+                                                      'reason': '珠子有瑕疵', 'refundFen': 0})
+        self.assertEqual(resend['reservedFen'], 0)
 
     # ---- 5. 两个并发退款请求不会突破 paidFen ----
 

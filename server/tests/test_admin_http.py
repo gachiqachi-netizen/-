@@ -56,6 +56,7 @@ class AdminCommerceHTTPTest(unittest.TestCase):
                  'person': '测试', 'phone': '13800138000', 'addr': '测试地址',
                  'status': '待支付', 'userId': 'u1',
                  'orderStatus': 'pending_confirmation', 'paymentStatus': 'paid' if paid else 'unpaid',
+                 'paidFen': 100 if paid else 0,
                  'fulfillmentStatus': 'unfulfilled', 'afterSaleStatus': 'none', 'logisticsStatus': 'not_shipped',
                  'statusHistory': [], 'logistics': None, 'logisticsHistory': [],
                  'termsSnapshot': [], 'createdAt': int(time.time() * 1000)}
@@ -115,7 +116,7 @@ class AdminCommerceHTTPTest(unittest.TestCase):
 
     def test_after_sale_flow(self):
         no = self._order('CGZTEST0003', paid=True)['no']
-        status_code, rec = self.request('/api/admin/after-sales', 'POST', {'orderNo': no, 'type': '仅退款', 'reason': '不想要了', 'refundFen': 0}, admin='test-admin')
+        status_code, rec = self.request('/api/admin/after-sales', 'POST', {'orderNo': no, 'type': '仅退款', 'reason': '不想要了', 'refundFen': 100}, admin='test-admin')
         self.assertEqual(status_code, 200)
         self.assertEqual(rec['status'], 'requested')
         order = app.db.get('orders', no)

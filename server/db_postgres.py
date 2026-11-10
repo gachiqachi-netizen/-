@@ -4,6 +4,7 @@ One short-lived connection per operation; pooling and production schema migratio
 are separate operational work. Uses JSONB to preserve the existing API documents.
 """
 import json
+from contextlib import contextmanager
 
 import migrate
 from db import TABLES
@@ -22,6 +23,17 @@ class PostgresDB:
 
     def connect(self):
         return self.psycopg.connect(self.url, connect_timeout=10)
+
+    @contextmanager
+    def transaction(self):
+        """复用同一个连接、同一个事务完成多次读写，退出时提交，异常时回滚。
+
+        调用方在 with 块内拿到 conn，可配合 get_for_update / put_in_conn /
+        delete_in_conn 完成「读-改-写」的原子操作，避免并发覆盖或读到中间态。
+        """
+        with self.connect() as conn:
+            with conn.transaction():
+                yield conn
 
     def initialize(self):
         try:
@@ -66,6 +78,29 @@ class PostgresDB:
         self._check(table)
         with self.connect() as conn:
             conn.execute(f'DELETE FROM {table} WHERE id = %s', (rid,))
+
+    def get_for_update(self, conn, table, rid):
+        """在给定事务连接内锁定并读取一行（SELECT ... FOR UPDATE）。
+
+        须在 transaction() 的 with 块内调用，否则锁随隐式事务立即释放。
+        返回行文档（含 id），不存在返回 None。
+        """
+        self._check(table)
+        row = conn.execute(f'SELECT doc FROM {table} WHERE id = %s FOR UPDATE', (rid,)).fetchone()
+        return {**row[0], 'id': rid} if row else None
+
+    def put_in_conn(self, conn, table, rid, doc):
+        """在给定事务连接内写入一行（不新开连接）。"""
+        self._check(table)
+        data = dict(doc); data.pop('id', None)
+        conn.execute(f'INSERT INTO {table} (id,doc) VALUES (%s,%s::jsonb) ON CONFLICT (id) DO UPDATE SET doc=EXCLUDED.doc',
+                     (rid, json.dumps(data, ensure_ascii=False, allow_nan=False)))
+        return {**data, 'id': rid}
+
+    def delete_in_conn(self, conn, table, rid):
+        """在给定事务连接内删除一行（不新开连接）。"""
+        self._check(table)
+        conn.execute(f'DELETE FROM {table} WHERE id = %s', (rid,))
 
     def delete_expired_sessions(self, now=None):
         import time

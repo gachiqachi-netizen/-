@@ -1,17 +1,18 @@
 # 串个珠
 
-自己设计手串、再下单买回家的微信小程序。现在是可运行的原型：前台（网页模拟小程序）+ 网页后台 + 接口 + 珠子知识库。
+自己设计手串、再下单买回家的原生微信小程序。仓库包含原生小程序、网页管理后台、业务接口、AI 适配层和珠子知识库；`prototype.html` 仅作为交互参考，不是正式客户端。
 
 ## 运行
 
 ```bash
-python3 server/app.py
+PORT=8801 ADMIN_TOKEN=local-dev-only DEV_LOGIN=1 python3 server/app.py
 ```
 
-- 前台：http://127.0.0.1:8800/ （浏览器切手机模式看）
-- 后台：http://127.0.0.1:8800/admin
+- 小程序：用微信开发者工具导入 `miniprogram/`
+- 后台：http://127.0.0.1:8801/admin
+- 目录接口：http://127.0.0.1:8801/api/catalog
 
-只用 Python 自带的库。第一次启动会用示例数据建库（`server/data.sqlite3`，不进 git）。接 AI 模型的方法见 [server/README.md](server/README.md)。
+默认 SQLite 运行只用 Python 自带库。第一次启动会用示例数据建库（`server/data.sqlite3`，不进 git）。`ADMIN_TOKEN` 必填；`DEV_LOGIN=1` 仅供本地开发。接 AI 模型的方法见 [server/README.md](server/README.md)。
 
 ## 目录
 
@@ -26,6 +27,6 @@ python3 server/app.py
 | `kb/data/plans/` | 100 条现成搭配方案，AI 配先查这里再按手围和预算微调 |
 | `kb/data/review/` | 独立审校的打分和意见 |
 | `kb/market/` | 市场调研：商家怎么写卖点、建 SPU、分 SKU |
-| `panzhu/` | 早期的小程序代码草稿，已过时 |
+| `miniprogram/` | 原生微信小程序；开发、体验、正式环境分别配置接口地址 |
 
 改了 `kb/taxonomy.txt` 后运行 `python3 kb/build.py`；改了珠子数据后运行 `python3 kb/validate.py` 检查格式。

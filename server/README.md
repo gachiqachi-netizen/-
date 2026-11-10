@@ -27,14 +27,14 @@ python server/migrate_sqlite_postgres.py --sqlite /实际路径/data.sqlite3
 
 可通过环境变量 `BEADLOOP_TEST_DATABASE_URL` 指向隔离的测试 PostgreSQL，再执行 `python -m unittest discover -s server/tests`，测试会创建并删除唯一临时 schema。适配器已在本地 PostgreSQL 16 测试设计并发冲突、订单幂等和报价检查，尚不是完成生产数据库改造：当前仍是 JSON 文档表，需要完善关系模型与查询索引、版本迁移、连接池、权限、加密、备份恢复和监控后再进行生产评估。
 
-前台（小程序原型）+ 网页后台 + 接口 + AI，一个命令启动，只用 Python 自带的库。
+原生小程序所需接口、网页后台和 AI 适配层可由同一服务提供。默认 SQLite 模式只用 Python 自带库。
 
 ```bash
-python3 server/app.py
+PORT=8801 ADMIN_TOKEN=local-dev-only DEV_LOGIN=1 python3 server/app.py
 ```
 
-- 前台：http://127.0.0.1:8800/ （用浏览器手机模式看）
-- 后台：http://127.0.0.1:8800/admin
+- 小程序目录接口：http://127.0.0.1:8801/api/catalog
+- 后台：http://127.0.0.1:8801/admin
 
 数据存在 `server/data.sqlite3`，上传的图片在 `server/uploads/`。删掉这两个就回到初始示例数据。
 
@@ -56,7 +56,7 @@ python3 server/app.py
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | GET | `/api/catalog` | 前台用：在售珠子、模板、宣传位、AI 状态 |
-| POST | `/api/orders` | 前台下单，价格由服务端重新计算 |
+| POST | `/api/orders` | 旧 H5 演示下单；默认关闭，仅设置 `DEMO_ORDERS=1` 才开放 |
 | POST | `/api/ai/design` | AI 配：心愿 + 对话记录 → 3 条候选 |
 | POST | `/api/ai/photo` | 拍照做同款：照片 → 认出主珠 / 配珠 / 金属点缀各是哪颗（只认不设计） |
 | POST | `/api/ai/review` | AI 帮你看看：肯定 + 寓意 + 最多 2 条可一键采纳的建议 |
@@ -98,4 +98,4 @@ AI 只负责挑珠子、起名字、写寓意；珠子 id 不在在售目录里�
 - 数据库：PostgreSQL JSONB 适配器已用于本地验证，仍需设计生产数据库模型、迁移机制、连接池、备份、恢复和监控；SQLite 仅作为开发用途。
 - 图片：本地文件夹 → 云存储 + CDN 缩略图。
 - 后台登录：现在只有一个口令，正式版需要账号和权限。
-- 前台：原生小程序已开始开发，微信环境联调和生产验收仍未完成。
+- 前台：原生小程序主要闭环已实现；仍需在体验版完成 iOS/Android 真机、隐私授权、弱网和生产域名验收。

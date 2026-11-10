@@ -82,8 +82,13 @@ class ProductionEnvTest(unittest.TestCase):
         # production 默认不允许
         with patch.dict(os.environ, {'ENV': 'production'}, clear=True):
             self.assertFalse(env.ai_fallback_allowed())
-        # 显式 AI_ALLOW_FALLBACK=1 时 production 也允许
+        # production 即使残留显式开关也必须 fail-closed
         with patch.dict(os.environ, {'ENV': 'production', 'AI_ALLOW_FALLBACK': '1'}, clear=True):
+            self.assertFalse(env.ai_fallback_allowed())
+        # trial 可显式开启，但默认关闭
+        with patch.dict(os.environ, {'ENV': 'trial'}, clear=True):
+            self.assertFalse(env.ai_fallback_allowed())
+        with patch.dict(os.environ, {'ENV': 'trial', 'AI_ALLOW_FALLBACK': '1'}, clear=True):
             self.assertTrue(env.ai_fallback_allowed())
 
 
@@ -124,15 +129,12 @@ class AIFallbackHTTPTest(unittest.TestCase):
             status, body = self.request('/api/plans/match', {'wrist': 15, 'text': '平安'})
         self.assertEqual(status, 502, body)
 
-    def test_explicit_fallback_degrades_with_metadata(self):
+    def test_production_explicit_fallback_is_still_rejected(self):
         with patch.dict(os.environ, {'ENV': 'production', 'AI_ALLOW_FALLBACK': '1'}, clear=True), \
              patch.object(app.ai, 'provider', return_value=object()), \
              patch.object(app.ai, 'extract_tags', side_effect=RuntimeError('boom')):
             status, body = self.request('/api/plans/match', {'wrist': 15, 'text': '平安'})
-        self.assertEqual(status, 200, body)
-        self.assertEqual(body.get('by'), 'rules')
-        self.assertTrue(body.get('degraded'))
-        self.assertEqual(body.get('degradedReason'), 'ai_unavailable')
+        self.assertEqual(status, 502, body)
 
     def test_production_without_provider_returns_502(self):
         with patch.dict(os.environ, {'ENV': 'production'}, clear=True), \

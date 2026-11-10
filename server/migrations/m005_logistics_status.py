@@ -40,12 +40,21 @@ _FULFILLMENT_TO_LOGISTICS = {
 
 
 def _desired_logistics(doc):
+    """按现代履约字段优先，规范化历史物流状态。
+
+    已经存在 fulfillmentStatus 的文档可能仍残留旧中文 status；旧字段不能反向
+    覆盖新状态。履约为 shipped 时保留 in_transit/exception/returned 等合法的后续
+    物流进度，其余矛盾值回收到 shipped。
+    """
+    fulfillment = doc.get('fulfillmentStatus')
+    if fulfillment in _FULFILLMENT_TO_LOGISTICS:
+        current = doc.get('logisticsStatus')
+        if fulfillment == 'shipped' and current in ('shipped', 'in_transit', 'exception', 'returned'):
+            return current
+        return _FULFILLMENT_TO_LOGISTICS[fulfillment]
     legacy = doc.get('status')
     if legacy in _LEGACY_LOGISTICS:
         return _LEGACY_LOGISTICS[legacy]
-    fulfillment = doc.get('fulfillmentStatus')
-    if fulfillment in _FULFILLMENT_TO_LOGISTICS:
-        return _FULFILLMENT_TO_LOGISTICS[fulfillment]
     current = doc.get('logisticsStatus')
     if current in VALID_LOGISTICS_STATUSES:
         return current

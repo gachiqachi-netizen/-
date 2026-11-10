@@ -367,6 +367,8 @@ def _cross_constraint(order, group, to_):
             return "未支付订单不能发货"
         if to_ in ("in_transit", "delivered") and groups["logisticsStatus"] == "not_shipped":
             return "未发货不能标记运输中或已签收"
+        if to_ in ("shipped", "in_transit", "delivered") and groups["fulfillmentStatus"] not in ("shipped", "delivered"):
+            return "订单尚未完成发货履约，不能推进物流状态"
     elif group == "orderStatus":
         if to_ == "completed":
             if not paid:
@@ -622,6 +624,14 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
                 order["logisticsStatus"] = "exception"
             elif to_ == "returned":
                 order["logisticsStatus"] = "returned"
+
+        if group == "logisticsStatus":
+            lg = dict(order.get("logistics") or {})
+            if to_ == "shipped" and not lg.get("shippedAt"):
+                lg["shippedAt"] = _now()
+            elif to_ == "delivered" and not lg.get("signedAt"):
+                lg["signedAt"] = _now()
+            order["logistics"] = lg
 
         order[group] = to_
         append_history(order, actor, group, from_, to_, note)

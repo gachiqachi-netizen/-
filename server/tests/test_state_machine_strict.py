@@ -59,6 +59,12 @@ class StrictStateMachineTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             commerce.transition_order_status(self.db, no, 'logisticsStatus', 'shipped')
 
+    def test_paid_but_unfulfilled_cannot_advance_logistics(self):
+        no = self.make_order('sm-strict-000007')['no']
+        self.set_paid(no)
+        with self.assertRaisesRegex(ValueError, '发货履约'):
+            commerce.transition_order_status(self.db, no, 'logisticsStatus', 'shipped')
+
     def test_cancelled_order_cannot_ship(self):
         no = self.make_order('sm-strict-000003')['no']
         self.set_paid(no)
@@ -112,6 +118,18 @@ class StrictStateMachineTest(unittest.TestCase):
                                                  logistics={'carrierName': '顺丰', 'trackingNo': 'SF123'})
         self.assertIsInstance(saved['logistics'].get('shippedAt'), int)
 
+    def test_delivered_logistics_transition_auto_writes_signed_at(self):
+        no = self.make_order('sm-strict-000008')['no']
+        self.set_paid(no)
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
+        commerce.transition_order_status(
+            self.db, no, 'fulfillmentStatus', 'shipped',
+            logistics={'carrierName': '顺丰', 'trackingNo': 'SF123'})
+        commerce.transition_order_status(self.db, no, 'logisticsStatus', 'in_transit')
+        saved = commerce.transition_order_status(self.db, no, 'logisticsStatus', 'delivered')
+        self.assertIsInstance(saved['logistics'].get('signedAt'), int)
+
 
 class LogisticsMigrationTest(unittest.TestCase):
     def _run_m005(self, orders):
@@ -163,6 +181,18 @@ class LogisticsMigrationTest(unittest.TestCase):
         # 已有错误 logisticsStatus=not_shipped 但 fulfillmentStatus=shipped → 校正为 shipped
         docs = self._run_m005([('O5', {'fulfillmentStatus': 'shipped', 'logisticsStatus': 'not_shipped'})])
         self.assertEqual(docs['O5']['logisticsStatus'], 'shipped')
+
+    def test_modern_fulfillment_wins_over_stale_legacy_status(self):
+        docs = self._run_m005([(
+            'O6', {'status': '待支付', 'fulfillmentStatus': 'shipped',
+                   'logisticsStatus': 'in_transit'})])
+        self.assertEqual(docs['O6']['logisticsStatus'], 'in_transit')
+
+    def test_delivered_fulfillment_corrects_stale_logistics(self):
+        docs = self._run_m005([(
+            'O7', {'status': '已发货', 'fulfillmentStatus': 'delivered',
+                   'logisticsStatus': 'shipped'})])
+        self.assertEqual(docs['O7']['logisticsStatus'], 'delivered')
 
 
 if __name__ == '__main__':

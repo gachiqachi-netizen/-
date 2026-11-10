@@ -60,10 +60,13 @@ def demo_orders_allowed():
 
 
 def ai_fallback_allowed():
-    """AI 降级是否允许：显式 AI_ALLOW_FALLBACK=1 时允许；否则仅 development 环境默认允许。
+    """AI 降级是否允许。
 
-    production/trial 未显式设置 AI_ALLOW_FALLBACK=1 时不允许静默降级。
+    production 永远 fail-closed，不能被遗留环境变量重新打开静默回退；
+    trial 仅在显式配置时允许，development 默认允许，便于本地开发。
     """
+    if is_prod():
+        return False
     if os.environ.get("AI_ALLOW_FALLBACK") == "1":
         return True
     return is_dev()

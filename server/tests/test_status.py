@@ -1,4 +1,4 @@
-"""四组订单状态、合法迁移、旧 status 兼容推导的单元测试。"""
+"""四组订单状态（英文枚举）、合法迁移、旧 status 兼容推导的单元测试。"""
 import os
 import sys
 import unittest
@@ -10,61 +10,72 @@ import status
 class StatusModelTest(unittest.TestCase):
     def test_new_order_status_defaults(self):
         g = status.new_order_status()
-        self.assertEqual(g, {"orderStatus": "待确认", "paymentStatus": "待支付",
-                             "fulfillmentStatus": "待履约", "afterSaleStatus": "无售后"})
+        self.assertEqual(g, {"orderStatus": "pending_confirmation", "paymentStatus": "unpaid",
+                             "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"})
 
     def test_derive_legacy_status(self):
         cases = {
-            "待支付": ("待确认", "待支付", "待履约", "无售后"),
-            "待串制": ("已确认", "已支付", "待履约", "无售后"),
-            "串制中": ("已确认", "已支付", "制作中", "无售后"),
-            "已发货": ("已确认", "已支付", "已发货", "无售后"),
-            "已完成": ("已完成", "已支付", "已签收", "无售后"),
-            "已取消": ("已取消", "待支付", "待履约", "无售后"),
+            "待支付": ("pending_confirmation", "unpaid", "unfulfilled", "none"),
+            "待串制": ("confirmed", "paid", "unfulfilled", "none"),
+            "串制中": ("confirmed", "paid", "producing", "none"),
+            "已发货": ("confirmed", "paid", "shipped", "none"),
+            "已完成": ("completed", "paid", "delivered", "none"),
+            "已取消": ("cancelled", "unpaid", "unfulfilled", "none"),
         }
         for legacy, expected in cases.items():
             self.assertEqual(tuple(status.derive_status({"status": legacy})[k] for k in status.GROUP_FIELDS), expected)
 
     def test_derive_keeps_explicit_groups(self):
-        order = {"status": "待支付", "orderStatus": "已确认", "paymentStatus": "已支付",
-                 "fulfillmentStatus": "制作中", "afterSaleStatus": "申请中"}
-        self.assertEqual(status.derive_status(order)["orderStatus"], "已确认")
-        self.assertEqual(status.derive_status(order)["paymentStatus"], "已支付")
+        order = {"status": "待支付", "orderStatus": "confirmed", "paymentStatus": "paid",
+                 "fulfillmentStatus": "producing", "afterSaleStatus": "requested"}
+        self.assertEqual(status.derive_status(order)["orderStatus"], "confirmed")
+        self.assertEqual(status.derive_status(order)["paymentStatus"], "paid")
+
+    def test_derive_unknown_legacy_defaults(self):
+        self.assertEqual(status.derive_status({"status": "不存在的状态"})["orderStatus"], "pending_confirmation")
+
+    def test_status_label_mapping(self):
+        self.assertEqual(status.status_label("orderStatus", "pending_confirmation"), "待确认")
+        self.assertEqual(status.status_label("orderStatus", "completed"), "已完成")
+        self.assertEqual(status.status_label("afterSaleStatus", "completed"), "售后完成")
+        self.assertEqual(status.status_label("fulfillmentStatus", "shipped"), "已发货")
+        self.assertEqual(status.status_label("orderStatus", "unknown"), "unknown")
 
     def test_order_transitions(self):
-        status.validate_transition("orderStatus", "待确认", "已确认")
-        status.validate_transition("orderStatus", "待确认", "已取消")
-        status.validate_transition("orderStatus", "已确认", "已完成")
-        status.validate_transition("orderStatus", "已确认", "已关闭")
-        status.validate_transition("orderStatus", "待确认", "待确认")  # 幂等
+        status.validate_transition("orderStatus", "pending_confirmation", "confirmed")
+        status.validate_transition("orderStatus", "pending_confirmation", "cancelled")
+        status.validate_transition("orderStatus", "confirmed", "completed")
+        status.validate_transition("orderStatus", "confirmed", "closed")
+        status.validate_transition("orderStatus", "pending_confirmation", "pending_confirmation")  # 幂等
 
     def test_illegal_order_transitions(self):
-        for bad in (("待确认", "已完成"), ("已取消", "已确认"), ("已完成", "已确认"), ("待确认", "已关闭")):
+        for bad in (("pending_confirmation", "completed"), ("cancelled", "confirmed"),
+                    ("completed", "confirmed"), ("pending_confirmation", "closed")):
             with self.assertRaises(ValueError):
                 status.validate_transition("orderStatus", *bad)
         with self.assertRaises(ValueError):
-            status.validate_transition("orderStatus", "待确认", "不存在的状态")
+            status.validate_transition("orderStatus", "pending_confirmation", "不存在的状态")
 
     def test_fulfillment_transitions(self):
-        status.validate_transition("fulfillmentStatus", "待履约", "制作中")
-        status.validate_transition("fulfillmentStatus", "制作中", "待发货")
-        status.validate_transition("fulfillmentStatus", "待发货", "已发货")
-        status.validate_transition("fulfillmentStatus", "已发货", "已签收")
-        status.validate_transition("fulfillmentStatus", "已发货", "物流异常")
-        status.validate_transition("fulfillmentStatus", "物流异常", "已发货")
-        status.validate_transition("fulfillmentStatus", "已发货", "已退回")
+        status.validate_transition("fulfillmentStatus", "unfulfilled", "producing")
+        status.validate_transition("fulfillmentStatus", "producing", "ready_to_ship")
+        status.validate_transition("fulfillmentStatus", "ready_to_ship", "shipped")
+        status.validate_transition("fulfillmentStatus", "shipped", "delivered")
+        status.validate_transition("fulfillmentStatus", "shipped", "exception")
+        status.validate_transition("fulfillmentStatus", "exception", "shipped")
+        status.validate_transition("fulfillmentStatus", "shipped", "returned")
 
     def test_illegal_fulfillment_transitions(self):
-        for bad in (("待发货", "已签收"), ("待履约", "已发货"), ("已签收", "已发货")):
+        for bad in (("ready_to_ship", "delivered"), ("unfulfilled", "shipped"), ("delivered", "shipped")):
             with self.assertRaises(ValueError):
                 status.validate_transition("fulfillmentStatus", *bad)
 
     def test_after_sale_transitions(self):
-        status.validate_transition("afterSaleStatus", "申请中", "已同意")
-        status.validate_transition("afterSaleStatus", "已同意", "退货中")
-        status.validate_transition("afterSaleStatus", "退货中", "退款中")
-        status.validate_transition("afterSaleStatus", "退款中", "售后完成")
-        status.validate_transition("afterSaleStatus", "申请中", "已拒绝")
+        status.validate_transition("afterSaleStatus", "requested", "approved")
+        status.validate_transition("afterSaleStatus", "approved", "returning")
+        status.validate_transition("afterSaleStatus", "returning", "refunding")
+        status.validate_transition("afterSaleStatus", "refunding", "completed")
+        status.validate_transition("afterSaleStatus", "requested", "rejected")
 
     def test_product_status_and_type_derivation(self):
         self.assertEqual(status.product_status({"onSale": True}), "on_sale")

@@ -359,7 +359,7 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
     from_ = current[group]
     status.validate_transition(group, from_, to_)
 
-    if group == "fulfillmentStatus" and to_ == "已发货":
+    if group == "fulfillmentStatus" and to_ == "shipped":
         carrier, tracking = _require_logistics_for_ship(order, logistics)
         lg = dict(order.get("logistics") or {})
         lg.update(logistics or {})
@@ -370,7 +370,7 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
         order["logistics"] = lg
         order.setdefault("logisticsHistory", []).append(
             {"at": _now(), "actor": actor, "action": "发货", "detail": f"{carrier} {tracking}"})
-    elif group == "fulfillmentStatus" and to_ == "已签收":
+    elif group == "fulfillmentStatus" and to_ == "delivered":
         lg = dict(order.get("logistics") or {})
         if not lg.get("signedAt"):
             lg["signedAt"] = _now()
@@ -444,7 +444,7 @@ def create_after_sale(db, data, actor=ACTOR):
     order = db.get("orders", order_no)
     if not order:
         raise ValueError("订单不存在")
-    if status.derive_status(order)["afterSaleStatus"] != "无售后":
+    if status.derive_status(order)["afterSaleStatus"] != "none":
         raise ValueError("该订单已有进行中的售后")
     atype = data.get("type")
     if atype not in status.AFTER_SALE_TYPES:
@@ -462,13 +462,13 @@ def create_after_sale(db, data, actor=ACTOR):
     rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
            "userNote": str(data.get("userNote") or "")[:500],
            "refundFen": refund_fen, "returnLogistics": {},
-           "result": "", "status": "申请中",
+           "result": "", "status": "requested",
            "createdAt": _now(), "updatedAt": _now(),
-           "history": [status.history_entry(actor, "afterSaleStatus", "无售后", "申请中", reason)]}
+           "history": [status.history_entry(actor, "afterSaleStatus", "none", "requested", reason)]}
     db.put("after_sales", no, rec)
 
-    order["afterSaleStatus"] = "申请中"
-    append_history(order, actor, "afterSaleStatus", "无售后", "申请中", f"创建售后 {no}")
+    order["afterSaleStatus"] = "requested"
+    append_history(order, actor, "afterSaleStatus", "none", "requested", f"创建售后 {no}")
     db.put("orders", order_no, order)
     audit(db, actor, "create", "after_sale", no, f"订单 {order_no} · {atype}")
     return rec
@@ -476,35 +476,35 @@ def create_after_sale(db, data, actor=ACTOR):
 
 def _after_sale_target(action, current, atype):
     if action == "approve":
-        if current != "申请中":
+        if current != "requested":
             raise ValueError("只有申请中的售后才能同意")
-        return "已同意"
+        return "approved"
     if action == "reject":
-        if current != "申请中":
+        if current != "requested":
             raise ValueError("只有申请中的售后才能拒绝")
-        return "已拒绝"
+        return "rejected"
     if action == "returning":
         if atype != "退货退款":
             raise ValueError("仅退款/补发没有退货环节")
-        if current != "已同意":
+        if current != "approved":
             raise ValueError("同意后才能记录退货物流")
-        return "退货中"
+        return "returning"
     if action == "receive":
         if atype == "补发":
             raise ValueError("补发类型没有退货收货环节")
-        if current in ("已同意", "退货中"):
-            return "退款中"
+        if current in ("approved", "returning"):
+            return "refunding"
         raise ValueError("当前状态不能确认收到退货")
     if action == "complete":
-        if current == "退款中":
-            return "售后完成"
-        if current == "已同意" and atype == "补发":
-            return "售后完成"
+        if current == "refunding":
+            return "completed"
+        if current == "approved" and atype == "补发":
+            return "completed"
         raise ValueError("当前状态不能完成售后")
     if action == "close":
-        if current in ("售后完成", "售后关闭"):
+        if current in ("completed", "closed"):
             raise ValueError("售后已结束")
-        return "售后关闭"
+        return "closed"
     raise ValueError("未知售后操作")
 
 

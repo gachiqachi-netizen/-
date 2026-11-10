@@ -3,7 +3,7 @@ function renderAfterSales() {
   const f = filters.afterSales;
   $('bar').innerHTML = `<h2 class="grow">售后（${data.afterSales.length}）</h2>
     <input id="asQ" type="search" placeholder="售后单号/订单号" value="${esc(f.q)}" style="max-width:180px">
-    <select id="asS"><option value="">状态：全部</option>${AFTER_SALE_STATUSES.map(s => `<option value="${s}" ${f.status === s ? 'selected' : ''}>${s}</option>`).join('')}</select>
+    <select id="asS"><option value="">状态：全部</option>${AFTER_SALE_STATUSES.map(s => `<option value="${s}" ${f.status === s ? 'selected' : ''}>${statusLabel('afterSaleStatus', s)}</option>`).join('')}</select>
     <button class="btn" id="asNew">新建售后</button>
     <button class="btn ghost" id="asReload">刷新</button>`;
   $('asQ').oninput = e => { f.q = e.target.value; renderAfterSaleList(); };
@@ -49,14 +49,14 @@ function newAfterSale() {
 }
 function afterSaleButtons(a) {
   const btns = [], s = a.status, t = a.type;
-  if (s === '申请中') { btns.push(['approve', '同意', '']); btns.push(['reject', '拒绝', 'danger']); }
-  else if (s === '已同意') {
+  if (s === 'requested') { btns.push(['approve', '同意', '']); btns.push(['reject', '拒绝', 'danger']); }
+  else if (s === 'approved') {
     if (t === '退货退款') { btns.push(['returning', '记录退货物流', '']); btns.push(['receive', '确认收到退货', '']); }
     else if (t === '仅退款') btns.push(['receive', '确认收到退货（退款）', '']);
     else if (t === '补发') btns.push(['complete', '完成售后', '']);
-  } else if (s === '退货中') btns.push(['receive', '确认收到退货', '']);
-  else if (s === '退款中') btns.push(['complete', '完成售后', '']);
-  if (s !== '售后完成' && s !== '售后关闭') btns.push(['close', '关闭', 'danger']);
+  } else if (s === 'returning') btns.push(['receive', '确认收到退货', '']);
+  else if (s === 'refunding') btns.push(['complete', '完成售后', '']);
+  if (s !== 'completed' && s !== 'closed') btns.push(['close', '关闭', 'danger']);
   return btns;
 }
 function afterSaleDetailHtml(a) {

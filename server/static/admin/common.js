@@ -11,16 +11,23 @@ const STOCKS = { in_stock: '现货', low_stock: '少量', out_of_stock: '缺货'
 const PROD_STATUS = { draft: '草稿', on_sale: '上架', off_sale: '下架', archived: '归档' };
 const TERM_STATUS = { draft: '草稿', published: '已发布', disabled: '已停用' };
 const GROUP_LABELS = { orderStatus: '订单状态', paymentStatus: '支付状态', fulfillmentStatus: '履约状态', afterSaleStatus: '售后状态' };
-const GROUP_VALUES = {
-  orderStatus: ['待确认', '已确认', '已取消', '已完成', '已关闭'],
-  paymentStatus: ['待支付', '支付中', '已支付', '支付失败', '部分退款', '已退款'],
-  fulfillmentStatus: ['待履约', '制作中', '待发货', '已发货', '已签收', '物流异常', '已退回'],
-  afterSaleStatus: ['无售后', '申请中', '已同意', '已拒绝', '退货中', '退款中', '售后完成', '售后关闭'],
+const STATUS_LABELS = {
+  orderStatus: { pending_confirmation: '待确认', confirmed: '已确认', cancelled: '已取消', completed: '已完成', closed: '已关闭' },
+  paymentStatus: { unpaid: '待支付', paying: '支付中', paid: '已支付', failed: '支付失败', partially_refunded: '部分退款', refunded: '已退款' },
+  fulfillmentStatus: { unfulfilled: '待履约', producing: '制作中', ready_to_ship: '待发货', shipped: '已发货', delivered: '已签收', exception: '物流异常', returned: '已退回' },
+  afterSaleStatus: { none: '无售后', requested: '申请中', approved: '已同意', rejected: '已拒绝', returning: '退货中', refunding: '退款中', completed: '售后完成', closed: '售后关闭' },
 };
-const ORDER_TRANSITIONS = { '待确认': ['已确认', '已取消'], '已确认': ['已完成', '已关闭'], '已取消': [], '已完成': [], '已关闭': [] };
-const FULFILLMENT_TRANSITIONS = { '待履约': ['制作中'], '制作中': ['待发货', '已退回'], '待发货': ['已发货', '已退回'], '已发货': ['已签收', '物流异常', '已退回'], '物流异常': ['已发货', '已退回'], '已签收': [], '已退回': [] };
+const statusLabel = (group, v) => (STATUS_LABELS[group] && STATUS_LABELS[group][v]) || v;
+const GROUP_VALUES = {
+  orderStatus: ['pending_confirmation', 'confirmed', 'cancelled', 'completed', 'closed'],
+  paymentStatus: ['unpaid', 'paying', 'paid', 'failed', 'partially_refunded', 'refunded'],
+  fulfillmentStatus: ['unfulfilled', 'producing', 'ready_to_ship', 'shipped', 'delivered', 'exception', 'returned'],
+  afterSaleStatus: ['none', 'requested', 'approved', 'rejected', 'returning', 'refunding', 'completed', 'closed'],
+};
+const ORDER_TRANSITIONS = { pending_confirmation: ['confirmed', 'cancelled'], confirmed: ['completed', 'closed'], cancelled: [], completed: [], closed: [] };
+const FULFILLMENT_TRANSITIONS = { unfulfilled: ['producing'], producing: ['ready_to_ship', 'returned'], ready_to_ship: ['shipped', 'returned'], shipped: ['delivered', 'exception', 'returned'], exception: ['shipped', 'returned'], delivered: [], returned: [] };
 const AFTER_SALE_TYPES = ['仅退款', '退货退款', '补发'];
-const AFTER_SALE_STATUSES = ['申请中', '已同意', '已拒绝', '退货中', '退款中', '售后完成', '售后关闭'];
+const AFTER_SALE_STATUSES = ['requested', 'approved', 'rejected', 'returning', 'refunding', 'completed', 'closed'];
 const TERM_TYPES = ['售前说明', '天然材料差异说明', '定制商品说明', '发货与物流说明', '退货退款说明', '售后服务说明'];
 const TARGETS = { product: '商品', template: '模板', banner: '宣传位', order: '订单', after_sale: '售后', term: '条款' };
 const ACTIONS = { create: '新建', update: '更新', delete: '删除', copy: '复制', archive: '归档', transition: '状态变更', update_logistics: '修改物流', approve: '同意售后', reject: '拒绝售后', returning: '记录退货', receive: '确认收货', complete: '完成售后', close: '关闭售后' };
@@ -48,13 +55,13 @@ function dtLocal(ms) { if (!ms) return ''; const d = new Date(ms), p = n => Stri
 function dtMs(v) { if (!v) return ''; const d = new Date(v); return isNaN(d.getTime()) ? '' : d.getTime(); }
 function prodTag(s) { const m = { draft: 'info', on_sale: 'ok', off_sale: 'warn', archived: 'gray' }; return `<span class="tag tag-${m[s] || 'gray'}">${PROD_STATUS[s]}</span>`; }
 function stagClass(group, v) {
-  if (['已签收', '已完成', '已同意', '售后完成', '已支付'].includes(v)) return 'ok';
-  if (['已取消', '已关闭', '已退回', '支付失败', '物流异常', '已拒绝', '售后关闭', '已退款', '部分退款'].includes(v)) return 'danger';
-  if (v === '无售后') return 'gray';
-  if (['已发货', '支付中', '退货中', '退款中'].includes(v)) return 'info';
+  if (['delivered', 'completed', 'approved', 'paid'].includes(v)) return 'ok';
+  if (['cancelled', 'closed', 'returned', 'failed', 'exception', 'rejected', 'refunded', 'partially_refunded'].includes(v)) return 'danger';
+  if (v === 'none') return 'gray';
+  if (['shipped', 'paying', 'returning', 'refunding'].includes(v)) return 'info';
   return 'warn';
 }
-function stag(group, v) { return `<span class="tag tag-${stagClass(group, v)}">${esc(v || '—')}</span>`; }
+function stag(group, v) { return `<span class="tag tag-${stagClass(group, v)}">${esc(statusLabel(group, v) || '—')}</span>`; }
 
 // ---------- 登录 + 请求封装 ----------
 let loginPromise = null;
@@ -230,7 +237,7 @@ function imgOpDo(e, op, i) {
 // ---------- 状态历史时间线（订单与售后共用） ----------
 function timelineHtml(h) {
   if (!h || !h.length) return '';
-  return `<div class="timeline">${h.slice().reverse().map(x => `<div class="tl"><span class="tl-dot"></span><div><span class="sub">${ts(x.at)} · ${esc(x.actor)}</span><div>${esc(GROUP_LABELS[x.group] || x.group)}：${esc(x.from)} → <b>${esc(x.to)}</b>${x.note ? ` <span class="muted">(${esc(x.note)})</span>` : ''}</div></div></div>`).join('')}</div>`;
+  return `<div class="timeline">${h.slice().reverse().map(x => `<div class="tl"><span class="tl-dot"></span><div><span class="sub">${ts(x.at)} · ${esc(x.actor)}</span><div>${esc(GROUP_LABELS[x.group] || x.group)}：${esc(statusLabel(x.group, x.from))} → <b>${esc(statusLabel(x.group, x.to))}</b>${x.note ? ` <span class="muted">(${esc(x.note)})</span>` : ''}</div></div></div>`).join('')}</div>`;
 }
 
 // ---------- 渲染调度 ----------

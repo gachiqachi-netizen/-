@@ -55,8 +55,8 @@ class AdminCommerceHTTPTest(unittest.TestCase):
                  'goods': 0, 'ship': 0, 'promo': 0, 'total': 0, 'totalFen': 0,
                  'person': '测试', 'phone': '13800138000', 'addr': '测试地址',
                  'status': '待支付', 'userId': 'u1',
-                 'orderStatus': '待确认', 'paymentStatus': '待支付',
-                 'fulfillmentStatus': '待履约', 'afterSaleStatus': '无售后',
+                 'orderStatus': 'pending_confirmation', 'paymentStatus': 'unpaid',
+                 'fulfillmentStatus': 'unfulfilled', 'afterSaleStatus': 'none',
                  'statusHistory': [], 'logistics': None, 'logisticsHistory': [],
                  'termsSnapshot': [], 'createdAt': int(time.time() * 1000)}
         app.db.put('orders', no, order)
@@ -85,26 +85,26 @@ class AdminCommerceHTTPTest(unittest.TestCase):
     def test_order_status_transition_and_illegal(self):
         no = self._order()['no']
         # 合法迁移：待确认 → 已确认
-        status_code, saved = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'orderStatus', 'to': '已确认'}, admin='test-admin')
+        status_code, saved = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'orderStatus', 'to': 'confirmed'}, admin='test-admin')
         self.assertEqual(status_code, 200)
-        self.assertEqual(saved['orderStatus'], '已确认')
-        # 非法迁移：已确认 → 待确认 应 400
-        status_code, body = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'orderStatus', 'to': '待确认'}, admin='test-admin')
+        self.assertEqual(saved['orderStatus'], 'confirmed')
+        # 非法迁移：confirmed → pending_confirmation 应 400
+        status_code, body = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'orderStatus', 'to': 'pending_confirmation'}, admin='test-admin')
         self.assertEqual(status_code, 400)
         # 支付状态不可手工改
-        status_code, body = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'paymentStatus', 'to': '已支付'}, admin='test-admin')
+        status_code, body = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'paymentStatus', 'to': 'paid'}, admin='test-admin')
         self.assertEqual(status_code, 400)
 
     def test_ship_requires_logistics_then_updates(self):
         no = self._order('CGZTEST0002')['no']
-        app.db.put('orders', no, {**app.db.get('orders', no), 'orderStatus': '已确认', 'fulfillmentStatus': '待发货'})
+        app.db.put('orders', no, {**app.db.get('orders', no), 'orderStatus': 'confirmed', 'fulfillmentStatus': 'ready_to_ship'})
         # 无物流不能发货
-        status_code, body = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'fulfillmentStatus', 'to': '已发货'}, admin='test-admin')
+        status_code, body = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'fulfillmentStatus', 'to': 'shipped'}, admin='test-admin')
         self.assertEqual(status_code, 400)
         # 填物流后发货
-        status_code, saved = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'fulfillmentStatus', 'to': '已发货', 'logistics': {'carrierName': '顺丰', 'trackingNo': 'SF123'}}, admin='test-admin')
+        status_code, saved = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'fulfillmentStatus', 'to': 'shipped', 'logistics': {'carrierName': '顺丰', 'trackingNo': 'SF123'}}, admin='test-admin')
         self.assertEqual(status_code, 200)
-        self.assertEqual(saved['fulfillmentStatus'], '已发货')
+        self.assertEqual(saved['fulfillmentStatus'], 'shipped')
         self.assertEqual(saved['logistics']['trackingNo'], 'SF123')
         # 修改物流
         status_code, _ = self.request(f'/api/admin/orders/{no}/logistics', 'PUT', {'carrierName': '顺丰', 'trackingNo': 'SF456', 'note': '已联系'}, admin='test-admin')
@@ -117,22 +117,22 @@ class AdminCommerceHTTPTest(unittest.TestCase):
         no = self._order('CGZTEST0003')['no']
         status_code, rec = self.request('/api/admin/after-sales', 'POST', {'orderNo': no, 'type': '仅退款', 'reason': '不想要了', 'refundFen': 0}, admin='test-admin')
         self.assertEqual(status_code, 200)
-        self.assertEqual(rec['status'], '申请中')
+        self.assertEqual(rec['status'], 'requested')
         order = app.db.get('orders', no)
-        self.assertEqual(order['afterSaleStatus'], '申请中')
-        # 同意 → 已同意
+        self.assertEqual(order['afterSaleStatus'], 'requested')
+        # 同意 → approved
         status_code, rec = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'approve'}, admin='test-admin')
         self.assertEqual(status_code, 200)
-        self.assertEqual(rec['status'], '已同意')
-        # 确认收到退货 → 退款中
+        self.assertEqual(rec['status'], 'approved')
+        # 确认收到退货 → refunding
         status_code, rec = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'receive'}, admin='test-admin')
         self.assertEqual(status_code, 200)
-        self.assertEqual(rec['status'], '退款中')
-        # 完成 → 售后完成
+        self.assertEqual(rec['status'], 'refunding')
+        # 完成 → completed
         status_code, rec = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'complete'}, admin='test-admin')
-        self.assertEqual(rec['status'], '售后完成')
+        self.assertEqual(rec['status'], 'completed')
         order = app.db.get('orders', no)
-        self.assertEqual(order['afterSaleStatus'], '售后完成')
+        self.assertEqual(order['afterSaleStatus'], 'completed')
         self.assertTrue(order['statusHistory'])
 
     def test_terms_publish_and_audit(self):

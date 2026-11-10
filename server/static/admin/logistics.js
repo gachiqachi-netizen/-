@@ -6,7 +6,7 @@ function renderLogistics() {
     ${data.orders.map(o => { const l = o.logistics || {}; return `<tr data-lg="${esc(o.no)}">
       <td class="num">${esc(o.no)}</td><td>${esc(o.person)}</td><td>${stag('fulfillmentStatus', o.fulfillmentStatus)}</td>
       <td>${esc(l.carrierName || '—')}</td><td>${esc(l.trackingNo || '—')}</td><td>${l.shippedAt ? ts(l.shippedAt) : '—'}</td><td>${l.signedAt ? ts(l.signedAt) : '—'}</td><td>${esc(l.note || '—')}</td>
-      <td style="white-space:nowrap"><button class="btn text" data-lgbtn="edit">编辑</button>${o.fulfillmentStatus === '待发货' ? '<button class="btn text" data-lgbtn="ship">发货</button>' : ''}<button class="btn text" data-lgbtn="hist">历史</button></td>
+      <td style="white-space:nowrap"><button class="btn text" data-lgbtn="edit">编辑</button>${o.fulfillmentStatus === 'ready_to_ship' ? '<button class="btn text" data-lgbtn="ship">发货</button>' : ''}<button class="btn text" data-lgbtn="hist">历史</button></td>
     </tr>`; }).join('')}</tbody></table></div>`;
   $('list').onclick = e => {
     const b = e.target.dataset.lgbtn; if (!b) return;
@@ -51,7 +51,7 @@ async function shipOrder(o) {
     carrierName = r.carrierName; trackingNo = r.trackingNo;
   }
   if (!await confirmBox('确认发货', `确定把订单 ${esc(o.no)} 标记为已发货吗？`)) return;
-  try { await api('PUT', `/api/admin/orders/${o.no}/status`, { group: 'fulfillmentStatus', to: '已发货', logistics: { carrierCode, carrierName, trackingNo } }); toast('已发货'); await refreshLogistics(); }
+  try { await api('PUT', `/api/admin/orders/${o.no}/status`, { group: 'fulfillmentStatus', to: 'shipped', logistics: { carrierCode, carrierName, trackingNo } }); toast('已发货'); await refreshLogistics(); }
   catch (e) { toast(e.message); }
 }
 function logisticsHistHtml(h) {

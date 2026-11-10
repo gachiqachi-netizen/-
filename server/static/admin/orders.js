@@ -10,7 +10,7 @@ function thumbHtml(o) {
   return p ? `<img src="${esc(p)}" style="width:48px;height:48px;border-radius:50%;object-fit:cover">` : '<span class="swatch" style="width:48px;height:48px"></span>';
 }
 function groupFilterOptions(group, cur) {
-  return `<option value="">${GROUP_LABELS[group]}</option>` + GROUP_VALUES[group].map(v => `<option value="${v}" ${v === cur ? 'selected' : ''}>${v}</option>`).join('');
+  return `<option value="">${GROUP_LABELS[group]}</option>` + GROUP_VALUES[group].map(v => `<option value="${v}" ${v === cur ? 'selected' : ''}>${statusLabel(group, v)}</option>`).join('');
 }
 function renderOrders() {
   const f = filters.orders;
@@ -57,14 +57,14 @@ function orderRowHtml(o) {
     <td>${stag('fulfillmentStatus', o.fulfillmentStatus)}</td>
     <td>${stag('afterSaleStatus', o.afterSaleStatus)}</td></tr>`;
 }
-function dang(group, n) { return (group === 'orderStatus' && (n === '已取消' || n === '已关闭')) || (group === 'fulfillmentStatus' && n === '已退回'); }
+function dang(group, n) { return (group === 'orderStatus' && (n === 'cancelled' || n === 'closed')) || (group === 'fulfillmentStatus' && n === 'returned'); }
 function statusGroupHtml(d, group, transitions) {
   const cur = d[group] || '—';
   const readonly = group === 'paymentStatus' || group === 'afterSaleStatus';
   const nexts = transitions[cur] || [];
   return `<div class="sgroup">
     <div class="shead"><span class="slab">${GROUP_LABELS[group]}</span>${stag(group, cur)}${readonly ? '<span class="muted sm">只读</span>' : ''}</div>
-    ${readonly ? '' : `<div class="sbtns">${nexts.map(n => `<button class="chip ${dang(group, n) ? 'chip-danger' : ''}" data-tran="${group}" data-to="${esc(n)}">${esc(n)}</button>`).join('') || '<span class="muted sm">已到终态</span>'}</div>`}
+    ${readonly ? '' : `<div class="sbtns">${nexts.map(n => `<button class="chip ${dang(group, n) ? 'chip-danger' : ''}" data-tran="${group}" data-to="${esc(n)}">${statusLabel(group, n)}</button>`).join('') || '<span class="muted sm">已到终态</span>'}</div>`}
   </div>`;
 }
 function logisticsHtml(lg) {
@@ -92,7 +92,7 @@ function orderDetailHtml(d) {
     ${logisticsHtml(d.logistics)}
     ${timelineHtml(d.statusHistory)}
     ${termsSnapshotHtml(d.termsSnapshot)}
-    ${d.afterSales && d.afterSales.length ? `<div class="drow"><b>关联售后：</b>${d.afterSales.map(a => `<span class="tag">${esc(a.no)} · ${esc(a.type)} · ${esc(a.status)}</span>`).join('')}</div>` : ''}
+    ${d.afterSales && d.afterSales.length ? `<div class="drow"><b>关联售后：</b>${d.afterSales.map(a => `<span class="tag">${esc(a.no)} · ${esc(a.type)} · ${statusLabel('afterSaleStatus', a.status)}</span>`).join('')}</div>` : ''}
   </div>`;
 }
 async function toggleOrderDetail(no, row) {
@@ -116,9 +116,9 @@ function bindOrderDetail(container, d) {
   container.querySelectorAll('[data-tran]').forEach(btn => {
     btn.onclick = async () => {
       const group = btn.dataset.tran, to = btn.dataset.to;
-      if (dang(group, to) && !await confirmBox('确认变更', `确定把${GROUP_LABELS[group]}改为「${to}」吗？`)) return;
+      if (dang(group, to) && !await confirmBox('确认变更', `确定把${GROUP_LABELS[group]}改为「${statusLabel(group, to)}」吗？`)) return;
       let logistics;
-      if (group === 'fulfillmentStatus' && to === '已发货') {
+      if (group === 'fulfillmentStatus' && to === 'shipped') {
         const lg = d.logistics || {};
         if (!lg.carrierName || !lg.trackingNo) {
           const r = await promptBox('发货需要物流信息', [{ key: 'carrierName', label: '承运公司' }, { key: 'trackingNo', label: '运单号' }]);

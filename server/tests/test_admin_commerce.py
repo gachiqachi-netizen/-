@@ -146,10 +146,10 @@ class AdminCommerceTest(unittest.TestCase):
 
     def test_order_four_group_status(self):
         order = self.make_order('four-group-000001')
-        self.assertEqual(order['orderStatus'], '待确认')
-        self.assertEqual(order['paymentStatus'], '待支付')
-        self.assertEqual(order['fulfillmentStatus'], '待履约')
-        self.assertEqual(order['afterSaleStatus'], '无售后')
+        self.assertEqual(order['orderStatus'], 'pending_confirmation')
+        self.assertEqual(order['paymentStatus'], 'unpaid')
+        self.assertEqual(order['fulfillmentStatus'], 'unfulfilled')
+        self.assertEqual(order['afterSaleStatus'], 'none')
         self.assertIsInstance(order['totalFen'], int)
         self.assertIsInstance(order['goodsFen'], int)
         self.assertIsInstance(order['shipFen'], int)
@@ -160,10 +160,10 @@ class AdminCommerceTest(unittest.TestCase):
         # 旧订单只有 status 字段
         self.db.put('orders', 'legacy-01', {'status': '待串制'})
         derived = status.derive_status(self.db.get('orders', 'legacy-01'))
-        self.assertEqual(derived['orderStatus'], '已确认')
-        self.assertEqual(derived['paymentStatus'], '已支付')
-        self.assertEqual(derived['fulfillmentStatus'], '待履约')
-        self.assertEqual(derived['afterSaleStatus'], '无售后')
+        self.assertEqual(derived['orderStatus'], 'confirmed')
+        self.assertEqual(derived['paymentStatus'], 'paid')
+        self.assertEqual(derived['fulfillmentStatus'], 'unfulfilled')
+        self.assertEqual(derived['afterSaleStatus'], 'none')
 
     # ---- 5. 非法状态迁移 ----
 
@@ -171,30 +171,30 @@ class AdminCommerceTest(unittest.TestCase):
         order = self.make_order('illegal-trans-01')
         no = order['no']
         with self.assertRaises(ValueError):
-            commerce.transition_order_status(self.db, no, 'orderStatus', '已完成')
-        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', '制作中')
-        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', '待发货')
+            commerce.transition_order_status(self.db, no, 'orderStatus', 'completed')
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         with self.assertRaises(ValueError):
-            commerce.transition_order_status(self.db, no, 'fulfillmentStatus', '已签收')
+            commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'delivered')
         with self.assertRaises(ValueError):
-            commerce.transition_order_status(self.db, no, 'paymentStatus', '已支付')
+            commerce.transition_order_status(self.db, no, 'paymentStatus', 'paid')
 
     # ---- 6. 物流 ----
 
     def test_logistics_ship_and_sign(self):
         order = self.make_order('logistics-000001')
         no = order['no']
-        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', '制作中')
-        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', '待发货')
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         with self.assertRaises(ValueError):
-            commerce.transition_order_status(self.db, no, 'fulfillmentStatus', '已发货')
+            commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped')
 
         commerce.update_order_logistics(self.db, no, {'carrierName': '顺丰速运', 'trackingNo': 'SF123456789'})
-        shipped = commerce.transition_order_status(self.db, no, 'fulfillmentStatus', '已发货')
+        shipped = commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped')
         self.assertIsInstance(shipped['logistics']['shippedAt'], int)
         self.assertGreater(shipped['logistics']['shippedAt'], 0)
 
-        signed = commerce.transition_order_status(self.db, no, 'fulfillmentStatus', '已签收')
+        signed = commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'delivered')
         self.assertIsInstance(signed['logistics']['signedAt'], int)
         self.assertGreater(signed['logistics']['signedAt'], 0)
         actions = [h.get('action') for h in signed['logisticsHistory']]
@@ -208,20 +208,20 @@ class AdminCommerceTest(unittest.TestCase):
         no = order['no']
         rec = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '仅退款', 'reason': '不想要了', 'refundFen': 1000})
         as_no = rec['no']
-        self.assertEqual(rec['status'], '申请中')
-        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], '申请中')
+        self.assertEqual(rec['status'], 'requested')
+        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'requested')
 
         rec = commerce.transition_after_sale(self.db, as_no, 'approve')
-        self.assertEqual(rec['status'], '已同意')
-        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], '已同意')
+        self.assertEqual(rec['status'], 'approved')
+        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'approved')
 
         rec = commerce.transition_after_sale(self.db, as_no, 'receive')
-        self.assertEqual(rec['status'], '退款中')
-        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], '退款中')
+        self.assertEqual(rec['status'], 'refunding')
+        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'refunding')
 
         rec = commerce.transition_after_sale(self.db, as_no, 'complete')
-        self.assertEqual(rec['status'], '售后完成')
-        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], '售后完成')
+        self.assertEqual(rec['status'], 'completed')
+        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'completed')
 
         history = self.db.get('orders', no)['statusHistory']
         self.assertTrue(any(h.get('group') == 'afterSaleStatus' for h in history))
@@ -241,11 +241,11 @@ class AdminCommerceTest(unittest.TestCase):
         rec = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '仅退款', 'reason': '不想要了', 'refundFen': 500})
         as_no = rec['no']
         rec = commerce.transition_after_sale(self.db, as_no, 'reject')
-        self.assertEqual(rec['status'], '已拒绝')
-        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], '已拒绝')
+        self.assertEqual(rec['status'], 'rejected')
+        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'rejected')
         rec = commerce.transition_after_sale(self.db, as_no, 'close')
-        self.assertEqual(rec['status'], '售后关闭')
-        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], '售后关闭')
+        self.assertEqual(rec['status'], 'closed')
+        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'closed')
 
     def test_after_sale_resend_has_no_receive(self):
         order = self.make_order('as-resend-000001')

@@ -11,12 +11,15 @@ TABLES = ("beads", "templates", "banners", "orders", "users", "sessions", "desig
 
 class DB:
     def __init__(self, path):
-        self.conn = sqlite3.connect(path, check_same_thread=False)
         self.lock = threading.Lock()
-        with self.lock:
-            for t in TABLES:
-                self.conn.execute(f"CREATE TABLE IF NOT EXISTS {t} (id TEXT PRIMARY KEY, doc TEXT NOT NULL)")
-            self.conn.commit()
+        try:
+            self.conn = sqlite3.connect(path, check_same_thread=False)
+            with self.lock:
+                for t in TABLES:
+                    self.conn.execute(f"CREATE TABLE IF NOT EXISTS {t} (id TEXT PRIMARY KEY, doc TEXT NOT NULL)")
+                self.conn.commit()
+        except sqlite3.Error as e:
+            raise RuntimeError(f"数据库迁移失败，无法启动：{e}（数据库文件：{path}）") from e
         if not self.list("beads"):
             for b in seed.BEADS:
                 self.put("beads", b["id"], b)

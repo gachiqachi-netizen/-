@@ -1,5 +1,6 @@
 server/data.sqlite3
 server/uploads/
+.workbuddy/
 __pycache__/
 _preview.html
 .DS_Store

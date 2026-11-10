@@ -1,21 +1,56 @@
 """订单四组独立状态、合法迁移、旧 status 字段兼容、状态历史。金额一律整数分。
 
-订单不再用一个 status 表示全部状态，拆成四组：
+订单不再用一个 status 表示全部状态，拆成四组（存储值为英文枚举，展示用中文标签）：
 - orderStatus      订单状态
 - paymentStatus    支付状态
 - fulfillmentStatus 履约/物流状态
 - afterSaleStatus  售后状态
 
-旧订单只存了 status，读取时用 LEGACY_STATUS_MAP 推导四组状态，不重写旧数据。
+旧订单只存了 status（中文），读取时用 LEGACY_STATUS_MAP 推导四组英文枚举，不重写旧数据。
 支付状态不可由后台手工修改（防止伪造支付成功）；真实支付/退款回调接入后再放开。
 """
 import time
 
-# 四组独立状态（顺序即后台展示顺序）
-ORDER_STATUSES = ["待确认", "已确认", "已取消", "已完成", "已关闭"]
-PAYMENT_STATUSES = ["待支付", "支付中", "已支付", "支付失败", "部分退款", "已退款"]
-FULFILLMENT_STATUSES = ["待履约", "制作中", "待发货", "已发货", "已签收", "物流异常", "已退回"]
-AFTER_SALE_STATUSES = ["无售后", "申请中", "已同意", "已拒绝", "退货中", "退款中", "售后完成", "售后关闭"]
+# 四组独立状态（英文枚举 = 存储值）
+ORDER_STATUSES = ["pending_confirmation", "confirmed", "cancelled", "completed", "closed"]
+PAYMENT_STATUSES = ["unpaid", "paying", "paid", "failed", "partially_refunded", "refunded"]
+FULFILLMENT_STATUSES = ["unfulfilled", "producing", "ready_to_ship", "shipped", "delivered", "exception", "returned"]
+AFTER_SALE_STATUSES = ["none", "requested", "approved", "rejected", "returning", "refunding", "completed", "closed"]
+
+# 四组状态字段名
+GROUP_FIELDS = ("orderStatus", "paymentStatus", "fulfillmentStatus", "afterSaleStatus")
+
+# 中文标签（按组区分：completed / closed 在两个组里含义不同）
+GROUP_LABELS = {"orderStatus": "订单状态", "paymentStatus": "支付状态",
+                "fulfillmentStatus": "履约状态", "afterSaleStatus": "售后状态"}
+
+ORDER_STATUS_LABELS = {
+    "pending_confirmation": "待确认", "confirmed": "已确认", "cancelled": "已取消",
+    "completed": "已完成", "closed": "已关闭",
+}
+PAYMENT_STATUS_LABELS = {
+    "unpaid": "待支付", "paying": "支付中", "paid": "已支付", "failed": "支付失败",
+    "partially_refunded": "部分退款", "refunded": "已退款",
+}
+FULFILLMENT_STATUS_LABELS = {
+    "unfulfilled": "待履约", "producing": "制作中", "ready_to_ship": "待发货",
+    "shipped": "已发货", "delivered": "已签收", "exception": "物流异常", "returned": "已退回",
+}
+AFTER_SALE_STATUS_LABELS = {
+    "none": "无售后", "requested": "申请中", "approved": "已同意", "rejected": "已拒绝",
+    "returning": "退货中", "refunding": "退款中", "completed": "售后完成", "closed": "售后关闭",
+}
+
+_STATUS_LABELS = {
+    "orderStatus": ORDER_STATUS_LABELS, "paymentStatus": PAYMENT_STATUS_LABELS,
+    "fulfillmentStatus": FULFILLMENT_STATUS_LABELS, "afterSaleStatus": AFTER_SALE_STATUS_LABELS,
+}
+
+
+def status_label(group, value):
+    """英文枚举 → 中文标签；未知值原样返回。"""
+    return _STATUS_LABELS.get(group, {}).get(value, value)
+
 
 # 商品/模板状态：草稿 / 上架 / 下架 / 归档
 PRODUCT_STATUSES = ["draft", "on_sale", "off_sale", "archived"]
@@ -35,59 +70,63 @@ MATERIALS = {
     "cord": "线材", "textile": "织物", "paper": "纸品", "plastic": "塑料", "glass": "玻璃", "alloy": "合金",
 }
 
-# 售后类型
+# 售后类型（业务类型，保持中文）
 AFTER_SALE_TYPES = ["仅退款", "退货退款", "补发"]
 
-# 服务条款类型
+# 服务条款类型（保持中文）
 TERM_TYPES = ["售前说明", "天然材料差异说明", "定制商品说明", "发货与物流说明", "退货退款说明", "售后服务说明"]
-
-# 四组状态的字段名
-GROUP_FIELDS = ("orderStatus", "paymentStatus", "fulfillmentStatus", "afterSaleStatus")
 
 # 允许的状态迁移（同状态视为合法，用于幂等）。空集合 = 终态。
 ORDER_TRANSITIONS = {
-    "待确认": {"已确认", "已取消"},
-    "已确认": {"已完成", "已关闭"},
-    "已取消": set(),
-    "已完成": set(),
-    "已关闭": set(),
+    "pending_confirmation": {"confirmed", "cancelled"},
+    "confirmed": {"completed", "closed"},
+    "cancelled": set(),
+    "completed": set(),
+    "closed": set(),
 }
 
 FULFILLMENT_TRANSITIONS = {
-    "待履约": {"制作中"},
-    "制作中": {"待发货", "已退回"},
-    "待发货": {"已发货", "已退回"},
-    "已发货": {"已签收", "物流异常", "已退回"},
-    "物流异常": {"已发货", "已退回"},
-    "已签收": set(),
-    "已退回": set(),
+    "unfulfilled": {"producing"},
+    "producing": {"ready_to_ship", "returned"},
+    "ready_to_ship": {"shipped", "returned"},
+    "shipped": {"delivered", "exception", "returned"},
+    "exception": {"shipped", "returned"},
+    "delivered": set(),
+    "returned": set(),
 }
 
 AFTER_SALE_TRANSITIONS = {
-    "申请中": {"已同意", "已拒绝", "售后关闭"},
-    "已同意": {"退货中", "退款中", "售后完成", "售后关闭"},
-    "退货中": {"退款中", "售后关闭"},
-    "退款中": {"售后完成", "售后关闭"},
-    "已拒绝": {"售后关闭"},
-    "售后完成": set(),
-    "售后关闭": set(),
+    "requested": {"approved", "rejected", "closed"},
+    "approved": {"returning", "refunding", "completed", "closed"},
+    "returning": {"refunding", "closed"},
+    "refunding": {"completed", "closed"},
+    "rejected": {"closed"},
+    "completed": set(),
+    "closed": set(),
 }
 
-# 旧 status 字段 → 四组状态。旧演示单无真实支付，视为已支付仅用于展示。
+# 旧 status 字段 → 四组英文枚举。旧演示单无真实支付，视为已支付仅用于展示。
 LEGACY_STATUS_MAP = {
-    "待支付": {"orderStatus": "待确认", "paymentStatus": "待支付", "fulfillmentStatus": "待履约", "afterSaleStatus": "无售后"},
-    "待串制": {"orderStatus": "已确认", "paymentStatus": "已支付", "fulfillmentStatus": "待履约", "afterSaleStatus": "无售后"},
-    "串制中": {"orderStatus": "已确认", "paymentStatus": "已支付", "fulfillmentStatus": "制作中", "afterSaleStatus": "无售后"},
-    "已发货": {"orderStatus": "已确认", "paymentStatus": "已支付", "fulfillmentStatus": "已发货", "afterSaleStatus": "无售后"},
-    "已完成": {"orderStatus": "已完成", "paymentStatus": "已支付", "fulfillmentStatus": "已签收", "afterSaleStatus": "无售后"},
-    "已取消": {"orderStatus": "已取消", "paymentStatus": "待支付", "fulfillmentStatus": "待履约", "afterSaleStatus": "无售后"},
+    "待支付": {"orderStatus": "pending_confirmation", "paymentStatus": "unpaid",
+               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
+    "待串制": {"orderStatus": "confirmed", "paymentStatus": "paid",
+               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
+    "串制中": {"orderStatus": "confirmed", "paymentStatus": "paid",
+               "fulfillmentStatus": "producing", "afterSaleStatus": "none"},
+    "已发货": {"orderStatus": "confirmed", "paymentStatus": "paid",
+               "fulfillmentStatus": "shipped", "afterSaleStatus": "none"},
+    "已完成": {"orderStatus": "completed", "paymentStatus": "paid",
+               "fulfillmentStatus": "delivered", "afterSaleStatus": "none"},
+    "已取消": {"orderStatus": "cancelled", "paymentStatus": "unpaid",
+               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
 }
 
-_DEFAULT_GROUPS = {"orderStatus": "待确认", "paymentStatus": "待支付", "fulfillmentStatus": "待履约", "afterSaleStatus": "无售后"}
+_DEFAULT_GROUPS = {"orderStatus": "pending_confirmation", "paymentStatus": "unpaid",
+                   "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"}
 
 
 def new_order_status():
-    """新建订单的四组初始状态。"""
+    """新建订单的四组初始状态（英文枚举）。"""
     return dict(_DEFAULT_GROUPS)
 
 
@@ -124,16 +163,16 @@ def validate_transition(group, from_, to_):
     if table is None:
         raise ValueError("未知状态组")
     if to_ not in table:
-        raise ValueError(f"{group} 没有「{to_}」这个状态")
+        raise ValueError(f"{GROUP_LABELS.get(group, group)} 没有「{status_label(group, to_)}」这个状态")
     if from_ not in table:
-        raise ValueError(f"{group} 当前状态「{from_}」无效")
+        raise ValueError(f"{GROUP_LABELS.get(group, group)} 当前状态「{status_label(group, from_)}」无效")
     if not can_transition(group, from_, to_):
-        raise ValueError(f"{group} 不允许从「{from_}」变更到「{to_}」")
+        raise ValueError(f"{GROUP_LABELS.get(group, group)} 不允许从「{status_label(group, from_)}」变更到「{status_label(group, to_)}」")
     return True
 
 
 def history_entry(actor, group, from_, to_, note=""):
-    """一条状态变更历史。"""
+    """一条状态变更历史（存英文枚举值）。"""
     return {"at": int(time.time() * 1000), "actor": actor, "group": group,
             "from": from_, "to": to_, "note": str(note or "")[:200]}
 

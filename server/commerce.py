@@ -353,16 +353,28 @@ def _order_refunded_fen(db, order_no):
 def _cross_constraint(order, group, to_):
     """跨状态约束（集中一处，服务端权威裁决）。返回违规原因字符串，合法返回 None。"""
     groups = status.derive_status(order)
+    paid = groups["paymentStatus"] == "paid"
+    cancelled = groups["orderStatus"] == "cancelled"
     if group == "fulfillmentStatus":
-        if to_ != "unfulfilled" and groups["paymentStatus"] != "paid":
+        if to_ != "unfulfilled" and not paid:
             return "未支付订单不能开始履约或发货"
-        if groups["orderStatus"] == "cancelled" and to_ != "unfulfilled":
+        if cancelled and to_ != "unfulfilled":
             return "订单已取消，不能继续履约"
     elif group == "logisticsStatus":
-        if to_ == "shipped" and groups["paymentStatus"] != "paid":
+        if cancelled:
+            return "订单已取消，不能继续发货"
+        if to_ in ("shipped", "in_transit", "delivered") and not paid:
             return "未支付订单不能发货"
         if to_ in ("in_transit", "delivered") and groups["logisticsStatus"] == "not_shipped":
             return "未发货不能标记运输中或已签收"
+    elif group == "orderStatus":
+        if to_ == "completed":
+            if not paid:
+                return "未支付订单不能完成"
+            if groups["fulfillmentStatus"] != "delivered":
+                return "订单未完成履约（未签收），不能标记完成"
+            if groups["logisticsStatus"] != "delivered":
+                return "物流未签收，不能标记订单完成"
     return None
 
 
@@ -635,10 +647,8 @@ def update_order_logistics(db, no, logistics, actor=ACTOR):
     if clean.get("carrierName") and not clean.get("trackingNo"):
         raise ValueError("填写了承运公司就必须填写运单号")
     for k in ("shippedAt", "signedAt"):
-        if k in lg and lg[k] not in (None, ""):
-            if not isinstance(lg[k], int):
-                raise ValueError("发货/签收时间格式不正确")
-            clean[k] = lg[k]
+        if lg.get(k) not in (None, ""):
+            raise ValueError("发货/签收时间由状态迁移自动生成，不能手工填写")
     order["logistics"] = {**(order.get("logistics") or {}), **clean}
     order.setdefault("logisticsHistory", []).append(
         {"at": _now(), "actor": actor, "action": "修改物流", "detail": json_dump_safe(clean)})

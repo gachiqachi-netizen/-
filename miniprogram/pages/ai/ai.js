@@ -7,7 +7,7 @@ Page({
   onShow() { this.setData({wrist:wrist()}); if (typeof wx.getStorageSync === 'function') { const old=wx.getStorageSync('cgz_ai_chat'); if (Array.isArray(old) && !this.data.messages.length) this.setData({messages:old,hasResults:old.some(m=>m.results&&m.results.length)}); } api.catalog().then(c=>{this.catalog=c.beads||[]; this.setData({catalog:this.catalog}); if(this.data.messages.length)this.setData({messages:this.data.messages.map(m=>m.results?{...m,results:m.results.map(r=>this.decorate(r))}:m)});}).catch(()=>{}); },
   clear() { this.setData({messages:[],hasResults:false,error:''}); if (typeof wx.removeStorageSync === 'function') wx.removeStorageSync('cgz_ai_chat'); },
   refine(e) { this.setData({text:e.currentTarget.dataset.text}); this.submit(); },
-  decorate(t) { const catalog=this.catalog||[], map=Object.fromEntries(catalog.map(b=>[b.id,b])); const special=t.special||[],tail=t.tail||[],pat=t.pattern||[],count=Math.max(1,Math.min(Number(t.count||t.fixed||21),120)); const ids=pat.length?((!t.count && !t.fixed && templates.build(t,catalog,this.data.wrist)) || special.concat(Array.from({length:Math.max(0,count-special.length-tail.length)},(_,i)=>pat[i%pat.length]),tail)):[]; const materials=ids.map(id=>map[id]); const calculatedPrice=ids.length&&materials.every(Boolean)?Math.round((materials.reduce((sum,b)=>sum+Number(b.price||0),0)+15)*100)/100:''; return {...t,price:t.price==null||t.price===''?calculatedPrice:t.price,beads:ids,preview:ids.map((id,i)=>{const b=map[id]||{},a=2*Math.PI*i/ids.length-Math.PI/2;return {key:i,x:50+35*Math.cos(a),y:50+35*Math.sin(a),color:(b.c||[])[0]||'#ccc',dark:(b.c||[])[1]||'#aaa',photo:b.photo||''}})} },
+  decorate(t) { const catalog=this.catalog||[], map=Object.fromEntries(catalog.map(b=>[b.id,b])); const fixed=Number.isInteger(t.fixed)&&t.fixed>0?t.fixed:null; const ids=(t.pattern||[]).length?(templates.build({...t,fixed},catalog,this.data.wrist)||[]):[]; const materials=ids.map(id=>map[id]); const calculatedPrice=ids.length&&materials.every(Boolean)?Math.round((materials.reduce((sum,b)=>sum+Number(b.price||0),0)+15)*100)/100:''; return {...t,fixed,price:t.price==null||t.price===''?calculatedPrice:t.price,beads:ids,preview:ids.map((id,i)=>{const b=map[id]||{},a=2*Math.PI*i/ids.length-Math.PI/2;return {key:i,x:50+35*Math.cos(a),y:50+35*Math.sin(a),color:(b.c||[])[0]||'#ccc',dark:(b.c||[])[1]||'#aaa',photo:b.photo||''}})} },
   input(e) { this.setData({ text: e.detail.value }) },
   example(e) { this.setData({ text: e.currentTarget.dataset.text }) },
   voice() { wx.showToast({ title: '语音识别暂不可用，请使用文字输入', icon: 'none', duration: 2500 }) },
@@ -19,6 +19,7 @@ Page({
     this.setData({ text: '', busy: true, error: '', messages: prior.concat({ role: 'me', text }) })
     try {
       const wristSize = wrist()
+      if (this.data.wrist !== wristSize) this.setData({ wrist: wristSize })
       let result, aiError, planError
       // This is the AI entry point: ask the model first so users do not keep
       // receiving the same rule-library defaults. The plan library is only a
@@ -45,11 +46,7 @@ Page({
     const message = this.data.messages[Number(e.currentTarget.dataset.message)]
     const t = message && message.results[Number(e.currentTarget.dataset.index)]
     if (!t || !t.pattern || !t.pattern.length) return wx.showToast({ title: '方案无法使用', icon: 'none' })
-    const d = store.create(), count = Math.max(1, Math.min(Number(t.count || t.fixed || 21), 120))
-    d.name = t.name || '我的手串'
-    const special = t.special || [], tail = t.tail || [], n = Math.max(0, count - special.length - tail.length)
-    d.wrist = wrist()
-    d.pattern=t.pattern.slice(); d.special=special.slice(); d.tail=tail.slice(); d.fixed=t.fixed||t.count||null; d.meaning=t.meaning||''; d.beads = (!t.count && !t.fixed && this.catalog && templates.build(t, this.catalog, d.wrist)) || special.concat(Array.from({ length: n }, (_, i) => t.pattern[i % t.pattern.length]), tail)
+    const d = store.fromTemplate(t, this.catalog || [], wrist())
     store.selected(d)
     wx.navigateTo({ url: '/pages/editor/editor' })
   }

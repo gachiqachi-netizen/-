@@ -1,4 +1,5 @@
 const KEY='cgz_miniprogram_designs'
+const templates=require('./template')
 const queues = Object.create(null)
 const CLOUD_FIELDS=['special','pattern','tail','fixed','source','tplId','meaning','edited']
 function snapshotOf(d){const s={name:d.name,beads:(d.beads||[]).slice(),wrist:d.wrist};for(const k of CLOUD_FIELDS)if(d[k]!==undefined)s[k]=Array.isArray(d[k])?d[k].slice():d[k];return s}
@@ -9,6 +10,13 @@ function save(d){const all=list(), i=all.findIndex(x=>x.id===d.id); const merged
 function selected(d){wx.setStorageSync('cgz_current_design',mergeCloud(d,wx.getStorageSync('cgz_current_design')))}
 function current(){return wx.getStorageSync('cgz_current_design')||null}
 function create(){return {id:'d'+Date.now()+'-'+Math.random().toString(36).slice(2,8),name:'我的手串',wrist:15,beads:[]}}
+function fromTemplate(source,catalog,wrist){
+  const d=create(), fixed=Number.isInteger(source.fixed)&&source.fixed>0?source.fixed:null
+  d.name=source.name||'我的手串';d.wrist=wrist;d.pattern=(source.pattern||[]).slice();d.special=(source.special||[]).slice();d.tail=(source.tail||[]).slice()
+  d.fixed=fixed;d.meaning=source.meaning||'';d.source=source.source||source.src||'ai';d.tplId=source.tplId||source.id||''
+  d.beads=templates.build({...source,fixed},catalog,wrist)||[]
+  return d
+}
 function sync(d){
   const id=d.id, snapshot=snapshotOf(d)
   const prior=queues[id]||Promise.resolve()
@@ -36,4 +44,4 @@ function sync(d){
   task.finally(()=>{if(queues[id]===task)delete queues[id]}).catch(()=>{})
   return task
 }
-module.exports={list,save,sync,selected,current,create}
+module.exports={list,save,sync,selected,current,create,fromTemplate}

@@ -60,6 +60,14 @@ class UserAPITest(unittest.TestCase):
         self.assertIsNone(user_api.read_share(self.db, 'bad'))
         self.assertIsNone(user_api.read_share(self.db, 'a' * 43))
 
+    def test_share_keeps_reflow_metadata(self):
+        data = {'name': '测试', 'wrist': 15, 'beads': ['a'] * 17, 'pattern': ['a'], 'special': [], 'tail': [], 'meaning': '祝福'}
+        share_id = user_api.create_share(self.db, data, 'owner')['shareId']
+        shared = user_api.read_share(self.db, share_id)
+        self.assertEqual(shared['pattern'], ['a'])
+        self.assertEqual(shared['meaning'], '祝福')
+        self.assertNotIn('fixed', shared)
+
     def test_order_snapshots_and_pending_payment(self):
         b = self.db.list('beads')[0]
         req = {'requestId': 'test-order-00000001', 'name': '测试', 'beads': [b['id']] * 6, 'wrist': 15, 'person': '测试', 'phone': '13800138000', 'addr': '测试地址', 'confirmedQuote': self.quote(b)}

@@ -132,7 +132,8 @@ def create_share(db, data, owner_id):
     if not design['beads']:
         raise ValueError('请先添加珠子')
     token = secrets.token_urlsafe(32)
-    db.put('shares', token, {k: design[k] for k in ('name', 'beads', 'wrist')})
+    fields = ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId')
+    db.put('shares', token, {k: design[k] for k in fields if k in design})
     return {'shareId': token}
 
 
@@ -140,7 +141,8 @@ def read_share(db, token):
     if not re.fullmatch(r'[A-Za-z0-9_-]{43}', token or ''):
         return None
     d = db.get('shares', token)
-    return {k: d[k] for k in ('name', 'beads', 'wrist')} if d else None
+    fields = ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId')
+    return {k: d[k] for k in fields if k in d} if d else None
 
 
 def make_order(db, data, uid):

@@ -25,6 +25,12 @@
         "attrs": {
           "color": "白"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       }
     ],
     "pattern": [
@@ -37,12 +43,10 @@
         }
       },
       {
-        "kb": "fen-jing",
-        "mm": 8,
-        "role": "主珠",
-        "attrs": {
-          "color": "淡粉"
-        }
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       },
       {
         "kb": "fen-jing",
@@ -54,21 +58,46 @@
       },
       {
         "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
+      },
+      {
+        "kb": "fen-jing",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "淡粉"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
+      },
+      {
+        "kb": "gezhu",
         "mm": 4,
         "role": "隔珠",
         "attrs": {
           "color": "银色"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       }
     ],
     "tail": [],
     "substitutes": {
-      "fen-jing": [
-        "caomei-jing",
-        "hongwen"
-      ],
       "zhenzhu": [
-        "beike"
+        "tao-mu"
+      ],
+      "fen-jing": [
+        "bai-shuijing"
       ]
     },
     "story": "淡粉晶做底色，柔和不挑肤色；开头一颗白珍珠，像晨光落在花瓣上。粉晶在流行文化里常和温柔、浪漫联系在一起，珍珠圆润寓意圆满。适合喜欢低调甜感、每天都想戴着的女生。",
@@ -99,7 +128,7 @@
       "少女"
     ],
     "gender": "female",
-    "budget": "low",
+    "budget": "mid",
     "special": [],
     "pattern": [
       {
@@ -134,11 +163,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "caomei-jing": [
-        "fen-jing"
-      ],
       "fen-jing": [
-        "hongwen"
+        "bai-shuijing"
+      ],
+      "caomei-jing": [
+        "bai-shuijing"
       ]
     },
     "story": "草莓晶里有细小的红点包体，像撒了草莓籽，配一颗通透粉晶把颜色提亮，银色隔珠让整串不腻。草莓晶名字讨喜，寓意甜甜蜜蜜。适合爱粉色、想给日常加点小心情的女生。",
@@ -208,11 +237,10 @@
     "tail": [],
     "substitutes": {
       "zi-jing": [
-        "zi-yusui",
-        "liyunmu"
+        "bai-shuijing"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
       ]
     },
     "story": "浅薰衣草紫比深紫更温柔，夹一颗清透白水晶，像紫色花田上起了薄雾。紫色在传统里象征尊贵雅致，白水晶通透寓意纯净。适合喜欢淡色、偏安静气质的女生。",
@@ -288,11 +316,10 @@
     "tail": [],
     "substitutes": {
       "yueguang-shi": [
-        "bai-shuijing",
-        "beike"
+        "tianhe-shi"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
       ]
     },
     "story": "蓝月光石转动时会浮起一层蓝白光晕，像月光落在水面，间一颗白水晶让整串更透亮。月光石在东西方都和月亮、温柔的意象相关。适合偏清冷、喜欢细节的女生，素色衣服最出效果。",
@@ -336,12 +363,10 @@
         }
       },
       {
-        "kb": "hailanbao",
-        "mm": 8,
-        "role": "主珠",
-        "attrs": {
-          "color": "天空蓝"
-        }
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       },
       {
         "kb": "hailanbao",
@@ -350,6 +375,26 @@
         "attrs": {
           "color": "天空蓝"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
+      },
+      {
+        "kb": "hailanbao",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "天空蓝"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       },
       {
         "kb": "zhenzhu",
@@ -361,21 +406,18 @@
       },
       {
         "kb": "gezhu",
-        "mm": 4,
-        "role": "隔珠",
-        "attrs": {
-          "color": "银色"
-        }
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       }
     ],
     "tail": [],
     "substitutes": {
-      "hailanbao": [
-        "lan-yusui",
-        "bai-shuijing"
-      ],
       "zhenzhu": [
-        "beike"
+        "tao-mu"
+      ],
+      "hailanbao": [
+        "tao-mu"
       ]
     },
     "story": "海蓝宝的浅蓝像晴天的海水，配白珍珠像浪花，颜色干净清爽。海蓝宝名字里带着海，常被用来寓意宽广、自在。适合爱旅行、喜欢夏天的女生，海边度假戴着拍照很出片。",
@@ -450,15 +492,14 @@
     ],
     "tail": [],
     "substitutes": {
-      "lv-yusui": [
-        "putao-shi",
-        "dongling-yu"
-      ],
       "dongling-yu": [
-        "lv-yusui"
+        "tao-mu"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
+      ],
+      "lv-yusui": [
+        "putong-manao"
       ]
     },
     "story": "苹果绿玉髓清新，绿东陵带细碎砂金闪点，再用白水晶留白，像林间小路上的光斑。绿色向来寓意生机、自然。适合喜欢棉麻、户外和植物的女生，价格友好，日常随便戴。",
@@ -536,13 +577,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "hetian-yu": [
-        "xiu-yu",
-        "shiyingyan-yu"
-      ],
       "nanhong": [
-        "zhanguo-hong",
         "putong-manao"
+      ],
+      "hetian-yu": [
+        "dongling-yu"
       ]
     },
     "story": "青白玉温润素净，隔几颗点一粒柿子红南红，是新中式里常见的白配红。古人以玉比君子之德，南红色如赤玉，传统上寓意红火吉祥。适合喜欢旗袍、马面裙或想要一串耐看玉珠的女生。",
@@ -612,8 +651,7 @@
     "tail": [],
     "substitutes": {
       "mila": [
-        "hupo",
-        "huang-shuijing"
+        "zhenzhu"
       ]
     },
     "story": "鸡油黄蜜蜡质地温润，颜色像陈年的蜂蜜，配金色小隔珠更有复古味道。蜜蜡在藏地和北方民俗里常被视为吉祥之物，越戴越润。适合偏爱暖色、喜欢老物件质感的女生。",
@@ -654,6 +692,12 @@
         "attrs": {
           "color": "柿子红"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       }
     ],
     "pattern": [
@@ -666,12 +710,24 @@
         }
       },
       {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
+      },
+      {
         "kb": "lvsong",
         "mm": 8,
         "role": "主珠",
         "attrs": {
           "color": "天蓝"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       },
       {
         "kb": "mila",
@@ -683,24 +739,35 @@
       },
       {
         "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
+      },
+      {
+        "kb": "gezhu",
         "mm": 4,
         "role": "隔珠",
         "attrs": {
           "color": "金色"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       }
     ],
     "tail": [],
     "substitutes": {
-      "lvsong": [
-        "tianhe-shi",
-        "lan-yusui"
+      "nanhong": [
+        "putong-manao"
       ],
       "mila": [
-        "hupo"
+        "zhenzhu"
       ],
-      "nanhong": [
-        "zhanguo-hong"
+      "lvsong": [
+        "heiyao"
       ]
     },
     "story": "天蓝绿松配鸡油黄蜜蜡，再加一颗南红，是藏式多宝里最经典的三色。绿松石在藏地被视为吉祥之石，南红红火，蜜蜡温润。适合喜欢民族风、复古穿搭的女生，配牛仔和亚麻都好看。",
@@ -716,7 +783,7 @@
   },
   {
     "id": "self-f-pearl-01",
-    "name": "珍珠月白",
+    "name": "珠光手绳",
     "audience": [
       "自己（女）"
     ],
@@ -733,54 +800,26 @@
       "简约"
     ],
     "gender": "female",
-    "budget": "mid",
+    "budget": "low",
     "special": [],
     "pattern": [
       {
         "kb": "zhenzhu",
-        "mm": 7,
+        "mm": 8,
         "role": "主珠",
         "attrs": {
-          "color": "白",
-          "origin": "淡水"
-        }
-      },
-      {
-        "kb": "zhenzhu",
-        "mm": 7,
-        "role": "主珠",
-        "attrs": {
-          "color": "白",
-          "origin": "淡水"
-        }
-      },
-      {
-        "kb": "zhenzhu",
-        "mm": 7,
-        "role": "主珠",
-        "attrs": {
-          "color": "白",
-          "origin": "淡水"
-        }
-      },
-      {
-        "kb": "gezhu",
-        "mm": 3,
-        "role": "隔片",
-        "attrs": {
-          "color": "金色"
+          "count": "3颗"
         }
       }
     ],
     "tail": [],
     "substitutes": {
       "zhenzhu": [
-        "beike",
-        "yueguang-shi"
+        "beike"
       ]
     },
-    "story": "7mm 淡水白珍珠，用金色小隔片分开，干净利落，比满串珍珠更轻盈。珍珠圆润，传统上寓意圆满、纯净。适合刚入职或通勤的女生，配衬衫和西装都得体，不抢风头。",
-    "tips": "珍珠最后戴、最先摘，避开香水和汗。",
+    "story": "三颗白色淡水珍珠作中心，主体改用可调编织绳，保留珠光的温柔，也比满圈珍珠更轻便。适合日常单戴或和手表叠戴，绳色可按衣着选择米白、灰蓝或深咖。",
+    "tips": "采用可调编绳，每颗珍珠之间打结并留缓冲，避免和硬物摩擦；佩戴前先喷香水。",
     "sources": [
       "市场调研 kb/market/crystals.md",
       "市场调研 kb/market/wenwan.md",
@@ -847,8 +886,7 @@
     "tail": [],
     "substitutes": {
       "fa-jing": [
-        "huang-shuijing",
-        "riguang-shi"
+        "bai-shuijing"
       ]
     },
     "story": "金发晶里一根根金色发丝在光下流动，配金色隔珠更显精致，有首饰感又不浮夸。金色在传统里象征明亮、富丽。适合想给通勤穿搭加点亮点的女生，戴在手表旁边也协调。",
@@ -923,20 +961,20 @@
     ],
     "tail": [],
     "substitutes": {
-      "fen-jing": [
-        "hongwen"
+      "zi-jing": [
+        "bai-shuijing"
       ],
-      "yueguang-shi": [
+      "fen-jing": [
         "bai-shuijing"
       ],
       "hailanbao": [
-        "lan-yusui"
+        "tao-mu"
       ],
-      "zi-jing": [
-        "zi-yusui"
+      "yueguang-shi": [
+        "tianhe-shi"
       ],
       "caomei-jing": [
-        "fen-jing"
+        "bai-shuijing"
       ]
     },
     "story": "粉、白、蓝、紫、莓红五种浅色晶石轮流排开，统一 8mm，像一束小雏菊，热闹却不杂。多宝在传统里寓意集众美于一身。适合拿不定主意、想要一串配什么都行的女生。",
@@ -1007,10 +1045,10 @@
     "tail": [],
     "substitutes": {
       "cha-jing": [
-        "youling"
+        "bai-shuijing"
       ],
       "fen-jing": [
-        "hongwen"
+        "bai-shuijing"
       ]
     },
     "story": "浅茶晶像加了奶的红茶，配一颗淡粉晶，是低饱和的烟灰玫瑰色调，复古又耐看。茶晶色调沉静，常被视为内敛稳重；粉晶添一点温柔。适合不爱太甜、偏爱大地色和莫兰迪色的女生。",
@@ -1086,11 +1124,10 @@
     "tail": [],
     "substitutes": {
       "lachang-shi": [
-        "yueguang-shi",
-        "heiyao"
+        "tianhe-shi"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
       ]
     },
     "story": "拉长石灰底上会闪出一片蓝绿晕彩，转动手腕像看见极光；白水晶让灰调透气。它的晕彩变化多，常被赋予神秘、梦幻的意象。适合喜欢冷色调、穿搭偏黑白灰的女生。",
@@ -1168,13 +1205,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "xingyue": [
-        "baiyu-puti",
-        "lianzi"
-      ],
       "nanhong": [
-        "zhanguo-hong",
         "putong-manao"
+      ],
+      "xingyue": [
+        "fengyan"
       ]
     },
     "story": "顺白星月菩提上布满小黑点，围着中间一圈“月”，名字就很有画面感；隔几颗点一粒南红，白里一点红很雅。星月菩提常用来串念珠，寓意清净圆满。适合想入门文玩、愿意慢慢盘出颜色的女生。",
@@ -1252,8 +1287,7 @@
     "tail": [],
     "substitutes": {
       "bai-shuijing": [
-        "shiyingyan-yu",
-        "yueguang-shi"
+        "huyan-shi"
       ]
     },
     "story": "整串清透白水晶，只加一颗银色小圆珠做记号，极简到几乎没有存在感，却和任何手表、戒指都不冲突。白水晶通透无色，寓意纯净明澈。适合通勤、不爱花哨、想要百搭基础款的女生。",
@@ -1331,14 +1365,14 @@
     ],
     "tail": [],
     "substitutes": {
-      "zi-jing": [
-        "zi-yusui"
-      ],
       "fen-jing": [
-        "hongwen"
+        "bai-shuijing"
+      ],
+      "zi-jing": [
+        "bai-shuijing"
       ],
       "lv-yusui": [
-        "dongling-yu"
+        "putong-manao"
       ]
     },
     "story": "浅紫水晶做花，淡粉晶做花苞，一颗浅绿玉髓做叶子，像四月垂下来的紫藤。紫色雅致、粉色温柔、绿色寓意生机。适合春天、喜欢花草和碎花裙的女生，颜色柔和不挑人。",
@@ -1369,7 +1403,7 @@
       "新中式"
     ],
     "gender": "female",
-    "budget": "mid",
+    "budget": "high",
     "special": [],
     "pattern": [
       {
@@ -1408,7 +1442,6 @@
     "tail": [],
     "substitutes": {
       "nanhong": [
-        "zhanguo-hong",
         "putong-manao"
       ]
     },
@@ -1462,12 +1495,10 @@
         }
       },
       {
-        "kb": "putong-manao",
-        "mm": 8,
-        "role": "主珠",
-        "attrs": {
-          "color": "红"
-        }
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       },
       {
         "kb": "putong-manao",
@@ -1476,6 +1507,26 @@
         "attrs": {
           "color": "红"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
+      },
+      {
+        "kb": "putong-manao",
+        "mm": 8,
+        "role": "主珠",
+        "attrs": {
+          "color": "红"
+        }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       },
       {
         "kb": "bai-shuijing",
@@ -1484,21 +1535,18 @@
       },
       {
         "kb": "gezhu",
-        "mm": 4,
-        "role": "隔珠",
-        "attrs": {
-          "color": "金色"
-        }
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       }
     ],
     "tail": [],
     "substitutes": {
-      "putong-manao": [
-        "nanhong",
-        "zhanguo-hong"
-      ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
+      ],
+      "putong-manao": [
+        "tao-mu"
       ]
     },
     "story": "红玛瑙颜色鲜亮，配一颗金色主题珠和白水晶，红金白三色就是过年的配色。红色在传统里寓意红火喜庆，新年穿红戴红图个好彩头。价格亲民，适合想给新年造型加点年味的女生。",
@@ -1576,8 +1624,7 @@
     "tail": [],
     "substitutes": {
       "heiyao": [
-        "cha-jing",
-        "chitie"
+        "ying-shi"
       ]
     },
     "story": "10mm 黑曜石，光下能看到一层乌金色光泽，配一颗银色隔珠，黑白利落。黑色沉静，常被视为内敛稳重。整串几乎不挑衣服，西装、卫衣都能戴，适合想要第一串手串、又怕太花哨的男生。",
@@ -1646,11 +1693,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "huyan-shi": [
-        "cha-jing"
-      ],
       "heiyao": [
-        "chitie"
+        "ying-shi"
+      ],
+      "huyan-shi": [
+        "bai-shuijing"
       ]
     },
     "story": "金黄虎眼石有一道道丝绢光，转动时像波纹流过，夹一颗纯黑黑曜石压住颜色。虎眼石因光带像虎目得名，常被赋予勇气、坚定的意象。适合喜欢大地色、穿搭偏工装的男生。",
@@ -1682,7 +1729,7 @@
       "简约"
     ],
     "gender": "male",
-    "budget": "mid",
+    "budget": "high",
     "special": [
       {
         "kb": "nanhong",
@@ -1705,13 +1752,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "xiaoye-zitan": [
-        "jichi-mu",
-        "tanxiang"
-      ],
       "nanhong": [
-        "zhanguo-hong",
         "putong-manao"
+      ],
+      "xiaoye-zitan": [
+        "huangyang"
       ]
     },
     "story": "整串小叶紫檀配一颗南红佛头，是文玩圈最经典的配法。小叶紫檀色深沉稳、纹理细密，常被视为木中上品，盘久了会出包浆；南红红火，一深一红很提气。适合想入门文玩的男生，通勤也百搭。",
@@ -1742,7 +1787,7 @@
       "文玩"
     ],
     "gender": "male",
-    "budget": "low",
+    "budget": "mid",
     "special": [
       {
         "kb": "fotou",
@@ -1763,8 +1808,7 @@
     "tail": [],
     "substitutes": {
       "jingang": [
-        "fengyan",
-        "longyan"
+        "fengyan"
       ]
     },
     "story": "12mm 五瓣金刚菩提，沟壑分明，用一个三通佛头收口，粗犷有分量。金刚菩提质地坚硬，名字取“坚固”之意，常被视为坚韧的象征；盘玩后由浅转红，很有成就感。适合喜欢动手盘串、手腕偏粗的男生。",
@@ -1835,8 +1879,7 @@
     "tail": [],
     "substitutes": {
       "qingjin": [
-        "fangna",
-        "lan-shuijing"
+        "ying-shi"
       ]
     },
     "story": "深蓝青金石里点点金星，配金色隔珠，像深海里的光，稳重又有质感。青金石古称“金精”，色如天青，历来是帝王礼器用石，寓意庄重。适合刚入职或常穿正装的男生，和深色西装、皮表带很搭。",
@@ -1910,8 +1953,7 @@
     "tail": [],
     "substitutes": {
       "fa-jing": [
-        "huang-shuijing",
-        "huyan-shi"
+        "bai-shuijing"
       ]
     },
     "story": "10mm 顺发金发晶，金丝整齐排列，在光下像一束束阳光，配金色隔珠更显贵气。金色在传统里象征光明、富丽。适合升职或换新岗位时犒劳自己，也适合偏商务、喜欢戴表的男生。",
@@ -1982,11 +2024,10 @@
     "tail": [],
     "substitutes": {
       "lachang-shi": [
-        "heiyao",
-        "yueguang-shi"
+        "tianhe-shi"
       ],
       "heiyao": [
-        "chitie"
+        "ying-shi"
       ]
     },
     "story": "拉长石灰黑底上浮着蓝色晕彩，像夜航时窗外的极光，配纯黑黑曜石和银色隔珠，冷静克制。拉长石晕彩多变，常被赋予神秘的意象。适合常出差、喜欢黑灰穿搭的男生。",
@@ -2017,7 +2058,7 @@
       "文玩"
     ],
     "gender": "male",
-    "budget": "low",
+    "budget": "mid",
     "special": [
       {
         "kb": "nanhong",
@@ -2038,17 +2079,33 @@
           "pattern": "正月",
           "count": "108颗"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
       }
     ],
     "tail": [],
     "substitutes": {
-      "xingyue": [
-        "lianzi",
-        "baiyu-puti"
-      ],
       "nanhong": [
-        "zhanguo-hong",
         "putong-manao"
+      ],
+      "xingyue": [
+        "fengyan"
       ]
     },
     "story": "108 颗 8mm 星月菩提配南红佛头，可多圈绕腕，也能挂在颈上。念珠取 108 之数来自佛教传统，象征圆满；星月白中带点，盘久了由白转黄，南红一点红很醒目。适合喜欢文玩、有耐心慢慢盘的男生。",
@@ -2127,14 +2184,14 @@
     ],
     "tail": [],
     "substitutes": {
-      "putong-manao": [
-        "zhanguo-hong"
+      "nanhong": [
+        "putong-manao"
       ],
       "heiyao": [
-        "chitie"
+        "ying-shi"
       ],
-      "nanhong": [
-        "zhanguo-hong"
+      "putong-manao": [
+        "shuicao"
       ]
     },
     "story": "红玛瑙为主、黑曜石压色，再加一颗南红主题珠，红黑配色热烈又不张扬。本命年戴红是传统民俗，红色寓意红火、喜庆；黑色让男款更沉稳。适合本命年想戴点红、又怕太跳的男生。",
@@ -2205,11 +2262,10 @@
     "tail": [],
     "substitutes": {
       "dongling-yu": [
-        "lv-yusui",
-        "shuicao"
+        "xiu-yu"
       ],
       "heiyao": [
-        "chitie"
+        "ying-shi"
       ]
     },
     "story": "绿东陵颜色像深山松林，里面细碎的砂金在阳光下微闪，配一颗黑曜石像山石。绿色寓意生机、自然。东陵玉耐磕耐汗，适合爱徒步、露营，常在户外跑的男生。",
@@ -2280,8 +2336,7 @@
     "tail": [],
     "substitutes": {
       "hetian-yu": [
-        "xiu-yu",
-        "lantian-yu"
+        "dongling-yu"
       ]
     },
     "story": "10mm 青白玉圆珠，颜色内敛，油润细腻，配银色隔珠不抢玉色。《礼记》有“君子比德于玉”之说，玉常被用来比喻温润谦和的品格。适合偏爱中式审美、喜欢穿立领衬衫或中山装的男生。",
@@ -2352,8 +2407,7 @@
     "tail": [],
     "substitutes": {
       "mila": [
-        "hupo",
-        "huang-shuijing"
+        "zhenzhu"
       ]
     },
     "story": "鸡油黄蜜蜡颜色浓郁，10mm 大珠更显分量，配金色隔珠带点老物件味道。蜜蜡在北方和藏地民俗里被视为吉祥之物，常作传家之物，越戴越润。适合偏爱暖色复古风、想要一串能戴很多年的男生。",
@@ -2439,17 +2493,17 @@
     ],
     "tail": [],
     "substitutes": {
-      "heiyao": [
-        "chitie"
+      "nanhong": [
+        "putong-manao"
       ],
-      "huyan-shi": [
-        "cha-jing"
+      "heiyao": [
+        "ying-shi"
       ],
       "qingjin": [
-        "fangna"
+        "ying-shi"
       ],
-      "nanhong": [
-        "zhanguo-hong"
+      "huyan-shi": [
+        "bai-shuijing"
       ]
     },
     "story": "黑曜石打底，间以金黄虎眼、深蓝青金和一颗南红，四色统一 10mm，像一幅山河图。多宝寓意集众美于一身，红、蓝、金都是传统里的吉祥色。适合想戴得有点个性、又不想太花的男生。",
@@ -2520,14 +2574,14 @@
     ],
     "tail": [],
     "substitutes": {
-      "bai-shuijing": [
-        "shiyingyan-yu"
-      ],
       "zi-jing": [
-        "zi-yusui"
+        "bai-shuijing"
+      ],
+      "bai-shuijing": [
+        "cha-jing"
       ]
     },
-    "story": "白水晶清透、紫水晶沉静，参照小程序里“金榜题名”模板改成男生的 10mm。紫色在传统里象征尊贵，白水晶寓意纯净明澈，考前戴一串图个心静的好兆头。适合备考的高中生、大学生，价格学生友好。",
+    "story": "白水晶清透、紫水晶沉静，参考页面里“金榜题名”款式改成男生的 10mm。紫色在传统里象征尊贵，白水晶寓意纯净明澈，考前戴一串图个沉稳的好兆头。适合备考的高中生、大学生，价格学生友好。",
     "tips": "考场若不让戴饰品，考前摘下放笔袋。",
     "sources": [
       "市场调研 kb/market/crystals.md",
@@ -2594,7 +2648,6 @@
     "tail": [],
     "substitutes": {
       "zhanguo-hong": [
-        "nanhong",
         "putong-manao"
       ]
     },
@@ -2664,12 +2717,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "hailanbao": [
-        "lan-yusui",
-        "bai-shuijing"
-      ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "cha-jing"
+      ],
+      "hailanbao": [
+        "fengyan"
       ]
     },
     "story": "浅蓝海蓝宝和白水晶交替，配银色隔珠，像毕业旅行时看到的海。海蓝宝名字里带着海，常被用来寓意宽广、自在，正合离开校园、走向更大世界的心情。适合刚毕业、准备出发的男生，也可以自己奖励自己。",
@@ -2737,11 +2789,10 @@
     "tail": [],
     "substitutes": {
       "yueguang-shi": [
-        "bai-shuijing",
-        "beike"
+        "tianhe-shi"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
       ]
     },
     "story": "情侣款里的“月”：白月光石泛着柔和蓝白光，配白水晶和银色隔珠，清透温柔。和男款的“日”配成一对，取“日月同辉”的意思，寓意彼此照亮、相伴长久。适合纪念日给两人各串一条。",
@@ -2811,12 +2862,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "huang-shuijing": [
-        "riguang-shi",
-        "huyan-shi"
-      ],
       "cha-jing": [
-        "youling"
+        "bai-shuijing"
+      ],
+      "huang-shuijing": [
+        "bai-shuijing"
       ]
     },
     "story": "情侣款里的“日”：金黄水晶像午后阳光，夹一颗深茶晶压色，男生戴着不显艳。和女款的白月光石配成一对，取“日月同辉”的意思，寓意两人互相照亮。适合纪念日、情人节两人一起戴。",
@@ -2886,11 +2936,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "bai-shuijing": [
-        "shiyingyan-yu"
-      ],
       "heiyao": [
-        "chitie"
+        "ying-shi"
+      ],
+      "bai-shuijing": [
+        "huyan-shi"
       ]
     },
     "story": "女款以白为主：白水晶里藏一颗黑曜石，男款反过来以黑为主、藏一颗白水晶，你中有我、我中有你。黑白是最不会出错的情侣配色，寓意两人互补。价格友好，适合学生情侣或第一次戴对串。",
@@ -2966,11 +3016,10 @@
     "tail": [],
     "substitutes": {
       "heiyao": [
-        "chitie",
-        "cha-jing"
+        "ying-shi"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "cha-jing"
       ]
     },
     "story": "男款以黑为主：10mm 黑曜石里藏一颗白水晶，和女款的“白里藏黑”正好相反，凑在一起是一对。黑色沉稳，白水晶纯净，寓意两人性格互补、彼此包容。适合学生情侣或想低调戴对串的人。",
@@ -3048,12 +3097,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "hetian-yu": [
-        "xiu-yu",
-        "shiyingyan-yu"
-      ],
       "nanhong": [
-        "zhanguo-hong"
+        "putong-manao"
+      ],
+      "hetian-yu": [
+        "dongling-yu"
       ]
     },
     "story": "女款 8mm 白玉配南红，男款 10mm 同料，两串用同一种玉，取“白首同心”之意。玉在传统里象征温润坚贞，红色寓意喜庆，白配红也是中式婚礼的配色。适合新婚或周年纪念，两人各戴一串。",
@@ -3131,12 +3179,11 @@
     ],
     "tail": [],
     "substitutes": {
-      "hetian-yu": [
-        "xiu-yu",
-        "lantian-yu"
-      ],
       "nanhong": [
-        "zhanguo-hong"
+        "putong-manao"
+      ],
+      "hetian-yu": [
+        "dongling-yu"
       ]
     },
     "story": "男款用 10mm 白玉，和女款同料，点一颗南红呼应女款，两串放在一起颜色一致。玉在传统里象征温润坚贞，“白首同心”寓意相守到老。适合新婚、结婚纪念日，和女款一起定制。",
@@ -3204,10 +3251,10 @@
     "tail": [],
     "substitutes": {
       "zi-jing": [
-        "zi-yusui"
+        "bai-shuijing"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
       ]
     },
     "story": "七夕情侣款里的女款：浅紫水晶像夜空，白水晶像银河里的星点，银色隔珠串起一道河。取牛郎织女鹊桥相会的传说，寓意相思与相守。和男款的青金石成对，适合七夕两人各戴一串。",
@@ -3250,6 +3297,12 @@
         }
       },
       {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
+      },
+      {
         "kb": "qingjin",
         "mm": 10,
         "role": "主珠",
@@ -3258,9 +3311,21 @@
         }
       },
       {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
+      },
+      {
         "kb": "bai-shuijing",
         "mm": 10,
         "role": "配珠"
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       },
       {
         "kb": "gezhu",
@@ -3269,15 +3334,21 @@
         "attrs": {
           "color": "银色"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔片",
+        "attrs": {}
       }
     ],
     "tail": [],
     "substitutes": {
       "qingjin": [
-        "fangna"
+        "ying-shi"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "cha-jing"
       ]
     },
     "story": "七夕情侣款里的男款：深蓝青金石带金点，像星空，夹一颗白水晶作银河。取牛郎织女鹊桥相会的传说，寓意隔得再远也相守。青金石古来色如天青，和女款的紫晶一冷一暖成一对。",
@@ -3343,13 +3414,13 @@
     "tail": [],
     "substitutes": {
       "zi-jing": [
-        "zi-yusui"
+        "bai-shuijing"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
       ]
     },
-    "story": "沿用小程序“金榜题名”的紫配白：一颗紫水晶两颗白水晶，清清爽爽像一张写好的试卷。紫色在传统里象征尊贵，白水晶寓意纯净明澈，考前戴上图个心静的好兆头。适合备考的女生，价格学生友好。",
+    "story": "沿用页面“金榜题名”的紫配白：一颗紫水晶两颗白水晶，清清爽爽像一张写好的试卷。紫色在传统里象征尊贵，白水晶寓意纯净明澈，考前戴上图个沉稳的好兆头。适合备考的女生，价格学生友好。",
     "tips": "考场若不让戴饰品，考前摘下。",
     "sources": [
       "市场调研 kb/market/crystals.md",
@@ -3414,14 +3485,14 @@
     ],
     "tail": [],
     "substitutes": {
-      "hailanbao": [
-        "lan-yusui"
-      ],
       "huang-shuijing": [
-        "riguang-shi"
+        "bai-shuijing"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
+      ],
+      "hailanbao": [
+        "tao-mu"
       ]
     },
     "story": "浅蓝海蓝宝像天空、柠檬黄水晶像阳光，白水晶像白衬衫，是毕业季那个夏天的颜色。蓝色寓意宽广，黄色寓意明亮，送给自己做毕业纪念。适合刚毕业的女生，拍毕业照时戴着很清新。",
@@ -3497,10 +3568,10 @@
     "tail": [],
     "substitutes": {
       "cha-jing": [
-        "youling"
+        "bai-shuijing"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "tao-mu"
       ]
     },
     "story": "6mm 细珠，浅茶晶和白水晶交错，配极小的金色隔片，戴着几乎没有负担，和手表叠戴也不打架。茶色素雅沉静，常被视为稳重内敛。适合每天上班、想低调戴点东西的女生。",
@@ -3567,11 +3638,10 @@
     "tail": [],
     "substitutes": {
       "shuicao": [
-        "lv-yusui",
-        "dongling-yu"
+        "putong-manao"
       ],
       "bai-shuijing": [
-        "shiyingyan-yu"
+        "huyan-shi"
       ]
     },
     "story": "水草玛瑙里像封着一丛青苔水草，每颗图案都不一样，配白水晶留白，像旅途中路过的苔原和溪水。玛瑙里的水草图案常被视为自然、生机的象征。适合爱旅行、喜欢独一无二小物件的女生。",
@@ -3603,7 +3673,7 @@
       "新中式"
     ],
     "gender": "female",
-    "budget": "mid",
+    "budget": "high",
     "special": [
       {
         "kb": "nanhong",
@@ -3623,16 +3693,33 @@
           "color": "紫红",
           "count": "108颗"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
       }
     ],
     "tail": [],
     "substitutes": {
-      "xiaoye-zitan": [
-        "jichi-mu",
-        "tanxiang"
-      ],
       "nanhong": [
-        "zhanguo-hong"
+        "putong-manao"
+      ],
+      "xiaoye-zitan": [
+        "tao-mu"
       ]
     },
     "story": "108 颗 6mm 小叶紫檀配一颗南红佛头，细珠绕腕四五圈，女生戴也秀气。念珠取 108 之数出自佛教传统，象征圆满；小叶紫檀色深沉稳、木纹细密，常被视为木中上品，盘久越亮。适合喜欢新中式、想要一串细珠多圈的女生。",
@@ -3663,7 +3750,7 @@
       "文玩"
     ],
     "gender": "male",
-    "budget": "low",
+    "budget": "mid",
     "special": [
       {
         "kb": "fotou",
@@ -3680,17 +3767,34 @@
           "color": "黄褐",
           "count": "108颗"
         }
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
+      },
+      {
+        "kb": "gezhu",
+        "mm": 3,
+        "role": "隔珠",
+        "attrs": {}
       }
     ],
     "tail": [],
     "substitutes": {
       "fengyan": [
-        "jingang",
-        "xingyue"
+        "tao-mu"
       ]
     },
-    "story": "108 颗 10mm 凤眼菩提，每颗有一道像凤眼的纹，配三通佛头，可挂颈也可多圈绕腕。念珠取 108 之数出自佛教传统，象征圆满；凤眼菩提质朴，盘久了会转成深红褐色。适合喜欢文玩、愿意长期盘玩的男生。",
-    "tips": "108 颗按颗数串，挂颈或绕腕约 6 圈。",
+    "story": "108 颗 10mm 凤眼菩提，每颗有一道像凤眼的纹，配三通佛头，可挂颈也可多圈手持。念珠取 108 之数出自佛教传统，象征圆满；凤眼菩提质朴，盘久了会转成深红褐色。适合喜欢文玩、愿意长期盘玩的男生。",
+    "tips": "108 颗按颗数串，挂颈或手持约 6 圈。",
     "sources": [
       "市场调研 kb/market/crystals.md",
       "市场调研 kb/market/wenwan.md",
@@ -3719,7 +3823,7 @@
       "文玩"
     ],
     "gender": "male",
-    "budget": "low",
+    "budget": "high",
     "special": [],
     "pattern": [
       {
@@ -3766,8 +3870,7 @@
     "tail": [],
     "substitutes": {
       "heitan": [
-        "jichi-mu",
-        "heiyao"
+        "huangyang"
       ]
     },
     "story": "10mm 黑檀木珠，乌黑细密，木质比石头轻，夏天戴不压手，配一颗银色隔珠干净利落。黑色沉静，常被视为沉稳内敛；木珠越戴越有光泽。适合通勤族男生，第一串木质手串的好选择。",

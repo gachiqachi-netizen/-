@@ -49,6 +49,17 @@ if os.environ.get("DATABASE_URL"):
     db = PostgresDB(os.environ["DATABASE_URL"])
 else:
     db = DB(os.environ.get("DATABASE_PATH") or os.path.join(DATA_DIR, "data.sqlite3"))
+user_api.cleanup_sessions(db)
+
+def session_cleanup_loop():
+    while True:
+        time.sleep(24 * 3600)
+        try:
+            user_api.cleanup_sessions(db)
+        except Exception:
+            traceback.print_exc()
+
+threading.Thread(target=session_cleanup_loop, daemon=True).start()
 
 ORDER_STATUS = ["待串制", "串制中", "已发货", "已完成", "已取消"]
 MAX_UPLOAD = 6 * 1024 * 1024
@@ -217,7 +228,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not uid:
                     return self.send(401, {"error": "请先登录"})
                 table = "designs" if path == "/api/designs" else "orders"
-                rows = [user_api.public_design(row) for row in db.list(table) if row.get("userId") == uid]
+                rows = [user_api.public_design(row) for row in db.list_by_owner(table, uid)]
                 rows.sort(key=lambda row: row.get("updatedAt", row.get("createdAt", 0)), reverse=True)
                 return self.send(200, rows)
             m = re.match(r"^/api/admin/(beads|templates|banners|orders)$", path)
@@ -244,6 +255,10 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/auth/dev":
                 status, result = user_api.dev_login(db, data.get("name"))
                 return self.send(status, result)
+            if path == "/api/auth/logout":
+                if not user_api.logout(db, self.headers.get("Authorization")):
+                    return self.send(401, {"error": "请先登录"})
+                return self.send(200, {"ok": True})
             if path == "/api/shares":
                 uid = self.user()
                 if not uid:

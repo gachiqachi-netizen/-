@@ -26,6 +26,8 @@ class PostgresDB:
         with self.connect() as conn:
             for table in TABLES:
                 conn.execute(f'CREATE TABLE IF NOT EXISTS {table} (id TEXT PRIMARY KEY, doc JSONB NOT NULL)')
+            for table in ('designs', 'orders'):
+                conn.execute(f"CREATE INDEX IF NOT EXISTS idx_{table}_user_id ON {table} ((doc->>'userId'))")
 
     @staticmethod
     def _check(table):
@@ -37,6 +39,13 @@ class PostgresDB:
         with self.connect() as conn:
             rows = conn.execute(f'SELECT id, doc FROM {table}').fetchall()
         return sorted([{**doc, 'id': rid} for rid, doc in rows], key=lambda d: (d.get('order', 9999), d['id']))
+
+    def list_by_owner(self, table, user_id):
+        if table not in ('designs', 'orders'):
+            raise ValueError('未知用户数据表')
+        with self.connect() as conn:
+            rows = conn.execute(f"SELECT id, doc FROM {table} WHERE doc->>'userId' = %s", (user_id,)).fetchall()
+        return [{**doc, 'id': rid} for rid, doc in rows]
 
     def get(self, table, rid):
         self._check(table)
@@ -56,6 +65,13 @@ class PostgresDB:
         self._check(table)
         with self.connect() as conn:
             conn.execute(f'DELETE FROM {table} WHERE id = %s', (rid,))
+
+    def delete_expired_sessions(self, now=None):
+        import time
+        now = time.time() if now is None else now
+        with self.connect() as conn:
+            result = conn.execute("DELETE FROM sessions WHERE COALESCE((doc->>'expiresAt')::double precision, 0) <= %s", (now,))
+            return result.rowcount
 
     def update_design_if_version(self, rid, user_id, expected, doc):
         with self.connect() as conn:

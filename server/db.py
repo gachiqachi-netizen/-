@@ -2,6 +2,7 @@
 import json
 import sqlite3
 import threading
+import time
 
 import seed
 
@@ -15,6 +16,14 @@ class DB:
         with self.lock:
             for t in TABLES:
                 self.conn.execute(f"CREATE TABLE IF NOT EXISTS {t} (id TEXT PRIMARY KEY, doc TEXT NOT NULL)")
+            for table in ("designs", "orders"):
+                columns = {row[1] for row in self.conn.execute(f"PRAGMA table_info({table})")}
+                if "user_id" not in columns:
+                    self.conn.execute(f"ALTER TABLE {table} ADD COLUMN user_id TEXT")
+                rows = self.conn.execute(f"SELECT id, doc FROM {table} WHERE user_id IS NULL").fetchall()
+                for rid, raw in rows:
+                    self.conn.execute(f"UPDATE {table} SET user_id = ? WHERE id = ?", (json.loads(raw).get("userId"), rid))
+                self.conn.execute(f"CREATE INDEX IF NOT EXISTS idx_{table}_user_id ON {table}(user_id)")
             self.conn.commit()
         if not self.list("beads"):
             for b in seed.BEADS:
@@ -35,6 +44,12 @@ class DB:
             out.append(d)
         return sorted(out, key=lambda d: (d.get("order", 9999), d["id"]))
 
+    def list_by_owner(self, table, user_id):
+        assert table in ("designs", "orders")
+        with self.lock:
+            rows = self.conn.execute(f"SELECT id, doc FROM {table} WHERE user_id = ?", (user_id,)).fetchall()
+        return [{**json.loads(doc), "id": rid} for rid, doc in rows]
+
     def get(self, table, rid):
         assert table in TABLES
         with self.lock:
@@ -50,7 +65,12 @@ class DB:
         doc = dict(doc)
         doc.pop("id", None)
         with self.lock:
-            self.conn.execute(f"INSERT OR REPLACE INTO {table} (id, doc) VALUES (?, ?)", (rid, json.dumps(doc, ensure_ascii=False)))
+            raw = json.dumps(doc, ensure_ascii=False)
+            if table in ("designs", "orders"):
+                self.conn.execute(f"INSERT OR REPLACE INTO {table} (id, doc, user_id) VALUES (?, ?, ?)",
+                                  (rid, raw, doc.get("userId")))
+            else:
+                self.conn.execute(f"INSERT OR REPLACE INTO {table} (id, doc) VALUES (?, ?)", (rid, raw))
             self.conn.commit()
         doc["id"] = rid
         return doc
@@ -113,7 +133,8 @@ class DB:
                         self.conn.rollback()
                         return 'price_changed', None
                 no = order['no']
-                self.conn.execute('INSERT INTO orders (id, doc) VALUES (?, ?)', (no, json.dumps(order, ensure_ascii=False)))
+                self.conn.execute('INSERT INTO orders (id, doc, user_id) VALUES (?, ?, ?)',
+                                  (no, json.dumps(order, ensure_ascii=False), order.get('userId')))
                 record = {'orderId': no, 'fingerprint': fingerprint}
                 self.conn.execute('INSERT INTO order_requests (id, doc) VALUES (?, ?)', (request_id, json.dumps(record)))
                 self.conn.commit()
@@ -127,3 +148,12 @@ class DB:
         with self.lock:
             self.conn.execute(f"DELETE FROM {table} WHERE id = ?", (rid,))
             self.conn.commit()
+
+    def delete_expired_sessions(self, now=None):
+        now = time.time() if now is None else now
+        with self.lock:
+            rows = self.conn.execute("SELECT id, doc FROM sessions").fetchall()
+            expired = [rid for rid, raw in rows if json.loads(raw).get("expiresAt", 0) <= now]
+            self.conn.executemany("DELETE FROM sessions WHERE id = ?", [(rid,) for rid in expired])
+            self.conn.commit()
+        return len(expired)

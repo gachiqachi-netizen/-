@@ -72,6 +72,18 @@ def owner(db, header):
     return s.get('userId') if s and s.get('expiresAt', 0) > time.time() else None
 
 
+def logout(db, header):
+    match = re.fullmatch(r'Bearer ([A-Za-z0-9_-]{32,128})', header or '')
+    if not match:
+        return False
+    db.delete('sessions', token_hash(match.group(1)))
+    return True
+
+
+def cleanup_sessions(db, now=None):
+    return db.delete_expired_sessions(time.time() if now is None else now)
+
+
 def design_data(data, owner_id):
     name = data.get('name', '我的手串')
     beads = data.get('beads', [])

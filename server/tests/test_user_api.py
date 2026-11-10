@@ -36,6 +36,21 @@ class UserAPITest(unittest.TestCase):
         self.db.put('sessions', user_api.token_hash(token), {'userId': 'u1', 'expiresAt': time.time() - 1})
         self.assertIsNone(user_api.owner(self.db, 'Bearer ' + token))
 
+    def test_owner_index_logout_and_expired_session_cleanup(self):
+        self.db.put('designs', 'a', {'userId': 'u1', 'name': '甲'})
+        self.db.put('designs', 'b', {'userId': 'u2', 'name': '乙'})
+        self.assertEqual([row['id'] for row in self.db.list_by_owner('designs', 'u1')], ['a'])
+        token = 'c' * 43
+        key = user_api.token_hash(token)
+        self.db.put('sessions', key, {'userId': 'u1', 'expiresAt': time.time() + 60})
+        self.assertTrue(user_api.logout(self.db, 'Bearer ' + token))
+        self.assertIsNone(user_api.owner(self.db, 'Bearer ' + token))
+        self.db.put('sessions', 'expired', {'userId': 'u1', 'expiresAt': time.time() - 1})
+        self.db.put('sessions', 'active', {'userId': 'u1', 'expiresAt': time.time() + 60})
+        self.assertEqual(user_api.cleanup_sessions(self.db), 1)
+        self.assertIsNone(self.db.get('sessions', 'expired'))
+        self.assertIsNotNone(self.db.get('sessions', 'active'))
+
     def test_share_is_random_private_snapshot(self):
         d = {'name': '测试', 'wrist': 15, 'beads': ['a', 'b'], 'phone': '13800138000', 'userId': 'exposed'}
         one = user_api.create_share(self.db, d, 'owner')['shareId']

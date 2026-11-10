@@ -27,6 +27,12 @@ class HTTPTest(unittest.TestCase):
             self.assertEqual(status, 200)
             self.assertIn('token', result)
             self.assertEqual(self.request('/api/designs', token=result['token'])[0], 200)
+
+    def test_logout_invalidates_current_token(self):
+        token = 'd' * 43
+        app.db.put('sessions', token_hash(token), {'userId': 'logout-user', 'expiresAt': time.time() + 300})
+        self.assertEqual(self.request('/api/auth/logout', 'POST', {}, token=token)[0], 200)
+        self.assertEqual(self.request('/api/designs', token=token)[0], 401)
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()

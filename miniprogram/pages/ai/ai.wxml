@@ -7,6 +7,7 @@
   </view>
   <view wx:for="{{messages}}" wx:key="index" wx:for-item="message" wx:for-index="mi" class="message {{message.role}}">
     <view class="bubble">{{message.text}}</view>
+    <view wx:if="{{message.role === 'assistant' && message.source}}" class="answer-source {{message.source === '方案库兜底' ? 'fallback' : ''}}">{{message.source}}</view>
     <scroll-view wx:if="{{message.results.length}}" scroll-x class="candidates"><view class="candidates-inner"><view wx:for="{{message.results}}" wx:key="id" wx:for-item="result" wx:for-index="ri" class="candidate">
       <view class="tray"><bracelet-thumb beads="{{result.beads}}" catalog="{{catalog}}"/></view>
       <view class="candidate-body"><view class="candidate-title">{{result.name}} <text wx:if="{{result.src==='plan'}}" class="badge">精选方案</text><text wx:if="{{result.src==='tpl'}}" class="badge">热门款</text></view><view class="tags"><text wx:for="{{result.tags}}" wx:key="*this" wx:for-item="tag" class="tag">{{tag}}</text></view><view class="meaning">{{result.meaning}}</view><view class="candidate-foot"><text>¥{{result.price}}</text><button size="mini" data-message="{{mi}}" data-index="{{ri}}" bindtap="use">用这条</button></view></view>

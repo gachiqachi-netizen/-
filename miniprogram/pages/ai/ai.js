@@ -7,7 +7,7 @@ Page({
   onShow() { this.setData({wrist:wrist()}); if (typeof wx.getStorageSync === 'function') { const old=wx.getStorageSync('cgz_ai_chat'); if (Array.isArray(old) && !this.data.messages.length) this.setData({messages:old,hasResults:old.some(m=>m.results&&m.results.length)}); } api.catalog().then(c=>{this.catalog=c.beads||[]; this.setData({catalog:this.catalog}); if(this.data.messages.length)this.setData({messages:this.data.messages.map(m=>m.results?{...m,results:m.results.map(r=>this.decorate(r))}:m)});}).catch(()=>{}); },
   clear() { this.setData({messages:[],hasResults:false,error:''}); if (typeof wx.removeStorageSync === 'function') wx.removeStorageSync('cgz_ai_chat'); },
   refine(e) { this.setData({text:e.currentTarget.dataset.text}); this.submit(); },
-  decorate(t) { const catalog=this.catalog||[], map=Object.fromEntries(catalog.map(b=>[b.id,b])); const special=t.special||[],tail=t.tail||[],pat=t.pattern||[],count=Math.max(1,Math.min(Number(t.count||t.fixed||21),120)); const ids=pat.length?((!t.count && !t.fixed && templates.build(t,catalog,this.data.wrist)) || special.concat(Array.from({length:Math.max(0,count-special.length-tail.length)},(_,i)=>pat[i%pat.length]),tail)):[]; return {...t,beads:ids,preview:ids.map((id,i)=>{const b=map[id]||{},a=2*Math.PI*i/ids.length-Math.PI/2;return {key:i,x:50+35*Math.cos(a),y:50+35*Math.sin(a),color:(b.c||[])[0]||'#ccc',dark:(b.c||[])[1]||'#aaa',photo:b.photo||''}})} },
+  decorate(t) { const catalog=this.catalog||[], map=Object.fromEntries(catalog.map(b=>[b.id,b])); const special=t.special||[],tail=t.tail||[],pat=t.pattern||[],count=Math.max(1,Math.min(Number(t.count||t.fixed||21),120)); const ids=pat.length?((!t.count && !t.fixed && templates.build(t,catalog,this.data.wrist)) || special.concat(Array.from({length:Math.max(0,count-special.length-tail.length)},(_,i)=>pat[i%pat.length]),tail)):[]; const materials=ids.map(id=>map[id]); const calculatedPrice=ids.length&&materials.every(Boolean)?Math.round((materials.reduce((sum,b)=>sum+Number(b.price||0),0)+15)*100)/100:''; return {...t,price:t.price==null||t.price===''?calculatedPrice:t.price,beads:ids,preview:ids.map((id,i)=>{const b=map[id]||{},a=2*Math.PI*i/ids.length-Math.PI/2;return {key:i,x:50+35*Math.cos(a),y:50+35*Math.sin(a),color:(b.c||[])[0]||'#ccc',dark:(b.c||[])[1]||'#aaa',photo:b.photo||''}})} },
   input(e) { this.setData({ text: e.detail.value }) },
   example(e) { this.setData({ text: e.currentTarget.dataset.text }) },
   voice() { wx.showToast({ title: '语音识别暂不可用，请使用文字输入', icon: 'none', duration: 2500 }) },
@@ -19,17 +19,23 @@ Page({
     this.setData({ text: '', busy: true, error: '', messages: prior.concat({ role: 'me', text }) })
     try {
       const wristSize = wrist()
-      let result, planError
-      try { result = await api.request('/plans/match', { text, wrist: wristSize, history }) } catch (err) { planError = err }
-      if (!result || !Array.isArray(result.results) || !result.results.length) {
-        try {
-          const design = await api.request('/ai/design', { text, wrist: wristSize, history: this.data.messages.slice(-6).map(m => (m.role === 'me' ? '用户：' : '你：') + m.text) })
-          if (Array.isArray(design.designs) && design.designs.length) result = { results: design.designs, reply: design.reply, by: 'ai' }
-        } catch (err) { if (!result && planError) throw planError }
+      let result, aiError, planError
+      // This is the AI entry point: ask the model first so users do not keep
+      // receiving the same rule-library defaults. The plan library is only a
+      // resilience fallback when the model is unavailable or returns no usable SKU.
+      try {
+        const design = await api.request('/ai/design', { text, wrist: wristSize, history: this.data.messages.slice(-6).map(m => (m.role === 'me' ? '用户：' : '你：') + m.text) }, 'POST', { timeout: 65000 })
+        if (Array.isArray(design.designs) && design.designs.length) result = { results: design.designs, reply: design.reply, by: 'ai' }
+      } catch (err) { aiError = err }
+      if (!result) {
+        try { result = await api.request('/plans/match', { text, wrist: wristSize, history }) } catch (err) { planError = err }
       }
-      if (!result) throw planError || new Error('搭配暂不可用')
+      if (!result) throw aiError || planError || new Error('搭配暂不可用')
       const results = Array.isArray(result.results) ? result.results.map(r=>this.decorate(r)) : []
-      this.setData({ messages: this.data.messages.concat({ role: 'assistant', text: result.reply || (results.length ? '为你找到了这些搭配。' : '暂时没有找到合适的搭配，请换个说法试试。'), results, source: result.by === 'ai' ? 'AI 与方案库' : '方案库匹配' }), hasResults: this.data.hasResults || results.length>0 }); if (typeof wx.setStorageSync==='function') wx.setStorageSync('cgz_ai_chat',this.data.messages.slice(-20))
+      const fromAI = result.by === 'ai'
+      const reply = result.reply || (results.length ? '为你找到了这些搭配。' : '暂时没有找到合适的搭配，请换个说法试试。')
+      const assistantText = fromAI ? reply : 'AI 暂时未响应，先为你展示方案库推荐。\n' + reply
+      this.setData({ messages: this.data.messages.concat({ role: 'assistant', text: assistantText, results, source: fromAI ? 'AI 生成' : '方案库兜底' }), hasResults: this.data.hasResults || results.length>0 }); if (typeof wx.setStorageSync==='function') wx.setStorageSync('cgz_ai_chat',this.data.messages.slice(-20))
     } catch (err) {
       const draft = this.data.text.trim()
       this.setData({ text: draft || text, error: (err.message || '搭配失败，请重试') + (draft ? '。上次未发送成功：' + text : ''), messages: prior })

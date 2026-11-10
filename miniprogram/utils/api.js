@@ -11,11 +11,12 @@ function networkError(error) {
   }
   return new Error(message)
 }
-function request(path, data, method) {
+function request(path, data, method, options) {
   const g = getApp().globalData
   if (g.configError || !g.apiBase) return Promise.reject(new Error(g.configError || '服务地址尚未配置'))
   const base = g.apiBase
-  return new Promise((resolve, reject) => wx.request({url: base + '/api' + path, method: method || (data ? 'POST' : 'GET'), data, timeout:10000, success(r) { if (r.statusCode >= 200 && r.statusCode < 300) resolve(r.data); else { const error = new Error((r.data && r.data.error) || '服务暂不可用'); error.status = r.statusCode; error.code = r.data && r.data.code; reject(error) } }, fail(error) { reject(networkError(error)) } }))
+  const timeout = options && Number(options.timeout)
+  return new Promise((resolve, reject) => wx.request({url: base + '/api' + path, method: method || (data ? 'POST' : 'GET'), data, timeout:timeout > 0 ? timeout : 10000, success(r) { if (r.statusCode >= 200 && r.statusCode < 300) resolve(r.data); else { const error = new Error((r.data && r.data.error) || '服务暂不可用'); error.status = r.statusCode; error.code = r.data && r.data.code; reject(error) } }, fail(error) { reject(networkError(error)) } }))
 }
 function showCatalogSource(offline) {
   if (typeof getCurrentPages !== 'function') return

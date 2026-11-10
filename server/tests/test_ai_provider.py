@@ -1,4 +1,5 @@
 import io
+import json
 import os
 import sys
 import unittest
@@ -15,6 +16,25 @@ import ai
 
 
 class OpenAICompatProviderTest(unittest.TestCase):
+    def test_vision_can_use_separate_provider_url_and_key(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = b'{"choices":[{"message":{"content":"{\\"ok\\":true}"}}]}'
+        with mock.patch.dict(os.environ, {
+            "AI_BASE_URL": "https://api.deepseek.test/v1",
+            "AI_API_KEY": "deepseek-secret",
+            "AI_MODEL": "deepseek-chat",
+            "AI_VISION_BASE_URL": "https://dashscope.test/compatible-mode/v1",
+            "AI_VISION_API_KEY": "dashscope-secret",
+            "AI_VISION_MODEL": "qwen3-vl-plus",
+        }, clear=False), mock.patch("urllib.request.urlopen", return_value=response) as opened:
+            out = OpenAICompatProvider().json("look", {"type": "object"}, image=("image/jpeg", "abc"))
+        self.assertTrue(out["ok"])
+        request = opened.call_args.args[0]
+        self.assertEqual("https://dashscope.test/compatible-mode/v1/chat/completions", request.full_url)
+        self.assertEqual("Bearer dashscope-secret", request.headers["Authorization"])
+        body = json.loads(request.data)
+        self.assertEqual("qwen3-vl-plus", body["model"])
+
     def test_http_error_keeps_safe_provider_detail(self):
         body = io.BytesIO(b'{"error":{"code":"Model.NotFound","message":"model is not enabled"}}')
         error = urllib.error.HTTPError("https://example.invalid", 400, "Bad Request", {}, body)

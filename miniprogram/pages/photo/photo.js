@@ -5,6 +5,31 @@ const wrist = require('../home/data').wrist
 const distance = (a,b) => 2*(a[0]-b[0])**2+4*(a[1]-b[1])**2+3*(a[2]-b[2])**2
 const rgb = h => {const x=String(h||'').match(/^#([a-f0-9]{6})$/i); return x ? [0,2,4].map(i=>parseInt(x[1].slice(i,i+2),16)) : [190,190,190]}
 const beadRgb = b => {const a=rgb((b.c||[])[0]), c=rgb((b.c||[])[1]||(b.c||[])[0]);return a.map((n,i)=>n*.45+c[i]*.55)}
+const within = (promise, ms, fallback = null) => new Promise(resolve => {
+  let done = false
+  const finish = value => { if (done) return; done = true; clearTimeout(timer); resolve(value) }
+  const timer = setTimeout(() => finish(fallback), ms)
+  Promise.resolve(promise).then(finish, () => finish(fallback))
+})
+const bounded = (promise, ms, message) => new Promise((resolve, reject) => {
+  let done = false
+  const timer = setTimeout(() => {
+    if (done) return
+    done = true
+    reject(new Error(message))
+  }, ms)
+  Promise.resolve(promise).then(value => {
+    if (done) return
+    done = true
+    clearTimeout(timer)
+    resolve(value)
+  }, error => {
+    if (done) return
+    done = true
+    clearTimeout(timer)
+    reject(error)
+  })
+})
 function metalColor(c) {let [r,g,b]=c.map(x=>x/255),mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,h=0,s=0;if(mx!==mn){let d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h*=60}return (h>=30&&h<=60&&s>.35&&l>.5)||(s<.1&&l>.72)}
 function palette(data,n) {
  const at=(x,y)=>{let i=(y*n+x)*4;return [data[i],data[i+1],data[i+2]]},border=[]
@@ -19,7 +44,7 @@ function palette(data,n) {
  return centers.map((c,i)=>({rgb:c,share:sums[i]/pixels.length})).filter(x=>x.share>=.04).sort((a,b)=>b.share-a.share)
 }
 Page({
-  data: { photo: '', busy: false, result: null, catalog: [], options: [], mainIndex: 0, accentIndex: 0, metalIndex: 0, every: 4, error: '', preview: [], price: 0, length: 0, beadCount: 0, roles: [], selectedMain:'',selectedAccent:'',selectedMetal:'', wrist:15, intervals:[2,3,4,6] },
+  data: { photo: '', busy: false, stage: '', result: null, catalog: [], options: [], mainIndex: 0, accentIndex: 0, metalIndex: 0, every: 4, error: '', preview: [], price: 0, length: 0, beadCount: 0, roles: [], selectedMain:'',selectedAccent:'',selectedMetal:'', wrist:15, intervals:[2,3,4,6] },
   onLoad() {
     api.catalog().then(c => {
       const catalog = c.beads || []
@@ -39,15 +64,36 @@ Page({
   },
   async recognize() {
     if (!this.data.photo || this.data.busy) return
-    this.setData({ busy: true, error: '' })
+    const run = (this.recognitionRun || 0) + 1
+    this.recognitionRun = run
+    const hardTimer = setTimeout(() => {
+      if (this.recognitionRun !== run) return
+      this.recognitionRun++
+      this.setData({ busy: false, error: '识别超时，请换一张较小、更清晰的手串照片后重试。', stage: '' })
+    }, this.recognitionHardTimeoutMs || 45000)
+    this.setData({ busy: true, error: '', stage: '正在处理照片…' })
     try {
-      const base64 = await new Promise((resolve, reject) => wx.getFileSystemManager().readFile({ filePath: this.data.photo, encoding: 'base64', success: r => resolve(r.data), fail: reject }))
+      const compressed = await bounded(new Promise(resolve => {
+        if (typeof wx.compressImage !== 'function') return resolve(this.data.photo)
+        wx.compressImage({ src: this.data.photo, quality: 65, success: r => resolve(r.tempFilePath || this.data.photo), fail: () => resolve(this.data.photo) })
+      }), this.compressTimeoutMs || 8000, '图片压缩超时')
+      if (this.recognitionRun !== run) return
+      this.setData({ stage: '正在读取照片…' })
+      const base64 = await bounded(new Promise((resolve, reject) => wx.getFileSystemManager().readFile({ filePath: compressed, encoding: 'base64', success: r => resolve(r.data), fail: reject })), this.readTimeoutMs || 8000, '图片读取超时')
+      if (this.recognitionRun !== run) return
       const type = base64.startsWith('iVBORw0KGgo') ? 'png' : base64.startsWith('UklGR') ? 'webp' : base64.startsWith('/9j/') ? 'jpeg' : ''
       if (!type) { this.setData({ error: '请使用 PNG、JPEG 或 WebP 图片。' }); return }
       let result
-      const local = await this.localRecognize(this.data.photo).catch(() => null)
-      try { result = await api.request('/ai/photo', { image: `data:image/${type};base64,${base64}` }); result.source = 'ai' }
-      catch (err) { result = local; if (!result) throw err }
+      // Some HarmonyOS WeChat builds never fire offscreen-image load/error.
+      // Start AI immediately and bound the optional local colour fallback so the
+      // page always leaves its loading state.
+      this.setData({ stage: '正在识别珠子…' })
+      const localPromise = within(this.localRecognize(compressed), this.localTimeoutMs || 2500)
+      const aiPromise = api.request('/ai/photo', { image: `data:image/${type};base64,${base64}` }, undefined, { timeout: 30000 })
+      try { result = await aiPromise; result.source = 'ai' }
+      catch (err) { result = await localPromise; if (!result) throw err }
+      if (this.recognitionRun !== run) return
+      const local = await localPromise
       if (result.ok === false) { this.setData({ error: (result.seen || '没有识别到可用的手串') + '，请换一张清晰照片。', result: null }); return }
       const pool = this.data.catalog.filter(b => b.mat !== 'metal' && !b.spacer && b.mm >= 6 && b.mm <= 12 && !/佛头|三通/.test(b.name))
       if (!pool.some(b => b.id === result.main)) result = local
@@ -60,7 +106,10 @@ Page({
       this.setData({ result, mainIndex: find(result.main), accentIndex: find(result.accent), metalIndex: find(result.metal), every: result.every || 4 }, () => this.renderResult())
     } catch (err) {
       this.setData({ error: err.message || '识别暂不可用，请稍后再试。', result: null })
-    } finally { this.setData({ busy: false }) }
+    } finally {
+      clearTimeout(hardTimer)
+      if (this.recognitionRun === run) this.setData({ busy: false, stage: '' })
+    }
   },
   async paletteFor(path) {
     if (typeof wx.createOffscreenCanvas !== 'function') throw new Error('本机颜色识别不可用')

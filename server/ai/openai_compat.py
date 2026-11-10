@@ -4,7 +4,9 @@
   AI_BASE_URL  例：https://dashscope.aliyuncs.com/compatible-mode/v1
   AI_API_KEY   对应平台的 Key
   AI_MODEL     文字模型，例：qwen-plus
-  AI_VISION_MODEL  看图模型（拍照做同款用），例：qwen-vl-plus；不填则拍照功能退回本地取色
+  AI_VISION_MODEL  看图模型（拍照做同款用），例：qwen3-vl-plus；不填则拍照功能退回本地取色
+  AI_VISION_BASE_URL  可选；视觉模型使用不同平台时单独配置
+  AI_VISION_API_KEY   可选；视觉模型的 Key（不填则沿用 AI_API_KEY）
 """
 import json
 import os
@@ -21,6 +23,8 @@ class OpenAICompatProvider:
         self.key = os.environ["AI_API_KEY"]
         self.model = os.environ.get("AI_MODEL", "qwen-plus")
         self.vision_model = os.environ.get("AI_VISION_MODEL", "")
+        self.vision_base = os.environ.get("AI_VISION_BASE_URL", self.base).rstrip("/")
+        self.vision_key = os.environ.get("AI_VISION_API_KEY", self.key)
 
     def json(self, prompt, schema, image=None):
         if image and not self.vision_model:
@@ -39,8 +43,10 @@ class OpenAICompatProvider:
             ],
             "response_format": {"type": "json_object"},
         }
-        req = urllib.request.Request(self.base + "/chat/completions", data=json.dumps(body).encode(),
-                                     headers={"Content-Type": "application/json", "Authorization": "Bearer " + self.key})
+        base = self.vision_base if image else self.base
+        key = self.vision_key if image else self.key
+        req = urllib.request.Request(base + "/chat/completions", data=json.dumps(body).encode(),
+                                     headers={"Content-Type": "application/json", "Authorization": "Bearer " + key})
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
                 out = json.loads(r.read())

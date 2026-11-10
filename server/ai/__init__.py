@@ -33,7 +33,8 @@ def provider():
 def status():
     p = provider()
     if p:
-        return {"enabled": True, "provider": p.name, "model": getattr(p, "model", "")}
+        return {"enabled": True, "provider": p.name, "model": getattr(p, "model", ""),
+                "visionModel": getattr(p, "vision_model", "")}
     return {"enabled": False, "reason": _provider_err or "未配置 AI 模型"}
 
 

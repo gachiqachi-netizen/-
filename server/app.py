@@ -18,6 +18,7 @@ import math
 import traceback
 import uuid
 import user_api
+import pricing
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
@@ -189,7 +190,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(200, f.read(), "application/json" if fp.endswith(".json") else "application/octet-stream")
             if path == "/api/catalog":
                 beads, tpls, banners = on_sale_catalog()
-                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status()})
+                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config()})
             if path == "/api/promotions/status":
                 return self.send(200, user_api.promotion_status())
             if path == "/api/kb/status":
@@ -284,7 +285,7 @@ class Handler(BaseHTTPRequestHandler):
                 out["by"] = by
                 return self.send(200, out)
             if path == "/api/orders":
-                if os.environ.get("DISABLE_DEMO_ORDERS") == "1":
+                if os.environ.get("DEMO_ORDERS") != "1":
                     return self.send(403, {"error": "演示下单已关闭"})
                 beads = {b["id"]: b for b in db.list("beads") if b.get("onSale", True)}
                 ids = data.get("beads") or []
@@ -295,16 +296,14 @@ class Handler(BaseHTTPRequestHandler):
                         return self.send(400, {"error": "请填写收货人、手机号和地址"})
                 if not re.match(r"^1\d{10}$", str(data.get("phone"))):
                     return self.send(400, {"error": "手机号要 11 位数字，以 1 开头"})
-                # 价格以服务端为准：珠子单价 + 手工费 + 选项 + 运费 - 首单立减
-                goods = sum(beads[x]["price"] for x in ids)
-                sub = goods + 15 + (5 if data.get("cord") == 1 else 0) + (10 if data.get("gift") else 0)
-                ship = 0 if sub >= 99 else 8
-                first = not any(o.get("phone") == data["phone"] for o in db.list("orders"))
-                promo = 10 if first else 0
+                priced = pricing.quote([{"unitPriceFen": int(round(beads[x]["price"] * 100))} for x in ids], data)
+                goods = priced["goodsFen"] / 100
+                ship = priced["shippingFen"] / 100
+                promo = 0
                 no = "CGZ" + time.strftime("%y%m%d") + uuid.uuid4().hex[:4].upper()
                 order = {"no": no, "name": str(data.get("name") or "我的手串")[:20], "beads": ids, "wrist": data.get("wrist"),
                          "length": data.get("length"), "cord": data.get("cord", 0), "gift": bool(data.get("gift")),
-                         "goods": goods, "ship": ship, "promo": promo, "total": max(0, sub + ship - promo),
+                         "goods": goods, "ship": ship, "promo": promo, "total": priced["totalFen"] / 100,
                          "person": data["person"].strip()[:20], "phone": data["phone"], "addr": data["addr"].strip()[:120],
                          "status": "待串制", "createdAt": int(time.time() * 1000)}
                 db.put("orders", no, order)
@@ -480,7 +479,7 @@ def validate(table, d):
 
 
 if __name__ == "__main__":
-    validate_bind(HOST, ADMIN_TOKEN, os.environ.get("ALLOW_PUBLIC_BIND") == "1", os.environ.get("DISABLE_DEMO_ORDERS") == "1")
+    validate_bind(HOST, ADMIN_TOKEN, os.environ.get("ALLOW_PUBLIC_BIND") == "1", os.environ.get("DEMO_ORDERS") != "1")
     print(f"串个珠服务已启动：{HOST}:{PORT}")
     print("AI：", ai.status())
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()

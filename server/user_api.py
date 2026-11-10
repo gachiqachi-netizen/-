@@ -1,5 +1,6 @@
 """WeChat identity and owner-scoped prototype APIs; payment integration is intentionally separate."""
 import kb
+import pricing
 import hashlib
 import json
 import os
@@ -161,10 +162,9 @@ def make_order(db, data, uid):
             raise ValueError('商品价格不正确')
     except (InvalidOperation, KeyError):
         raise ValueError('商品价格不正确')
-    sub = goods + 15 + (5 if cord == 1 else 0) + (10 if data.get('gift') else 0)
-    ship = 0 if sub >= 99 else 8
-    # Promotions require transaction-safe eligibility; none is claimed in this new flow.
-    total = sub + ship
+    priced = pricing.quote([{'unitPriceFen': int(Decimal(str(beads[i]['price'])) * 100)} for i in ids], {'cord': cord, 'gift': data.get('gift', False)})
+    ship = Decimal(priced['shippingFen']) / 100
+    total = Decimal(priced['totalFen']) / 100
     quote = data.get('confirmedQuote')
     if not isinstance(quote, dict) or type(quote.get('totalFen')) is not int or not isinstance(quote.get('items'), list):
         raise ValueError('请先确认订单报价')
@@ -184,7 +184,7 @@ def make_order(db, data, uid):
     no = 'CGZ' + time.strftime('%y%m%d') + uuid.uuid4().hex[:12].upper()
     order = {'no': no, 'userId': uid, 'name': str(data.get('name') or '我的手串')[:60], 'beads': ids, 'items': snapshot,
              'wrist': wrist, 'length': sum(Decimal(str(beads[i].get('mm', 0))) for i in ids).__float__(),
-             'cord': cord, 'gift': data.get('gift', False), 'goods': float(goods), 'ship': ship, 'promo': 0,
+             'cord': cord, 'gift': data.get('gift', False), 'goods': float(goods), 'ship': float(ship), 'promo': 0,
              'promotion': promotion_status(),
              'total': float(total), 'person': data['person'].strip()[:40], 'phone': data['phone'],
              'addr': data['addr'].strip()[:200], 'status': '待支付', 'paymentAvailable': False,

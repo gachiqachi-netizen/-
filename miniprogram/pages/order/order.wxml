@@ -11,7 +11,7 @@
       <view class="opt"><text>手围 / 珠串总长</text><view class="value-link" bindtap="wrist">{{design.wrist}}cm / {{length}}cm <text class="muted">修改 ›</text></view></view>
       <view wx:if="{{fit && fit !== '长度基本合适'}}" class="fit-warning"><text>{{fit}}</text><text class="value-link" bindtap="edit">回去调整 ›</text></view>
       <view class="opt"><text>穿绳</text><view class="cords"><button class="cord {{cord===0?'chosen':''}}" data-cord="0" bindtap="setCord">弹力线</button><button class="cord {{cord===1?'chosen':''}}" data-cord="1" bindtap="setCord">编织绳 +¥5</button></view></view>
-      <view class="opt"><text>礼盒包装 +¥10</text><switch checked="{{gift}}" color="#c8302e" bindchange="setGift"/></view>
+      <view class="opt"><text>礼盒包装 +¥{{giftPrice}}</text><switch checked="{{gift}}" color="#c8302e" bindchange="setGift"/></view>
       <view class="opt"><text>手工串制</text><text>¥15</text></view>
       <view class="opt"><text>运费</text><text>{{ship==='0.00'?'包邮':'¥'+ship+'（满 ¥99 包邮）'}}</text></view>
     </view>

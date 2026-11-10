@@ -11,7 +11,7 @@
 - `GET /api/my/orders`：仅返回当前用户订单。
 - `POST /api/my/orders`：提交 `requestId`（每次新购买生成唯一 16–128 位英文字母、数字、下划线或连字符，网络重试须沿用且请求内容不变）、`name`、`beads`、`wrist`、`cord`（0 或 1）、`gift`（布尔）、`person`、`phone`、`addr` 和用户确认的 `confirmedQuote`。报价格式为 `{"totalFen":整数,"items":[{"id":"珠子ID","unitPriceFen":整数,"mm":数字}]}`，每种珠子只提供一次；金额单位为分。服务端对比当前价格、规格和总价，并在插入事务中重新检查材料快照；发生变化返回 HTTP 409 `price_changed`，必须刷新后由用户重新确认。相同请求编号和内容重复提交返回同一订单，内容不同返回 409 `idempotency_conflict`。新订单为“待支付”，`paymentAvailable` 为 false，不会自动进入履约。
 
-旧网页演示仍使用 `/api/orders`；部署时必须设置 `DISABLE_DEMO_ORDERS=1` 禁用该入口。此 SQLite 实现适合本地开发，不是生产数据库或完整支付系统。小程序正式上线仍需安全的后台认证、微信支付及回调验证、可靠的生产数据库、HTTPS 和部署环境、订单并发与幂等、数据备份和日志脱敏等。勿将微信密钥提交到仓库。
+旧网页演示仍使用 `/api/orders`，默认关闭；只有本地明确设置 `DEMO_ORDERS=1` 才开放。此 SQLite 实现适合本地开发，不是生产数据库或完整支付系统。小程序正式上线仍需安全的后台认证、微信支付及回调验证、可靠的生产数据库、HTTPS 和部署环境、订单并发与幂等、数据备份和日志脱敏等。勿将微信密钥提交到仓库。
 
 ### PostgreSQL 适配与本地迁移演练
 
@@ -38,7 +38,7 @@ python3 server/app.py
 
 数据存在 `server/data.sqlite3`，上传的图片在 `server/uploads/`。删掉这两个就回到初始示例数据。
 
-容器调试时可设置 `DATA_DIR` 为挂载的持久目录（影响数据库和上传文件）；也可单独设置 `DATABASE_PATH` 和 `UPLOADS_DIR`。默认只监听 `127.0.0.1`。确需容器对外监听时设置 `SERVER_HOST=0.0.0.0`、`ALLOW_PUBLIC_BIND=1`、`ADMIN_TOKEN` 和 `DISABLE_DEMO_ORDERS=1`，仍需配合 HTTPS 反向代理、鉴权、访问控制和生产数据库；这些选项并不等同上线准备完成。
+容器调试时可设置 `DATA_DIR` 为挂载的持久目录（影响数据库和上传文件）；也可单独设置 `DATABASE_PATH` 和 `UPLOADS_DIR`。默认只监听 `127.0.0.1`。确需容器对外监听时设置 `SERVER_HOST=0.0.0.0`、`ALLOW_PUBLIC_BIND=1` 和 `ADMIN_TOKEN`，并保持 `DEMO_ORDERS` 未开启，仍需配合 HTTPS 反向代理、鉴权、访问控制和生产数据库；这些选项并不等同上线准备完成。
 
 ## 后台能做什么
 

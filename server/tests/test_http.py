@@ -99,6 +99,14 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(body['firstOrder'], {'available': False, 'discountFen': 0, 'reason': 'payment_not_integrated'})
 
+    def test_catalog_exposes_pricing_and_demo_order_is_closed_by_default(self):
+        status, catalog = self.request('/api/catalog')
+        self.assertEqual(status, 200)
+        self.assertEqual(catalog['pricing']['handworkFen'], 1500)
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop('DEMO_ORDERS', None)
+            self.assertEqual(self.request('/api/orders', 'POST', {})[0], 403)
+
     def test_design_isolation_and_share_snapshot(self):
         a, b = 'a' * 43, 'b' * 43
         status, design = self.request('/api/designs', 'POST', {'name':'私有设计', 'beads':['zt8'], 'wrist':15}, token=a)

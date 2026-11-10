@@ -724,9 +724,11 @@ function topTags(ids, max) {
   const cnt = {}; ids.forEach(id => (ITEM[id]?.tags || []).forEach(t => { if (t !== '点缀') cnt[t] = (cnt[t] || 0) + 1; }));
   return Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]).slice(0, max);
 }
+const priceWithHandwork = ids => priceOf(ids) + PRICING.handworkFen / 100;
 const tagsHtml = tags => tags.map(t => `<span class="tag ${tagClass(t)}">${esc(t)}</span>`).join('');
 const WISHES = ['考试顺利', '好运连连', '送女朋友', '本命年', '送爸妈平安', '升职加薪'];
 const CORDS = [['弹力线', 0], ['编织绳', 5]];
+let PRICING = { handworkFen: 1500, cordFen: 500, giftFen: 1000, freeShippingThresholdFen: 9900, shippingFen: 800 };
 const SKINS = ['#f1c9a5', '#d9a27a', '#9c6a4a'];
 
 // ================= 本地服务接口（server/app.py 启动时注入 window.CGZ_API；线上原型里没有，走原来的逻辑） =================
@@ -1093,7 +1095,7 @@ function renderStudio(reset) {
   $('dTags').innerHTML = tagsHtml(topTags(b, 4));
   $('dMeaning').textContent = (design.edited ? '' : design.meaning) || autoMeaning(b) || '加几颗珠子，这里会显示寓意。';
   renderMeter($('meter'), b); renderCountRow(b);
-  $('dPrice').textContent = b.length ? priceOf(b) + 15 : 0;
+  $('dPrice').textContent = b.length ? priceWithHandwork(b) : 0;
   $('dSpec').textContent = b.length ? `做成实物 · ${b.length} 颗 · 含手工费` : '加几颗珠子就能做成实物';
   const tools = $('selTools');
   if (sel !== null && b[sel]) {
@@ -1248,10 +1250,10 @@ $('reviewBody').onclick = e => {
 function renderFinished() {
   $('finishedPreview').src = thumb(design.beads);
   $('finishedName').textContent = design.name || '我的手串';
-  $('finishedPrice').textContent = `¥${priceOf(design.beads) + 15}`;
+  $('finishedPrice').textContent = `¥${priceWithHandwork(design.beads)}`;
   const f = fitOf(design.beads);
   $('finishedInfo').textContent = `手围 ${wrist}cm · ${design.beads.length} 颗 · 总长 ${lengthOf(design.beads)}mm · ${f.ok ? '长度合适' : f.text.replace(/<[^>]+>/g, '')}`;
-  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceOf(design.beads) + 15);
+  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceWithHandwork(design.beads));
   renderReview();
 }
 
@@ -1307,7 +1309,7 @@ function beadOk(c) {
     return true;
   };
 }
-const candPrice = d => priceOf(fill(d.special || [], d.pattern, d.tail)) + 15;
+const candPrice = d => priceWithHandwork(fill(d.special || [], d.pattern, d.tail));
 function localCands(c, shownNames) {
   const out = [], avoid = [...shownNames];
   for (let i = 0; i < 6 && out.length < 3; i++) {
@@ -1368,7 +1370,7 @@ function candHtml(d, mi, ci) {
   return `<div class="cand"><span class="traybox"><img src="${thumb(beads, 220, -0.75)}" alt=""></span><div class="body">
     <span class="nm">${esc(d.name)}${d.src === 'tpl' ? '<span class="badge">热门款</span>' : d.src === 'plan' ? '<span class="badge">精选方案</span>' : ''}</span>
     <span class="tags">${tagsHtml(topTags(beads, 2))}</span><span class="mean">${esc(d.meaning || '')}</span>
-    <div class="foot"><span class="price">¥${priceOf(beads) + 15}</span><button class="btn ghost sm" type="button" data-use="${mi}.${ci}">用这条</button></div></div></div>`;
+    <div class="foot"><span class="price">¥${priceWithHandwork(beads)}</span><button class="btn ghost sm" type="button" data-use="${mi}.${ci}">用这条</button></div></div></div>`;
 }
 function renderChat() {
   $('aiWrist').textContent = wrist + 'cm';
@@ -1556,7 +1558,7 @@ function renderSame() {
     <div class="section-head" style="margin-top:0"><h2>认出来的珠子</h2><span class="caption muted">不对就点别的</span></div>
     <div class="card">${role('main', '主珠', '数量最多的', false)}${role('accent', '配珠', '', true)}${role('metal', '金属点缀', '', true)}${every}</div>
     <p class="same-tips">颜色以实物为准。料包里没有一模一样的珠子时，按最接近的配。</p>`;
-  bar.innerHTML = `<div class="sum"><b>¥${priceOf(beads) + 15}</b><span>${beads.length} 颗 · ${f.len}mm · 按 ${wrist}cm 手围</span></div><button class="btn" type="button" id="sameGo">放到托盘上改</button>`;
+  bar.innerHTML = `<div class="sum"><b>¥${priceWithHandwork(beads)}</b><span>${beads.length} 颗 · ${f.len}mm · 按 ${wrist}cm 手围</span></div><button class="btn" type="button" id="sameGo">放到托盘上改</button>`;
 }
 $('sameFile').onchange = e => { const f = e.target.files[0]; e.target.value = ''; sameRecognize(f); };
 $('v-same').addEventListener('click', e => {
@@ -1575,7 +1577,7 @@ function buildTry() {
   document.querySelectorAll('[data-try]').forEach(x => x.classList.toggle('on', x.dataset.try === tryMode));
   $('tryPhoto').hidden = tryMode !== 'photo'; $('tryStage').hidden = tryMode !== 'model'; $('skinRow').hidden = tryMode !== 'model';
   const f = fitOf(design.beads);
-  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceOf(design.beads) + 15);
+  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceWithHandwork(design.beads));
   $('tryFit').innerHTML = `<span class="ink2">手围 <b class="num" style="color:var(--ink)">${wrist}cm</b> · 总长 <b class="num" style="color:var(--ink)">${f.len}mm</b></span> ${f.ok ? '<span style="color:var(--fit-ok)">✓ 松紧合适</span>' : '<span style="color:var(--fit-warn)">! ' + f.text.replace(/<[^>]+>/g, '') + '</span>'}`;
   if (tryMode === 'photo') return photoTry.render();
   if (!viewer.mount($('tryStage'))) return;
@@ -1657,7 +1659,7 @@ function wrapText(x, text, left, top, maxW, lh) { let line = '', y = top; for (c
 let shareCanvas = null;
 function buildShare() {
   const W = 720, H = 1060, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
-  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceOf(design.beads) + 15);
+  document.querySelectorAll('.tryPrice').forEach(e => e.textContent = priceWithHandwork(design.beads));
   x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
   const g = x.createRadialGradient(W / 2, 330, 40, W / 2, 360, 420); g.addColorStop(0, '#efece8'); g.addColorStop(.5, '#efece8'); g.addColorStop(1, '#e3ded8');
   x.fillStyle = g; rr(x, 32, 32, W - 64, 620, 40); x.fill();
@@ -1672,7 +1674,7 @@ function buildShare() {
     topTags(design.beads, 3).forEach(t => { const [bgc, fg] = TINT[tagClass(t)], w = x.measureText(t).width + 24; x.fillStyle = bgc; rr(x, tx, 752, w, 36, 8); x.fill(); x.fillStyle = fg; x.fillText(t, tx + 12, 778); tx += w + 10; });
     x.fillStyle = '#5e5753'; x.font = `400 26px ${sans}`;
     const endY = wrapText(x, design.meaning || design.aiMeaning || autoMeaning(design.beads), 56, 836, W - 112, 40);
-    x.fillStyle = '#c8302e'; x.font = `700 44px ${num}`; x.fillText(`¥${priceOf(design.beads) + 15}`, 56, Math.max(endY + 30, 940));
+    x.fillStyle = '#c8302e'; x.font = `700 44px ${num}`; x.fillText(`¥${priceWithHandwork(design.beads)}`, 56, Math.max(endY + 30, 940));
     x.fillStyle = '#736b66'; x.font = `500 22px ${num}`; x.fillText(`${design.beads.length} 颗 · ${lengthOf(design.beads)}mm · 适合 ${wrist}cm 手围`, 56, Math.max(endY + 30, 940) + 40);
     x.strokeStyle = '#e6e2dd'; x.lineWidth = 2; x.beginPath(); x.arc(W - 130, 950, 70, 0, 7); x.stroke();
     x.fillStyle = '#736b66'; x.font = `400 20px ${sans}`; x.textAlign = 'center'; x.fillText('小程序码', W - 130, 948); x.fillText('长按串同款', W - 130, 976);
@@ -1695,7 +1697,7 @@ function renderShared() {
   $('sMeaning').textContent = shared.meaning || autoMeaning(shared.beads);
   renderMeter($('sMeter'), shared.beads);
   $('sNotes').innerHTML = notesHtml(shared);
-  $('sPrice').textContent = priceOf(shared.beads) + 15;
+  $('sPrice').textContent = priceWithHandwork(shared.beads);
 }
 $('previewShared').onclick = () => { shared = clone(design); go('shared'); };
 $('remix').onclick = () => { const d = clone(shared); delete d.id; stack = ['diy']; loadDesign('shared', { ...d, source: 'shared', edited: false }, '已放到你的托盘上，随便改'); };
@@ -1708,7 +1710,7 @@ function gotoOrder() {
 
 // ================= 下单 =================
 let cord = 0;
-function orderTotal() { const sub = priceOf(design.beads) + 15 + CORDS[cord][1] + ($('gift').checked ? 10 : 0), ship = sub >= 99 ? 0 : 8, promo = orders.length ? 0 : 10; return { ship, promo, sum: Math.max(0, sub + ship - promo) }; }
+function orderTotal() { const subFen = Math.round(priceOf(design.beads) * 100) + PRICING.handworkFen + (cord === 1 ? PRICING.cordFen : 0) + ($('gift').checked ? PRICING.giftFen : 0), shipFen = subFen >= PRICING.freeShippingThresholdFen ? 0 : PRICING.shippingFen; return { ship: shipFen / 100, promo: 0, sum: (subFen + shipFen) / 100 }; }
 function buildOrder() {
   $('oName').textContent = design.name || '我的手串';
   $('oPreview').src = thumb(design.beads);
@@ -1769,7 +1771,7 @@ function renderMine() {
       };
       el.appendChild(b); });
   };
-  list(designs, $('myDesigns'), '还没有作品。在首页改过的手串会自动存到这里。', d => `<div><div class="nm">${esc(d.name)}<span class="badge">${d.ordered ? '已下单' : (SRC[d.source] || '')}</span></div><div class="tags" style="margin:2px 0">${tagsHtml(topTags(d.beads, 2))}</div><div class="spec">${d.beads.length} 颗 · ${lengthOf(d.beads)}mm · <span style="color:var(--brand)">¥${priceOf(d.beads) + 15}</span></div></div>`);
+  list(designs, $('myDesigns'), '还没有作品。在首页改过的手串会自动存到这里。', d => `<div><div class="nm">${esc(d.name)}<span class="badge">${d.ordered ? '已下单' : (SRC[d.source] || '')}</span></div><div class="tags" style="margin:2px 0">${tagsHtml(topTags(d.beads, 2))}</div><div class="spec">${d.beads.length} 颗 · ${lengthOf(d.beads)}mm · <span style="color:var(--brand)">¥${priceWithHandwork(d.beads)}</span></div></div>`);
   list(orders, $('myOrders'), '还没有订单。', d => `<div><div class="nm">${esc(d.name)}</div><div class="spec">${d.no} · ${d.time} · ${d.wrist || ''}cm · ¥${d.sum}</div><div class="caption" style="color:var(--fit-ok)">串制中 · 点开再买一条</div></div>`);
 }
 
@@ -1799,7 +1801,7 @@ function renderHome() {
   $('tpls').innerHTML = '';
   ts.forEach(t => {
     const beads = fill(t.special, t.pattern, t.tail), c = document.createElement('div'); c.className = 'tpl';
-    c.innerHTML = `<span class="traybox" data-act="use"><img src="${t.cover ? photoUrl(t.cover) : thumb(beads)}" alt=""${t.cover ? ' class="real"' : ''}></span><span class="body"><span class="nm" data-act="use">${t.name}</span><span class="tags">${tagsHtml(topTags(beads, 2))}</span><span class="foot"><span class="price">¥${priceOf(beads) + 15}</span><span class="spec">${beads.length} 颗 · ${lengthOf(beads)}mm</span></span>
+    c.innerHTML = `<span class="traybox" data-act="use"><img src="${t.cover ? photoUrl(t.cover) : thumb(beads)}" alt=""${t.cover ? ' class="real"' : ''}></span><span class="body"><span class="nm" data-act="use">${t.name}</span><span class="tags">${tagsHtml(topTags(beads, 2))}</span><span class="foot"><span class="price">¥${priceWithHandwork(beads)}</span><span class="spec">${beads.length} 颗 · ${lengthOf(beads)}mm</span></span>
       <span class="cardacts"><button class="btn ghost" data-act="try">试戴</button><button class="btn ghost" data-act="use">用这款</button></span></span>`;
     c.onclick = e => { const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
       if (a === 'try') { saveDesign(); newDesign('tpl', fromTemplate(t)); tryMode = 'photo'; go('try'); }
@@ -1832,11 +1834,11 @@ function renderDiy() {
   $('diyWrist').textContent = wrist + 'cm';
   const last = designs.find(d => d.id === store.get('draftId', '') && validIds(d.beads) && d.edited && !d.ordered);
   $('resumeCard').hidden = !last;
-  if (last) { $('resumeCard').innerHTML = `<span class="resume-info"><span class="caption muted">上次的设计</span><b>${esc(last.name)}</b><span class="caption muted">${last.beads.length} 颗 · ¥${priceOf(last.beads) + 15}</span></span><span class="resume-action">继续设计 ›</span>`; $('resumeCard').onclick = () => openEditor(last.source, clone(last)); }
+  if (last) { $('resumeCard').innerHTML = `<span class="resume-info"><span class="caption muted">上次的设计</span><b>${esc(last.name)}</b><span class="caption muted">${last.beads.length} 颗 · ¥${priceWithHandwork(last.beads)}</span></span><span class="resume-action">继续设计 ›</span>`; $('resumeCard').onclick = () => openEditor(last.source, clone(last)); }
   $('starts').innerHTML = `<button class="start blank" type="button" data-start="blank"><span class="traybox"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke-dasharray="2.5 3"/><path d="M12 8.5v7M8.5 12h7"/></svg></span><span class="body"><span class="nm">从空白开始</span><span class="go">一颗颗挑，挑好主珠一键铺满</span></span></button>` +
     `<button class="start" type="button" data-start="photo"><span class="traybox">${CAMERA_SVG}</span><span class="body"><span class="nm">照着照片串</span><span class="go">拍一张喜欢的手串，认出珠子帮你串好</span></span></button>` +
     validTemplates().map(t => { const beads = fill(t.special, t.pattern, t.tail);
-      return `<button class="start" type="button" data-start="${t.id}"><span class="traybox"><img src="${t.cover ? photoUrl(t.cover) : thumb(beads)}" alt=""${t.cover ? ' class="real"' : ''}></span><span class="body"><span class="nm">${t.name}</span><span class="tags">${tagsHtml(topTags(beads, 2))}</span><span class="foot" style="display:flex;justify-content:space-between;align-items:baseline"><span class="price">¥${priceOf(beads) + 15}</span><span class="go">从这款开始 ›</span></span></span></button>`; }).join('');
+      return `<button class="start" type="button" data-start="${t.id}"><span class="traybox"><img src="${t.cover ? photoUrl(t.cover) : thumb(beads)}" alt=""${t.cover ? ' class="real"' : ''}></span><span class="body"><span class="nm">${t.name}</span><span class="tags">${tagsHtml(topTags(beads, 2))}</span><span class="foot" style="display:flex;justify-content:space-between;align-items:baseline"><span class="price">¥${priceWithHandwork(beads)}</span><span class="go">从这款开始 ›</span></span></span></button>`; }).join('');
 }
 $('starts').onclick = e => {
   const b = e.target.closest('[data-start]'); if (!b) return;
@@ -2021,7 +2023,7 @@ if (API) (async () => {
   try {
     apiJson('/kb/rules').then(r => { if (Array.isArray(r.counts)) COUNT_RULES = r.counts.filter(c => c.count >= 11 && c.count <= 30 && c.confidence !== 'low'); }).catch(() => {});
     const c = await apiJson('/catalog');
-    kitSource = 'live'; setCatalog(c.beads);
+    kitSource = 'live'; setCatalog(c.beads); PRICING = c.pricing || PRICING; CORDS[1][1] = PRICING.cordFen / 100;
     TEMPLATES.splice(0, TEMPLATES.length, ...c.templates);
     BANNERS.splice(0, BANNERS.length, ...c.banners);
     if (design) design.beads = design.beads.filter(id => ITEM[id]);

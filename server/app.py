@@ -372,7 +372,7 @@ class Handler(BaseHTTPRequestHandler):
             if m:
                 if not self.admin_ok():
                     return self.send(401, {"error": "需要后台口令"})
-                rec = db.get("after_sales", m.group(1))
+                rec = commerce.after_sale_detail(db, m.group(1))
                 return self.send(200, rec) if rec else self.send(404, {"error": "售后记录不存在"})
             return self.send(404, {"error": "not_found"})
         except Exception as e:

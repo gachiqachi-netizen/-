@@ -39,6 +39,13 @@ class AdminCommerceTest(unittest.TestCase):
                'person': '测试', 'phone': '13800138000', 'addr': '测试地址', 'confirmedQuote': self.quote(bead)}
         return user_api.make_order(self.db, req, 'u1')
 
+    def set_paid(self, no):
+        """直接改库把订单标记为已支付（支付状态不可走状态机入口手工修改）。"""
+        order = self.db.get('orders', no)
+        order['paymentStatus'] = 'paid'
+        order['paidFen'] = order.get('totalFen', 0)
+        self.db.put('orders', no, order)
+
     def on_sale_bead_ids(self):
         """复刻 app.on_sale_catalog 里的珠子过滤：在售 + 有尺寸 + 珠子/隔片。"""
         return {b['id'] for b in self.db.list('beads')
@@ -172,6 +179,7 @@ class AdminCommerceTest(unittest.TestCase):
         no = order['no']
         with self.assertRaises(ValueError):
             commerce.transition_order_status(self.db, no, 'orderStatus', 'completed')
+        self.set_paid(no)
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         with self.assertRaises(ValueError):
@@ -184,6 +192,7 @@ class AdminCommerceTest(unittest.TestCase):
     def test_logistics_ship_and_sign(self):
         order = self.make_order('logistics-000001')
         no = order['no']
+        self.set_paid(no)
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         with self.assertRaises(ValueError):
@@ -206,10 +215,15 @@ class AdminCommerceTest(unittest.TestCase):
     def test_after_sale_refund_flow(self):
         order = self.make_order('as-refund-000001')
         no = order['no']
+        self.set_paid(no)
         rec = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '仅退款', 'reason': '不想要了', 'refundFen': 1000})
         as_no = rec['no']
         self.assertEqual(rec['status'], 'requested')
         self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'requested')
+
+        rec = commerce.transition_after_sale(self.db, as_no, 'approve')
+        self.assertEqual(rec['status'], 'reviewing')
+        self.assertEqual(self.db.get('orders', no)['afterSaleStatus'], 'reviewing')
 
         rec = commerce.transition_after_sale(self.db, as_no, 'approve')
         self.assertEqual(rec['status'], 'approved')
@@ -230,6 +244,7 @@ class AdminCommerceTest(unittest.TestCase):
     def test_after_sale_refund_exceeds_total(self):
         order = self.make_order('as-exceed-000001')
         no = order['no']
+        self.set_paid(no)
         total_fen = self.db.get('orders', no)['totalFen']
         with self.assertRaises(ValueError):
             commerce.create_after_sale(self.db, {'orderNo': no, 'type': '仅退款', 'reason': '退款超了',
@@ -238,6 +253,7 @@ class AdminCommerceTest(unittest.TestCase):
     def test_after_sale_reject_and_close(self):
         order = self.make_order('as-reject-000001')
         no = order['no']
+        self.set_paid(no)
         rec = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '仅退款', 'reason': '不想要了', 'refundFen': 500})
         as_no = rec['no']
         rec = commerce.transition_after_sale(self.db, as_no, 'reject')

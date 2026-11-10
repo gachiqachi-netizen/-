@@ -219,6 +219,7 @@ def make_order(db, data, uid):
              'goodsFen': goods_fen, 'shipFen': shipping_fen, 'totalFen': payable_fen,
              'orderStatus': groups['orderStatus'], 'paymentStatus': groups['paymentStatus'],
              'fulfillmentStatus': groups['fulfillmentStatus'], 'afterSaleStatus': groups['afterSaleStatus'],
+             'logisticsStatus': groups['logisticsStatus'],
              'statusHistory': [], 'logistics': None, 'logisticsHistory': [],
              'termsSnapshot': terms_snapshot,
              'termsVersion': hashlib.sha256(json.dumps(terms_snapshot, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:16],

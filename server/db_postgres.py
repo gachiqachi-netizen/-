@@ -5,6 +5,7 @@ are separate operational work. Uses JSONB to preserve the existing API documents
 """
 import json
 
+import migrate
 from db import TABLES
 
 
@@ -25,10 +26,7 @@ class PostgresDB:
     def initialize(self):
         try:
             with self.connect() as conn:
-                for table in TABLES:
-                    conn.execute(f'CREATE TABLE IF NOT EXISTS {table} (id TEXT PRIMARY KEY, doc JSONB NOT NULL)')
-                for table in ('designs', 'orders'):
-                    conn.execute(f"CREATE INDEX IF NOT EXISTS idx_{table}_user_id ON {table} ((doc->>'userId'))")
+                migrate.run_migrations(conn, migrate.PostgresAdapter())
         except Exception as e:
             raise RuntimeError(f'PostgreSQL 数据库迁移失败，无法启动：{e}') from e
 

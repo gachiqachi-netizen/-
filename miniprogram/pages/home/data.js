@@ -15,5 +15,5 @@ function catalogCards(data) {
 }
 function selectCard(card) { const d=store.create(); d.wrist=wrist(); d.name=card.name; d.beads=card.beads.slice(); d.source='tpl'; d.tplId=card.id; d.meaning=card.meaning||''; d.pattern=(card.pattern||[]).slice(); d.special=(card.special||[]).slice(); d.tail=(card.tail||[]).slice(); d.fixed=card.fixed||null; store.selected(d); return d }
 function goWrist() { wx.navigateTo({url:'/pages/wrist/wrist'}) }
-function openEditor(card, mode) { if (card) selectCard(card); else { const d=store.create();d.wrist=wrist();store.selected(d) } if(mode==='try') wx.navigateTo({url:'/pages/tryon/tryon'}); else nav.openEditor() }
+function openEditor(card, mode) { if (card) selectCard(card); else { const d=store.create();d.wrist=wrist();store.selected(d) } if(mode==='try') wx.navigateTo({url:'/features/tryon/tryon'}); else nav.openEditor() }
 module.exports = {wrist,catalogCards,selectCard,openEditor,goWrist}

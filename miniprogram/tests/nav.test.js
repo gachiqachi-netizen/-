@@ -23,5 +23,5 @@ test('editor and order loop twenty times without exceeding ten pages', () => {
 test('successful order relaunches order detail', () => {
   stack = [{ route: 'pages/order/order' }]
   nav.orderComplete('A 1')
-  assert.equal(relaunched, '/pages/order-detail/order-detail?no=A%201')
+  assert.equal(relaunched, '/features/order-detail/order-detail?no=A%201')
 })

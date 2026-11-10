@@ -21,8 +21,8 @@ test('ordinary AI plan reflows when wrist changes while fixed 108 stays fixed', 
   assert.equal(prayerLarge.beads.length, 108)
 })
 
-require('../pages/shared/shared')
-const shared = require('../pages/shared/shared')
+require('../features/shared/shared')
+const shared = require('../features/shared/shared')
 
 test('shared template reflows for viewer wrist and defaults to 15cm when unmeasured', () => {
   const source = { name: '分享', wrist: 13, beads: Array(14).fill('main'), pattern: ['main'], special: [], tail: [] }

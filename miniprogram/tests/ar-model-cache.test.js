@@ -50,7 +50,7 @@ test('legacy AR entry redirects to photo page after subpackage failure',()=>{
  delete require.cache[require.resolve('../pages/ar-tryon/ar-tryon')];require('../pages/ar-tryon/ar-tryon');
  const page={...definition,data:{},setData(d){Object.assign(this.data,d)}};let route='';
  global.wx={redirectTo:o=>{route=o.url;if(o.fail)o.fail({})}};
- page.onLoad();assert.match(page.data.error,/照片试戴/);page.photoTryon();assert.equal(route,'/pages/tryon/tryon');
+ page.onLoad();assert.match(page.data.error,/照片试戴/);page.photoTryon();assert.equal(route,'/features/tryon/tryon');
  delete global.Page;delete global.wx;
 });
 test('AR model download failure exits loading state and provides photo navigation',async()=>{
@@ -61,7 +61,7 @@ test('AR model download failure exits loading state and provides photo navigatio
  let route='';global.getApp=()=>({globalData:{apiBase:'http://localhost:8801'}});
  global.wx={authorize:o=>o.success(),getAccountInfoSync:()=>({miniProgram:{envVersion:'develop'}}),redirectTo:o=>route=o.url};
  const page={...definition,data:{...definition.data,beads:['sample']},setData(d){Object.assign(this.data,d)},createSelectorQuery(){return {select(){return this},fields(){return this},exec(cb){cb([{node:{getContext:()=>({})}}])}}}};
- await page.initialize();assert.match(page.data.error,/模型下载失败/);assert.equal(page.data.modelLoading,false);assert.equal(page.data.cameraMounted,false);page.photoTryon();assert.equal(route,'/pages/tryon/tryon');
+ await page.initialize();assert.match(page.data.error,/模型下载失败/);assert.equal(page.data.modelLoading,false);assert.equal(page.data.cameraMounted,false);page.photoTryon();assert.equal(route,'/features/tryon/tryon');
  if(old)require.cache[runtimePath]=old;else delete require.cache[runtimePath];delete global.Page;delete global.wx;delete global.getApp;
 });
 

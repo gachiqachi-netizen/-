@@ -29,7 +29,7 @@ Page({
    if(!this.data.renderFailed)this.setData({cameraMounted:true,status:'模型已加载，正在打开相机…'});
   }catch(e){this.fail(e.message||e.errMsg||String(e))}finally{this._loading=false;if(!this._closed)this.setData({modelLoading:false})}
  },
- photoTryon(){if(this._modelControl&&this._modelControl.cancel)this._modelControl.cancel();this.stopFrames();wx.redirectTo({url:'/pages/tryon/tryon'})},
+ photoTryon(){if(this._modelControl&&this._modelControl.cancel)this._modelControl.cancel();this.stopFrames();wx.redirectTo({url:'/features/tryon/tryon'})},
  cameraReady(){this._cameraReady=true;this.setData({status:'相机已启动，等待视频帧…'});this.startFrames()},
  cameraError(e){this.fail('相机启动失败：'+((e.detail||{}).errMsg||'未知原因'))},
  startFrames(){if(this.data.renderFailed||this._listener||this._hidden||this._closed||!this._tracker)return;

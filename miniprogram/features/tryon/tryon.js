@@ -1,6 +1,6 @@
 const api = require('../../utils/api')
 const store = require('../../utils/design')
-const logic = require('../editor/logic')
+const logic = require('../../pages/editor/logic')
 const SKINS = ['#e9c2a6','#d7ad91','#b98462','#80543d']
 Page({
   data: { mode:'photo', photo:'', width:320, height:400, size:38, angle:0, flatten:45, hideBack:false, photoFallback:false, photoReady:false, xpos:0, ypos:0, saving:false, error:'', skin:SKINS[1], skins:SKINS, catalog:[], beads:[], wrist:15, length:'--', fit:'', price:'--', missing:0, modelError:false },

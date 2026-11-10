@@ -4,7 +4,7 @@
   "compileType": "miniprogram",
   "setting": {
     "es6": true,
-    "minified": false,
+    "minified": true,
     "urlCheck": false,
     "postcss": false,
     "compileWorklet": false,
@@ -27,7 +27,12 @@
   },
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "tests"
+      }
+    ],
     "include": []
   },
   "editorSetting": {}

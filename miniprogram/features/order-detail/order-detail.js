@@ -1,3 +1,3 @@
-const materials=require('../editor/materials')
+const materials=require('../../pages/editor/materials')
 const auth=require('../../utils/auth'),store=require('../../utils/design')
 Page({data:{order:null,items:[],loading:true,error:''},onLoad(q){this.no=q.no;this.load()},async load(){this.setData({loading:true,error:'',order:null,items:[]});try{const rows=await auth.authorized('/my/orders');const order=rows.find(o=>o.no===this.no);if(!order)throw new Error('未找到该订单');this.setData({order,items:materials.fromSnapshot(order.items||[])})}catch(e){this.setData({error:e.message})}finally{this.setData({loading:false})}},reorder(){const o=this.data.order;if(!o)return;const d=store.create();Object.assign(d,{name:o.name,wrist:o.wrist,beads:o.beads.slice()});store.selected(d);wx.navigateTo({url:'/pages/order/order'})}})

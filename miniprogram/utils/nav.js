@@ -12,5 +12,5 @@ function open(route) {
 }
 function openEditor() { open('pages/editor/editor') }
 function openOrder() { open('pages/order/order') }
-function orderComplete(no) { wx.reLaunch({ url: '/pages/order-detail/order-detail?no=' + encodeURIComponent(no) }) }
+function orderComplete(no) { wx.reLaunch({ url: '/features/order-detail/order-detail?no=' + encodeURIComponent(no) }) }
 module.exports = { openEditor, openOrder, orderComplete }

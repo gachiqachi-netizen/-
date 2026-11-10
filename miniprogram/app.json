@@ -7,14 +7,11 @@
     "pages/finish/finish",
     "pages/order/order",
     "pages/photo/photo",
-    "pages/shared/shared",
-    "pages/tryon/tryon",
     "pages/login/login",
     "pages/diy/diy",
     "pages/wrist/wrist",
     "pages/share/share",
-    "pages/ar-tryon/ar-tryon",
-    "pages/order-detail/order-detail"
+    "pages/ar-tryon/ar-tryon"
   ],
   "window": {
     "navigationBarTitleText": "串个珠",
@@ -52,6 +49,14 @@
       "root": "ar-hand",
       "pages": [
         "index"
+      ]
+    },
+    {
+      "root": "features",
+      "pages": [
+        "tryon/tryon",
+        "shared/shared",
+        "order-detail/order-detail"
       ]
     }
   ]

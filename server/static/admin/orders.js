@@ -20,7 +20,7 @@ function renderOrders() {
     <select id="oFp">${groupFilterOptions('paymentStatus', f.paymentStatus)}</select>
     <select id="oFf">${groupFilterOptions('fulfillmentStatus', f.fulfillmentStatus)}</select>
     <select id="oFa">${groupFilterOptions('afterSaleStatus', f.afterSaleStatus)}</select>
-    <button class="btn ghost" id="oReload">刷新</button>`;
+    <button class="btn ghost" id="oReload">刷新</button>${PAYMENT_NOT_INTEGRATED ? '<span class="tag tag-warn">未接真实支付</span>' : ''}`;
   $('oQ').oninput = e => { f.q = e.target.value; renderOrderList(); };
   $('oFs').onchange = e => { f.orderStatus = e.target.value; renderOrderList(); };
   $('oFp').onchange = e => { f.paymentStatus = e.target.value; renderOrderList(); };
@@ -61,9 +61,10 @@ function dang(group, n) { return (group === 'orderStatus' && (n === 'cancelled' 
 function statusGroupHtml(d, group, transitions) {
   const cur = d[group] || '—';
   const readonly = group === 'paymentStatus' || group === 'afterSaleStatus';
+  const payWarn = group === 'paymentStatus' && PAYMENT_NOT_INTEGRATED ? ' · 未接真实支付' : '';
   const nexts = transitions[cur] || [];
   return `<div class="sgroup">
-    <div class="shead"><span class="slab">${GROUP_LABELS[group]}</span>${stag(group, cur)}${readonly ? '<span class="muted sm">只读</span>' : ''}</div>
+    <div class="shead"><span class="slab">${GROUP_LABELS[group]}</span>${stag(group, cur)}${readonly ? `<span class="muted sm">只读${payWarn}</span>` : ''}</div>
     ${readonly ? '' : `<div class="sbtns">${nexts.map(n => `<button class="chip ${dang(group, n) ? 'chip-danger' : ''}" data-tran="${group}" data-to="${esc(n)}">${statusLabel(group, n)}</button>`).join('') || '<span class="muted sm">已到终态</span>'}</div>`}
   </div>`;
 }

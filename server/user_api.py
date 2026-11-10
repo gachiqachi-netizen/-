@@ -149,6 +149,9 @@ def read_share(db, token):
 
 
 def make_order(db, data, uid):
+    # 支付状态只能由支付回调（payments.mark_paid）推进，客户端传入的一律拒绝，防止伪造。
+    if 'paymentStatus' in data:
+        raise ValueError('支付状态不可由客户端指定')
     key = data.get('requestId')
     if not isinstance(key, str) or not re.fullmatch(r'[A-Za-z0-9_-]{16,128}', key):
         raise ValueError('请提供 16–128 位订单请求编号 requestId')

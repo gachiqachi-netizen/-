@@ -70,7 +70,7 @@ class LegacyCompatTest(unittest.TestCase):
         order = db.get('orders', 'legacy-order')
         derived = status.derive_status(order)
         self.assertEqual(derived['orderStatus'], 'confirmed')
-        self.assertEqual(derived['paymentStatus'], 'paid')
+        self.assertEqual(derived['paymentStatus'], 'unpaid')
         self.assertEqual(derived['fulfillmentStatus'], 'unfulfilled')
         self.assertEqual(derived['afterSaleStatus'], 'none')
         self.assertEqual(order['status'], '待串制')

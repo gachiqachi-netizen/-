@@ -20,3 +20,4 @@
  <camera wx:if="{{cameraMounted}}" class="capture" device-position="{{position}}" flash="off" frame-size="medium" bindinitdone="cameraReady" binderror="cameraError"/>
  <canvas class="compute" type="webgl" id="compute"/>
 </view>
+<privacy-popup scene="打开摄像头进行实时试戴" bind:reject="privacyRejected"/>

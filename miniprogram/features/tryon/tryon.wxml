@@ -20,3 +20,4 @@
   <view class="error" wx:if="{{error}}">{{error}}</view>
   <view class="bottom"><view class="sum"><view class="price">¥{{price}}</view><view class="tiny">预计商品价 · 含手工费</view></view><button class="ghost" bindtap="share">分享</button><button class="primary" bindtap="order">去下单</button></view>
 </view>
+<privacy-popup scene="拍照或选择手腕照片" bind:reject="privacyRejected"/>

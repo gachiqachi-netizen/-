@@ -1,0 +1,10 @@
+<view wx:if="{{visible}}" class="privacy-mask">
+  <view class="privacy-card">
+    <view class="privacy-title">隐私保护说明</view>
+    <view class="privacy-copy">为{{scene}}，需要读取你主动选择的照片或使用摄像头。照片仅在你确认后发送到识别服务；实时手腕画面只在本机处理。</view>
+    <view class="privacy-actions">
+      <button class="privacy-secondary" bindtap="reject">暂不使用</button>
+      <button id="agree-btn" class="privacy-primary" open-type="agreePrivacyAuthorization" bindagreeprivacyauthorization="agree">同意并继续</button>
+    </view>
+  </view>
+</view>

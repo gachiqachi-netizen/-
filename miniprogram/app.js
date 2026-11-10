@@ -7,6 +7,7 @@ try { config = loadConfig(wx) } catch (error) {
 App({
   globalData: {...config, configError, catalog: null},
   onLaunch() {
+    require('./utils/privacy').install()
     if (configError) wx.showModal({title: '环境配置未完成', content: configError, showCancel: false})
   }
 })

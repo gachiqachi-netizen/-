@@ -75,5 +75,6 @@ Page({
  retry(){if(this._busy||this._loading)return;if(this.data.renderFailed){wx.redirectTo({url:'/ar-hand/index'});return;}this.stopFrames();this._seenFrame=false;this._cameraReady=false;this.setData({cameraMounted:false,error:'',tracked:false},()=>{if(this._tracker)this.setData({cameraMounted:true,status:'正在重启相机…'});else this.initialize()})},
  fail(message){console.error('[AR-TFJS]',message);if(!this._closed)this.setData({error:message,status:'测试未通过',tracked:false})},
  overlayError(e){this._renderFailure=e&&e.detail||{};this.stopFrames();this.setData({renderFailed:true});this.fail('手串 3D 渲染失败（'+(this._renderFailure.stage||'unknown')+'）：'+(this._renderFailure.message||'未知错误'))},
- copyDiagnostic(){const d=wx.getDeviceInfo?wx.getDeviceInfo():wx.getSystemInfoSync();wx.setClipboardData({data:JSON.stringify({build:'tfjs-hand-03',scalePercent:this.data.scalePercent,render:this._renderFailure||null,platform:d.platform,model:d.model,system:d.system,status:this.data.status,diag:this.data.diag,error:this.data.error})})}
+ copyDiagnostic(){const d=wx.getDeviceInfo?wx.getDeviceInfo():wx.getSystemInfoSync();wx.setClipboardData({data:JSON.stringify({build:'tfjs-hand-03',scalePercent:this.data.scalePercent,render:this._renderFailure||null,platform:d.platform,model:d.model,system:d.system,status:this.data.status,diag:this.data.diag,error:this.data.error})})},
+ privacyRejected(){this.stopFrames();this.setData({cameraMounted:false,error:'未授权摄像头。可以改用照片试戴。',status:'已取消实时试戴'})}
 });

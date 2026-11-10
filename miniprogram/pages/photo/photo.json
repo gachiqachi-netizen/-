@@ -1,1 +1,1 @@
-{"navigationBarTitleText": "拍照做同款", "usingComponents": {"bracelet-thumb": "/components/bracelet-thumb/index"}}
+{"navigationBarTitleText":"拍照做同款","usingComponents":{"bracelet-thumb":"/components/bracelet-thumb/index","privacy-popup":"/components/privacy-popup/index"}}

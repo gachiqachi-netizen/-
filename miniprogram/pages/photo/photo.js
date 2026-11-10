@@ -152,5 +152,6 @@ Page({
     if (!beads || beads.length < 6) return wx.showToast({title:'材料无法生成合适的手串，请调整后重试',icon:'none'})
     d.name = '照片同款'; d.beads = beads; store.selected(d)
     require('../../utils/nav').openEditor()
-  }
+  },
+  privacyRejected() { this.setData({busy:false, error:'未授权照片或相机权限。你仍可返回首页使用模板或自由 DIY。'}) }
 })

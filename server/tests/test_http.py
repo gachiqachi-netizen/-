@@ -55,12 +55,24 @@ class HTTPTest(unittest.TestCase):
         app.db, app.ADMIN_TOKEN = cls.original_db, cls.original_token
         cls.temp.cleanup()
 
-    def request(self, path, method='GET', data=None, token=None, raw=None, admin=None):
-        headers = {}
+    def setUp(self):
+        with app._admin_lock:
+            app._admin_sessions.clear()
+            app._admin_login_failures.clear()
+        self.audit_path = os.path.join(self.temp.name, 'admin-audit.jsonl')
+        app.ADMIN_AUDIT_PATH = self.audit_path
+        if os.path.exists(self.audit_path):
+            os.unlink(self.audit_path)
+
+    def request(self, path, method='GET', data=None, token=None, raw=None, admin=None,
+                cookie=None, extra_headers=None, with_headers=False):
+        headers = dict(extra_headers or {})
         if token:
             headers['Authorization'] = 'Bearer ' + token
         if admin:
             headers['X-Admin-Token'] = admin
+        if cookie:
+            headers['Cookie'] = cookie
         if data is not None:
             raw = json.dumps(data).encode()
         if raw is not None:
@@ -71,7 +83,48 @@ class HTTPTest(unittest.TestCase):
         except HTTPError as error:
             response = error
         with response:
-            return response.status, json.loads(response.read())
+            raw_body = response.read()
+            if 'application/json' in (response.headers.get('Content-Type') or ''):
+                body = json.loads(raw_body)
+            else:
+                body = raw_body.decode()
+            result = (response.status, body)
+            if with_headers:
+                return result + (dict(response.headers.items()),)
+            return result
+
+    def test_admin_browser_session_logout_rate_limit_and_audit(self):
+        status, _, headers = self.request('/api/admin/session', 'POST', {'password': 'test-admin'},
+                                          extra_headers={'X-Forwarded-Proto': 'https'}, with_headers=True)
+        self.assertEqual(status, 200)
+        set_cookie = headers['Set-Cookie']
+        self.assertIn('HttpOnly', set_cookie)
+        self.assertIn('SameSite=Strict', set_cookie)
+        self.assertIn('Secure', set_cookie)
+        cookie = set_cookie.split(';', 1)[0]
+        self.assertEqual(self.request('/api/admin/orders', cookie=cookie)[0], 200)
+
+        bead = {'name': '审计珠', 'mm': 8, 'price': 1, 'mat': 'wood', 'c': ['#ffffff', '#000000']}
+        self.assertEqual(self.request('/api/admin/beads', 'POST', bead, cookie=cookie)[0], 200)
+        with open(self.audit_path, encoding='utf-8') as stream:
+            audit = stream.read()
+        self.assertIn('LOGIN', audit)
+        self.assertIn('/api/admin/beads/', audit)
+        self.assertNotIn('test-admin', audit)
+
+        self.assertEqual(self.request('/api/admin/session', 'DELETE', cookie=cookie)[0], 200)
+        self.assertEqual(self.request('/api/admin/orders', cookie=cookie)[0], 401)
+
+        for _ in range(app.ADMIN_LOGIN_LIMIT):
+            self.assertEqual(self.request('/api/admin/session', 'POST', {'password': 'wrong'})[0], 401)
+        self.assertEqual(self.request('/api/admin/session', 'POST', {'password': 'test-admin'})[0], 429)
+
+    def test_admin_page_has_browser_security_headers(self):
+        status, _, headers = self.request('/admin', with_headers=True)
+        self.assertEqual(status, 200)
+        self.assertEqual(headers['X-Frame-Options'], 'DENY')
+        self.assertEqual(headers['X-Content-Type-Options'], 'nosniff')
+        self.assertIn("frame-ancestors 'none'", headers['Content-Security-Policy'])
 
     def test_local_model_files_served_without_escaping_folder(self):
         folder = os.path.join(self.temp.name, 'models')

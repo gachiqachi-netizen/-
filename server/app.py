@@ -64,6 +64,36 @@ threading.Thread(target=session_cleanup_loop, daemon=True).start()
 ORDER_STATUS = ["待串制", "串制中", "已发货", "已完成", "已取消"]
 MAX_UPLOAD = 6 * 1024 * 1024
 AI_SLOTS = threading.BoundedSemaphore(4)
+ADMIN_SESSION_TTL = int(os.environ.get("ADMIN_SESSION_TTL", "28800"))
+ADMIN_LOGIN_WINDOW = 10 * 60
+ADMIN_LOGIN_LIMIT = 5
+ADMIN_AUDIT_PATH = os.path.join(DATA_DIR, "admin-audit.jsonl")
+_admin_sessions = {}
+_admin_login_failures = {}
+_admin_lock = threading.Lock()
+
+
+def _prune_admin_state(now=None):
+    now = now or time.time()
+    with _admin_lock:
+        for sid, expires in list(_admin_sessions.items()):
+            if expires <= now:
+                _admin_sessions.pop(sid, None)
+        for ip, attempts in list(_admin_login_failures.items()):
+            kept = [stamp for stamp in attempts if stamp > now - ADMIN_LOGIN_WINDOW]
+            if kept:
+                _admin_login_failures[ip] = kept
+            else:
+                _admin_login_failures.pop(ip, None)
+
+
+def _audit_admin(method, path, ip):
+    record = {"at": int(time.time() * 1000), "method": method, "path": path, "ip": ip}
+    try:
+        with open(ADMIN_AUDIT_PATH, "a", encoding="utf-8") as stream:
+            stream.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except OSError:
+        traceback.print_exc()
 
 def validate_bind(host, admin_token, public_enabled, demo_disabled):
     # Public binding is an explicit opt-in, but is not a substitute for TLS,
@@ -143,7 +173,7 @@ class Handler(BaseHTTPRequestHandler):
         message = re.sub(r'/api/shares/[A-Za-z0-9_-]{43}', '/api/shares/[redacted]', fmt % args)
         sys.stderr.write("%s %s\n" % (self.command, message))
 
-    def send(self, code, body, ctype="application/json; charset=utf-8"):
+    def send(self, code, body, ctype="application/json; charset=utf-8", headers=None):
         if isinstance(body, (dict, list)):
             body = json.dumps(body, ensure_ascii=False)
         if isinstance(body, str):
@@ -152,6 +182,13 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
+        if ctype.startswith("text/html"):
+            self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+        for name, value in (headers or {}).items():
+            self.send_header(name, value)
         self.end_headers()
         self.wfile.write(body)
 
@@ -170,9 +207,57 @@ class Handler(BaseHTTPRequestHandler):
             raise ValueError("请求内容必须是 JSON 对象")
         return data
 
+    def admin_cookie(self):
+        for part in (self.headers.get("Cookie") or "").split(";"):
+            name, _, value = part.strip().partition("=")
+            if name == "beadloop_admin":
+                return value
+        return ""
+
     def admin_ok(self):
         supplied = self.headers.get("X-Admin-Token") or ""
-        return bool(ADMIN_TOKEN) and secrets.compare_digest(supplied.encode('utf-8'), ADMIN_TOKEN.encode('utf-8'))
+        if bool(ADMIN_TOKEN) and secrets.compare_digest(supplied.encode('utf-8'), ADMIN_TOKEN.encode('utf-8')):
+            return True
+        sid = self.admin_cookie()
+        if not sid:
+            return False
+        _prune_admin_state()
+        with _admin_lock:
+            return (_admin_sessions.get(sid) or 0) > time.time()
+
+    def admin_login(self, data):
+        ip = self.client_address[0]
+        now = time.time()
+        _prune_admin_state(now)
+        with _admin_lock:
+            attempts = _admin_login_failures.get(ip, [])
+        if len(attempts) >= ADMIN_LOGIN_LIMIT:
+            return self.send(429, {"error": "尝试次数过多，请十分钟后再试"}, headers={"Retry-After": str(ADMIN_LOGIN_WINDOW)})
+        supplied = str(data.get("password") or "")
+        if not ADMIN_TOKEN or not secrets.compare_digest(supplied.encode("utf-8"), ADMIN_TOKEN.encode("utf-8")):
+            with _admin_lock:
+                _admin_login_failures.setdefault(ip, []).append(now)
+            return self.send(401, {"error": "后台口令不正确"})
+        sid = secrets.token_urlsafe(32)
+        with _admin_lock:
+            _admin_sessions[sid] = now + ADMIN_SESSION_TTL
+            _admin_login_failures.pop(ip, None)
+        secure = "; Secure" if self.headers.get("X-Forwarded-Proto") == "https" else ""
+        cookie = f"beadloop_admin={sid}; Path=/; Max-Age={ADMIN_SESSION_TTL}; HttpOnly; SameSite=Strict{secure}"
+        _audit_admin("LOGIN", "/api/admin/session", ip)
+        return self.send(200, {"ok": True}, headers={"Set-Cookie": cookie})
+
+    def admin_logout(self):
+        sid = self.admin_cookie()
+        with _admin_lock:
+            _admin_sessions.pop(sid, None)
+        secure = "; Secure" if self.headers.get("X-Forwarded-Proto") == "https" else ""
+        cookie = f"beadloop_admin=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict{secure}"
+        _audit_admin("LOGOUT", "/api/admin/session", self.client_address[0])
+        return self.send(200, {"ok": True}, headers={"Set-Cookie": cookie})
+
+    def audit_admin_mutation(self, path):
+        _audit_admin(self.command, path, self.client_address[0])
 
     def user(self):
         return user_api.owner(db, self.headers.get("Authorization"))
@@ -185,7 +270,8 @@ class Handler(BaseHTTPRequestHandler):
                 html = open(FRONT, encoding="utf-8").read()
                 return self.send(200, page_skeleton(html, '<script>window.CGZ_API="/api";</script>'), "text/html; charset=utf-8")
             if path in ("/admin", "/admin/"):
-                return self.send(200, open(os.path.join(HERE, "static", "admin.html"), encoding="utf-8").read(), "text/html; charset=utf-8")
+                with open(os.path.join(HERE, "static", "admin.html"), encoding="utf-8") as stream:
+                    return self.send(200, stream.read(), "text/html; charset=utf-8")
             if path.startswith("/uploads/"):
                 name = os.path.basename(path)
                 fp = os.path.join(UPLOADS, name)
@@ -248,6 +334,8 @@ class Handler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         try:
             data = self.body()
+            if path == "/api/admin/session":
+                return self.admin_login(data)
             # ----- 前台 -----
             if path == "/api/auth/wechat":
                 status, result = user_api.login(db, data.get("code"))
@@ -327,7 +415,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/upload":
                 if not self.admin_ok():
                     return self.send(401, {"error": "需要后台口令"})
-                return self.send(200, {"url": save_image(data.get("data"))})
+                result = {"url": save_image(data.get("data"))}
+                self.audit_admin_mutation(path)
+                return self.send(200, result)
             if path.startswith("/api/ai/"):
                 return self.ai_route(path, data)
             # ----- 后台：新建 -----
@@ -340,7 +430,9 @@ class Handler(BaseHTTPRequestHandler):
                 err = validate(m.group(1), data)
                 if err:
                     return self.send(400, {"error": err})
-                return self.send(200, db.put(m.group(1), rid, data))
+                result = db.put(m.group(1), rid, data)
+                self.audit_admin_mutation(path + "/" + rid)
+                return self.send(200, result)
             return self.send(404, {"error": "not_found"})
         except user_api.IdempotencyConflict as e:
             return self.send(409, {"error": str(e), "code": "idempotency_conflict"})
@@ -387,11 +479,15 @@ class Handler(BaseHTTPRequestHandler):
                 if data.get("status") not in ORDER_STATUS:
                     return self.send(400, {"error": "状态不对"})
                 o["status"] = data["status"]
-                return self.send(200, db.put("orders", rid, o))
+                result = db.put("orders", rid, o)
+                self.audit_admin_mutation(path)
+                return self.send(200, result)
             err = validate(table, data)
             if err:
                 return self.send(400, {"error": err})
-            return self.send(200, db.put(table, rid, data))
+            result = db.put(table, rid, data)
+            self.audit_admin_mutation(path)
+            return self.send(200, result)
         except ValueError as e:
             return self.send(400, {"error": str(e)})
         except Exception as e:
@@ -400,6 +496,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         path = urlparse(self.path).path
+        if path == "/api/admin/session":
+            return self.admin_logout()
         design_match = re.fullmatch(r"/api/designs/([a-f0-9]{32})", path)
         if design_match:
             uid = self.user()
@@ -416,6 +514,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self.admin_ok():
             return self.send(401, {"error": "需要后台口令"})
         db.delete(*m.groups())
+        self.audit_admin_mutation(path)
         return self.send(200, {"ok": True})
 
     # ---------- AI ----------

@@ -213,6 +213,36 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(self.request('/api/my/orders', token=b)[1], [])
         self.assertEqual(self.request('/api/admin/orders/' + order['no'], 'PUT', {'status':'串制中'}, admin='test-admin')[0], 400)
 
+    def test_customer_order_contract_and_cancel_authorization_over_http(self):
+        a, b = 'a' * 43, 'b' * 43
+        order = {
+            'no': 'HTTP-CANCEL-ORDER', 'userId': 'owner-a', 'name': '待取消订单',
+            'beads': ['zt8'] * 6, 'items': [{'id': 'zt8', 'unitPriceFen': 300}],
+            'totalFen': 3300, 'payableFen': 3300, 'paidFen': 0, 'refundFen': 0,
+            'status': '待支付', 'orderStatus': 'pending_confirmation',
+            'paymentStatus': 'unpaid', 'fulfillmentStatus': 'unfulfilled',
+            'afterSaleStatus': 'none', 'logisticsStatus': 'not_shipped',
+            'statusHistory': [], 'logisticsHistory': [], 'logistics': None,
+        }
+        app.db.put('orders', order['no'], order)
+        self.addCleanup(app.db.delete, 'orders', order['no'])
+        listed = self.request('/api/my/orders', token=a)[1]
+        public = next(row for row in listed if row['no'] == order['no'])
+        self.assertEqual(public['state']['payment'], {'code': 'unpaid', 'label': '待支付'})
+        self.assertEqual(public['allowedActions'], ['cancel_order', 'reorder'])
+        self.assertNotIn('userId', public)
+        self.assertNotIn('pay', public['allowedActions'])
+
+        path = '/api/my/orders/' + order['no'] + '/actions'
+        self.assertEqual(self.request(path, 'POST', {'action': 'cancel_order'})[0], 401)
+        self.assertEqual(self.request(path, 'POST', {'action': 'cancel_order'}, token=b)[0], 404)
+        self.assertEqual(self.request(path, 'POST', {}, token=a)[0], 400)
+        status_code, cancelled = self.request(path, 'POST', {'action': 'cancel_order'}, token=a)
+        self.assertEqual(status_code, 200)
+        self.assertEqual(cancelled['state']['order']['code'], 'cancelled')
+        self.assertEqual(cancelled['state']['payment']['code'], 'closed')
+        self.assertEqual(cancelled['allowedActions'], ['reorder'])
+
     def test_invalid_json_is_rejected_without_internal_details(self):
         for raw in (b'[1]', b'{broken', b'null'):
             status, result = self.request('/api/auth/wechat', 'POST', raw=raw)

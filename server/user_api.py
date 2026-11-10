@@ -136,6 +136,57 @@ def public_design(d):
     return {k: v for k, v in d.items() if k != 'userId'}
 
 
+_ORDER_STATE_GROUPS = (
+    ('order', 'orderStatus'),
+    ('payment', 'paymentStatus'),
+    ('fulfillment', 'fulfillmentStatus'),
+    ('afterSale', 'afterSaleStatus'),
+    ('logistics', 'logisticsStatus'),
+)
+
+
+def order_allowed_actions(order):
+    """Return stable customer action codes; the server remains the final arbiter."""
+    groups = status.derive_status(order)
+    actions = []
+    if (groups['orderStatus'] == 'pending_confirmation'
+            and groups['paymentStatus'] == 'unpaid'
+            and groups['fulfillmentStatus'] == 'unfulfilled'
+            and groups['afterSaleStatus'] == 'none'
+            and groups['logisticsStatus'] == 'not_shipped'):
+        actions.append('cancel_order')
+    if (groups['orderStatus'] == 'confirmed'
+            and groups['paymentStatus'] == 'paid'
+            and groups['fulfillmentStatus'] == 'shipped'
+            and groups['afterSaleStatus'] == 'none'
+            and groups['logisticsStatus'] in ('shipped', 'in_transit')):
+        actions.append('confirm_receipt')
+    if groups['logisticsStatus'] != 'not_shipped' or order.get('logistics'):
+        actions.append('view_logistics')
+    if isinstance(order.get('beads'), list) and order['beads']:
+        actions.append('reorder')
+    # Real payment is not integrated. Never advertise a pay action merely because
+    # the legacy order has paymentAvailable or an unpaid status.
+    return actions
+
+
+def public_order(order):
+    """Owner-safe order representation with normalized state and actions."""
+    out = public_design(order)
+    groups = status.derive_status(order)
+    out['state'] = {
+        key: {'code': groups[field], 'label': status.status_label(field, groups[field])}
+        for key, field in _ORDER_STATE_GROUPS
+    }
+    out['allowedActions'] = order_allowed_actions(order)
+    return out
+
+
+def perform_order_action(db, no, uid, action):
+    import commerce
+    return public_order(commerce.customer_order_action(db, no, uid, action))
+
+
 def create_share(db, data, owner_id):
     """Create an unguessable public snapshot, containing only explicit design fields."""
     design = design_data(data, owner_id)
@@ -169,7 +220,7 @@ def make_order(db, data, uid):
     if state == 'conflict':
         raise IdempotencyConflict('同一个订单请求编号不能用于不同内容')
     if state == 'existing':
-        return public_design(existing)
+        return public_order(existing)
     beads = {b['id']: b for b in db.list('beads') if b.get('onSale', True)}
     ids = data.get('beads')
     if not isinstance(ids, list) or not 6 <= len(ids) <= 500 or any(not isinstance(i, str) or i not in beads for i in ids):
@@ -237,7 +288,7 @@ def make_order(db, data, uid):
         raise IdempotencyConflict('同一个订单请求编号不能用于不同内容')
     if state == 'price_changed':
         raise PriceChanged()
-    return public_design(result)
+    return public_order(result)
 
 
 def promotion_status():

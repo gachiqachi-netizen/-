@@ -329,7 +329,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not uid:
                     return self.send(401, {"error": "请先登录"})
                 table = "designs" if path == "/api/designs" else "orders"
-                rows = [user_api.public_design(row) for row in db.list_by_owner(table, uid)]
+                presenter = user_api.public_design if path == "/api/designs" else user_api.public_order
+                rows = [presenter(row) for row in db.list_by_owner(table, uid)]
                 rows.sort(key=lambda row: row.get("updatedAt", row.get("createdAt", 0)), reverse=True)
                 return self.send(200, rows)
             m = re.match(r"^/api/admin/(beads|templates|banners|orders)$", path)
@@ -404,6 +405,16 @@ class Handler(BaseHTTPRequestHandler):
                 if not uid:
                     return self.send(401, {"error": "请先登录"})
                 return self.send(201, user_api.create_share(db, data, uid))
+            order_action = re.fullmatch(r"/api/my/orders/([\w-]+)/actions(?:/([a-z_]+))?", path)
+            if order_action:
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                no, suffix_action = order_action.groups()
+                action = suffix_action or data.get("action")
+                if not isinstance(action, str) or not re.fullmatch(r"[a-z_]+", action):
+                    raise ValueError("订单操作格式不正确")
+                return self.send(200, user_api.perform_order_action(db, no, uid, action))
             if path in ("/api/designs", "/api/my/orders"):
                 uid = self.user()
                 if not uid:

@@ -1,10 +1,19 @@
-<view class="mine-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
+<view class="mine-page">
+  <view wx:if="{{catalogOffline}}" class="offline-note">正在使用离线示例数据</view>
   <view class="wrist-card" bindtap="wrist"><text>我的手围</text><text class="wrist-value">{{wrist}}cm ›</text></view>
   <view class="section-title">我的订单</view>
   <view wx:if="{{!loggedIn}}" class="empty-note">登录后查看订单 <text class="link" bindtap="goLogin">微信登录 ›</text></view>
   <view wx:elif="{{orderLoading}}" class="empty-note">正在读取订单…</view>
   <view wx:elif="{{!orders.length}}" class="empty-note">{{orderStatus || '还没有订单。'}}</view>
-  <view wx:for="{{orders}}" wx:key="no" class="item" data-i="{{index}}" bindtap="viewOrder"><view class="traybox"><bracelet-thumb beads="{{item.beads}}" catalog="{{catalog}}"/></view><view class="body"><view class="name">{{item.name}}</view><view class="spec">{{item.no}} · {{item.wrist}}cm · ¥{{item.total}}</view><view class="note">{{item.status}} · 查看订单详情</view></view><view class="chev">›</view></view>
+  <view wx:for="{{orders}}" wx:key="no" class="item order-item" data-i="{{index}}" bindtap="viewOrder">
+    <view class="traybox"><bracelet-thumb beads="{{item.beads}}" catalog="{{catalog}}"/></view>
+    <view class="body">
+      <view class="order-heading"><view class="name">{{item.name}}</view><view class="status-badge status-{{item.stateView.tone}}">{{item.stateView.label}}</view></view>
+      <view class="spec">{{item.no}} · {{item.wrist}}cm · ¥{{item.total}}</view>
+      <view class="note order-note">{{item.stateView.description}}</view>
+    </view>
+    <view class="chev">›</view>
+  </view>
   <view class="section-title">我的作品</view>
   <view wx:if="{{!designs.length}}" class="empty-note">还没有作品。制作并保存后会出现在这里。</view>
   <view wx:for="{{designs}}" wx:key="id" class="item" data-i="{{index}}" bindtap="open"><view class="traybox"><bracelet-thumb beads="{{item.beads}}" catalog="{{catalog}}"/></view><view class="body"><view class="name">{{item.name}}</view><view class="spec">{{item.beads.length}} 颗 · 手围 {{item.wrist}}cm</view><view class="note">{{item.cloudId?'已关联云端':'保存在本机'}}</view></view><view class="chev">›</view></view>

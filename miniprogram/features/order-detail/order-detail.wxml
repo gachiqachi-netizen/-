@@ -1,1 +1,36 @@
-<view class="wrap"><view wx:if="{{loading}}">正在读取订单…</view><view wx:if="{{error}}" class="error">{{error}}<button bindtap="load">重新加载</button></view><block wx:if="{{order}}"><view class="card"><view class="title">{{order.status}}</view><view class="sub">订单号 {{order.no}}</view><view>{{order.name}}</view><view>手围 {{order.wrist}}cm · {{order.beads.length}} 颗</view><view>珠串总长 {{order.length}}mm</view></view><view class="card"><view class="title">材料明细</view><view wx:for="{{items}}" wx:key="id">{{item.name}} {{item.mm}}mm × {{item.qty}} · ¥{{item.subtotal}}<view wx:if="{{item.pointsText}}" class="caption">{{item.pointsText}}</view><view wx:if="{{item.explanation}}" class="material-explanation">{{item.explanation}}</view><view wx:if="{{item.safety}}" class="material-safety">安全提示：{{item.safety}}</view></view></view><view class="card"><view>材料 ¥{{order.goods}} · 运费 ¥{{order.ship}}</view><view class="title">订单总额 ¥{{order.total}}</view><view class="sub">总额含制作费用，以提交订单时的价格为准。</view></view><view class="card"><view>{{order.person}} · {{order.phone}}</view><view>{{order.addr}}</view></view><view class="sub" wx:if="{{!order.paymentAvailable}}">支付暂未开放，此订单尚不能在线付款。</view><button class="reorder" bindtap="reorder">按这款再买一条</button></block></view>
+<view class="wrap order-detail">
+  <view wx:if="{{loading}}" class="loading-note">正在读取订单…</view>
+  <view wx:if="{{error}}" class="error error-card">{{error}}<button bindtap="load">重新加载</button></view>
+  <block wx:if="{{order}}">
+    <view class="card state-card">
+      <view class="state-top"><view><view class="eyebrow">当前状态</view><view class="state-title">{{order.stateView.label}}</view></view><view class="status-badge status-{{order.stateView.tone}}">{{order.stateView.label}}</view></view>
+      <view class="state-description">{{order.stateView.description}}</view>
+      <view class="state-groups">
+        <view wx:for="{{order.stateView.states}}" wx:key="key" class="state-group"><view class="group-label">{{item.groupLabel}}</view><view class="group-value group-{{item.tone}}">{{item.label}}</view></view>
+      </view>
+    </view>
+
+    <view class="card product-card">
+      <view class="row"><view class="title product-name">{{order.name}}</view><view class="price">¥{{order.total}}</view></view>
+      <view class="sub">订单号 {{order.no}}</view>
+      <view class="spec-line">手围 {{order.wrist}}cm · {{order.beads.length}} 颗 · 珠串总长 {{order.length}}mm</view>
+    </view>
+
+    <view wx:if="{{logisticsOpen}}" class="card logistics-card">
+      <view class="title section-heading">物流信息</view>
+      <block wx:if="{{order.logistics && (order.logistics.carrierName || order.logistics.carrierCode || order.logistics.trackingNo)}}"><view>{{order.logistics.carrierName || order.logistics.carrierCode || '承运方待更新'}}</view><view class="sub">运单号 {{order.logistics.trackingNo || '待更新'}}</view></block>
+      <view wx:else class="sub">物流信息尚未生成，发货后会在这里更新。</view>
+    </view>
+
+    <view class="card">
+      <view class="title section-heading">材料明细</view>
+      <view wx:for="{{items}}" wx:key="id" class="material-row"><view class="row"><view>{{item.name}} {{item.mm}}mm × {{item.qty}}</view><view>¥{{item.subtotal}}</view></view><view wx:if="{{item.pointsText}}" class="caption">{{item.pointsText}}</view><view wx:if="{{item.explanation}}" class="material-explanation">{{item.explanation}}</view><view wx:if="{{item.safety}}" class="material-safety">安全提示：{{item.safety}}</view></view>
+    </view>
+    <view class="card amount-card"><view class="row"><view>材料</view><view>¥{{order.goods}}</view></view><view class="row"><view>运费</view><view>¥{{order.ship}}</view></view><view class="row amount-total"><view>订单总额</view><view>¥{{order.total}}</view></view><view class="sub">总额含制作费用，以提交订单时的价格为准。</view></view>
+    <view class="card address-card"><view class="title section-heading">收货信息</view><view>{{order.person}} · {{order.phone}}</view><view class="sub">{{order.addr}}</view></view>
+    <view class="payment-note" wx:if="{{!order.paymentAvailable && order.paymentStatus==='unpaid'}}">支付暂未开放，此订单尚不能在线付款。</view>
+  </block>
+</view>
+<view wx:if="{{order && order.actionViews.length}}" class="action-bar">
+  <button wx:for="{{order.actionViews}}" wx:key="code" class="action-button action-{{item.style}}" data-code="{{item.code}}" bindtap="runAction" loading="{{actionBusy===item.code}}" disabled="{{actionBusy}}">{{item.label}}</button>
+</view>

@@ -674,6 +674,73 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
     return saved
 
 
+def customer_order_action(db, no, user_id, action):
+    """Apply a customer-owned order action under the same database transaction.
+
+    Payment is intentionally absent: only the payment callback boundary may
+    advance paymentStatus to paid.
+    """
+    if action not in ("cancel_order", "confirm_receipt"):
+        raise ValueError("不支持的订单操作")
+    meta = {}
+
+    def apply(order):
+        if order.get("userId") != user_id:
+            # Do not reveal whether another customer's order exists.
+            raise KeyError("订单不存在")
+        groups = status.derive_status(order)
+        meta["before"] = dict(groups)
+        now = _now()
+        if action == "cancel_order":
+            expected = {
+                "orderStatus": "pending_confirmation", "paymentStatus": "unpaid",
+                "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none",
+                "logisticsStatus": "not_shipped",
+            }
+            if any(groups[k] != v for k, v in expected.items()):
+                raise ValueError("当前订单状态不能取消")
+            status.validate_transition("orderStatus", groups["orderStatus"], "cancelled")
+            status.validate_transition("paymentStatus", groups["paymentStatus"], "closed")
+            order["orderStatus"] = "cancelled"
+            order["paymentStatus"] = "closed"
+            order["status"] = "已取消"  # legacy client compatibility
+            append_history(order, "customer", "orderStatus", groups["orderStatus"], "cancelled", "用户取消未支付订单")
+            append_history(order, "customer", "paymentStatus", groups["paymentStatus"], "closed", "订单取消，关闭支付")
+        else:
+            if not (groups["orderStatus"] == "confirmed"
+                    and groups["paymentStatus"] == "paid"
+                    and groups["fulfillmentStatus"] == "shipped"
+                    and groups["afterSaleStatus"] == "none"
+                    and groups["logisticsStatus"] in ("shipped", "in_transit")):
+                raise ValueError("当前订单状态不能确认收货")
+            status.validate_transition("logisticsStatus", groups["logisticsStatus"], "delivered")
+            _check_order_constraints(order, "logisticsStatus", "delivered")
+            order["logisticsStatus"] = "delivered"
+            status.validate_transition("fulfillmentStatus", groups["fulfillmentStatus"], "delivered")
+            _check_order_constraints(order, "fulfillmentStatus", "delivered")
+            order["fulfillmentStatus"] = "delivered"
+            status.validate_transition("orderStatus", groups["orderStatus"], "completed")
+            _check_order_constraints(order, "orderStatus", "completed")
+            order["orderStatus"] = "completed"
+            order["status"] = "已完成"  # legacy client compatibility
+            logistics = dict(order.get("logistics") or {})
+            logistics.setdefault("signedAt", now)
+            order["logistics"] = logistics
+            order.setdefault("logisticsHistory", []).append(
+                {"at": now, "actor": "customer", "action": "确认收货", "detail": "用户确认已收到商品"})
+            append_history(order, "customer", "logisticsStatus", groups["logisticsStatus"], "delivered", "用户确认收货")
+            append_history(order, "customer", "fulfillmentStatus", groups["fulfillmentStatus"], "delivered", "用户确认收货")
+            append_history(order, "customer", "orderStatus", groups["orderStatus"], "completed", "用户确认收货")
+        order["updatedAt"] = now
+        return order
+
+    return _atomic_order_transition(
+        db, no, apply,
+        audit_builder=lambda: _audit_record(
+            "customer", action, "order", no,
+            json.dumps(meta.get("before", {}), ensure_ascii=False, sort_keys=True)))
+
+
 def update_order_logistics(db, no, logistics, actor=ACTOR):
     order = db.get("orders", no)
     if not order:

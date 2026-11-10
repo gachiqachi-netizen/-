@@ -1,6 +1,7 @@
 """WeChat identity and owner-scoped prototype APIs; payment integration is intentionally separate."""
 import kb
 import pricing
+import money
 import content_security
 import hashlib
 import json
@@ -11,7 +12,7 @@ import time
 import urllib.parse
 import urllib.request
 import uuid
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 
 import status
 
@@ -175,14 +176,15 @@ def make_order(db, data, uid):
     if type(cord) is not int or cord not in (0, 1) or type(data.get('gift', False)) is not bool:
         raise ValueError('订单选项不正确')
     try:
-        goods = sum((Decimal(str(beads[i]['price'])) for i in ids), Decimal(0))
-        if not goods.is_finite() or goods < 0:
-            raise ValueError('商品价格不正确')
-    except (InvalidOperation, KeyError):
+        unit_prices = [{'unitPriceFen': money.yuan_to_fen(beads[i]['price'])} for i in ids]
+    except KeyError:
         raise ValueError('商品价格不正确')
-    priced = pricing.quote([{'unitPriceFen': int(Decimal(str(beads[i]['price'])) * 100)} for i in ids], {'cord': cord, 'gift': data.get('gift', False)})
-    ship = Decimal(priced['shippingFen']) / 100
-    total = Decimal(priced['totalFen']) / 100
+    priced = pricing.quote(unit_prices, {'cord': cord, 'gift': data.get('gift', False)})
+    goods_fen = money.parse_fen(priced['goodsFen'])
+    subtotal_fen = money.parse_fen(priced['subtotalFen'])
+    shipping_fen = money.parse_fen(priced['shippingFen'])
+    discount_fen = money.parse_fen(priced['discountFen'])
+    payable_fen = money.parse_fen(priced['payableFen'])
     quote = data.get('confirmedQuote')
     if not isinstance(quote, dict) or type(quote.get('totalFen')) is not int or not isinstance(quote.get('items'), list):
         raise ValueError('请先确认订单报价')
@@ -191,25 +193,27 @@ def make_order(db, data, uid):
         if not isinstance(item, dict) or not isinstance(item.get('id'), str) or type(item.get('unitPriceFen')) is not int or isinstance(item.get('mm'), bool) or not isinstance(item.get('mm'), (int, float)) or item['id'] in quoted:
             raise ValueError('订单报价格式不正确')
         quoted[item['id']] = (item['unitPriceFen'], item['mm'])
-    actual = {i: (int(Decimal(str(beads[i]['price'])) * 100), beads[i]['mm']) for i in set(ids)}
-    if quoted != actual or Decimal(quote['totalFen']) != total * 100:
+    actual = {i: (money.yuan_to_fen(beads[i]['price']), beads[i]['mm']) for i in set(ids)}
+    if quoted != actual or quote['totalFen'] != payable_fen:
         raise PriceChanged()
     enriched = {i: kb.enrich(beads[i]) for i in set(ids)}
     snapshot = [{**{key: enriched[i].get(key, [] if key == 'points' else '')
                     for key in ('id', 'name', 'mm', 'price', 'photo', 'kb', 'points', 'meaning', 'summary', 'safety')},
                  'photo': beads[i].get('photo'),
-                 'unitPriceFen': int(Decimal(str(beads[i]['price'])) * 100)} for i in ids]
+                 'unitPriceFen': money.yuan_to_fen(beads[i]['price'])} for i in ids]
     no = 'CGZ' + time.strftime('%y%m%d') + uuid.uuid4().hex[:12].upper()
     import commerce
     terms_snapshot = commerce.terms_snapshot(db)
     groups = status.new_order_status()
     order = {'no': no, 'userId': uid, 'name': str(data.get('name') or '我的手串')[:60], 'beads': ids, 'items': snapshot,
              'wrist': wrist, 'length': sum(Decimal(str(beads[i].get('mm', 0))) for i in ids).__float__(),
-             'cord': cord, 'gift': data.get('gift', False), 'goods': float(goods), 'ship': float(ship), 'promo': 0,
+             'cord': cord, 'gift': data.get('gift', False), 'promo': 0,
              'promotion': promotion_status(),
-             'total': float(total), 'person': data['person'].strip()[:40], 'phone': data['phone'],
+             'person': data['person'].strip()[:40], 'phone': data['phone'],
              'addr': data['addr'].strip()[:200], 'status': '待支付', 'paymentAvailable': False,
-             'goodsFen': int(goods * 100), 'shipFen': int(Decimal(ship) * 100), 'totalFen': int(total * 100),
+             'subtotalFen': subtotal_fen, 'shippingFen': shipping_fen, 'discountFen': discount_fen,
+             'payableFen': payable_fen, 'paidFen': 0, 'refundFen': 0,
+             'goodsFen': goods_fen, 'shipFen': shipping_fen, 'totalFen': payable_fen,
              'orderStatus': groups['orderStatus'], 'paymentStatus': groups['paymentStatus'],
              'fulfillmentStatus': groups['fulfillmentStatus'], 'afterSaleStatus': groups['afterSaleStatus'],
              'statusHistory': [], 'logistics': None, 'logisticsHistory': [],

@@ -15,8 +15,10 @@ class PricingTest(unittest.TestCase):
             'handworkFen': 1500,
             'cordFen': 500,
             'giftFen': 1000,
+            'subtotalFen': 4800,
             'shippingFen': 800,
             'discountFen': 0,
+            'payableFen': 5600,
             'totalFen': 5600,
         })
         self.assertEqual(pricing.public_config(), {

@@ -30,12 +30,16 @@ def quote(items, options=None):
     gift = GIFT_FEN if options.get('gift') is True else 0
     subtotal = goods + HANDWORK_FEN + cord + gift
     shipping = 0 if subtotal >= FREE_SHIPPING_THRESHOLD_FEN else SHIPPING_FEN
+    discount = 0
     return {
         'goodsFen': goods,
         'handworkFen': HANDWORK_FEN,
         'cordFen': cord,
         'giftFen': gift,
+        'subtotalFen': subtotal,
         'shippingFen': shipping,
-        'discountFen': 0,
+        'discountFen': discount,
+        'payableFen': subtotal + shipping - discount,
+        # totalFen 为兼容别名，恒等于 payableFen
         'totalFen': subtotal + shipping,
     }

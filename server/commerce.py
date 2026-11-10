@@ -8,17 +8,15 @@ import time
 import uuid
 
 import kb
+import money
 import status
 
 ACTOR = "admin"
 
 
 def fen(yuan):
-    """元（浮点）转整数分。"""
-    try:
-        return int(round(float(yuan) * 100))
-    except (TypeError, ValueError):
-        raise ValueError("金额格式不正确")
+    """元转整数分，委托 money.yuan_to_fen（唯一权威转换）。"""
+    return money.yuan_to_fen(yuan)
 
 
 def _now():
@@ -452,11 +450,11 @@ def create_after_sale(db, data, actor=ACTOR):
     reason = str(data.get("reason") or "").strip()[:200]
     if not reason:
         raise ValueError("请填写售后原因")
-    refund_fen = data.get("refundFen")
-    if isinstance(refund_fen, bool) or not isinstance(refund_fen, int) or refund_fen < 0:
-        raise ValueError("退款金额必须是不小于 0 的整数分")
-    if atype in ("仅退款", "退货退款") and refund_fen > fen(order.get("total", 0)):
-        raise ValueError("退款金额不能超过订单金额")
+    refund_fen = money.parse_fen(data.get("refundFen"))
+    if atype in ("仅退款", "退货退款"):
+        payable_fen = money.normalize_order_amounts(order)["payableFen"]
+        if refund_fen > payable_fen:
+            raise ValueError("退款金额不能超过订单金额")
 
     no = _after_sale_no()
     rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,

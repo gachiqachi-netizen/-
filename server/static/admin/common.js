@@ -49,7 +49,7 @@ let toastT; const toast = t => { $('toast').textContent = t; $('toast').classLis
 const productStatus = b => (PROD_STATUS[b.status] ? b.status : (b.onSale === false ? 'off_sale' : 'on_sale'));
 const productType = b => (TYPES[b.type] ? b.type : (b.spacer ? 'spacer' : 'bead'));
 const fenYuan = fen => (fen == null ? '—' : '¥' + (fen / 100).toFixed(2));
-const moneyFen = o => (o.totalFen != null ? o.totalFen : (o.total != null ? Math.round(Number(o.total) * 100) : null));
+const moneyFen = o => (o.payableFen != null ? o.payableFen : (o.totalFen != null ? o.totalFen : (o.total != null ? Math.round(Number(o.total) * 100) : null)));
 const ts = ms => (ms ? new Date(ms).toLocaleString('zh-CN', { hour12: false }) : '—');
 function dtLocal(ms) { if (!ms) return ''; const d = new Date(ms), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
 function dtMs(v) { if (!v) return ''; const d = new Date(v); return isNaN(d.getTime()) ? '' : d.getTime(); }

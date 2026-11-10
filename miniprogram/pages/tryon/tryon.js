@@ -70,5 +70,5 @@ Page({
   },
   openAR(){wx.navigateTo({url:'/pages/ar-tryon/ar-tryon'})},
   share(){wx.navigateTo({url:'/pages/share/share'})},
-  order(){if(this.data.missing)return wx.showToast({title:'请先替换下架材料',icon:'none'});wx.navigateTo({url:'/pages/order/order'})}
+  order(){if(this.data.missing)return wx.showToast({title:'请先替换下架材料',icon:'none'});require('../../utils/nav').openOrder()}
 })

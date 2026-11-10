@@ -1,5 +1,5 @@
 const materials=require('../editor/materials')
-const auth=require('../../utils/auth'),store=require('../../utils/design'),api=require('../../utils/api'), sizing=require('../editor/logic')
+const auth=require('../../utils/auth'),store=require('../../utils/design'),api=require('../../utils/api'), sizing=require('../editor/logic'),nav=require('../../utils/nav')
 // Store only a compact fingerprint and request ID; the shipping address is not persisted here.
 function fingerprint(text){let a=2166136261,b=2246822519;for(let i=0;i<text.length;i++){const c=text.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b^c,3266489917)}return (a>>>0).toString(16)+'-'+(b>>>0).toString(16)+'-'+text.length}
 const KEY='cgz_pending_order_request'
@@ -42,7 +42,7 @@ Page({
   input(e){this.setData({[e.currentTarget.dataset.key]:e.detail.value})},
   setCord(e){this.setData({cord:Number(e.currentTarget.dataset.cord)},()=>this.calculate())},
   setGift(e){this.setData({gift:!!e.detail.value},()=>this.calculate())},
-  edit(){wx.navigateTo({url:'/pages/editor/editor'})},
+  edit(){nav.openEditor()},
   wrist(){wx.navigateTo({url:'/pages/wrist/wrist?source=editor'})},
   unavailable(){this.setData({previewFallback:true})},
   async submit(){
@@ -74,7 +74,7 @@ Page({
       const payload={name:design.name,beads:design.beads,wrist:design.wrist,cord,gift,person:person.trim(),phone:phone.trim(),addr:addr.trim(),confirmedQuote}
       payload.requestId=requestId(payload)
       const order=await auth.authorized('/my/orders',payload)
-      const pending=wx.getStorageSync(KEY)||{};Object.keys(pending).forEach(k=>{if(pending[k]===payload.requestId)delete pending[k]});wx.setStorageSync(KEY,pending);this.setData({order})
+      const pending=wx.getStorageSync(KEY)||{};Object.keys(pending).forEach(k=>{if(pending[k]===payload.requestId)delete pending[k]});wx.setStorageSync(KEY,pending);this.setData({order});nav.orderComplete(order.no)
     } catch(e) {
       if(e.status===401) {
         this.setData({catalogReady:true,needLogin:true,error:'需要先登录才能下单'})

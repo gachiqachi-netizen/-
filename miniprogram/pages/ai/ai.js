@@ -2,6 +2,7 @@ const api = require('../../utils/api')
 const store = require('../../utils/design')
 const templates = require('../../utils/template')
 const wrist = require('../home/data').wrist
+const nav = require('../../utils/nav')
 Page({
   data: { text: '', messages: [], busy: false, error: '', wrist: 15, hasResults: false, catalog: [], refines:['颜色淡一点','100 以内','换成水晶','男生戴的','再来三条'] },
   onShow() { this.setData({wrist:wrist()}); if (typeof wx.getStorageSync === 'function') { const old=wx.getStorageSync('cgz_ai_chat'); if (Array.isArray(old) && !this.data.messages.length) this.setData({messages:old,hasResults:old.some(m=>m.results&&m.results.length)}); } api.catalog().then(c=>{this.catalog=c.beads||[]; this.setData({catalog:this.catalog}); if(this.data.messages.length)this.setData({messages:this.data.messages.map(m=>m.results?{...m,results:m.results.map(r=>this.decorate(r))}:m)});}).catch(()=>{}); },
@@ -48,6 +49,6 @@ Page({
     if (!t || !t.pattern || !t.pattern.length) return wx.showToast({ title: '方案无法使用', icon: 'none' })
     const d = store.fromTemplate(t, this.catalog || [], wrist())
     store.selected(d)
-    wx.navigateTo({ url: '/pages/editor/editor' })
+    nav.openEditor()
   }
 })

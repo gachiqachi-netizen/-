@@ -1,5 +1,6 @@
 const api = require('../../utils/api')
 const store = require('../../utils/design')
+const nav = require('../../utils/nav')
 
 function viewerWrist() {
   const value = Number(wx.getStorageSync('cgz_wrist'))
@@ -27,8 +28,8 @@ Page({
       this.setData({ design, catalog, items, notes, price, missing, measured: wrist.measured, loading: false })
     }).catch(e => this.setData({ loading: false, error: e.message || '分享暂不可用' }))
   },
-  use() { if (!this.data.design) return; store.selected(this.data.design); wx.navigateTo({ url: '/pages/editor/editor' }) },
-  buySame() { if (!this.data.design || this.data.missing) return; store.selected(this.data.design); wx.navigateTo({ url: '/pages/order/order' }) }
+  use() { if (!this.data.design) return; store.selected(this.data.design); nav.openEditor() },
+  buySame() { if (!this.data.design || this.data.missing) return; store.selected(this.data.design); nav.openOrder() }
 })
 
 module.exports = { viewerWrist, reflow }

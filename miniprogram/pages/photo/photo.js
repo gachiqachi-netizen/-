@@ -151,6 +151,6 @@ Page({
     const beads = templates.build({pattern}, catalog, d.wrist)
     if (!beads || beads.length < 6) return wx.showToast({title:'材料无法生成合适的手串，请调整后重试',icon:'none'})
     d.name = '照片同款'; d.beads = beads; store.selected(d)
-    wx.navigateTo({ url: '/pages/editor/editor' })
+    require('../../utils/nav').openEditor()
   }
 })

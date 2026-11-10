@@ -1,6 +1,7 @@
 """WeChat identity and owner-scoped prototype APIs; payment integration is intentionally separate."""
 import kb
 import pricing
+import content_security
 import hashlib
 import json
 import os
@@ -77,6 +78,7 @@ def design_data(data, owner_id):
     wrist = data.get('wrist', 15)
     if not isinstance(name, str) or len(name) > 60 or not name.strip():
         raise ValueError('请填写设计名称')
+    content_security.ensure_allowed(name)
     if not isinstance(beads, list) or len(beads) > 500 or any(not isinstance(i, str) or len(i) > 100 for i in beads):
         raise ValueError('珠子数据格式不正确')
     if isinstance(wrist, bool) or not isinstance(wrist, (int, float)) or not 8 <= wrist <= 30:

@@ -19,6 +19,7 @@ import traceback
 import uuid
 import user_api
 import pricing
+import content_security
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
@@ -436,6 +437,13 @@ class Handler(BaseHTTPRequestHandler):
             AI_SLOTS.release()
         if out is None:
             return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
+        if isinstance(out, dict):
+            key = "designs" if isinstance(out.get("designs"), list) else "results" if isinstance(out.get("results"), list) else None
+            if key:
+                out[key] = content_security.filter_ai_entries(out[key])
+            for field in ("reply", "text", "summary"):
+                if isinstance(out.get(field), str) and not content_security.allowed(out[field]):
+                    out[field] = "已生成搭配，请查看具体方案。"
         return self.send(200, out)
 
 

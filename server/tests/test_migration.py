@@ -5,6 +5,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import migrate
@@ -22,6 +23,33 @@ def _order_doc(conn, rid):
 
 
 class MigrationTest(unittest.TestCase):
+    def test_postgres_global_lock_commits_and_releases_on_failure(self):
+        events = []
+
+        class Conn:
+            def execute(self, sql, params=None):
+                events.append(('execute', sql, params))
+                return self
+
+            def commit(self):
+                events.append(('commit',))
+
+            def rollback(self):
+                events.append(('rollback',))
+
+        conn = Conn()
+        adapter = mock.Mock(name='postgres-adapter')
+        adapter.name = 'postgres'
+        with mock.patch('migrate._apply_migrations', side_effect=RuntimeError('注入失败')):
+            with self.assertRaisesRegex(RuntimeError, '注入失败'):
+                run_migrations(conn, adapter)
+
+        self.assertEqual(events[0][1], 'SELECT pg_advisory_lock(%s)')
+        self.assertEqual(events[1], ('commit',))
+        self.assertEqual(events[-3], ('rollback',))
+        self.assertEqual(events[-2][1], 'SELECT pg_advisory_unlock(%s)')
+        self.assertEqual(events[-1], ('commit',))
+
     def test_old_structure_migrates_to_new(self):
         with tempfile.TemporaryDirectory() as d:
             path = os.path.join(d, 'test.db')

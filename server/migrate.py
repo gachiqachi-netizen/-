@@ -150,10 +150,19 @@ def run_migrations(conn, adapter, migrations=None):
         migrations = MIGRATIONS
     if adapter.name == 'postgres':
         conn.execute('SELECT pg_advisory_lock(%s)', (MIGRATION_LOCK_KEY,))
+        # psycopg 默认会为 SELECT 开启隐式事务。会话级 advisory lock
+        # 不随事务提交释放，因此立即提交取锁语句，确保后续每个
+        # migration 都能在干净的事务中执行。
+        conn.commit()
         try:
             return _apply_migrations(conn, adapter, migrations)
         finally:
+            # 如果建表或迁移在事务边界外失败，连接可能仍处于
+            # aborted transaction。先回滚恢复连接，再释放会话锁，避免
+            # 异常路径把锁留到连接关闭才释放。
+            conn.rollback()
             conn.execute('SELECT pg_advisory_unlock(%s)', (MIGRATION_LOCK_KEY,))
+            conn.commit()
     return _apply_migrations(conn, adapter, migrations)
 
 

@@ -153,6 +153,15 @@ class TransactionTest(unittest.TestCase):
         self.assertEqual(after['fulfillmentStatus'], before['fulfillmentStatus'])  # 订单未变
         self.assertEqual([a for a in self.db.list('audit_logs') if a.get('action') == 'transition'], [])  # 审计无记录
 
+    def test_idempotent_order_transition_does_not_duplicate_audit(self):
+        no = self.make_order('txn-audit-000002')['no']
+        commerce.transition_order_status(self.db, no, 'orderStatus', 'confirmed')
+        first = [a for a in self.db.list('audit_logs') if a.get('action') == 'transition']
+        commerce.transition_order_status(self.db, no, 'orderStatus', 'confirmed')
+        second = [a for a in self.db.list('audit_logs') if a.get('action') == 'transition']
+        self.assertEqual(len(first), 1)
+        self.assertEqual(len(second), 1)
+
     # ---- 5. 迁移幂等重跑 + m006 物理列与唯一索引 ----
 
     def test_migration_rerun_idempotent_and_m006_constraint(self):

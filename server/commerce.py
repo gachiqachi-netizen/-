@@ -617,9 +617,11 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
 
     saved = _atomic_order_transition(
         db, no, apply,
-        audit_builder=(None if meta.get("idempotent") else
-                       lambda: _audit_record(actor, "transition", "order", no,
-                                             f"{group}: {meta['from']} → {meta['to']}")))
+        audit_builder=lambda: (
+            None if meta.get("idempotent") else
+            _audit_record(actor, "transition", "order", no,
+                          f"{group}: {meta['from']} → {meta['to']}")
+        ))
     return saved
 
 

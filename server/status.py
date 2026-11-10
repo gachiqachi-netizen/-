@@ -175,16 +175,19 @@ def derive_status(order):
 
     已有分组字段直接用；缺 logisticsStatus 时从履约状态推导（发货前 not_shipped）。
     旧订单只有中文 status 时按 LEGACY_STATUS_MAP 推导，不改写旧数据。
+    迁移可能只回填了部分分组字段（如 paymentStatus/logisticsStatus），此时其余缺失的
+    分组字段仍优先按旧中文 status 从 LEGACY_STATUS_MAP 补齐，避免被兜底成默认值。
     """
+    legacy = LEGACY_STATUS_MAP.get(order.get("status"))
     if any(k in order for k in GROUP_FIELDS):
         groups = {k: order.get(k) for k in GROUP_FIELDS}
         if groups.get("logisticsStatus") is None:
             groups["logisticsStatus"] = _FULFILLMENT_TO_LOGISTICS.get(groups.get("fulfillmentStatus"), "not_shipped")
     else:
-        groups = dict(LEGACY_STATUS_MAP.get(order.get("status"), _DEFAULT_GROUPS))
-    for k in GROUP_FIELDS:  # 兜底补齐缺失字段
+        groups = dict(legacy or _DEFAULT_GROUPS)
+    for k in GROUP_FIELDS:  # 兜底补齐缺失字段：优先旧中文状态推导，其次默认值
         if groups.get(k) is None:
-            groups[k] = _DEFAULT_GROUPS[k]
+            groups[k] = (legacy or _DEFAULT_GROUPS)[k]
     return groups
 
 

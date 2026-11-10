@@ -94,8 +94,10 @@ class TransitionTableTest(unittest.TestCase):
         ])
 
     def test_payment_is_not_transitionable(self):
-        with self.assertRaises(ValueError):
-            status.validate_transition("paymentStatus", "unpaid", "paid")
+        # 支付状态迁移表允许 unpaid→paid（真实支付回调内部推进路径）；
+        # 后台手工推进由 commerce.transition_order_status 对 paymentStatus 拒绝，
+        # 见 test_payment_truth.py::test_admin_transition_payment_status_rejected。
+        self.assertTrue(status.validate_transition("paymentStatus", "unpaid", "paid"))
 
     def test_next_states(self):
         self.assertEqual(status.next_states("logisticsStatus", "shipped"),

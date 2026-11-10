@@ -1,28 +1,31 @@
-"""订单四组独立状态、合法迁移、旧 status 字段兼容、状态历史。金额一律整数分。
+"""订单五组独立状态、合法迁移、旧 status 字段兼容、状态历史。金额一律整数分。
 
-订单不再用一个 status 表示全部状态，拆成四组（存储值为英文枚举，展示用中文标签）：
-- orderStatus      订单状态
-- paymentStatus    支付状态
-- fulfillmentStatus 履约/物流状态
-- afterSaleStatus  售后状态
+订单不再用一个 status 表示全部状态，拆成五组（存储值为英文枚举，展示用中文标签）：
+- orderStatus       订单状态
+- paymentStatus     支付状态
+- fulfillmentStatus 履约状态（producing=制作中、ready_to_ship=待发货，语义等价于任务的 making/quality_check/ready）
+- afterSaleStatus   售后状态
+- logisticsStatus   物流状态（独立维度，发货时与履约联动）
 
-旧订单只存了 status（中文），读取时用 LEGACY_STATUS_MAP 推导四组英文枚举，不重写旧数据。
+旧订单只存了 status（中文），读取时用 LEGACY_STATUS_MAP 推导英文枚举，不重写旧数据。
 支付状态不可由后台手工修改（防止伪造支付成功）；真实支付/退款回调接入后再放开。
 """
 import time
 
-# 四组独立状态（英文枚举 = 存储值）
+# 五组独立状态（英文枚举 = 存储值）
 ORDER_STATUSES = ["pending_confirmation", "confirmed", "cancelled", "completed", "closed"]
 PAYMENT_STATUSES = ["unpaid", "paying", "paid", "failed", "partially_refunded", "refunded"]
 FULFILLMENT_STATUSES = ["unfulfilled", "producing", "ready_to_ship", "shipped", "delivered", "exception", "returned"]
-AFTER_SALE_STATUSES = ["none", "requested", "approved", "rejected", "returning", "refunding", "completed", "closed"]
+AFTER_SALE_STATUSES = ["none", "requested", "reviewing", "approved", "rejected", "returning", "refunding", "completed", "closed"]
+LOGISTICS_STATUSES = ["not_shipped", "shipped", "in_transit", "delivered", "exception", "returned"]
 
-# 四组状态字段名
-GROUP_FIELDS = ("orderStatus", "paymentStatus", "fulfillmentStatus", "afterSaleStatus")
+# 状态组字段名（物流状态独立成组）
+GROUP_FIELDS = ("orderStatus", "paymentStatus", "fulfillmentStatus", "afterSaleStatus", "logisticsStatus")
 
 # 中文标签（按组区分：completed / closed 在两个组里含义不同）
 GROUP_LABELS = {"orderStatus": "订单状态", "paymentStatus": "支付状态",
-                "fulfillmentStatus": "履约状态", "afterSaleStatus": "售后状态"}
+                "fulfillmentStatus": "履约状态", "afterSaleStatus": "售后状态",
+                "logisticsStatus": "物流状态"}
 
 ORDER_STATUS_LABELS = {
     "pending_confirmation": "待确认", "confirmed": "已确认", "cancelled": "已取消",
@@ -37,13 +40,18 @@ FULFILLMENT_STATUS_LABELS = {
     "shipped": "已发货", "delivered": "已签收", "exception": "物流异常", "returned": "已退回",
 }
 AFTER_SALE_STATUS_LABELS = {
-    "none": "无售后", "requested": "申请中", "approved": "已同意", "rejected": "已拒绝",
+    "none": "无售后", "requested": "申请中", "reviewing": "审核中", "approved": "已同意", "rejected": "已拒绝",
     "returning": "退货中", "refunding": "退款中", "completed": "售后完成", "closed": "售后关闭",
+}
+LOGISTICS_STATUS_LABELS = {
+    "not_shipped": "未发货", "shipped": "已发货", "in_transit": "运输中",
+    "delivered": "已签收", "exception": "物流异常", "returned": "已退回",
 }
 
 _STATUS_LABELS = {
     "orderStatus": ORDER_STATUS_LABELS, "paymentStatus": PAYMENT_STATUS_LABELS,
     "fulfillmentStatus": FULFILLMENT_STATUS_LABELS, "afterSaleStatus": AFTER_SALE_STATUS_LABELS,
+    "logisticsStatus": LOGISTICS_STATUS_LABELS,
 }
 
 
@@ -96,7 +104,8 @@ FULFILLMENT_TRANSITIONS = {
 }
 
 AFTER_SALE_TRANSITIONS = {
-    "requested": {"approved", "rejected", "closed"},
+    "requested": {"reviewing", "rejected", "closed"},
+    "reviewing": {"approved", "rejected", "closed"},
     "approved": {"returning", "refunding", "completed", "closed"},
     "returning": {"refunding", "closed"},
     "refunding": {"completed", "closed"},
@@ -105,46 +114,82 @@ AFTER_SALE_TRANSITIONS = {
     "closed": set(),
 }
 
-# 旧 status 字段 → 四组英文枚举。旧演示单无真实支付，视为已支付仅用于展示。
+LOGISTICS_TRANSITIONS = {
+    "not_shipped": {"shipped"},
+    "shipped": {"in_transit", "delivered", "exception"},
+    "in_transit": {"delivered", "exception"},
+    "exception": {"in_transit", "returned"},
+    "delivered": set(),
+    "returned": set(),
+}
+
+# 旧 status 字段 → 五组英文枚举。旧演示单无真实支付，视为已支付仅用于展示。
 LEGACY_STATUS_MAP = {
     "待支付": {"orderStatus": "pending_confirmation", "paymentStatus": "unpaid",
-               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
+               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none", "logisticsStatus": "not_shipped"},
     "待串制": {"orderStatus": "confirmed", "paymentStatus": "paid",
-               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
+               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none", "logisticsStatus": "not_shipped"},
     "串制中": {"orderStatus": "confirmed", "paymentStatus": "paid",
-               "fulfillmentStatus": "producing", "afterSaleStatus": "none"},
+               "fulfillmentStatus": "producing", "afterSaleStatus": "none", "logisticsStatus": "not_shipped"},
     "已发货": {"orderStatus": "confirmed", "paymentStatus": "paid",
-               "fulfillmentStatus": "shipped", "afterSaleStatus": "none"},
+               "fulfillmentStatus": "shipped", "afterSaleStatus": "none", "logisticsStatus": "shipped"},
     "已完成": {"orderStatus": "completed", "paymentStatus": "paid",
-               "fulfillmentStatus": "delivered", "afterSaleStatus": "none"},
+               "fulfillmentStatus": "delivered", "afterSaleStatus": "none", "logisticsStatus": "delivered"},
     "已取消": {"orderStatus": "cancelled", "paymentStatus": "unpaid",
-               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"},
+               "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none", "logisticsStatus": "not_shipped"},
 }
 
 _DEFAULT_GROUPS = {"orderStatus": "pending_confirmation", "paymentStatus": "unpaid",
-                   "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"}
+                   "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none",
+                   "logisticsStatus": "not_shipped"}
+
+# 履约状态 → 物流状态回退映射（旧订单没有独立 logisticsStatus 字段时推导）
+_FULFILLMENT_TO_LOGISTICS = {
+    "unfulfilled": "not_shipped", "producing": "not_shipped", "ready_to_ship": "not_shipped",
+    "shipped": "shipped", "delivered": "delivered", "exception": "exception", "returned": "returned",
+}
 
 
 def new_order_status():
-    """新建订单的四组初始状态（英文枚举）。"""
+    """新建订单的五组初始状态（英文枚举）。"""
     return dict(_DEFAULT_GROUPS)
 
 
 def derive_status(order):
-    """从订单文档推导四组状态。已有四组字段直接用；否则按旧 status 映射，不改写旧数据。"""
-    if all(k in order for k in GROUP_FIELDS):
-        return {k: order[k] for k in GROUP_FIELDS}
-    return dict(LEGACY_STATUS_MAP.get(order.get("status"), _DEFAULT_GROUPS))
+    """从订单文档推导五组状态（含物流状态）。
+
+    已有分组字段直接用；缺 logisticsStatus 时从履约状态推导（发货前 not_shipped）。
+    旧订单只有中文 status 时按 LEGACY_STATUS_MAP 推导，不改写旧数据。
+    """
+    if any(k in order for k in GROUP_FIELDS):
+        groups = {k: order.get(k) for k in GROUP_FIELDS}
+        if groups.get("logisticsStatus") is None:
+            groups["logisticsStatus"] = _FULFILLMENT_TO_LOGISTICS.get(groups.get("fulfillmentStatus"), "not_shipped")
+    else:
+        groups = dict(LEGACY_STATUS_MAP.get(order.get("status"), _DEFAULT_GROUPS))
+    for k in GROUP_FIELDS:  # 兜底补齐缺失字段
+        if groups.get(k) is None:
+            groups[k] = _DEFAULT_GROUPS[k]
+    return groups
 
 
 def _table(group):
     return {"orderStatus": ORDER_TRANSITIONS, "fulfillmentStatus": FULFILLMENT_TRANSITIONS,
-            "afterSaleStatus": AFTER_SALE_TRANSITIONS}.get(group)
+            "afterSaleStatus": AFTER_SALE_TRANSITIONS, "logisticsStatus": LOGISTICS_TRANSITIONS}.get(group)
 
 
 def valid_values(group):
     return {"orderStatus": ORDER_STATUSES, "paymentStatus": PAYMENT_STATUSES,
-            "fulfillmentStatus": FULFILLMENT_STATUSES, "afterSaleStatus": AFTER_SALE_STATUSES}.get(group, [])
+            "fulfillmentStatus": FULFILLMENT_STATUSES, "afterSaleStatus": AFTER_SALE_STATUSES,
+            "logisticsStatus": LOGISTICS_STATUSES}.get(group, [])
+
+
+def next_states(group, current):
+    """某状态组当前状态下允许的下一状态（稳定有序列表）。终态返回空列表。"""
+    table = _table(group)
+    if table is None:
+        raise ValueError("未知状态组")
+    return sorted(table.get(current, set()))
 
 
 def can_transition(group, from_, to_):

@@ -212,6 +212,7 @@ def make_order(db, data, uid):
              'goodsFen': int(goods * 100), 'shipFen': int(Decimal(ship) * 100), 'totalFen': int(total * 100),
              'orderStatus': groups['orderStatus'], 'paymentStatus': groups['paymentStatus'],
              'fulfillmentStatus': groups['fulfillmentStatus'], 'afterSaleStatus': groups['afterSaleStatus'],
+             'logisticsStatus': groups['logisticsStatus'],
              'statusHistory': [], 'logistics': None, 'logisticsHistory': [],
              'termsSnapshot': terms_snapshot,
              'termsVersion': hashlib.sha256(json.dumps(terms_snapshot, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:16],

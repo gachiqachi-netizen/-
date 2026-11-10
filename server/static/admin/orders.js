@@ -40,7 +40,7 @@ function renderOrderList() {
     return true;
   });
   if (!list.length) { $('list').innerHTML = `<div class="empty">${data.orders.length ? '没有找到匹配的订单。' : '还没有订单。用户在前台下单后会出现在这里。'}</div>`; return; }
-  $('list').innerHTML = `<div class="tblwrap"><table><thead><tr><th>订单</th><th>手串</th><th>金额</th><th>收货</th><th>订单状态</th><th>支付</th><th>履约</th><th>售后</th></tr></thead><tbody>
+  $('list').innerHTML = `<div class="tblwrap"><table><thead><tr><th>订单</th><th>手串</th><th>金额</th><th>收货</th><th>订单状态</th><th>支付</th><th>履约</th><th>物流</th><th>售后</th></tr></thead><tbody>
     ${list.map(o => orderRowHtml(o)).join('')}</tbody></table></div>`;
   $('list').onclick = e => { const tr = e.target.closest('tr[data-no]'); if (tr) toggleOrderDetail(tr.dataset.no, tr); };
 }
@@ -55,16 +55,16 @@ function orderRowHtml(o) {
     <td>${stag('orderStatus', o.orderStatus)}</td>
     <td>${stag('paymentStatus', o.paymentStatus)}</td>
     <td>${stag('fulfillmentStatus', o.fulfillmentStatus)}</td>
+    <td>${stag('logisticsStatus', o.logisticsStatus)}</td>
     <td>${stag('afterSaleStatus', o.afterSaleStatus)}</td></tr>`;
 }
-function dang(group, n) { return (group === 'orderStatus' && (n === 'cancelled' || n === 'closed')) || (group === 'fulfillmentStatus' && n === 'returned'); }
-function statusGroupHtml(d, group, transitions) {
+function dang(group, n) { return (group === 'orderStatus' && (n === 'cancelled' || n === 'closed')) || (group === 'fulfillmentStatus' && n === 'returned') || (group === 'logisticsStatus' && (n === 'returned' || n === 'exception')); }
+function statusGroupHtml(d, group, nexts) {
   const cur = d[group] || '—';
   const readonly = group === 'paymentStatus' || group === 'afterSaleStatus';
-  const nexts = transitions[cur] || [];
   return `<div class="sgroup">
     <div class="shead"><span class="slab">${GROUP_LABELS[group]}</span>${stag(group, cur)}${readonly ? '<span class="muted sm">只读</span>' : ''}</div>
-    ${readonly ? '' : `<div class="sbtns">${nexts.map(n => `<button class="chip ${dang(group, n) ? 'chip-danger' : ''}" data-tran="${group}" data-to="${esc(n)}">${statusLabel(group, n)}</button>`).join('') || '<span class="muted sm">已到终态</span>'}</div>`}
+    ${readonly ? '' : `<div class="sbtns">${(nexts || []).map(n => `<button class="chip ${dang(group, n) ? 'chip-danger' : ''}" data-tran="${group}" data-to="${esc(n)}">${statusLabel(group, n)}</button>`).join('') || '<span class="muted sm">已到终态</span>'}</div>`}
   </div>`;
 }
 function logisticsHtml(lg) {
@@ -78,13 +78,15 @@ function termsSnapshotHtml(list) {
 }
 function orderDetailHtml(d) {
   const items = orderItems(d);
+  const at = d.allowedTransitions || {};
   return `<div class="detail">
     <div class="dhead"><h2>订单 ${esc(d.no)}</h2><span class="sub">${ts(d.createdAt)} · 手围 ${esc(d.wrist)}cm${d.length != null ? ' · 总长 ' + esc(d.length) + 'mm' : ''} · ${d.cord ? '编织绳' : '弹力线'}${d.gift ? ' · 礼盒' : ''}</span></div>
     <div class="dgrid">
-      ${statusGroupHtml(d, 'orderStatus', ORDER_TRANSITIONS)}
-      ${statusGroupHtml(d, 'paymentStatus', {})}
-      ${statusGroupHtml(d, 'fulfillmentStatus', FULFILLMENT_TRANSITIONS)}
-      ${statusGroupHtml(d, 'afterSaleStatus', {})}
+      ${statusGroupHtml(d, 'orderStatus', at.orderStatus ?? (ORDER_TRANSITIONS[d.orderStatus] || []))}
+      ${statusGroupHtml(d, 'paymentStatus', [])}
+      ${statusGroupHtml(d, 'fulfillmentStatus', at.fulfillmentStatus ?? (FULFILLMENT_TRANSITIONS[d.fulfillmentStatus] || []))}
+      ${statusGroupHtml(d, 'logisticsStatus', at.logisticsStatus ?? (LOGISTICS_TRANSITIONS[d.logisticsStatus] || []))}
+      ${statusGroupHtml(d, 'afterSaleStatus', [])}
     </div>
     <div class="drow"><b>收货：</b>${esc(d.person)} ${esc(d.phone)} · ${esc(d.addr)}</div>
     <div class="drow"><b>商品：</b>${items.map(it => `${esc(it.name || it.id)} ${it.mm != null ? it.mm + 'mm' : ''}${it.price != null ? ' · ¥' + it.price + '/颗' : ''}`).join('、')}</div>
@@ -100,7 +102,7 @@ async function toggleOrderDetail(no, row) {
   if (next && next.classList.contains('detail-row')) { next.remove(); return; }
   let d; try { d = await api('GET', '/api/admin/orders/' + no); } catch (e) { toast(e.message); return; }
   const tr = document.createElement('tr'); tr.className = 'detail-row';
-  tr.innerHTML = `<td colspan="8">${orderDetailHtml(d)}</td>`;
+  tr.innerHTML = `<td colspan="9">${orderDetailHtml(d)}</td>`;
   row.after(tr); bindOrderDetail(tr, d);
 }
 async function doOrderTransition(no, group, to, logistics) {

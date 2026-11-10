@@ -50,13 +50,13 @@ class AdminCommerceHTTPTest(unittest.TestCase):
         with resp:
             return resp.status, json.loads(resp.read())
 
-    def _order(self, no='CGZTEST0001'):
+    def _order(self, no='CGZTEST0001', paid=False):
         order = {'no': no, 'name': '测试手串', 'beads': [], 'items': [], 'wrist': 15,
                  'goods': 0, 'ship': 0, 'promo': 0, 'total': 0, 'totalFen': 0,
                  'person': '测试', 'phone': '13800138000', 'addr': '测试地址',
                  'status': '待支付', 'userId': 'u1',
-                 'orderStatus': 'pending_confirmation', 'paymentStatus': 'unpaid',
-                 'fulfillmentStatus': 'unfulfilled', 'afterSaleStatus': 'none',
+                 'orderStatus': 'pending_confirmation', 'paymentStatus': 'paid' if paid else 'unpaid',
+                 'fulfillmentStatus': 'unfulfilled', 'afterSaleStatus': 'none', 'logisticsStatus': 'not_shipped',
                  'statusHistory': [], 'logistics': None, 'logisticsHistory': [],
                  'termsSnapshot': [], 'createdAt': int(time.time() * 1000)}
         app.db.put('orders', no, order)
@@ -97,7 +97,7 @@ class AdminCommerceHTTPTest(unittest.TestCase):
 
     def test_ship_requires_logistics_then_updates(self):
         no = self._order('CGZTEST0002')['no']
-        app.db.put('orders', no, {**app.db.get('orders', no), 'orderStatus': 'confirmed', 'fulfillmentStatus': 'ready_to_ship'})
+        app.db.put('orders', no, {**app.db.get('orders', no), 'orderStatus': 'confirmed', 'paymentStatus': 'paid', 'fulfillmentStatus': 'ready_to_ship'})
         # 无物流不能发货
         status_code, body = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'fulfillmentStatus', 'to': 'shipped'}, admin='test-admin')
         self.assertEqual(status_code, 400)
@@ -114,13 +114,16 @@ class AdminCommerceHTTPTest(unittest.TestCase):
         self.assertTrue(detail['logisticsHistory'])
 
     def test_after_sale_flow(self):
-        no = self._order('CGZTEST0003')['no']
+        no = self._order('CGZTEST0003', paid=True)['no']
         status_code, rec = self.request('/api/admin/after-sales', 'POST', {'orderNo': no, 'type': '仅退款', 'reason': '不想要了', 'refundFen': 0}, admin='test-admin')
         self.assertEqual(status_code, 200)
         self.assertEqual(rec['status'], 'requested')
         order = app.db.get('orders', no)
         self.assertEqual(order['afterSaleStatus'], 'requested')
-        # 同意 → approved
+        # 同意 → 审核中 → 已同意
+        status_code, rec = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'approve'}, admin='test-admin')
+        self.assertEqual(status_code, 200)
+        self.assertEqual(rec['status'], 'reviewing')
         status_code, rec = self.request(f"/api/admin/after-sales/{rec['no']}/transition", 'PUT', {'action': 'approve'}, admin='test-admin')
         self.assertEqual(status_code, 200)
         self.assertEqual(rec['status'], 'approved')

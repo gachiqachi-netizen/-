@@ -3,6 +3,7 @@
 金额一律整数分（fen）。所有后台写操作都写审计日志；订单与售后状态变更同时写状态历史。
 不接真实支付与退款，不写任何密钥；支付状态不可由后台手工修改。
 """
+import json
 import re
 import time
 import uuid
@@ -317,15 +318,131 @@ def archive_template(db, rid, actor=ACTOR):
     return saved
 
 
+# ---------------------------------------------------------------- 跨状态约束
+
+def _paid_fen(order):
+    """实付金额（整数分）。统一字段为 paidFen（Agent C），旧数据回退 totalFen。"""
+    paid = order.get("paidFen")
+    if paid is None:
+        paid = order.get("totalFen", 0)
+    return int(paid or 0)
+
+
+def _order_refunded_fen(db, order_no):
+    """该订单累计已退款（整数分）：退款类售后中「退款中/已完成」的金额之和。"""
+    total = 0
+    for a in db.list("after_sales"):
+        if a.get("orderNo") != order_no:
+            continue
+        if a.get("type") not in ("仅退款", "退货退款"):
+            continue
+        if a.get("status") in ("refunding", "completed"):
+            total += int(a.get("refundFen") or 0)
+    return total
+
+
+def _cross_constraint(order, group, to_):
+    """跨状态约束（集中一处，服务端权威裁决）。返回违规原因字符串，合法返回 None。"""
+    groups = status.derive_status(order)
+    if group == "fulfillmentStatus":
+        if to_ != "unfulfilled" and groups["paymentStatus"] != "paid":
+            return "未支付订单不能开始履约或发货"
+        if groups["orderStatus"] == "cancelled" and to_ != "unfulfilled":
+            return "订单已取消，不能继续履约"
+    elif group == "logisticsStatus":
+        if to_ == "shipped" and groups["paymentStatus"] != "paid":
+            return "未支付订单不能发货"
+        if to_ in ("in_transit", "delivered") and groups["logisticsStatus"] == "not_shipped":
+            return "未发货不能标记运输中或已签收"
+    return None
+
+
+def _check_order_constraints(order, group, to_):
+    """校验订单跨状态约束，违反抛 ValueError。"""
+    err = _cross_constraint(order, group, to_)
+    if err:
+        raise ValueError(err)
+
+
+def _has_paid(order):
+    """是否已实付：paymentStatus == paid，或已存在真实 paidFen>0（支付回调写入，未接入时为缺省）。
+
+    注意：不能用 totalFen 回退判断「是否已支付」——未支付订单也有 totalFen>0。
+    """
+    if status.derive_status(order)["paymentStatus"] == "paid":
+        return True
+    paid = order.get("paidFen")
+    return paid is not None and int(paid or 0) > 0
+
+
+def _check_refund_constraints(order, refund_fen, db):
+    """校验退款类售后的金额与支付约束，违反抛 ValueError。"""
+    groups = status.derive_status(order)
+    if groups["paymentStatus"] == "refunded":
+        raise ValueError("该订单已完成退款，不能再次退款")
+    if not _has_paid(order):
+        raise ValueError("未支付订单不能退款")
+    cap = _paid_fen(order)  # 实付上限：paidFen 回退 totalFen
+    already = _order_refunded_fen(db, order.get("no"))
+    if already + refund_fen > cap:
+        raise ValueError("退款总额不能超过实付金额")
+
+
+def allowed_order_transitions(order):
+    """订单详情允许的下一状态（按组），供前端渲染按钮；服务端仍是最终裁决。"""
+    groups = status.derive_status(order)
+    out = {}
+    for group in ("orderStatus", "fulfillmentStatus", "logisticsStatus"):
+        current = groups.get(group)
+        states = status.next_states(group, current)
+        if group == "logisticsStatus":
+            # 「发货」由履约状态联动推进，物流维度不单独提供发货按钮
+            states = [s for s in states if s != "shipped"]
+        out[group] = [t for t in states if _cross_constraint(order, group, t) is None]
+    out["paymentStatus"] = []
+    out["afterSaleStatus"] = []
+    return out
+
+
+def _atomic_order_transition(db, no, fn):
+    """在数据库写锁内原子地读-改-写订单，避免并发重复转换或状态覆盖。
+
+    fn(order) 原地修改订单（可抛 ValueError/KeyError），返回修改后的订单。
+    SQLite 下直接走 db.conn 而不是 db.get/db.put，避免嵌套获取 db.lock 造成死锁；
+    无持久连接锁的实现（PostgreSQL）回退到 get/put 读改写，仍走同一状态机入口。
+    """
+    if hasattr(db, "lock") and hasattr(db, "conn"):
+        with db.lock:
+            row = db.conn.execute("SELECT doc FROM orders WHERE id = ?", (no,)).fetchone()
+            if not row:
+                raise KeyError("订单不存在")
+            order = json.loads(row[0])
+            order["id"] = no
+            fn(order)
+            doc = dict(order)
+            doc.pop("id", None)
+            db.conn.execute("INSERT OR REPLACE INTO orders (id, doc, user_id) VALUES (?, ?, ?)",
+                            (no, json.dumps(doc, ensure_ascii=False), doc.get("userId")))
+            db.conn.commit()
+            order["id"] = no
+            return order
+    order = db.get("orders", no)
+    if not order:
+        raise KeyError("订单不存在")
+    fn(order)
+    return db.put("orders", no, order)
+
+
 # ---------------------------------------------------------------- 订单
 
 def order_detail(db, no):
-    """订单详情：附四组状态、状态历史、物流、售后记录。不改写旧数据。"""
+    """订单详情：附五组状态、允许的下一状态、状态历史、物流、售后记录。不改写旧数据。"""
     o = db.get("orders", no)
     if not o:
         return None
     out = dict(o)
     out.update(status.derive_status(o))
+    out["allowedTransitions"] = allowed_order_transitions(o)
     out["statusHistory"] = o.get("statusHistory", [])
     out["logisticsHistory"] = o.get("logisticsHistory", [])
     out["afterSales"] = [a for a in db.list("after_sales") if a.get("orderNo") == no]
@@ -348,38 +465,58 @@ def _require_logistics_for_ship(order, logistics):
 
 
 def transition_order_status(db, no, group, to_, note="", logistics=None, actor=ACTOR):
-    order = db.get("orders", no)
-    if not order:
-        raise KeyError("订单不存在")
-    if group not in ("orderStatus", "fulfillmentStatus"):
-        raise ValueError("只能变更订单状态或履约状态")
+    if group not in ("orderStatus", "fulfillmentStatus", "logisticsStatus"):
+        raise ValueError("只能变更订单状态、履约状态或物流状态")
     if group == "paymentStatus":
         raise ValueError("支付状态不可手工修改")
-    current = status.derive_status(order)
-    from_ = current[group]
-    status.validate_transition(group, from_, to_)
 
-    if group == "fulfillmentStatus" and to_ == "shipped":
-        carrier, tracking = _require_logistics_for_ship(order, logistics)
-        lg = dict(order.get("logistics") or {})
-        lg.update(logistics or {})
-        lg["carrierName"] = carrier
-        lg["trackingNo"] = tracking
-        if not lg.get("shippedAt"):
-            lg["shippedAt"] = _now()
-        order["logistics"] = lg
-        order.setdefault("logisticsHistory", []).append(
-            {"at": _now(), "actor": actor, "action": "发货", "detail": f"{carrier} {tracking}"})
-    elif group == "fulfillmentStatus" and to_ == "delivered":
-        lg = dict(order.get("logistics") or {})
-        if not lg.get("signedAt"):
-            lg["signedAt"] = _now()
-        order["logistics"] = lg
+    meta = {}
 
-    order[group] = to_
-    append_history(order, actor, group, from_, to_, note)
-    saved = db.put("orders", no, order)
-    audit(db, actor, "transition", "order", no, f"{group}: {from_} → {to_}")
+    def apply(order):
+        groups = status.derive_status(order)
+        from_ = groups[group]
+        meta["from"] = from_
+        meta["to"] = to_
+        status.validate_transition(group, from_, to_)
+        _check_order_constraints(order, group, to_)
+        if from_ == to_:  # 幂等：重复转换直接返回当前状态，不重复写历史/审计
+            meta["idempotent"] = True
+            return order
+        meta["idempotent"] = False
+
+        if group == "fulfillmentStatus":
+            if to_ == "shipped":
+                carrier, tracking = _require_logistics_for_ship(order, logistics)
+                lg = dict(order.get("logistics") or {})
+                lg.update(logistics or {})
+                lg["carrierName"] = carrier
+                lg["trackingNo"] = tracking
+                if not lg.get("shippedAt"):
+                    lg["shippedAt"] = _now()
+                order["logistics"] = lg
+                order.setdefault("logisticsHistory", []).append(
+                    {"at": _now(), "actor": actor, "action": "发货", "detail": f"{carrier} {tracking}"})
+                # 联动：履约发货同时推进物流状态到 shipped
+                if status.derive_status(order)["logisticsStatus"] == "not_shipped":
+                    order["logisticsStatus"] = "shipped"
+            elif to_ == "delivered":
+                lg = dict(order.get("logistics") or {})
+                if not lg.get("signedAt"):
+                    lg["signedAt"] = _now()
+                order["logistics"] = lg
+                order["logisticsStatus"] = "delivered"
+            elif to_ == "exception":
+                order["logisticsStatus"] = "exception"
+            elif to_ == "returned":
+                order["logisticsStatus"] = "returned"
+
+        order[group] = to_
+        append_history(order, actor, group, from_, to_, note)
+        return order
+
+    saved = _atomic_order_transition(db, no, apply)
+    if not meta.get("idempotent"):
+        audit(db, actor, "transition", "order", no, f"{group}: {meta['from']} → {meta['to']}")
     return saved
 
 
@@ -429,6 +566,7 @@ def list_orders(db, q="", filters=None):
             continue
         item = dict(o)
         item.update(groups)
+        item["allowedTransitions"] = allowed_order_transitions(o)
         out.append(item)
     return out
 
@@ -455,8 +593,8 @@ def create_after_sale(db, data, actor=ACTOR):
     refund_fen = data.get("refundFen")
     if isinstance(refund_fen, bool) or not isinstance(refund_fen, int) or refund_fen < 0:
         raise ValueError("退款金额必须是不小于 0 的整数分")
-    if atype in ("仅退款", "退货退款") and refund_fen > fen(order.get("total", 0)):
-        raise ValueError("退款金额不能超过订单金额")
+    if atype in ("仅退款", "退货退款"):
+        _check_refund_constraints(order, refund_fen, db)
 
     no = _after_sale_no()
     rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
@@ -476,13 +614,15 @@ def create_after_sale(db, data, actor=ACTOR):
 
 def _after_sale_target(action, current, atype):
     if action == "approve":
-        if current != "requested":
-            raise ValueError("只有申请中的售后才能同意")
-        return "approved"
+        if current == "requested":
+            return "reviewing"
+        if current == "reviewing":
+            return "approved"
+        raise ValueError("只有申请中或审核中的售后才能同意")
     if action == "reject":
-        if current != "requested":
-            raise ValueError("只有申请中的售后才能拒绝")
-        return "rejected"
+        if current in ("requested", "reviewing"):
+            return "rejected"
+        raise ValueError("只有申请中或审核中的售后才能拒绝")
     if action == "returning":
         if atype != "退货退款":
             raise ValueError("仅退款/补发没有退货环节")
@@ -515,6 +655,8 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
     current = rec["status"]
     target = _after_sale_target(action, current, rec["type"])
     status.validate_transition("afterSaleStatus", current, target)
+    if target == current:  # 幂等：同一状态重复转换不重复写历史
+        return rec
 
     rec["status"] = target
     rec["updatedAt"] = _now()
@@ -547,6 +689,34 @@ def list_after_sales(db, q="", pstatus=""):
         rows = [r for r in rows if q in str(r.get("no") or "").lower()
                 or q in str(r.get("orderNo") or "").lower()]
     return rows
+
+
+def after_sale_allowed_states(rec):
+    """售后记录允许的下一状态（稳定有序列表）。"""
+    return status.next_states("afterSaleStatus", rec.get("status"))
+
+
+def after_sale_allowed_actions(rec):
+    """售后记录当前可执行的操作（供前端渲染按钮），复用 _after_sale_target 作为唯一裁决源。"""
+    actions = []
+    for action in ("approve", "reject", "returning", "receive", "complete", "close"):
+        try:
+            _after_sale_target(action, rec.get("status"), rec.get("type"))
+            actions.append(action)
+        except ValueError:
+            pass
+    return actions
+
+
+def after_sale_detail(db, no):
+    """售后详情：附允许的下一状态与允许的操作。"""
+    rec = db.get("after_sales", no)
+    if not rec:
+        return None
+    out = dict(rec)
+    out["allowedTransitions"] = after_sale_allowed_states(rec)
+    out["allowedActions"] = after_sale_allowed_actions(rec)
+    return out
 
 
 # ---------------------------------------------------------------- 条款

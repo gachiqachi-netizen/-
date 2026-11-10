@@ -11,16 +11,17 @@ class StatusModelTest(unittest.TestCase):
     def test_new_order_status_defaults(self):
         g = status.new_order_status()
         self.assertEqual(g, {"orderStatus": "pending_confirmation", "paymentStatus": "unpaid",
-                             "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none"})
+                             "fulfillmentStatus": "unfulfilled", "afterSaleStatus": "none",
+                             "logisticsStatus": "not_shipped"})
 
     def test_derive_legacy_status(self):
         cases = {
-            "待支付": ("pending_confirmation", "unpaid", "unfulfilled", "none"),
-            "待串制": ("confirmed", "paid", "unfulfilled", "none"),
-            "串制中": ("confirmed", "paid", "producing", "none"),
-            "已发货": ("confirmed", "paid", "shipped", "none"),
-            "已完成": ("completed", "paid", "delivered", "none"),
-            "已取消": ("cancelled", "unpaid", "unfulfilled", "none"),
+            "待支付": ("pending_confirmation", "unpaid", "unfulfilled", "none", "not_shipped"),
+            "待串制": ("confirmed", "paid", "unfulfilled", "none", "not_shipped"),
+            "串制中": ("confirmed", "paid", "producing", "none", "not_shipped"),
+            "已发货": ("confirmed", "paid", "shipped", "none", "shipped"),
+            "已完成": ("completed", "paid", "delivered", "none", "delivered"),
+            "已取消": ("cancelled", "unpaid", "unfulfilled", "none", "not_shipped"),
         }
         for legacy, expected in cases.items():
             self.assertEqual(tuple(status.derive_status({"status": legacy})[k] for k in status.GROUP_FIELDS), expected)
@@ -71,7 +72,8 @@ class StatusModelTest(unittest.TestCase):
                 status.validate_transition("fulfillmentStatus", *bad)
 
     def test_after_sale_transitions(self):
-        status.validate_transition("afterSaleStatus", "requested", "approved")
+        status.validate_transition("afterSaleStatus", "requested", "reviewing")
+        status.validate_transition("afterSaleStatus", "reviewing", "approved")
         status.validate_transition("afterSaleStatus", "approved", "returning")
         status.validate_transition("afterSaleStatus", "returning", "refunding")
         status.validate_transition("afterSaleStatus", "refunding", "completed")

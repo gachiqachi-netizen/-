@@ -49,7 +49,8 @@ function newAfterSale() {
 }
 function afterSaleButtons(a) {
   const btns = [], s = a.status, t = a.type;
-  if (s === 'requested') { btns.push(['approve', '同意', '']); btns.push(['reject', '拒绝', 'danger']); }
+  if (s === 'requested') { btns.push(['approve', '进入审核', '']); btns.push(['reject', '拒绝', 'danger']); }
+  else if (s === 'reviewing') { btns.push(['approve', '同意', '']); btns.push(['reject', '拒绝', 'danger']); }
   else if (s === 'approved') {
     if (t === '退货退款') { btns.push(['returning', '记录退货物流', '']); btns.push(['receive', '确认收到退货', '']); }
     else if (t === '仅退款') btns.push(['receive', '确认收到退货（退款）', '']);
@@ -60,7 +61,8 @@ function afterSaleButtons(a) {
   return btns;
 }
 function afterSaleDetailHtml(a) {
-  const btns = afterSaleButtons(a);
+  let btns = afterSaleButtons(a);
+  if (Array.isArray(a.allowedActions)) { const allowed = new Set(a.allowedActions); btns = btns.filter(([act]) => allowed.has(act)); }
   return `<div class="detail">
     <div class="dhead"><h2>售后 ${esc(a.no)}</h2><span class="sub">${ts(a.createdAt)}</span></div>
     <div class="drow"><b>订单：</b>${esc(a.orderNo)}</div>

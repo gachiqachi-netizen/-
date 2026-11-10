@@ -16,5 +16,6 @@ project.private.config.json
 .playwright-cli/
 output/
 *.log
+*.jsonl
 
 miniprogram/config.local.js

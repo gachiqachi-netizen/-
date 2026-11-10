@@ -7,6 +7,8 @@ import time
 import urllib.parse
 import urllib.request
 
+import env
+
 _token = None
 _expires_at = 0
 _lock = threading.Lock()
@@ -19,6 +21,11 @@ class ContentRejected(ValueError):
 
 def configured():
     return bool(os.environ.get('WECHAT_APP_ID') and os.environ.get('WECHAT_APP_SECRET'))
+
+
+def fail_open_allowed():
+    """未配置凭证时是否允许 fail-open：仅 development 环境允许；trial/production 必须 fail-closed。"""
+    return env.is_dev()
 
 
 def set_checker(checker):
@@ -65,8 +72,10 @@ def allowed(text):
     if _checker is not None:
         return bool(_checker(text))
     if not configured():
-        sys.stderr.write('content security skipped: WECHAT_APP_ID/WECHAT_APP_SECRET not configured\n')
-        return True
+        if fail_open_allowed():
+            sys.stderr.write('content security skipped: WECHAT_APP_ID/WECHAT_APP_SECRET not configured\n')
+            return True
+        raise ContentRejected('内容安全未配置，无法校验文字')
     return _wechat_check(text)
 
 

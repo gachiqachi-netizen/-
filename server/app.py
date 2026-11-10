@@ -422,6 +422,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not isinstance(exclude, list) or len(exclude) > 100 or any(not isinstance(x, str) or len(x) > 100 for x in exclude):
                     raise ValueError("排除方案格式不正确")
                 tags, by = None, "rules"
+                degraded = False
+                degraded_reason = ""
                 if ai.provider():
                     try:
                         vocab = {k: sorted({v for p in plans.all_plans() for v in (p.get(k) or [])}) for k in ("audience", "occasion", "meaning", "style")}
@@ -436,9 +438,19 @@ class Handler(BaseHTTPRequestHandler):
                             tags = {**local, **{k: v for k, v in t.items() if v}}
                             by = "ai"
                     except Exception:
-                        sys.stderr.write("AI tag extraction failed; using local matching\n")
+                        sys.stderr.write("AI tag extraction failed\n")
+                        if not env.ai_fallback_allowed():
+                            return self.send(502, {"error": "AI 暂时不可用"})
+                        degraded = True
+                        degraded_reason = "ai_unavailable"
+                elif not env.ai_fallback_allowed():
+                    # production/trial 未配置 AI 且未显式允许降级：不得用本地规则冒充 AI 方案
+                    return self.send(502, {"error": "AI 暂时不可用"})
                 out = plans.match(text, beads, wrist, history, set(exclude), tags)
                 out["by"] = by
+                if degraded:
+                    out["degraded"] = True
+                    out["degradedReason"] = degraded_reason
                 return self.send(200, out)
             if path == "/api/orders":
                 if not env.demo_orders_allowed():
@@ -642,7 +654,9 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError as e:
             return self.send(400, {"error": str(e)})
         if not ai.provider():
-            return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
+            if env.ai_fallback_allowed():
+                return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
+            return self.send(502, {"error": "AI 暂时不可用，请稍后重试"})
         if not AI_SLOTS.acquire(blocking=False):
             return self.send(429, {"error": "请求较多，请稍后重试"})
         try:
@@ -660,7 +674,9 @@ class Handler(BaseHTTPRequestHandler):
         finally:
             AI_SLOTS.release()
         if out is None:
-            return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
+            if env.ai_fallback_allowed():
+                return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
+            return self.send(502, {"error": "AI 暂时不可用，请稍后重试"})
         if isinstance(out, dict):
             key = "designs" if isinstance(out.get("designs"), list) else "results" if isinstance(out.get("results"), list) else None
             if key:

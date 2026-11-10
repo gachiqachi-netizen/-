@@ -19,34 +19,32 @@ from db import DB  # noqa: E402
 class EnvDerivationTest(unittest.TestCase):
     def test_default_is_dev(self):
         with patch.dict(os.environ, {}, clear=True):
-            self.assertEqual(env.env_name(), 'dev')
+            self.assertEqual(env.env_name(), 'development')
             self.assertTrue(env.is_dev())
             self.assertFalse(env.is_prod())
             self.assertFalse(env.is_experience())
 
-    def test_explicit_env_values_and_aliases(self):
-        with patch.dict(os.environ, {'ENV': 'prod'}, clear=True):
-            self.assertEqual(env.env_name(), 'prod')
-        with patch.dict(os.environ, {'ENV': 'experience'}, clear=True):
-            self.assertEqual(env.env_name(), 'experience')
+    def test_explicit_env_values(self):
         with patch.dict(os.environ, {'ENV': 'production'}, clear=True):
-            self.assertEqual(env.env_name(), 'prod')
+            self.assertEqual(env.env_name(), 'production')
+        with patch.dict(os.environ, {'ENV': 'trial'}, clear=True):
+            self.assertEqual(env.env_name(), 'trial')
         with patch.dict(os.environ, {'ENV': 'development'}, clear=True):
-            self.assertEqual(env.env_name(), 'dev')
+            self.assertEqual(env.env_name(), 'development')
 
     def test_database_url_implies_prod(self):
         with patch.dict(os.environ, {'DATABASE_URL': 'postgres://example.invalid/db'}, clear=True):
-            self.assertEqual(env.env_name(), 'prod')
+            self.assertEqual(env.env_name(), 'production')
             self.assertTrue(env.is_prod())
 
     def test_public_bind_implies_experience(self):
         with patch.dict(os.environ, {'ALLOW_PUBLIC_BIND': '1'}, clear=True):
-            self.assertEqual(env.env_name(), 'experience')
+            self.assertEqual(env.env_name(), 'trial')
             self.assertTrue(env.is_experience())
 
     def test_explicit_env_overrides_derivation(self):
-        with patch.dict(os.environ, {'ENV': 'dev', 'DATABASE_URL': 'postgres://example.invalid/db'}, clear=True):
-            self.assertEqual(env.env_name(), 'dev')
+        with patch.dict(os.environ, {'ENV': 'development', 'DATABASE_URL': 'postgres://example.invalid/db'}, clear=True):
+            self.assertEqual(env.env_name(), 'development')
 
 
 class DemoOrdersTest(unittest.TestCase):
@@ -55,7 +53,7 @@ class DemoOrdersTest(unittest.TestCase):
             self.assertTrue(env.demo_orders_allowed())
         with patch.dict(os.environ, {}, clear=True):
             self.assertFalse(env.demo_orders_allowed())
-        with patch.dict(os.environ, {'ENV': 'prod', 'DEMO_ORDERS': '1'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'production', 'DEMO_ORDERS': '1'}, clear=True):
             self.assertFalse(env.demo_orders_allowed())
         with patch.dict(os.environ, {'ALLOW_PUBLIC_BIND': '1', 'DEMO_ORDERS': '1'}, clear=True):
             self.assertFalse(env.demo_orders_allowed())
@@ -63,10 +61,10 @@ class DemoOrdersTest(unittest.TestCase):
 
 class StartupFastFailTest(unittest.TestCase):
     def test_prod_requires_admin_token(self):
-        with patch.dict(os.environ, {'ENV': 'prod'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'production'}, clear=True):
             with self.assertRaises(SystemExit):
                 env.require_admin_token()
-        with patch.dict(os.environ, {'ENV': 'prod', 'ADMIN_TOKEN': 'fake-token'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'production', 'ADMIN_TOKEN': 'fake-token'}, clear=True):
             env.require_admin_token()
 
     def test_experience_requires_admin_token(self):
@@ -81,22 +79,28 @@ class StartupFastFailTest(unittest.TestCase):
             env.require_admin_token()
 
     def test_prod_rejects_missing_admin_token(self):
-        with patch.dict(os.environ, {'ENV': 'prod'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'production'}, clear=True):
             with self.assertRaises(SystemExit):
                 env.validate_startup()
 
     def test_prod_rejects_dev_login(self):
-        with patch.dict(os.environ, {'ENV': 'prod', 'ADMIN_TOKEN': 'fake', 'DEV_LOGIN': '1'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'production', 'ADMIN_TOKEN': 'fake',
+                                     'DATABASE_URL': 'postgres://example.invalid/db', 'DEV_LOGIN': '1'}, clear=True):
             with self.assertRaises(SystemExit):
                 env.validate_startup()
 
     def test_prod_rejects_demo_orders(self):
-        with patch.dict(os.environ, {'ENV': 'prod', 'ADMIN_TOKEN': 'fake', 'DEMO_ORDERS': '1'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'production', 'ADMIN_TOKEN': 'fake',
+                                     'DATABASE_URL': 'postgres://example.invalid/db',
+                                     'WECHAT_APP_ID': 'x', 'WECHAT_APP_SECRET': 'y',
+                                     'DEMO_ORDERS': '1'}, clear=True):
             with self.assertRaises(SystemExit):
                 env.validate_startup()
 
     def test_prod_ok_when_configured(self):
-        with patch.dict(os.environ, {'ENV': 'prod', 'ADMIN_TOKEN': 'fake'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'production', 'ADMIN_TOKEN': 'fake',
+                                     'DATABASE_URL': 'postgres://example.invalid/db',
+                                     'WECHAT_APP_ID': 'x', 'WECHAT_APP_SECRET': 'y'}, clear=True):
             env.validate_startup()
 
     def test_dev_login_with_database_url_rejected(self):
@@ -109,10 +113,13 @@ class StartupFastFailTest(unittest.TestCase):
         token = 'admin-token-must-not-leak'
         # 每个用例都应失败，且错误信息要能定位问题（含开关名），但不泄露密钥/数据库地址/堆栈。
         cases = [
-            ({'ENV': 'prod'}, 'ADMIN_TOKEN'),
-            ({'ENV': 'prod', 'ADMIN_TOKEN': token, 'DEV_LOGIN': '1'}, 'DEV_LOGIN'),
-            ({'ENV': 'prod', 'ADMIN_TOKEN': token, 'DEMO_ORDERS': '1'}, 'DEMO_ORDERS'),
+            ({'ENV': 'production'}, 'ADMIN_TOKEN'),
+            ({'ENV': 'production', 'ADMIN_TOKEN': token, 'DATABASE_URL': dburl, 'DEV_LOGIN': '1'}, 'DEV_LOGIN'),
+            ({'ENV': 'production', 'ADMIN_TOKEN': token, 'DATABASE_URL': dburl,
+              'WECHAT_APP_ID': 'x', 'WECHAT_APP_SECRET': 'y', 'DEMO_ORDERS': '1'}, 'DEMO_ORDERS'),
             ({'DATABASE_URL': dburl, 'DEV_LOGIN': '1'}, 'DATABASE_URL'),
+            ({'ENV': 'production', 'ADMIN_TOKEN': token}, 'PostgreSQL'),
+            ({'ENV': 'production', 'ADMIN_TOKEN': token, 'DATABASE_URL': dburl}, '微信内容安全凭证'),
         ]
         for envvars, snippet in cases:
             with patch.dict(os.environ, envvars, clear=True):
@@ -161,13 +168,13 @@ class DemoOrderHTTPTest(unittest.TestCase):
         return {'beads': ids, 'person': '测试', 'phone': '13800138000', 'addr': '测试地址'}
 
     def test_demo_orders_allowed_in_dev(self):
-        with patch.dict(os.environ, {'ENV': 'dev', 'DEMO_ORDERS': '1'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'development', 'DEMO_ORDERS': '1'}, clear=True):
             status, body = self.request('/api/orders', 'POST', self._valid_demo_payload())
         self.assertEqual(status, 200, body)
         self.assertIn('no', body)
 
     def test_demo_orders_forbidden_in_prod_even_when_enabled(self):
-        with patch.dict(os.environ, {'ENV': 'prod', 'DEMO_ORDERS': '1'}, clear=True):
+        with patch.dict(os.environ, {'ENV': 'production', 'DEMO_ORDERS': '1'}, clear=True):
             status, body = self.request('/api/orders', 'POST', self._valid_demo_payload())
         self.assertEqual(status, 403, body)
 

@@ -21,6 +21,16 @@ class ContentSecurityTest(unittest.TestCase):
         with patch.dict(os.environ, {'WECHAT_APP_ID': '', 'WECHAT_APP_SECRET': ''}):
             self.assertTrue(content_security.allowed('本地开发标题'))
 
+    def test_unconfigured_production_fails_closed(self):
+        with patch.dict(os.environ, {'ENV': 'production', 'WECHAT_APP_ID': '', 'WECHAT_APP_SECRET': ''}, clear=False):
+            with self.assertRaises(content_security.ContentRejected):
+                content_security.allowed('任何文字')
+
+    def test_unconfigured_trial_fails_closed(self):
+        with patch.dict(os.environ, {'ENV': 'trial', 'WECHAT_APP_ID': '', 'WECHAT_APP_SECRET': ''}, clear=False):
+            with self.assertRaises(content_security.ContentRejected):
+                content_security.allowed('任何文字')
+
     def test_ai_entries_drop_only_rejected_result(self):
         content_security.set_checker(lambda text: '不安全' not in text)
         entries = [{'name': '保留', 'meaning': '普通寓意'}, {'name': '丢弃', 'meaning': '不安全'}]

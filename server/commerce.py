@@ -31,10 +31,15 @@ def _new_id(prefix):
 
 # ---------------------------------------------------------------- 审计
 
+def _audit_record(actor, action, target, target_id, detail=None):
+    """构造一条审计记录（不落库），供事务内/事务外复用。"""
+    return {"actor": actor or ACTOR, "action": action, "target": target,
+            "targetId": str(target_id), "detail": (detail or "")[:500], "at": _now()}
+
+
 def audit(db, actor, action, target, target_id, detail=None):
     """写一条操作审计。actor 默认为后台操作员。"""
-    rec = {"actor": actor or ACTOR, "action": action, "target": target,
-           "targetId": str(target_id), "detail": (detail or "")[:500], "at": _now()}
+    rec = _audit_record(actor, action, target, target_id, detail)
     db.put("audit_logs", _new_id("a"), rec)
     return rec
 
@@ -327,10 +332,10 @@ def _paid_fen(order):
     return int(paid or 0)
 
 
-def _order_refunded_fen(db, order_no):
-    """该订单累计已退款（整数分）：退款类售后中「退款中/已完成」的金额之和。"""
+def _refunded_fen(after_sales, order_no):
+    """从售后文档列表算该订单累计已退款（整数分）：退款类售后中「退款中/已完成」金额之和。"""
     total = 0
-    for a in db.list("after_sales"):
+    for a in after_sales:
         if a.get("orderNo") != order_no:
             continue
         if a.get("type") not in ("仅退款", "退货退款"):
@@ -338,6 +343,11 @@ def _order_refunded_fen(db, order_no):
         if a.get("status") in ("refunding", "completed"):
             total += int(a.get("refundFen") or 0)
     return total
+
+
+def _order_refunded_fen(db, order_no):
+    """该订单累计已退款（整数分），基于 db.list 读全量售后（事务外调用）。"""
+    return _refunded_fen(db.list("after_sales"), order_no)
 
 
 def _cross_constraint(order, group, to_):
@@ -374,17 +384,21 @@ def _has_paid(order):
     return paid is not None and int(paid or 0) > 0
 
 
-def _check_refund_constraints(order, refund_fen, db):
-    """校验退款类售后的金额与支付约束，违反抛 ValueError。"""
+def _check_refund_constraints_in(order, refund_fen, refunded_fen):
+    """校验退款类售后的金额与支付约束（给定已退款金额），违反抛 ValueError。"""
     groups = status.derive_status(order)
     if groups["paymentStatus"] == "refunded":
         raise ValueError("该订单已完成退款，不能再次退款")
     if not _has_paid(order):
         raise ValueError("未支付订单不能退款")
     cap = _paid_fen(order)  # 实付上限：paidFen 回退 totalFen
-    already = _order_refunded_fen(db, order.get("no"))
-    if already + refund_fen > cap:
+    if refunded_fen + refund_fen > cap:
         raise ValueError("退款总额不能超过实付金额")
+
+
+def _check_refund_constraints(order, refund_fen, db):
+    """校验退款类售后的金额与支付约束（事务外，基于 db 读已退款金额）。"""
+    _check_refund_constraints_in(order, refund_fen, _order_refunded_fen(db, order.get("no")))
 
 
 def allowed_order_transitions(order):
@@ -403,33 +417,121 @@ def allowed_order_transitions(order):
     return out
 
 
-def _atomic_order_transition(db, no, fn):
-    """在数据库写锁内原子地读-改-写订单，避免并发重复转换或状态覆盖。
+class _AtomicWriter:
+    """订单/售后读改写的事务绑定写入器。
+
+    SQLite：持有 db.lock + BEGIN IMMEDIATE，直接用 db.conn 执行 SQL（避免嵌套 db.lock 死锁）。
+    PostgreSQL：持有 db.transaction() 连接，读用 SELECT ... FOR UPDATE 锁行。
+    事务内只调用本写入器的方法，不调用会再开连接/再取锁的 db.get/db.put/db.list。
+    """
+
+    def __init__(self, db):
+        self.db = db
+        self._sqlite = hasattr(db, "lock") and hasattr(db, "conn")
+        self.conn = None
+
+    def __enter__(self):
+        if self._sqlite:
+            self._lock = self.db.lock
+            self._lock.__enter__()
+            self.conn = self.db.conn
+            self.conn.execute("BEGIN IMMEDIATE")
+        else:
+            self._txn = self.db.transaction()
+            self.conn = self._txn.__enter__()
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        if self._sqlite:
+            try:
+                if exc_type is None:
+                    self.conn.commit()
+                else:
+                    self.conn.rollback()
+            finally:
+                self._lock.__exit__(exc_type, exc, tb)
+            return False
+        return self._txn.__exit__(exc_type, exc, tb)
+
+    def lock_order(self, no):
+        """锁定订单行并返回文档（PG 用 FOR UPDATE，SQLite 靠 BEGIN IMMEDIATE 写锁）。"""
+        if self._sqlite:
+            row = self.conn.execute("SELECT doc FROM orders WHERE id = ?", (no,)).fetchone()
+            return {**json.loads(row[0]), "id": no} if row else None
+        return self.db.get_for_update(self.conn, "orders", no)
+
+    def lock_after_sale(self, no):
+        """锁定售后行并返回文档。"""
+        if self._sqlite:
+            row = self.conn.execute("SELECT doc FROM after_sales WHERE id = ?", (no,)).fetchone()
+            return {**json.loads(row[0]), "id": no} if row else None
+        return self.db.get_for_update(self.conn, "after_sales", no)
+
+    def list_after_sales(self):
+        if self._sqlite:
+            return [json.loads(r[0]) for r in self.conn.execute("SELECT doc FROM after_sales").fetchall()]
+        return [r[0] for r in self.conn.execute("SELECT doc FROM after_sales").fetchall()]
+
+    def find_after_sale_by_key(self, order_no, idem_key):
+        """按 (orderNo, idempotencyKey) 查已有售后，返回带 id 的文档或 None。"""
+        if self._sqlite:
+            row = self.conn.execute(
+                "SELECT doc, id FROM after_sales WHERE order_no = ? AND idempotency_key = ?",
+                (order_no, idem_key)).fetchone()
+            return {**json.loads(row[0]), "id": row[1]} if row else None
+        row = self.conn.execute(
+            "SELECT doc, id FROM after_sales "
+            "WHERE doc->>'orderNo' = %s AND doc->>'idempotencyKey' = %s",
+            (order_no, idem_key)).fetchone()
+        return {**row[0], "id": row[1]} if row else None
+
+    def put_order(self, no, doc):
+        data = dict(doc); data.pop("id", None)
+        if self._sqlite:
+            self.conn.execute("INSERT OR REPLACE INTO orders (id, doc, user_id) VALUES (?, ?, ?)",
+                              (no, json.dumps(data, ensure_ascii=False), data.get("userId")))
+        else:
+            self.db.put_in_conn(self.conn, "orders", no, data)
+
+    def put_after_sale(self, no, doc):
+        data = dict(doc); data.pop("id", None)
+        if self._sqlite:
+            # 同时维护幂等物理列，避免 INSERT OR REPLACE 触发唯一索引的删除重插语义
+            self.conn.execute(
+                "INSERT INTO after_sales (id, doc, order_no, idempotency_key) VALUES (?, ?, ?, ?) "
+                "ON CONFLICT(id) DO UPDATE SET doc=excluded.doc, order_no=excluded.order_no, "
+                "idempotency_key=excluded.idempotency_key",
+                (no, json.dumps(data, ensure_ascii=False), data.get("orderNo"), data.get("idempotencyKey")))
+        else:
+            self.db.put_in_conn(self.conn, "after_sales", no, data)
+
+    def put_audit(self, rec):
+        rid = _new_id("a")
+        if self._sqlite:
+            self.conn.execute("INSERT INTO audit_logs (id, doc) VALUES (?, ?)",
+                              (rid, json.dumps(rec, ensure_ascii=False)))
+        else:
+            self.db.put_in_conn(self.conn, "audit_logs", rid, rec)
+
+
+def _atomic_order_transition(db, no, fn, audit_builder=None):
+    """在数据库写事务内原子地读-改-写订单，避免并发重复转换或状态覆盖。
 
     fn(order) 原地修改订单（可抛 ValueError/KeyError），返回修改后的订单。
-    SQLite 下直接走 db.conn 而不是 db.get/db.put，避免嵌套获取 db.lock 造成死锁；
-    无持久连接锁的实现（PostgreSQL）回退到 get/put 读改写，仍走同一状态机入口。
+    audit_builder()（可选）在提交前返回一条审计记录（None 表示不写），与订单
+    写入同一事务：要么一起成功、要么一起回滚。
+    SQLite 用 db.lock + BEGIN IMMEDIATE；PostgreSQL 用事务 + SELECT ... FOR UPDATE。
     """
-    if hasattr(db, "lock") and hasattr(db, "conn"):
-        with db.lock:
-            row = db.conn.execute("SELECT doc FROM orders WHERE id = ?", (no,)).fetchone()
-            if not row:
-                raise KeyError("订单不存在")
-            order = json.loads(row[0])
-            order["id"] = no
-            fn(order)
-            doc = dict(order)
-            doc.pop("id", None)
-            db.conn.execute("INSERT OR REPLACE INTO orders (id, doc, user_id) VALUES (?, ?, ?)",
-                            (no, json.dumps(doc, ensure_ascii=False), doc.get("userId")))
-            db.conn.commit()
-            order["id"] = no
-            return order
-    order = db.get("orders", no)
-    if not order:
-        raise KeyError("订单不存在")
-    fn(order)
-    return db.put("orders", no, order)
+    with _AtomicWriter(db) as w:
+        order = w.lock_order(no)
+        if not order:
+            raise KeyError("订单不存在")
+        fn(order)
+        w.put_order(no, order)
+        rec = audit_builder() if audit_builder else None
+        if rec:
+            w.put_audit(rec)
+        return order
 
 
 # ---------------------------------------------------------------- 订单
@@ -513,9 +615,11 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
         append_history(order, actor, group, from_, to_, note)
         return order
 
-    saved = _atomic_order_transition(db, no, apply)
-    if not meta.get("idempotent"):
-        audit(db, actor, "transition", "order", no, f"{group}: {meta['from']} → {meta['to']}")
+    saved = _atomic_order_transition(
+        db, no, apply,
+        audit_builder=(None if meta.get("idempotent") else
+                       lambda: _audit_record(actor, "transition", "order", no,
+                                             f"{group}: {meta['from']} → {meta['to']}")))
     return saved
 
 
@@ -578,11 +682,6 @@ def _after_sale_no():
 
 def create_after_sale(db, data, actor=ACTOR):
     order_no = str(data.get("orderNo") or "").strip()
-    order = db.get("orders", order_no)
-    if not order:
-        raise ValueError("订单不存在")
-    if status.derive_status(order)["afterSaleStatus"] != "none":
-        raise ValueError("该订单已有进行中的售后")
     atype = data.get("type")
     if atype not in status.AFTER_SALE_TYPES:
         raise ValueError("售后类型不正确")
@@ -590,23 +689,37 @@ def create_after_sale(db, data, actor=ACTOR):
     if not reason:
         raise ValueError("请填写售后原因")
     refund_fen = money.parse_fen(data.get("refundFen"))
-    if atype in ("仅退款", "退货退款"):
-        _check_refund_constraints(order, refund_fen, db)
+    idem_key = str(data.get("idempotencyKey") or "").strip() or None
 
-    no = _after_sale_no()
-    rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
-           "userNote": str(data.get("userNote") or "")[:500],
-           "refundFen": refund_fen, "returnLogistics": {},
-           "result": "", "status": "requested",
-           "createdAt": _now(), "updatedAt": _now(),
-           "history": [status.history_entry(actor, "afterSaleStatus", "none", "requested", reason)]}
-    db.put("after_sales", no, rec)
+    with _AtomicWriter(db) as w:
+        order = w.lock_order(order_no)
+        if not order:
+            raise ValueError("订单不存在")
+        if idem_key:
+            existing = w.find_after_sale_by_key(order_no, idem_key)
+            if existing:
+                return existing
+        if status.derive_status(order)["afterSaleStatus"] != "none":
+            raise ValueError("该订单已有进行中的售后")
+        if atype in ("仅退款", "退货退款"):
+            _check_refund_constraints_in(order, refund_fen, _refunded_fen(w.list_after_sales(), order_no))
 
-    order["afterSaleStatus"] = "requested"
-    append_history(order, actor, "afterSaleStatus", "none", "requested", f"创建售后 {no}")
-    db.put("orders", order_no, order)
-    audit(db, actor, "create", "after_sale", no, f"订单 {order_no} · {atype}")
-    return rec
+        no = _after_sale_no()
+        rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
+               "userNote": str(data.get("userNote") or "")[:500],
+               "refundFen": refund_fen, "returnLogistics": {},
+               "result": "", "status": "requested",
+               "createdAt": _now(), "updatedAt": _now(),
+               "history": [status.history_entry(actor, "afterSaleStatus", "none", "requested", reason)]}
+        if idem_key:
+            rec["idempotencyKey"] = idem_key
+        w.put_after_sale(no, rec)
+
+        order["afterSaleStatus"] = "requested"
+        append_history(order, actor, "afterSaleStatus", "none", "requested", f"创建售后 {no}")
+        w.put_order(order_no, order)
+        w.put_audit(_audit_record(actor, "create", "after_sale", no, f"订单 {order_no} · {atype}"))
+        return rec
 
 
 def _after_sale_target(action, current, atype):
@@ -646,36 +759,42 @@ def _after_sale_target(action, current, atype):
 
 
 def transition_after_sale(db, no, action, note="", return_logistics=None, result=None, actor=ACTOR):
-    rec = db.get("after_sales", no)
-    if not rec:
+    pre = db.get("after_sales", no)
+    if not pre:
         raise KeyError("售后记录不存在")
-    current = rec["status"]
-    target = _after_sale_target(action, current, rec["type"])
-    status.validate_transition("afterSaleStatus", current, target)
-    # 支付域退款（paid → refunding → refunded/refund_failed）走 payments.handle_refund；
-    # 当前未接真实微信退款，故此处只推进售后域状态，不伪造订单 paymentStatus 的退款流转。
-    if target == current:  # 幂等：同一状态重复转换不重复写历史
+    order_no = pre["orderNo"]
+
+    with _AtomicWriter(db) as w:
+        order = w.lock_order(order_no)
+        rec = w.lock_after_sale(no)
+        if not rec:
+            raise KeyError("售后记录不存在")
+        current = rec["status"]
+        target = _after_sale_target(action, current, rec["type"])
+        status.validate_transition("afterSaleStatus", current, target)
+        # 支付域退款（paid → refunding → refunded/refund_failed）走 payments.handle_refund；
+        # 当前未接真实微信退款，故此处只推进售后域状态，不伪造订单 paymentStatus 的退款流转。
+        if target == current:  # 幂等：同一状态重复转换不重复写历史
+            return rec
+
+        rec["status"] = target
+        rec["updatedAt"] = _now()
+        if result is not None:
+            rec["result"] = str(result)[:500]
+        if return_logistics:
+            rl = {k: str(v or "").strip()[:100] for k, v in (return_logistics or {}).items()
+                  if k in ("carrierCode", "carrierName", "trackingNo")}
+            rec["returnLogistics"] = {**rec.get("returnLogistics", {}), **rl}
+        rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", current, target, note))
+        rec["history"] = rec["history"][-200:]
+        w.put_after_sale(no, rec)
+
+        if order:
+            order["afterSaleStatus"] = target
+            append_history(order, actor, "afterSaleStatus", current, target, note)
+            w.put_order(order_no, order)
+        w.put_audit(_audit_record(actor, action, "after_sale", no, f"{rec['type']}: {current} → {target}"))
         return rec
-
-    rec["status"] = target
-    rec["updatedAt"] = _now()
-    if result is not None:
-        rec["result"] = str(result)[:500]
-    if return_logistics:
-        rl = {k: str(v or "").strip()[:100] for k, v in (return_logistics or {}).items()
-              if k in ("carrierCode", "carrierName", "trackingNo")}
-        rec["returnLogistics"] = {**rec.get("returnLogistics", {}), **rl}
-    rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", current, target, note))
-    rec["history"] = rec["history"][-200:]
-    db.put("after_sales", no, rec)
-
-    order = db.get("orders", rec["orderNo"])
-    if order:
-        order["afterSaleStatus"] = target
-        append_history(order, actor, "afterSaleStatus", current, target, note)
-        db.put("orders", rec["orderNo"], order)
-    audit(db, actor, action, "after_sale", no, f"{rec['type']}: {current} → {target}")
-    return rec
 
 
 def list_after_sales(db, q="", pstatus=""):

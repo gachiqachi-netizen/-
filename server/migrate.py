@@ -36,6 +36,10 @@ from migrations import MIGRATIONS  # noqa: E402
 
 SCHEMA_MIGRATIONS_TABLE = 'schema_migrations'
 
+# 迁移全局锁 key：固定 advisory lock，跨实例串行化迁移，避免两个实例并发执行
+# 同一迁移（先拿锁再重读已执行版本）。取值与业务数据无关，只作互斥令牌。
+MIGRATION_LOCK_KEY = 0x63677A2D6D696772  # b"cgz-migr"（串个珠迁移锁）
+
 
 def _now_iso():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -139,9 +143,21 @@ def run_migrations(conn, adapter, migrations=None):
     """按版本号升序执行迁移，已应用版本跳过。返回本次实际应用的版本号列表。
 
     失败时抛 RuntimeError（含失败版本号），事务已回滚，不留下半迁移状态。
+    PostgreSQL 下先取会话级 advisory lock，拿到锁后重读已执行版本，避免两个
+    实例并发执行同一迁移；锁在 finally 中释放（连接关闭时也会自动释放）。
     """
     if migrations is None:
         migrations = MIGRATIONS
+    if adapter.name == 'postgres':
+        conn.execute('SELECT pg_advisory_lock(%s)', (MIGRATION_LOCK_KEY,))
+        try:
+            return _apply_migrations(conn, adapter, migrations)
+        finally:
+            conn.execute('SELECT pg_advisory_unlock(%s)', (MIGRATION_LOCK_KEY,))
+    return _apply_migrations(conn, adapter, migrations)
+
+
+def _apply_migrations(conn, adapter, migrations):
     adapter.ensure_schema_migrations(conn)
     applied = adapter.applied_versions(conn)
     applied_now = []

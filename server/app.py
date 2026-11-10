@@ -20,6 +20,7 @@ import uuid
 import user_api
 import pricing
 import content_security
+import env
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
@@ -43,9 +44,8 @@ FRONT = os.path.join(HERE, "..", "prototype.html")   # 前台就是原型页面�
 os.makedirs(UPLOADS, exist_ok=True)
 def ensure_dev_login_local():
     # 开发测试登录只签 dev: 前缀的本地账号，绝不能出现在生产数据库上。
-    if os.environ.get("DEV_LOGIN") == "1" and os.environ.get("DATABASE_URL"):
-        raise SystemExit("DEV_LOGIN=1 只能用于本地开发，不能和 DATABASE_URL 同时设置")
-ensure_dev_login_local()
+    env.ensure_dev_login_local()
+env.validate_startup()
 if os.environ.get("DATABASE_URL"):
     from db_postgres import PostgresDB
     db = PostgresDB(os.environ["DATABASE_URL"])
@@ -438,7 +438,7 @@ class Handler(BaseHTTPRequestHandler):
                 out["by"] = by
                 return self.send(200, out)
             if path == "/api/orders":
-                if os.environ.get("DEMO_ORDERS") != "1":
+                if not env.demo_orders_allowed():
                     return self.send(403, {"error": "演示下单已关闭"})
                 beads = {b["id"]: b for b in db.list("beads") if b.get("onSale", True)}
                 ids = data.get("beads") or []
@@ -708,7 +708,7 @@ def validate(table, d):
 
 
 if __name__ == "__main__":
-    validate_bind(HOST, ADMIN_TOKEN, os.environ.get("ALLOW_PUBLIC_BIND") == "1", os.environ.get("DEMO_ORDERS") != "1")
+    validate_bind(HOST, ADMIN_TOKEN, os.environ.get("ALLOW_PUBLIC_BIND") == "1", not env.demo_orders_allowed())
     print(f"串个珠服务已启动：{HOST}:{PORT}")
     print("AI：", ai.status())
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()

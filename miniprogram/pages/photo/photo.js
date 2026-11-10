@@ -2,6 +2,7 @@ const api = require('../../utils/api')
 const store = require('../../utils/design')
 const templates = require('../../utils/template')
 const wrist = require('../home/data').wrist
+const imageCompress = require('./compress')
 const distance = (a,b) => 2*(a[0]-b[0])**2+4*(a[1]-b[1])**2+3*(a[2]-b[2])**2
 const rgb = h => {const x=String(h||'').match(/^#([a-f0-9]{6})$/i); return x ? [0,2,4].map(i=>parseInt(x[1].slice(i,i+2),16)) : [190,190,190]}
 const beadRgb = b => {const a=rgb((b.c||[])[0]), c=rgb((b.c||[])[1]||(b.c||[])[0]);return a.map((n,i)=>n*.45+c[i]*.55)}
@@ -58,7 +59,6 @@ Page({
     wx.chooseMedia({ count: 1, mediaType: ['image'], sourceType: ['album', 'camera'], success: r => {
       const file = r.tempFiles && r.tempFiles[0]
       if (!file) return
-      if (file.size > 5 * 1024 * 1024) return this.setData({ error: '图片超过 5MB，请选择较小的图片。' })
       this.setData({ photo: file.tempFilePath, result: null, error: '' }, () => this.recognize())
     }, fail: () => {} })
   },
@@ -73,10 +73,8 @@ Page({
     }, this.recognitionHardTimeoutMs || 45000)
     this.setData({ busy: true, error: '', stage: '正在处理照片…' })
     try {
-      const compressed = await bounded(new Promise(resolve => {
-        if (typeof wx.compressImage !== 'function') return resolve(this.data.photo)
-        wx.compressImage({ src: this.data.photo, quality: 65, success: r => resolve(r.tempFilePath || this.data.photo), fail: () => resolve(this.data.photo) })
-      }), this.compressTimeoutMs || 8000, '图片压缩超时')
+      const prepared = await bounded(imageCompress.prepare(this.data.photo), this.compressTimeoutMs || 20000, '图片压缩超时，请裁剪照片或换一张后重试。')
+      const compressed = prepared.path
       if (this.recognitionRun !== run) return
       this.setData({ stage: '正在读取照片…' })
       const base64 = await bounded(new Promise((resolve, reject) => wx.getFileSystemManager().readFile({ filePath: compressed, encoding: 'base64', success: r => resolve(r.data), fail: reject })), this.readTimeoutMs || 8000, '图片读取超时')

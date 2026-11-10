@@ -6,6 +6,7 @@ test('本机颜色识别不回调时不阻塞 AI，页面会退出识别状态',
   global.Page = value => { definition = value }
   global.getApp = () => ({ globalData: { apiBase: 'http://localhost:8801' } })
   global.wx = {
+    getImageInfo: o => o.success({ width: 800, height: 600, size: 1024 }),
     getFileSystemManager: () => ({ readFile: o => o.success({ data: '/9j/dGVzdA==' }) })
   }
   const apiPath = require.resolve('../utils/api')
@@ -46,7 +47,10 @@ test('手机图片读取不回调时显示阶段错误并退出加载', async ()
   let definition
   global.Page = value => { definition = value }
   global.getApp = () => ({ globalData: { apiBase: 'http://localhost:8801' } })
-  global.wx = { getFileSystemManager: () => ({ readFile() {} }) }
+  global.wx = {
+    getImageInfo: o => o.success({ width: 800, height: 600, size: 1024 }),
+    getFileSystemManager: () => ({ readFile() {} })
+  }
   delete require.cache[require.resolve('../pages/photo/photo')]
   require('../pages/photo/photo')
   const page = {

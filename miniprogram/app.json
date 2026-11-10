@@ -44,6 +44,7 @@
   },
   "sitemapLocation": "sitemap.json",
   "__usePrivacyCheck__": true,
+  "lazyCodeLoading": "requiredComponents",
   "style": "v2",
   "subPackages": [
     {

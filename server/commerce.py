@@ -108,10 +108,18 @@ def normalize_product(data, existing=None):
     if ptype in ("bead", "spacer") and mm is None:
         return None, "请填写尺寸（mm），用户要靠它判断合不合手"
 
-    price = d.get("price")
-    if isinstance(price, bool) or not isinstance(price, (int, float)) or price < 0:
-        return None, "请填写价格"
-    price_fen = fen(price)
+    try:
+        if "priceFen" in d:
+            price_fen = money.parse_fen(d["priceFen"])
+            if "price" in d and money.yuan_to_fen(d["price"]) != price_fen:
+                return None, "价格与整数分金额不一致"
+        elif "price" in d:
+            price_fen = money.yuan_to_fen(d["price"])
+        else:
+            return None, "请填写价格"
+    except ValueError as exc:
+        return None, str(exc)
+    price = price_fen / 100
 
     pstatus = d.get("status") or status.product_status(existing or d)
     if pstatus not in status.PRODUCT_STATUSES:
@@ -325,24 +333,38 @@ def archive_template(db, rid, actor=ACTOR):
 # ---------------------------------------------------------------- 跨状态约束
 
 def _paid_fen(order):
-    """实付金额（整数分）。统一字段为 paidFen（Agent C），旧数据回退 totalFen。"""
-    paid = order.get("paidFen")
-    if paid is None:
-        paid = order.get("totalFen", 0)
-    return int(paid or 0)
+    """可信实付金额（整数分）。未收到支付回调时一律为 0。"""
+    return int(order.get("paidFen") or 0)
+
+
+_ACTIVE_AFTER_SALE_STATUSES = ("requested", "reviewing", "approved", "returning", "refunding")
+
+
+def _reserved_fen(after_sales, order_no):
+    """退款类售后尚未释放的预占金额。"""
+    total = 0
+    for rec in after_sales:
+        if rec.get("orderNo") != order_no or rec.get("type") not in ("仅退款", "退货退款"):
+            continue
+        if rec.get("status") in _ACTIVE_AFTER_SALE_STATUSES:
+            total += int(rec.get("reservedFen") or rec.get("requestedFen") or rec.get("refundFen") or 0)
+    return total
 
 
 def _refunded_fen(after_sales, order_no):
-    """从售后文档列表算该订单累计已退款（整数分）：退款类售后中「退款中/已完成」金额之和。"""
+    """累计真实退款金额；只信任支付回调写入的 refundedFen。"""
     total = 0
     for a in after_sales:
         if a.get("orderNo") != order_no:
             continue
         if a.get("type") not in ("仅退款", "退货退款"):
             continue
-        if a.get("status") in ("refunding", "completed"):
-            total += int(a.get("refundFen") or 0)
+        total += int(a.get("refundedFen") or 0)
     return total
+
+
+def _order_reserved_fen(db, order_no):
+    return _reserved_fen(db.list("after_sales"), order_no)
 
 
 def _order_refunded_fen(db, order_no):
@@ -398,21 +420,26 @@ def _has_paid(order):
     return paid is not None and int(paid or 0) > 0
 
 
-def _check_refund_constraints_in(order, refund_fen, refunded_fen):
-    """校验退款类售后的金额与支付约束（给定已退款金额），违反抛 ValueError。"""
+def _check_refund_constraints_in(order, refund_fen, reserved_fen, refunded_fen):
+    """校验退款请求、预占和真实退款总额。"""
+    refund_fen = money.parse_fen(refund_fen)
+    if refund_fen <= 0:
+        raise ValueError("退款金额必须大于 0")
     groups = status.derive_status(order)
     if groups["paymentStatus"] == "refunded":
         raise ValueError("该订单已完成退款，不能再次退款")
     if not _has_paid(order):
         raise ValueError("未支付订单不能退款")
-    cap = _paid_fen(order)  # 实付上限：paidFen 回退 totalFen
-    if refunded_fen + refund_fen > cap:
+    cap = _paid_fen(order)
+    if reserved_fen + refunded_fen + refund_fen > cap:
         raise ValueError("退款总额不能超过实付金额")
 
 
 def _check_refund_constraints(order, refund_fen, db):
     """校验退款类售后的金额与支付约束（事务外，基于 db 读已退款金额）。"""
-    _check_refund_constraints_in(order, refund_fen, _order_refunded_fen(db, order.get("no")))
+    no = order.get("no") or order.get("id")
+    _check_refund_constraints_in(
+        order, refund_fen, _order_reserved_fen(db, no), _order_refunded_fen(db, no))
 
 
 def allowed_order_transitions(order):
@@ -712,6 +739,8 @@ def create_after_sale(db, data, actor=ACTOR):
         raise ValueError("请填写售后原因")
     refund_fen = money.parse_fen(data.get("refundFen"))
     idem_key = str(data.get("idempotencyKey") or "").strip() or None
+    if idem_key and not re.fullmatch(r"[A-Za-z0-9_-]{16,128}", idem_key):
+        raise ValueError("幂等键格式不正确")
 
     with _AtomicWriter(db) as w:
         order = w.lock_order(order_no)
@@ -720,16 +749,25 @@ def create_after_sale(db, data, actor=ACTOR):
         if idem_key:
             existing = w.find_after_sale_by_key(order_no, idem_key)
             if existing:
-                return existing
+                old_amount = int(existing.get("requestedFen") or existing.get("refundFen") or 0)
+                if (existing.get("type"), existing.get("reason"), old_amount) != (atype, reason, refund_fen):
+                    raise ValueError("幂等键已用于不同请求")
+                out = dict(existing)
+                out["idempotent"] = True
+                return out
         if status.derive_status(order)["afterSaleStatus"] != "none":
             raise ValueError("该订单已有进行中的售后")
         if atype in ("仅退款", "退货退款"):
-            _check_refund_constraints_in(order, refund_fen, _refunded_fen(w.list_after_sales(), order_no))
+            sales = w.list_after_sales()
+            _check_refund_constraints_in(
+                order, refund_fen, _reserved_fen(sales, order_no), _refunded_fen(sales, order_no))
 
         no = _after_sale_no()
         rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
                "userNote": str(data.get("userNote") or "")[:500],
-               "refundFen": refund_fen, "returnLogistics": {},
+               "refundFen": refund_fen, "requestedFen": refund_fen,
+               "reservedFen": refund_fen if atype in ("仅退款", "退货退款") else 0,
+               "refundedFen": 0, "returnLogistics": {},
                "result": "", "status": "requested",
                "createdAt": _now(), "updatedAt": _now(),
                "history": [status.history_entry(actor, "afterSaleStatus", "none", "requested", reason)]}
@@ -764,12 +802,10 @@ def _after_sale_target(action, current, atype):
     if action == "receive":
         if atype == "补发":
             raise ValueError("补发类型没有退货收货环节")
-        if current in ("approved", "returning"):
-            return "refunding"
-        raise ValueError("当前状态不能确认收到退货")
+        raise ValueError("真实退款服务尚未接入，不能确认退款收货")
     if action == "complete":
-        if current == "refunding":
-            return "completed"
+        if atype in ("仅退款", "退货退款"):
+            raise ValueError("真实退款服务尚未接入，不能完成退款售后")
         if current == "approved" and atype == "补发":
             return "completed"
         raise ValueError("当前状态不能完成售后")
@@ -801,6 +837,8 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
 
         rec["status"] = target
         rec["updatedAt"] = _now()
+        if target in ("rejected", "closed"):
+            rec["reservedFen"] = 0
         if result is not None:
             rec["result"] = str(result)[:500]
         if return_logistics:

@@ -464,7 +464,7 @@ class Handler(BaseHTTPRequestHandler):
                         return self.send(400, {"error": "请填写收货人、手机号和地址"})
                 if not re.match(r"^1\d{10}$", str(data.get("phone"))):
                     return self.send(400, {"error": "手机号要 11 位数字，以 1 开头"})
-                priced = pricing.quote([{"unitPriceFen": int(round(beads[x]["price"] * 100))} for x in ids], data)
+                priced = pricing.quote([{"unitPriceFen": user_api.bead_price_fen(beads[x])} for x in ids], data)
                 goods = priced["goodsFen"] / 100
                 ship = priced["shippingFen"] / 100
                 promo = 0
@@ -693,8 +693,10 @@ def validate(table, d):
             return "请填写珠子名称"
         if not (isinstance(d.get("mm"), (int, float)) and d["mm"] > 0):
             return "请填写尺寸（mm），用户要靠它判断合不合手"
-        if not isinstance(d.get("price"), (int, float)) or d["price"] < 0:
-            return "请填写单价"
+        try:
+            user_api.bead_price_fen(d)
+        except (KeyError, TypeError, ValueError):
+            return "请填写有效的整数分单价"
         if d.get("mat") not in ai.MATS:
             return "材质不对"
         if d.get("kb"):

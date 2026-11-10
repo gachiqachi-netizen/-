@@ -5,6 +5,7 @@ import threading
 import time
 
 import migrate
+import money
 import seed
 
 TABLES = ("beads", "templates", "banners", "orders", "users", "sessions", "designs", "order_requests", "shares",
@@ -126,7 +127,14 @@ class DB:
                 for item in order['items']:
                     row = self.conn.execute('SELECT doc FROM beads WHERE id = ?', (item['id'],)).fetchone()
                     bead = json.loads(row[0]) if row else None
-                    if not bead or not bead.get('onSale', True) or any(bead.get(k) != item.get(k) for k in ('name', 'mm', 'price', 'photo')):
+                    current_price = (money.parse_fen(bead['priceFen']) if bead and 'priceFen' in bead
+                                     else money.yuan_to_fen(bead.get('price')) if bead else None)
+                    expected_price = item.get('unitPriceFen')
+                    if expected_price is None and 'price' in item:
+                        expected_price = money.yuan_to_fen(item['price'])
+                    if (not bead or not bead.get('onSale', True)
+                            or any(bead.get(k) != item.get(k) for k in ('name', 'mm', 'photo'))
+                            or current_price != expected_price):
                         self.conn.rollback()
                         return 'price_changed', None
                 no = order['no']

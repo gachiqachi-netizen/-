@@ -162,6 +162,22 @@ class UserAPITest(unittest.TestCase):
             user_api.make_order(self.db, req, 'u1')
         self.assertEqual(self.db.list('orders'), [])
 
+    def test_order_uses_price_fen_over_stale_display_price(self):
+        bead = self.db.list('beads')[0]
+        bead['priceFen'] = 101
+        bead['price'] = 999
+        self.db.put('beads', bead['id'], bead)
+        unit_prices = [{'unitPriceFen': 101} for _ in range(6)]
+        import pricing
+        quote = pricing.quote(unit_prices)
+        quote['items'] = [{'id': bead['id'], 'unitPriceFen': 101, 'mm': bead['mm']}]
+        req = {'requestId': 'fen-authority-0001', 'beads': [bead['id']] * 6, 'wrist': 15,
+               'person': '测试', 'phone': '13800138000', 'addr': '测试地址',
+               'confirmedQuote': quote}
+        order = user_api.make_order(self.db, req, 'u1')
+        self.assertEqual(order['items'][0]['unitPriceFen'], 101)
+        self.assertEqual(order['items'][0]['priceFen'], 101)
+
     def test_catalog_rechecked_during_order_transaction(self):
         bead = self.db.list('beads')[0]
         old = {'id': bead['id'], 'name': bead['name'], 'mm': bead['mm'], 'price': bead['price'], 'photo': bead.get('photo')}

@@ -7,6 +7,7 @@ import json
 from contextlib import contextmanager
 
 import migrate
+import money
 from db import TABLES
 
 
@@ -152,7 +153,14 @@ class PostgresDB:
                 item = by_id[rid]
                 row = conn.execute('SELECT doc FROM beads WHERE id = %s FOR SHARE', (rid,)).fetchone()
                 bead = row[0] if row else None
-                if not bead or not bead.get('onSale', True) or any(bead.get(k) != item.get(k) for k in ('name', 'mm', 'price', 'photo')):
+                current_price = (money.parse_fen(bead['priceFen']) if bead and 'priceFen' in bead
+                                 else money.yuan_to_fen(bead.get('price')) if bead else None)
+                expected_price = item.get('unitPriceFen')
+                if expected_price is None and 'price' in item:
+                    expected_price = money.yuan_to_fen(item['price'])
+                if (not bead or not bead.get('onSale', True)
+                        or any(bead.get(k) != item.get(k) for k in ('name', 'mm', 'photo'))
+                        or current_price != expected_price):
                     return 'price_changed', None
             no = order['no']
             conn.execute('INSERT INTO orders (id,doc) VALUES (%s,%s::jsonb)', (no, json.dumps(order, ensure_ascii=False, allow_nan=False)))

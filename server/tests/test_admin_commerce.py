@@ -111,6 +111,19 @@ class AdminCommerceTest(unittest.TestCase):
             commerce.create_product(self.db, {'id': 'bead-nomm', 'name': '缺尺寸珠', 'type': 'bead', 'mat': 'wood',
                                               'price': 3, 'status': 'on_sale'})
 
+    def test_product_price_fen_is_authoritative(self):
+        product = commerce.create_product(self.db, {
+            'id': 'fen-price', 'name': '整数分商品', 'type': 'bead', 'mat': 'wood',
+            'mm': 8, 'priceFen': 101, 'status': 'draft',
+        })
+        self.assertEqual(product['priceFen'], 101)
+        self.assertEqual(product['price'], 1.01)
+        with self.assertRaises(ValueError):
+            commerce.create_product(self.db, {
+                'id': 'bad-fen-price', 'name': '冲突价格', 'type': 'bead', 'mat': 'wood',
+                'mm': 8, 'priceFen': 101, 'price': 1, 'status': 'draft',
+            })
+
     # ---- 3. 模板生命周期 ----
 
     def test_template_lifecycle(self):

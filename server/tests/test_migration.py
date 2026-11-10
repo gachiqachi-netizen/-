@@ -154,6 +154,53 @@ class MigrationTest(unittest.TestCase):
                              doc['subtotalFen'] + doc['shippingFen'] - doc['discountFen'])
             conn.close()
 
+    def test_money_backfill_uses_decimal_half_up(self):
+        with tempfile.TemporaryDirectory() as d:
+            conn = sqlite3.connect(os.path.join(d, 'test.db'))
+            before = [m for m in migrate.MIGRATIONS if m.VERSION in ('001', '002', '003')]
+            run_migrations(conn, SQLiteAdapter(), migrations=before)
+            conn.execute("INSERT INTO orders (id, doc) VALUES (?, ?)",
+                         ('ROUND', json.dumps({'total': 1.005, 'ship': 0})))
+            conn.commit()
+            money_migration = [m for m in migrate.MIGRATIONS if m.VERSION == '004']
+            run_migrations(conn, SQLiteAdapter(), migrations=money_migration)
+            self.assertEqual(_order_doc(conn, 'ROUND')['payableFen'], 101)
+            conn.close()
+
+    def test_invalid_existing_fen_rolls_back_money_migration(self):
+        invalid_values = (True, -1, 1.2, '100')
+        for index, invalid in enumerate(invalid_values):
+            with self.subTest(invalid=invalid), tempfile.TemporaryDirectory() as d:
+                conn = sqlite3.connect(os.path.join(d, 'test.db'))
+                before = [m for m in migrate.MIGRATIONS if m.VERSION in ('001', '002', '003')]
+                run_migrations(conn, SQLiteAdapter(), migrations=before)
+                doc = {'subtotalFen': 100, 'shippingFen': invalid, 'discountFen': 0,
+                       'payableFen': 100, 'paidFen': 0, 'refundFen': 0}
+                conn.execute("INSERT INTO orders (id, doc) VALUES (?, ?)",
+                             (f'BAD{index}', json.dumps(doc)))
+                conn.commit()
+                with self.assertRaises(RuntimeError):
+                    run_migrations(conn, SQLiteAdapter(),
+                                   migrations=[m for m in migrate.MIGRATIONS if m.VERSION == '004'])
+                self.assertNotIn('004', _versions(conn))
+                self.assertEqual(_order_doc(conn, f'BAD{index}'), doc)
+                conn.close()
+
+    def test_inconsistent_existing_money_fields_are_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            conn = sqlite3.connect(os.path.join(d, 'test.db'))
+            run_migrations(conn, SQLiteAdapter(),
+                           migrations=[m for m in migrate.MIGRATIONS if m.VERSION in ('001', '002', '003')])
+            doc = {'subtotalFen': 100, 'shippingFen': 20, 'discountFen': 0,
+                   'payableFen': 999, 'paidFen': 0, 'refundFen': 0}
+            conn.execute("INSERT INTO orders (id, doc) VALUES (?, ?)", ('BADSUM', json.dumps(doc)))
+            conn.commit()
+            with self.assertRaises(RuntimeError):
+                run_migrations(conn, SQLiteAdapter(),
+                               migrations=[m for m in migrate.MIGRATIONS if m.VERSION == '004'])
+            self.assertNotIn('004', _versions(conn))
+            conn.close()
+
 
 if __name__ == '__main__':
     unittest.main()

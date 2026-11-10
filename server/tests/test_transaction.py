@@ -115,7 +115,7 @@ class TransactionTest(unittest.TestCase):
             barrier.wait()
             recs.append(commerce.create_after_sale(
                 self.db, {'orderNo': no, 'type': '仅退款', 'reason': '不想要了',
-                          'refundFen': 100, 'idempotencyKey': 'idem-key-1'}))
+                          'refundFen': 100, 'idempotencyKey': 'idem-key-00000001'}))
 
         a = threading.Thread(target=create)
         b = threading.Thread(target=create)
@@ -131,13 +131,13 @@ class TransactionTest(unittest.TestCase):
         self.set_paid(no)
         commerce.create_after_sale(self.db, {'orderNo': no, 'type': '仅退款',
                                              'reason': '不想要了', 'refundFen': 100,
-                                             'idempotencyKey': 'idem-key-2'})
+                                             'idempotencyKey': 'idem-key-00000002'})
         # 直接写库触发唯一索引（不依赖应用层先查再写）
         with self.assertRaises(sqlite3.IntegrityError):
             self.db.conn.execute(
                 "INSERT INTO after_sales (id, doc, order_no, idempotency_key) VALUES (?, ?, ?, ?)",
                 ('AS-DUP', json.dumps({'no': 'AS-DUP', 'orderNo': no, 'status': 'requested'}),
-                 no, 'idem-key-2'))
+                 no, 'idem-key-00000002'))
             self.db.conn.commit()
 
     # ---- 4. 订单变更与审计同事务回滚 ----

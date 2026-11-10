@@ -25,6 +25,13 @@ class PriceChanged(Exception):
     pass
 
 
+def bead_price_fen(bead):
+    """商品计价只信任 priceFen；旧数据没有该字段时才从 price 迁移兼容。"""
+    if 'priceFen' in bead:
+        return money.parse_fen(bead['priceFen'])
+    return money.yuan_to_fen(bead.get('price'))
+
+
 def token_hash(token):
     return hashlib.sha256(token.encode()).hexdigest()
 
@@ -179,8 +186,8 @@ def make_order(db, data, uid):
     if type(cord) is not int or cord not in (0, 1) or type(data.get('gift', False)) is not bool:
         raise ValueError('订单选项不正确')
     try:
-        unit_prices = [{'unitPriceFen': money.yuan_to_fen(beads[i]['price'])} for i in ids]
-    except KeyError:
+        unit_prices = [{'unitPriceFen': bead_price_fen(beads[i])} for i in ids]
+    except (KeyError, ValueError):
         raise ValueError('商品价格不正确')
     priced = pricing.quote(unit_prices, {'cord': cord, 'gift': data.get('gift', False)})
     goods_fen = money.parse_fen(priced['goodsFen'])
@@ -196,14 +203,15 @@ def make_order(db, data, uid):
         if not isinstance(item, dict) or not isinstance(item.get('id'), str) or type(item.get('unitPriceFen')) is not int or isinstance(item.get('mm'), bool) or not isinstance(item.get('mm'), (int, float)) or item['id'] in quoted:
             raise ValueError('订单报价格式不正确')
         quoted[item['id']] = (item['unitPriceFen'], item['mm'])
-    actual = {i: (money.yuan_to_fen(beads[i]['price']), beads[i]['mm']) for i in set(ids)}
+    actual = {i: (bead_price_fen(beads[i]), beads[i]['mm']) for i in set(ids)}
     if quoted != actual or quote['totalFen'] != payable_fen:
         raise PriceChanged()
     enriched = {i: kb.enrich(beads[i]) for i in set(ids)}
     snapshot = [{**{key: enriched[i].get(key, [] if key == 'points' else '')
                     for key in ('id', 'name', 'mm', 'price', 'photo', 'kb', 'points', 'meaning', 'summary', 'safety')},
                  'photo': beads[i].get('photo'),
-                 'unitPriceFen': money.yuan_to_fen(beads[i]['price'])} for i in ids]
+                 'priceFen': bead_price_fen(beads[i]),
+                 'unitPriceFen': bead_price_fen(beads[i])} for i in ids]
     no = 'CGZ' + time.strftime('%y%m%d') + uuid.uuid4().hex[:12].upper()
     import commerce
     terms_snapshot = commerce.terms_snapshot(db)

@@ -94,3 +94,16 @@ BANNERS = [
 for i, b in enumerate(BANNERS):
     b.setdefault("order", (i + 1) * 10)
     b.setdefault("on", True)
+
+# 服务条款：预置内容只作占位，正式文本需运营 / 法务确认后替换。
+TERMS = [
+    {"id": "term-presale", "title": "售前说明", "type": "售前说明", "version": "0.1.0", "body": "（待运营 / 法务确认）下单前请确认商品材质、尺寸与价格；本内容为占位文本，正式售前说明待运营与法务确认后发布。", "status": "draft"},
+    {"id": "term-natural", "title": "天然材料差异说明", "type": "天然材料差异说明", "version": "0.1.0", "body": "（待运营 / 法务确认）天然材料存在色差、纹理等个体差异，图片仅供参考；本内容为占位文本。", "status": "draft"},
+    {"id": "term-custom", "title": "定制商品说明", "type": "定制商品说明", "version": "0.1.0", "body": "（待运营 / 法务确认）定制手串按用户设计制作，确认后非质量问题不予退换；本内容为占位文本。", "status": "draft"},
+    {"id": "term-shipping", "title": "发货与物流说明", "type": "发货与物流说明", "version": "0.1.0", "body": "（待运营 / 法务确认）制作完成后安排发货，具体时效与承运方式见订单详情；本内容为占位文本。", "status": "draft"},
+    {"id": "term-refund", "title": "退货退款说明", "type": "退货退款说明", "version": "0.1.0", "body": "（待运营 / 法务确认）支持售后退款，具体规则与流程以正式条款为准；本内容为占位文本。", "status": "draft"},
+    {"id": "term-after-sale", "title": "售后服务说明", "type": "售后服务说明", "version": "0.1.0", "body": "（待运营 / 法务确认）售后申请与处理流程以正式条款为准；本内容为占位文本。", "status": "draft"},
+]
+for i, t in enumerate(TERMS):
+    t.setdefault("order", (i + 1) * 10)
+    t.setdefault("effectiveAt", None)

@@ -5,7 +5,8 @@ import threading
 
 import seed
 
-TABLES = ("beads", "templates", "banners", "orders", "users", "sessions", "designs", "order_requests", "shares")
+TABLES = ("beads", "templates", "banners", "orders", "users", "sessions", "designs", "order_requests", "shares",
+          "audit_logs", "after_sales", "terms")
 
 
 class DB:
@@ -23,6 +24,9 @@ class DB:
                 self.put("templates", t["id"], t)
             for b in seed.BANNERS:
                 self.put("banners", b["id"], b)
+        if not self.list("terms"):
+            for t in seed.TERMS:
+                self.put("terms", t["id"], t)
 
     def list(self, table):
         assert table in TABLES

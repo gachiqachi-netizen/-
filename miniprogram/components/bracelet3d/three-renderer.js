@@ -31,25 +31,35 @@ function create(canvas,width,height,pixelRatio,onReady){
   renderer.setPixelRatio(Math.min(2,pixelRatio||1));renderer.setSize(width,height,false);renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1
   const scene=new T.Scene(),env=makeEnvironment(T,renderer),camera=new T.PerspectiveCamera(30,width/height,1,3000),root=new T.Group();scene.add(root)
   scene.add(new T.HemisphereLight(0xfff1df,0x2a1c14,.5));const key=new T.DirectionalLight(0xffffff,1.1);key.position.set(60,140,120);scene.add(key);const rim=new T.DirectionalLight(0xffd29a,.5);rim.position.set(-100,30,-80);scene.add(rim)
-  let group=null, lastKey=null; const imageCache={}, proceduralCache={}
-  function clear(){if(!group)return;root.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map && !o.material.map._beadloopShared)o.material.map.dispose();o.material.dispose()}});group=null}
+  const group=new T.Group();root.add(group)
+  let beadMeshes=[],cord=null,lastListKey=null,lastSelected=null; const imageCache={}, proceduralCache={}
+  function disposeMesh(o){if(!o)return;if(o.parent)o.parent.remove(o);if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map && !o.material.map._beadloopShared)o.material.map.dispose();o.material.dispose()}}
+  function clear(){beadMeshes.forEach(disposeMesh);beadMeshes=[];disposeMesh(cord);cord=null;lastListKey=null;lastSelected=null}
+  function itemKey(item){return JSON.stringify([item.id,item.mat,item.mm,!!item.spacer,item.c||[],item.texture||''])}
   function mapFor(item){
     if(item.texture&&canvas.createImage){const base=(getApp().globalData.apiBase||'').replace(/\/$/,'');const url=/^https?:\/\//.test(item.texture)?item.texture:item.texture[0]==='/'?base+item.texture:base+'/_blob/'+item.texture
-      if(url){if(imageCache[url]&&imageCache[url].ready)return imageCache[url].texture;if(!imageCache[url]){const entry=imageCache[url]={};try{const image=canvas.createImage();image.onload=()=>{entry.texture=new T.Texture(image);entry.texture.encoding=T.sRGBEncoding;entry.texture._beadloopShared=true;entry.texture.needsUpdate=true;entry.ready=true;lastKey=null;onReady()};image.onerror=()=>{};image.src=url}catch(_){}}}
+      if(url){if(imageCache[url]&&imageCache[url].ready)return imageCache[url].texture;if(!imageCache[url]){const entry=imageCache[url]={};try{const image=canvas.createImage();image.onload=()=>{entry.texture=new T.Texture(image);entry.texture.encoding=T.sRGBEncoding;entry.texture._beadloopShared=true;entry.texture.needsUpdate=true;entry.ready=true;lastListKey=null;onReady()};image.onerror=()=>{};image.src=url}catch(_){}}}
     }
     const key=[item.id,item.mat,(item.c||[]).join(),item.texture||''].join('|');if(!proceduralCache[key]){proceduralCache[key]=textureData(T,item);proceduralCache[key]._beadloopShared=true}return proceduralCache[key]
   }
   return {update(list,selected,rx,ry){
-    const stateKey=JSON.stringify([list,selected]);if(group && stateKey===lastKey){root.rotation.set(rx,ry,0);renderer.render(scene,camera);return}
-    lastKey=stateKey;clear();group=new T.Group();const total=list.reduce((s,b)=>s+(Number(b.mm)||8),0),R=total/(2*Math.PI);let cur=Math.PI/2,maxD=8
+    const listKey=JSON.stringify(list),unchanged=listKey===lastListKey
+    if(unchanged && selected===lastSelected){root.rotation.set(rx,ry,0);renderer.render(scene,camera);return}
+    const total=list.reduce((s,b)=>s+(Number(b.mm)||8),0),R=total/(2*Math.PI);let cur=Math.PI/2,maxD=8
     list.forEach((it,i)=>{const mm=Number(it.mm)||8,frac=mm/total,angle=cur-frac*Math.PI;cur-=frac*2*Math.PI;maxD=Math.max(maxD,mm)
+      const key=itemKey(it);let m=beadMeshes[i]
+      if(!m || m.userData.key!==key){
+        if(m)disposeMesh(m)
       const params=({wood:[.55,0,.35],bodhi:[.5,0,.25],stone:[.22,0,.9],jade:[.22,0,.9],crystal:[.05,0,1],metal:[.22,1,.2]})[it.mat]||[.4,0,.5]
       const material=new T.MeshPhysicalMaterial({map:mapFor(it),roughness:params[0],metalness:params[1],clearcoat:params[2],clearcoatRoughness:.08,transparent:it.mat==='crystal',opacity:it.mat==='crystal'?.8:1,envMap:env,envMapIntensity:it.mat==='metal'?1.2:.9})
-      if(it.sourceIndex===selected){material.emissive=new T.Color(0x7a5410);material.emissiveIntensity=.7}
-      const geo=it.spacer?new T.CylinderGeometry(4.6,4.6,mm,36):new T.SphereGeometry(mm/2,48,32),m=new T.Mesh(geo,material);m.position.set(R*Math.cos(angle),R*Math.sin(angle),0);m.rotation.z=angle;if(it.sourceIndex===selected)m.scale.setScalar(1.12);m.userData.i=it.sourceIndex;group.add(m)
+        const geo=it.spacer?new T.CylinderGeometry(4.6,4.6,mm,36):new T.SphereGeometry(mm/2,48,32);m=new T.Mesh(geo,material);m.userData.key=key;beadMeshes[i]=m;group.add(m)
+      }
+      const active=it.sourceIndex===selected;m.position.set(R*Math.cos(angle),R*Math.sin(angle),0);m.rotation.z=angle;m.scale.setScalar(active?1.12:1);m.userData.i=it.sourceIndex
+      if(m.material.emissive){m.material.emissive.setHex(active?0x7a5410:0x000000);m.material.emissiveIntensity=active?.7:0}
     })
-    if(list.length)group.add(new T.Mesh(new T.TorusGeometry(R,.5,8,160),new T.MeshStandardMaterial({color:0x8c2a1c,roughness:.8})))
-    root.add(group);root.rotation.set(rx,ry,0);camera.position.set(0,0,Math.max(80,(R+maxD)/Math.tan(15*Math.PI/180)*1.12));camera.lookAt(0,0,0);camera.updateProjectionMatrix();renderer.render(scene,camera)
+    while(beadMeshes.length>list.length)disposeMesh(beadMeshes.pop())
+    if(!unchanged){disposeMesh(cord);cord=list.length?new T.Mesh(new T.TorusGeometry(R,.5,8,160),new T.MeshStandardMaterial({color:0x8c2a1c,roughness:.8})):null;if(cord)group.add(cord)}
+    lastListKey=listKey;lastSelected=selected;root.rotation.set(rx,ry,0);camera.position.set(0,0,Math.max(80,(R+maxD)/Math.tan(15*Math.PI/180)*1.12));camera.lookAt(0,0,0);camera.updateProjectionMatrix();renderer.render(scene,camera)
   },pick(x,y){if(!group)return null;const ray=new T.Raycaster();ray.setFromCamera(new T.Vector2(x/width*2-1,1-y/height*2),camera);const hit=ray.intersectObjects(group.children).find(h=>h.object.userData.i!==undefined);return hit?hit.object.userData.i:null},dispose(){clear();Object.values(imageCache).forEach(x=>{if(x.texture)x.texture.dispose()});Object.values(proceduralCache).forEach(x=>x.dispose());if(env)env.dispose();renderer.dispose()}}
 }
 module.exports={create}

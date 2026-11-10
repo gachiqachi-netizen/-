@@ -44,14 +44,17 @@ Page({
   const version=this._version||0,t=Date.now();
   try{
    if(frame.data.byteLength!==frame.width*frame.height*4)throw new Error('相机帧格式非 RGBA');
-   const frozen={width:frame.width,height:frame.height,data:frame.data.slice(0)};
+   const byteLength=frame.width*frame.height*4
+   if(!this._frameBytes||this._frameBytes.byteLength!==byteLength)this._frameBytes=new Uint8ClampedArray(byteLength)
+   this._frameBytes.set(new Uint8ClampedArray(frame.data))
+   const frozen={width:frame.width,height:frame.height,data:this._frameBytes};
    const predictions=await this._tracker.estimate(frozen);
    if(this.data.frozen||this.data.renderFailed||this._closed||this._hidden||version!==(this._version||0))return;
    // Draw the exact inference frame to prevent camera/landmark crop or mirror mismatch.
    const out=this._output,ctx=this._ctx;
    if(out.width!==frame.width||out.height!==frame.height){out.width=frame.width;out.height=frame.height}
-   const image=out.createImageData?out.createImageData(new Uint8ClampedArray(frozen.data),frame.width,frame.height):ctx.createImageData(frame.width,frame.height);
-   image.data.set(new Uint8ClampedArray(frozen.data));ctx.putImageData(image,0,0);
+   const image=out.createImageData?out.createImageData(frozen.data,frame.width,frame.height):ctx.createImageData(frame.width,frame.height);
+   if(image.data!==frozen.data)image.data.set(frozen.data);ctx.putImageData(image,0,0);
    const s=Math.max(this.data.width/frame.width,this.data.height/frame.height);
    const first=predictions[0],rawPose=first&&first.handInViewConfidence>=.8?placement(first.landmarks,frame.width,frame.height,this.data.width,this.data.height):null;
    const outside=rawPose&&(rawPose.x<0||rawPose.x>this.data.width||rawPose.y<0||rawPose.y>this.data.height);

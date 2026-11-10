@@ -13,18 +13,23 @@ Page({
     const d=this.data.design; if(!d)return
     const result=logic.stats(d.beads,this.data.catalog,d.wrist), map=result.map
     const items=d.beads.map((id,i)=>{const b=map[id];if(!b)return null;const a=2*Math.PI*i/d.beads.length-Math.PI/2;return {...b,x:50+37*Math.cos(a),y:50+37*Math.sin(a),sourceIndex:i}}).filter(Boolean)
-    const category=this.data.catalog.filter(b=>(this.data.materialTab==='accessories'?(b.mat==='metal'||b.spacer):!(b.mat==='metal'||b.spacer))&&(this.data.cat==='all'||b.mat===this.data.cat)), sizes=[...new Set(category.map(b=>Number(b.mm)).filter(n=>n>0))].sort((a,b)=>a-b)
-    const size=this.data.size!=='all' && !sizes.includes(Number(this.data.size))?'all':this.data.size
-    const filtered=category.filter(b=>size==='all'||Number(b.mm)===Number(size)||b.spacer).map(b=>({...b,photoUrl:b.photo?(/^(https?:|data:)/.test(b.photo)?b.photo:getApp().globalData.apiBase+b.photo):'',perRound:b.spacer||b.mat==='metal'?'点缀':`一圈约 ${Math.round((Number(d.wrist)*10+Math.max(8,2.5*Number(b.mm)-5))/Number(b.mm))} 颗`}))
     const pref=d.preferences||{};
-    const score=b=>{let score=0;const hex=(b.c&&b.c[0]||'').replace('#','');if(hex.length===6){const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),blue=parseInt(hex.slice(4,6),16),lum=.2126*r+.7152*g+.0722*blue;if(pref.color==='深色系')score+=(255-lum)/255;if(pref.color==='浅色系')score+=lum/255;if(pref.color==='暖色系')score+=(r-blue)/255;if(pref.color==='冷色系')score+=(blue+g-2*r)/510}if(pref.meaning&&pref.meaning!=='全部'&&((b.tags||[]).join('')+(b.meaning||'')).includes(pref.meaning))score+=2;return score};filtered.sort((a,b)=>score(b)-score(a));
+    const filterKey=JSON.stringify([this.data.materialTab,this.data.cat,this.data.size,d.wrist,pref.color,pref.meaning,this.data.catalog.length])
+    let filterPatch={}
+    if(filterKey!==this.filterKey){
+      const category=this.data.catalog.filter(b=>(this.data.materialTab==='accessories'?(b.mat==='metal'||b.spacer):!(b.mat==='metal'||b.spacer))&&(this.data.cat==='all'||b.mat===this.data.cat)), sizes=[...new Set(category.map(b=>Number(b.mm)).filter(n=>n>0))].sort((a,b)=>a-b)
+      const size=this.data.size!=='all' && !sizes.includes(Number(this.data.size))?'all':this.data.size
+      const filtered=category.filter(b=>size==='all'||Number(b.mm)===Number(size)||b.spacer).map(b=>({...b,photoUrl:b.photo?(/^(https?:|data:)/.test(b.photo)?b.photo:getApp().globalData.apiBase+b.photo):'',perRound:b.spacer||b.mat==='metal'?'点缀':`一圈约 ${Math.round((Number(d.wrist)*10+Math.max(8,2.5*Number(b.mm)-5))/Number(b.mm))} 颗`}))
+      const score=b=>{let score=0;const hex=(b.c&&b.c[0]||'').replace('#','');if(hex.length===6){const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),blue=parseInt(hex.slice(4,6),16),lum=.2126*r+.7152*g+.0722*blue;if(pref.color==='深色系')score+=(255-lum)/255;if(pref.color==='浅色系')score+=lum/255;if(pref.color==='暖色系')score+=(r-blue)/255;if(pref.color==='冷色系')score+=(blue+g-2*r)/510}if(pref.meaning&&pref.meaning!=='全部'&&((b.tags||[]).join('')+(b.meaning||'')).includes(pref.meaning))score+=2;return score};filtered.sort((a,b)=>score(b)-score(a))
+      this.filterKey=filterKey;filterPatch={filtered,sizes,size}
+    }
     const selectedItem=map[d.beads[this.data.selected]]
     const missingItems=d.beads.map((id,index)=>({id,index})).filter(x=>!map[x.id])
     const countMap={},tags=[]; d.beads.forEach(id=>{const bead=map[id];if(!bead)return;countMap[id]=(countMap[id]||0)+1;(bead.tags||[]).forEach(t=>{if(t!=='点缀'&&!tags.includes(t))tags.push(t)})})
     const notes=materials.fromCatalog(d.beads,this.data.catalog)
     const last=[...d.beads].reverse().find(id=>{const b=map[id];return b&&!b.spacer&&b.mat!=='metal'}), next=last?logic.fill(d.beads,this.data.catalog,d.wrist,last):[]
     const max=result.target*1.25, diff=result.length-result.target, fitOK=!result.missing&&d.beads.length>0&&(d.beads.length>=54||(diff>=-4&&diff<=6))
-    this.setData({items,missingItems,price:result.missing?'--':(result.price+(d.beads.length?15:0)).toFixed(2),length:result.missing?'--':(result.length/10).toFixed(1),fit:result.fit,missing:result.missing,filtered,sizes,size,tags:tags.slice(0,4),notes,safetyNotice:materials.safetyLines(notes),meterFill:Math.min(100,result.length/max*100),meterZoneLeft:(result.target-4)/max*100,meterZoneWidth:10/max*100,fitOK,fillCount:Math.max(0,next.length-d.beads.length),fillLabel:last?`${map[last].name} ${map[last].mm}mm`:'',hasPattern:!!(d.pattern&&d.pattern.length),selectedLabel:selectedItem?`${selectedItem.name} ${selectedItem.mm}mm`:this.data.selected>=0?'已下架材料':'',canUndo:!!(this.history&&this.history.length)})
+    this.setData({...filterPatch,items,missingItems,price:result.missing?'--':(result.price+(d.beads.length?15:0)).toFixed(2),length:result.missing?'--':(result.length/10).toFixed(1),fit:result.fit,missing:result.missing,tags:tags.slice(0,4),notes,safetyNotice:materials.safetyLines(notes),meterFill:Math.min(100,result.length/max*100),meterZoneLeft:(result.target-4)/max*100,meterZoneWidth:10/max*100,fitOK,fillCount:Math.max(0,next.length-d.beads.length),fillLabel:last?`${map[last].name} ${map[last].mm}mm`:'',hasPattern:!!(d.pattern&&d.pattern.length),selectedLabel:selectedItem?`${selectedItem.name} ${selectedItem.mm}mm`:this.data.selected>=0?'已下架材料':'',canUndo:!!(this.history&&this.history.length)})
     store.selected(d)
   },
   changeBeads(next, selected){ const d=this.data.design;this.history=this.history||[];this.history.push(d.beads.slice());if(this.history.length>60)this.history.shift();d.beads=next;this.setData({design:d,selected:selected==null?-1:selected});this.update();this.saveDraftSoon() },

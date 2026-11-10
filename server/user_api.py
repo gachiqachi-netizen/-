@@ -13,6 +13,8 @@ import urllib.request
 import uuid
 from decimal import Decimal, InvalidOperation
 
+import status
+
 SESSION_SECONDS = 30 * 24 * 3600
 
 class IdempotencyConflict(Exception):
@@ -198,12 +200,21 @@ def make_order(db, data, uid):
                  'photo': beads[i].get('photo'),
                  'unitPriceFen': int(Decimal(str(beads[i]['price'])) * 100)} for i in ids]
     no = 'CGZ' + time.strftime('%y%m%d') + uuid.uuid4().hex[:12].upper()
+    import commerce
+    terms_snapshot = commerce.terms_snapshot(db)
+    groups = status.new_order_status()
     order = {'no': no, 'userId': uid, 'name': str(data.get('name') or '我的手串')[:60], 'beads': ids, 'items': snapshot,
              'wrist': wrist, 'length': sum(Decimal(str(beads[i].get('mm', 0))) for i in ids).__float__(),
              'cord': cord, 'gift': data.get('gift', False), 'goods': float(goods), 'ship': float(ship), 'promo': 0,
              'promotion': promotion_status(),
              'total': float(total), 'person': data['person'].strip()[:40], 'phone': data['phone'],
              'addr': data['addr'].strip()[:200], 'status': '待支付', 'paymentAvailable': False,
+             'goodsFen': int(goods * 100), 'shipFen': int(Decimal(ship) * 100), 'totalFen': int(total * 100),
+             'orderStatus': groups['orderStatus'], 'paymentStatus': groups['paymentStatus'],
+             'fulfillmentStatus': groups['fulfillmentStatus'], 'afterSaleStatus': groups['afterSaleStatus'],
+             'statusHistory': [], 'logistics': None, 'logisticsHistory': [],
+             'termsSnapshot': terms_snapshot,
+             'termsVersion': hashlib.sha256(json.dumps(terms_snapshot, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:16],
              'createdAt': int(time.time() * 1000)}
     state, result = db.idempotent_order(request_id, fingerprint, order)
     if state == 'conflict':

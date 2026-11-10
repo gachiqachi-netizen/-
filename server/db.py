@@ -6,25 +6,29 @@ import time
 
 import seed
 
-TABLES = ("beads", "templates", "banners", "orders", "users", "sessions", "designs", "order_requests", "shares")
+TABLES = ("beads", "templates", "banners", "orders", "users", "sessions", "designs", "order_requests", "shares",
+          "audit_logs", "after_sales", "terms")
 
 
 class DB:
     def __init__(self, path):
-        self.conn = sqlite3.connect(path, check_same_thread=False)
         self.lock = threading.Lock()
-        with self.lock:
-            for t in TABLES:
-                self.conn.execute(f"CREATE TABLE IF NOT EXISTS {t} (id TEXT PRIMARY KEY, doc TEXT NOT NULL)")
-            for table in ("designs", "orders"):
-                columns = {row[1] for row in self.conn.execute(f"PRAGMA table_info({table})")}
-                if "user_id" not in columns:
-                    self.conn.execute(f"ALTER TABLE {table} ADD COLUMN user_id TEXT")
-                rows = self.conn.execute(f"SELECT id, doc FROM {table} WHERE user_id IS NULL").fetchall()
-                for rid, raw in rows:
-                    self.conn.execute(f"UPDATE {table} SET user_id = ? WHERE id = ?", (json.loads(raw).get("userId"), rid))
-                self.conn.execute(f"CREATE INDEX IF NOT EXISTS idx_{table}_user_id ON {table}(user_id)")
-            self.conn.commit()
+        try:
+            self.conn = sqlite3.connect(path, check_same_thread=False)
+            with self.lock:
+                for t in TABLES:
+                    self.conn.execute(f"CREATE TABLE IF NOT EXISTS {t} (id TEXT PRIMARY KEY, doc TEXT NOT NULL)")
+                for table in ("designs", "orders"):
+                    columns = {row[1] for row in self.conn.execute(f"PRAGMA table_info({table})")}
+                    if "user_id" not in columns:
+                        self.conn.execute(f"ALTER TABLE {table} ADD COLUMN user_id TEXT")
+                    rows = self.conn.execute(f"SELECT id, doc FROM {table} WHERE user_id IS NULL").fetchall()
+                    for rid, raw in rows:
+                        self.conn.execute(f"UPDATE {table} SET user_id = ? WHERE id = ?", (json.loads(raw).get("userId"), rid))
+                    self.conn.execute(f"CREATE INDEX IF NOT EXISTS idx_{table}_user_id ON {table}(user_id)")
+                self.conn.commit()
+        except (sqlite3.Error, ValueError, TypeError, json.JSONDecodeError) as e:
+            raise RuntimeError(f"数据库迁移失败，无法启动：{e}（数据库文件：{path}）") from e
         if not self.list("beads"):
             for b in seed.BEADS:
                 self.put("beads", b["id"], b)
@@ -32,6 +36,9 @@ class DB:
                 self.put("templates", t["id"], t)
             for b in seed.BANNERS:
                 self.put("banners", b["id"], b)
+        if not self.list("terms"):
+            for t in seed.TERMS:
+                self.put("terms", t["id"], t)
 
     def list(self, table):
         assert table in TABLES
@@ -62,7 +69,6 @@ class DB:
 
     def put(self, table, rid, doc):
         assert table in TABLES
-        doc = dict(doc)
         doc.pop("id", None)
         with self.lock:
             raw = json.dumps(doc, ensure_ascii=False)

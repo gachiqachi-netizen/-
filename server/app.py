@@ -29,6 +29,8 @@ sys.path.insert(0, HERE)
 import ai  # noqa: E402
 import kb  # noqa: E402
 import plans  # noqa: E402
+import status  # noqa: E402
+import commerce  # noqa: E402
 from db import DB  # noqa: E402
 
 PORT = int(os.environ.get("PORT", "8800"))
@@ -123,7 +125,8 @@ def page_skeleton(body, head=""):
 
 
 def on_sale_catalog():
-    beads = [kb.enrich(b) for b in db.list("beads") if b.get("onSale", True) and (b.get("mm") or 0) > 0]
+    beads = [kb.enrich(b) for b in db.list("beads") if b.get("onSale", True) and (b.get("mm") or 0) > 0
+             and status.product_type(b) in ("bead", "spacer")]
     ids = {b["id"] for b in beads}
     tpls = [t for t in db.list("templates") if t.get("onSale", True)
             and all(x in ids for x in (t.get("special") or []) + (t.get("pattern") or []) + (t.get("tail") or []))
@@ -259,6 +262,10 @@ class Handler(BaseHTTPRequestHandler):
     def audit_admin_mutation(self, path):
         _audit_admin(self.command, path, self.client_address[0])
 
+    def qs(self):
+        from urllib.parse import parse_qs
+        return parse_qs(urlparse(self.path).query)
+
     def user(self):
         return user_api.owner(db, self.headers.get("Authorization"))
 
@@ -272,6 +279,14 @@ class Handler(BaseHTTPRequestHandler):
             if path in ("/admin", "/admin/"):
                 with open(os.path.join(HERE, "static", "admin.html"), encoding="utf-8") as stream:
                     return self.send(200, stream.read(), "text/html; charset=utf-8")
+            if path.startswith("/admin/"):   # 后台拆分的 JS 模块（server/static/admin/）
+                rel = os.path.normpath(path[len("/admin/"):]).replace("\\", "/")
+                fp = os.path.join(HERE, "static", "admin", rel)
+                if not rel or rel.startswith("..") or os.path.isabs(rel) or not os.path.isfile(fp):
+                    return self.send(404, {"error": "not_found"})
+                ext = rel.rsplit(".", 1)[-1] if "." in rel else ""
+                ctype = {"js": "application/javascript; charset=utf-8", "css": "text/css; charset=utf-8"}.get(ext, "application/octet-stream")
+                return self.send(200, open(fp, "rb").read(), ctype)
             if path.startswith("/uploads/"):
                 name = os.path.basename(path)
                 fp = os.path.join(UPLOADS, name)
@@ -321,10 +336,44 @@ class Handler(BaseHTTPRequestHandler):
             if m:
                 if not self.admin_ok():
                     return self.send(401, {"error": "需要后台口令"})
-                rows = db.list(m.group(1))
+                q = self.qs()
                 if m.group(1) == "orders":
-                    rows.sort(key=lambda o: o.get("createdAt", 0), reverse=True)
+                    rows = commerce.list_orders(db, q.get("q", [""])[0],
+                                                {k: q.get(k, [""])[0] for k in status.GROUP_FIELDS})
+                elif m.group(1) == "beads":
+                    rows = commerce.list_products(db, q.get("q", [""])[0], q.get("type", [""])[0], q.get("status", [""])[0])
+                elif m.group(1) == "templates":
+                    rows = commerce.list_templates(db, q.get("q", [""])[0], q.get("status", [""])[0])
+                else:
+                    rows = db.list(m.group(1))
                 return self.send(200, rows)
+            if path == "/api/admin/after-sales":
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                q = self.qs()
+                return self.send(200, commerce.list_after_sales(db, q.get("q", [""])[0], q.get("status", [""])[0]))
+            if path == "/api/admin/terms":
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                q = self.qs()
+                return self.send(200, commerce.list_terms(db, q.get("q", [""])[0], q.get("status", [""])[0]))
+            if path == "/api/admin/audit":
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                q = self.qs()
+                return self.send(200, commerce.list_audit(db, q.get("q", [""])[0], q.get("target", [""])[0]))
+            m = re.match(r"^/api/admin/orders/([\w-]+)$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                detail = commerce.order_detail(db, m.group(1))
+                return self.send(200, detail) if detail else self.send(404, {"error": "订单不存在"})
+            m = re.match(r"^/api/admin/after-sales/([\w-]+)$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                rec = db.get("after_sales", m.group(1))
+                return self.send(200, rec) if rec else self.send(404, {"error": "售后记录不存在"})
             return self.send(404, {"error": "not_found"})
         except Exception as e:
             traceback.print_exc()
@@ -425,14 +474,36 @@ class Handler(BaseHTTPRequestHandler):
             if m:
                 if not self.admin_ok():
                     return self.send(401, {"error": "需要后台口令"})
-                prefix = {"beads": "b", "templates": "t", "banners": "bn"}[m.group(1)]
-                rid = data.get("id") or prefix + uuid.uuid4().hex[:6]
-                err = validate(m.group(1), data)
+                if m.group(1) == "beads":
+                    result = commerce.create_product(db, data)
+                    self.audit_admin_mutation(path + "/" + result["id"])
+                    return self.send(200, result)
+                if m.group(1) == "templates":
+                    result = commerce.create_template(db, data)
+                    self.audit_admin_mutation(path + "/" + result["id"])
+                    return self.send(200, result)
+                err = validate("banners", data)
                 if err:
                     return self.send(400, {"error": err})
-                result = db.put(m.group(1), rid, data)
+                rid = data.get("id") or "bn" + uuid.uuid4().hex[:6]
+                result = db.put("banners", rid, data)
                 self.audit_admin_mutation(path + "/" + rid)
                 return self.send(200, result)
+            m = re.match(r"^/api/admin/(beads|templates)/([\w-]+)/copy$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                if m.group(1) == "beads":
+                    return self.send(200, commerce.copy_product(db, m.group(2)))
+                return self.send(200, commerce.copy_template(db, m.group(2)))
+            if path == "/api/admin/after-sales":
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                return self.send(200, commerce.create_after_sale(db, data))
+            if path == "/api/admin/terms":
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                return self.send(200, commerce.create_term(db, data))
             return self.send(404, {"error": "not_found"})
         except user_api.IdempotencyConflict as e:
             return self.send(409, {"error": str(e), "code": "idempotency_conflict"})
@@ -440,6 +511,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(409, {"error": "商品价格或规格已变化，请刷新并重新确认订单", "code": "price_changed"})
         except ValueError as e:
             return self.send(400, {"error": str(e)})
+        except KeyError as e:
+            return self.send(404, {"error": str(e)})
         except Exception as e:
             traceback.print_exc()
             return self.send(500, {"error": "服务暂时不可用，请稍后重试"})
@@ -457,39 +530,59 @@ class Handler(BaseHTTPRequestHandler):
                 if type(expected) is not int or expected < 0:
                     return self.send(400, {"error": "请提供设计版本 expectedUpdatedAt"})
                 design = user_api.design_data(data, uid)
-                status, saved = db.update_design_if_version(design_match.group(1), uid, expected, design)
-                if status == 'missing':
+                update_status, saved = db.update_design_if_version(design_match.group(1), uid, expected, design)
+                if update_status == 'missing':
                     return self.send(404, {"error": "设计不存在"})
-                if status == 'conflict':
+                if update_status == 'conflict':
                     return self.send(409, {"error": "设计已在其他设备修改，请重新获取后处理冲突", "code": "design_conflict"})
                 return self.send(200, user_api.public_design(saved))
-            m = re.match(r"^/api/admin/(beads|templates|banners|orders)/([\w-]+)$", path)
-            if not m:
-                return self.send(404, {"error": "not_found"})
-            if not self.admin_ok():
-                return self.send(401, {"error": "需要后台口令"})
-            table, rid = m.groups()
             data = self.body()
-            if table == "orders":   # 订单后台只能改状态
-                o = db.get("orders", rid)
-                if not o:
-                    return self.send(404, {"error": "订单不存在"})
-                if o.get("userId") and o.get("status") == "待支付" and data.get("status") != "已取消":
-                    return self.send(400, {"error": "待支付订单不能进入履约"})
-                if data.get("status") not in ORDER_STATUS:
-                    return self.send(400, {"error": "状态不对"})
-                o["status"] = data["status"]
-                result = db.put("orders", rid, o)
+            m = re.match(r"^/api/admin/orders/([\w-]+)/(status|logistics)$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                rid, action = m.groups()
+                if action == "status":
+                    group, to = data.get("group"), data.get("to")
+                    if group not in status.GROUP_FIELDS or not to:
+                        return self.send(400, {"error": "请提供 group 和 to"})
+                    result = commerce.transition_order_status(db, rid, group, to, data.get("note") or "", data.get("logistics"))
+                else:
+                    result = commerce.update_order_logistics(db, rid, data)
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
-            err = validate(table, data)
-            if err:
-                return self.send(400, {"error": err})
-            result = db.put(table, rid, data)
-            self.audit_admin_mutation(path)
-            return self.send(200, result)
+            m = re.match(r"^/api/admin/after-sales/([\w-]+)/transition$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                result = commerce.transition_after_sale(db, m.group(1), data.get("action"), data.get("note") or "", data.get("returnLogistics"), data.get("result"))
+                self.audit_admin_mutation(path)
+                return self.send(200, result)
+            m = re.match(r"^/api/admin/(beads|templates|banners|terms|orders)/([\w-]+)$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                table, rid = m.groups()
+                if table == "orders":
+                    return self.send(400, {"error": "旧订单状态接口已停用，请使用分组状态接口"})
+                if table == "beads":
+                    result = commerce.update_product(db, rid, data)
+                if table == "templates":
+                    result = commerce.update_template(db, rid, data)
+                if table == "terms":
+                    result = commerce.update_term(db, rid, data)
+                if table == "banners":
+                    err = validate("banners", data)
+                    if err:
+                        return self.send(400, {"error": err})
+                    result = db.put("banners", rid, data)
+                self.audit_admin_mutation(path)
+                return self.send(200, result)
+            return self.send(404, {"error": "not_found"})
         except ValueError as e:
             return self.send(400, {"error": str(e)})
+        except KeyError as e:
+            return self.send(404, {"error": str(e)})
         except Exception as e:
             traceback.print_exc()
             return self.send(500, {"error": "服务暂时不可用，请稍后重试"})
@@ -498,24 +591,38 @@ class Handler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         if path == "/api/admin/session":
             return self.admin_logout()
-        design_match = re.fullmatch(r"/api/designs/([a-f0-9]{32})", path)
-        if design_match:
-            uid = self.user()
-            if not uid:
-                return self.send(401, {"error": "请先登录"})
-            old = db.get("designs", design_match.group(1))
-            if not old or old.get("userId") != uid:
-                return self.send(404, {"error": "设计不存在"})
-            db.delete("designs", design_match.group(1))
+        try:
+            design_match = re.fullmatch(r"/api/designs/([a-f0-9]{32})", path)
+            if design_match:
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                old = db.get("designs", design_match.group(1))
+                if not old or old.get("userId") != uid:
+                    return self.send(404, {"error": "设计不存在"})
+                db.delete("designs", design_match.group(1))
+                return self.send(200, {"ok": True})
+            m = re.match(r"^/api/admin/(beads|templates|banners|terms)/([\w-]+)$", path)
+            if not m:
+                return self.send(404, {"error": "not_found"})
+            if not self.admin_ok():
+                return self.send(401, {"error": "需要后台口令"})
+            table, rid = m.groups()
+            if table == "beads":
+                commerce.delete_product(db, rid)
+            elif table == "templates":
+                commerce.delete_template(db, rid)
+            elif table == "terms":
+                commerce.delete_term(db, rid)
+            else:
+                db.delete("banners", rid)
+            self.audit_admin_mutation(path)
             return self.send(200, {"ok": True})
-        m = re.match(r"^/api/admin/(beads|templates|banners)/([\w-]+)$", path)
-        if not m:
-            return self.send(404, {"error": "not_found"})
-        if not self.admin_ok():
-            return self.send(401, {"error": "需要后台口令"})
-        db.delete(*m.groups())
-        self.audit_admin_mutation(path)
-        return self.send(200, {"ok": True})
+        except KeyError as e:
+            return self.send(404, {"error": str(e)})
+        except Exception:
+            traceback.print_exc()
+            return self.send(500, {"error": "服务暂时不可用，请稍后重试"})
 
     # ---------- AI ----------
     def ai_route(self, path, data):

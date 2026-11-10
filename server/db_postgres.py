@@ -23,11 +23,14 @@ class PostgresDB:
         return self.psycopg.connect(self.url, connect_timeout=10)
 
     def initialize(self):
-        with self.connect() as conn:
-            for table in TABLES:
-                conn.execute(f'CREATE TABLE IF NOT EXISTS {table} (id TEXT PRIMARY KEY, doc JSONB NOT NULL)')
-            for table in ('designs', 'orders'):
-                conn.execute(f"CREATE INDEX IF NOT EXISTS idx_{table}_user_id ON {table} ((doc->>'userId'))")
+        try:
+            with self.connect() as conn:
+                for table in TABLES:
+                    conn.execute(f'CREATE TABLE IF NOT EXISTS {table} (id TEXT PRIMARY KEY, doc JSONB NOT NULL)')
+                for table in ('designs', 'orders'):
+                    conn.execute(f"CREATE INDEX IF NOT EXISTS idx_{table}_user_id ON {table} ((doc->>'userId'))")
+        except Exception as e:
+            raise RuntimeError(f'PostgreSQL 数据库迁移失败，无法启动：{e}') from e
 
     @staticmethod
     def _check(table):

@@ -1,7 +1,7 @@
 // Public deployment addresses only; never put credentials in this file.
 const environments = {
-  trial: {apiBase: 'https://api.example.com', modelBase: 'https://static.example.com', modelVersion: 'v1'},
-  release: {apiBase: 'https://api.example.com', modelBase: 'https://static.example.com', modelVersion: 'v1'}
+  trial: {apiBase: 'https://api.beadloop.cn', modelBase: 'https://api.beadloop.cn/models', modelVersion: 'v1'},
+  release: {apiBase: 'https://api.beadloop.cn', modelBase: 'https://api.beadloop.cn/models', modelVersion: 'v1'}
 }
 function validBase(value, httpsOnly) {
   if (typeof value !== 'string') return false

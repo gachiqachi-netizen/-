@@ -9,7 +9,8 @@ test('开发工具使用本机8801，手机配置独立', () => {
 })
 test('体验和正式只使用自己的HTTPS配置', () => {
   for (const env of ['trial', 'release']) {
-    assert.throws(() => resolveConfig(env, 'ios'), /正式环境地址未配置/)
+    assert.equal(resolveConfig(env, 'ios').apiBase, 'https://api.beadloop.cn')
+    assert.equal(resolveConfig(env, 'ios').modelBase, 'https://api.beadloop.cn/models')
     assert.throws(() => resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://api.example.com',modelBase:'https://static.real.cn'}}), /正式环境地址未配置/)
     assert.throws(() => resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://api.real.cn',modelBase:'https://static.example.com'}}), /正式环境地址未配置/)
     assert.equal(resolveConfig(env, 'ios', null, {[env]:{apiBase:'https://api.real.cn',modelBase:'https://static.real.cn',modelVersion:'v2'}}).modelVersion,'v2')

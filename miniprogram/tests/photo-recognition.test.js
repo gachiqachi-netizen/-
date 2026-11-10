@@ -13,7 +13,7 @@ test('本机颜色识别不回调时不阻塞 AI，页面会退出识别状态',
   const oldApi = require.cache[apiPath]
   require.cache[apiPath] = { id: apiPath, filename: apiPath, loaded: true, exports: {
     request: async (_path, _data, _method, options) => {
-      assert.equal(options.timeout, 30000)
+      assert.equal(options.timeout, 180000)
       return { ok: true, seen: '识别到棕色手串', main: 'wood', accent: '', metal: '', every: 4 }
     },
     catalog: async () => ({ beads: [] })

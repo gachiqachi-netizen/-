@@ -11,13 +11,16 @@ _provider_err = None
 
 
 def provider():
-    """AI_PROVIDER=claude / openai；不填时：有 ANTHROPIC_API_KEY 用 Claude，有 AI_BASE_URL+AI_API_KEY 用国内模型。"""
+    """选择 AI provider；生产推荐 AI_PROVIDER=zerone，并使用 Agent 独立运行密钥。"""
     global _provider, _provider_err
     if _provider or _provider_err:
         return _provider
     want = os.environ.get("AI_PROVIDER", "").lower()
     try:
-        if want == "claude" or (not want and os.environ.get("ANTHROPIC_API_KEY")):
+        if want == "zerone" or (not want and os.environ.get("ZERONE_AGENT_URL") and os.environ.get("ZERONE_AGENT_API_KEY")):
+            from .zerone import ZerOneProvider
+            _provider = ZerOneProvider()
+        elif want == "claude" or (not want and os.environ.get("ANTHROPIC_API_KEY")):
             from .claude import ClaudeProvider
             _provider = ClaudeProvider()
         elif want == "openai" or (not want and os.environ.get("AI_BASE_URL") and os.environ.get("AI_API_KEY")):

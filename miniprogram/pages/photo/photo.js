@@ -70,7 +70,7 @@ Page({
       if (this.recognitionRun !== run) return
       this.recognitionRun++
       this.setData({ busy: false, error: '识别超时，请换一张较小、更清晰的手串照片后重试。', stage: '' })
-    }, this.recognitionHardTimeoutMs || 45000)
+    }, this.recognitionHardTimeoutMs || 210000)
     this.setData({ busy: true, error: '', stage: '正在处理照片…' })
     try {
       const prepared = await bounded(imageCompress.prepare(this.data.photo), this.compressTimeoutMs || 20000, '图片压缩超时，请裁剪照片或换一张后重试。')
@@ -87,7 +87,7 @@ Page({
       // page always leaves its loading state.
       this.setData({ stage: '正在识别珠子…' })
       const localPromise = within(this.localRecognize(compressed), this.localTimeoutMs || 2500)
-      const aiPromise = api.request('/ai/photo', { image: `data:image/${type};base64,${base64}` }, undefined, { timeout: 30000 })
+      const aiPromise = api.request('/ai/photo', { image: `data:image/${type};base64,${base64}` }, undefined, { timeout: 180000 })
       try { result = await aiPromise; result.source = 'ai' }
       catch (err) { result = await localPromise; if (!result) throw err }
       if (this.recognitionRun !== run) return

@@ -70,7 +70,20 @@ PORT=8801 ADMIN_TOKEN=local-dev-only DEV_LOGIN=1 python3 server/app.py
 
 不配置时，`/api/plans/match` 使用本地规则匹配方案并以 `by: rules` 标注；`/api/ai/*` 返回 503，用户端应明确展示暂不可用。照片识别不会被伪装为已成功。
 
-**国内上线（推荐）**：用已备案的国内模型，走兼容 OpenAI 的接口：
+**生产推荐：ZerOne Agent**。业务服务只配置 Agent 独立运行密钥，不能使用管理级 CLI Token：
+
+```bash
+AI_PROVIDER=zerone \
+ZERONE_AGENT_URL=https://agents.zerone.life/zerone/beadloop \
+ZERONE_AGENT_API_KEY=你的Agent独立运行密钥 \
+ZERONE_AGENT_NAME=beadloop \
+ZERONE_AGENT_TIMEOUT=180 \
+python3 server/app.py
+```
+
+四类能力（标签抽取、AI 配、拍照做同款、AI 评价）统一由 Agent 编排；Beadloop 后端继续校验 SKU、计算颗数、长度和价格。旧的模型直连保留为回滚选项。
+
+**国内模型直连（回滚）**：用已备案的国内模型，走兼容 OpenAI 的接口：
 
 ```bash
 AI_PROVIDER=openai \

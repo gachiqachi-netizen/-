@@ -26,7 +26,7 @@ Page({
       // receiving the same rule-library defaults. The plan library is only a
       // resilience fallback when the model is unavailable or returns no usable SKU.
       try {
-        const design = await api.request('/ai/design', { text, wrist: wristSize, history: this.data.messages.slice(-6).map(m => (m.role === 'me' ? '用户：' : '你：') + m.text) }, 'POST', { timeout: 65000 })
+        const design = await api.request('/ai/design', { text, wrist: wristSize, history: this.data.messages.slice(-6).map(m => (m.role === 'me' ? '用户：' : '你：') + m.text) }, 'POST', { timeout: 180000 })
         if (Array.isArray(design.designs) && design.designs.length) result = { results: design.designs, reply: design.reply, by: 'ai' }
       } catch (err) { aiError = err }
       if (!result) {

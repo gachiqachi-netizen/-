@@ -415,7 +415,7 @@
 | 横向进度 | `progress` | 订单详情五步（下单 / 支付 / 制作 / 发货 / 完成） |
 | 竖向说明 | `guide` | 拍照做同款三步、怎么量手围 |
 
-横向：圆点 24rpx，连线 4rpx；已完成＝圆点和连线 `--c-ok`，圆点里 `check`；进行中＝圆点外圈 `--c-brand` 2rpx 描边、内心 `--c-brand`，文字 `--c-ink` 600；未到＝圆点和连线 `--c-line-strong`，文字 `--c-ink-3`；出问题＝圆点 `--c-danger` 里面 `warning`，文字 `--c-danger`。文字 `.t-micro`，在圆点下方居中。
+横向：圆点 24rpx，连线 4rpx；已完成＝圆点和连线 `--c-ok`，圆点里 `check`；进行中＝圆点 `--c-ink`，外面一圈 6rpx 的 `--c-line`，文字 `--c-ink` 600（不用朱砂，避免和“出问题”的红混淆）；未到＝圆点和连线 `--c-line-strong`，文字 `--c-ink-3`；出问题＝圆点 `--c-danger` 里面 `warning`，文字 `--c-danger`。文字 `.t-micro`，在圆点下方居中。
 
 属性：`steps`（`[{label, state: 'done'|'current'|'todo'|'error'}]`）。数据由 `utils/order-state.js` 的 `progress()` 给。
 
@@ -479,7 +479,7 @@
 |---|---|---|---|---|
 | 说明 | `info` | 底 `--c-info-tint`，字 `--c-info` | `info` | 预览模式、仅本机处理、方案库推荐 |
 | 注意 | `warn` | 底 `--c-warn-tint`，字 `--c-warn` | `info` | 离线示例数据、改价待确认、支付暂未开放、尺寸偏差 |
-| 成功 | `ok` | 底 `--c-ok-tint`，字 `--c-ok` | `check-circle` | 长度合适、订单已提交 |
+| 成功 | `ok` | 底 `--c-ok-tint`，字 `--c-ok` | `check-circle` | 长度合适、已同步（“订单已提交”不用它，用 `info`：订单停在待支付，不是成功） |
 | 错误 | `danger` | 底 `--c-danger-tint`，字 `--c-danger` | `warning` | 材料下架、加载失败、提交失败 |
 
 属性：`tone`、`text`（或默认插槽）、`action`（按钮文字）、`full`（通栏：无圆角，贴页面顶部，用于离线提示）；事件 `action`。

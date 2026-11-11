@@ -1,0 +1,181 @@
+/*
+ * 串个珠 设计 token（2026-11 改版，视觉方向“素纸朱砂”）
+ *
+ * 用法：复制到 miniprogram/styles/tokens.wxss，在 app.wxss 第一行 @import "styles/tokens.wxss";
+ * 变量挂在 page 上，自定义组件内可直接 var(--xxx)（CSS 变量会穿过组件边界继承）。
+ * 规则：页面和组件的 wxss 里不再出现颜色字面量、字号字面量、圆角字面量，一律引用这里的变量。
+ * 换算：1px = 2rpx（以 375 宽设计稿为准）；间距走 4/8 栅格，即 8rpx 的整数倍。
+ * 详见 docs/design/03-design-system.md。
+ */
+
+page {
+  /* ───── 颜色：底与面 ───── */
+  --c-bg: #f5f1ea;            /* 页面底：米宣纸色，不是纯白 */
+  --c-surface: #fffdfa;       /* 卡面、底栏、弹层 */
+  --c-sunken: #efeae1;        /* 凹陷区：输入框底、分类栏、骨架底 */
+  --c-tray-a: #fbf8f2;        /* 托盘绒布渐变：中心 */
+  --c-tray-b: #e9e2d5;        /* 托盘绒布渐变：边缘 */
+  --c-line: #e6dfd3;          /* 发丝分隔线 */
+  --c-line-strong: #cfc6b8;   /* 输入框、未选中筹码描边 */
+
+  /* ───── 颜色：墨色文字 ───── */
+  --c-ink: #1f1b18;           /* 正文、标题、价格 */
+  --c-ink-2: #5a524b;         /* 次要文字 */
+  --c-ink-3: #736a61;         /* 辅助说明（在 --c-bg 上对比度 4.7:1） */
+  --c-ink-4: #a39a90;         /* 占位符、禁用，不承载必须读到的信息 */
+
+  /* ───── 颜色：朱砂（品牌） ───── */
+  --c-brand: #b73a2b;         /* 主按钮底、选中描边、tab 选中 */
+  --c-brand-press: #9a2e21;   /* 主按钮按下 */
+  --c-brand-tint: #f7e6e1;    /* 选中底 */
+  --c-brand-ink: #a23022;     /* 朱砂色文字（链接、选中文字），只用在 surface / brand-tint 上 */
+  --c-on-brand: #fffdfa;      /* 朱砂底上的文字 */
+
+  /* ───── 颜色：鎏金（点缀，仅“精选”角标、分隔纹样） ───── */
+  --c-gold: #7a5e22;
+  --c-gold-tint: #f3ebda;
+
+  /* ───── 颜色：语义 ───── */
+  --c-ok: #2f6b4f;            /* 松绿：尺寸合适、已完成、已同步 */
+  --c-ok-tint: #e3efe7;
+  --c-warn: #8a5a0b;          /* 琥珀：待支付、尺寸偏差、离线数据、改价 */
+  --c-warn-tint: #faf0d9;
+  --c-info: #3b5b7a;          /* 黛蓝：中性说明、制作中、运输中 */
+  --c-info-tint: #e6edf3;
+  --c-danger: #a8261a;        /* 安全警示与错误：全站唯一允许的红色文字 */
+  --c-danger-tint: #fbe9e5;
+  --c-danger-line: #e9b4ab;
+
+  /* ───── 颜色：遮罩与骨架 ───── */
+  --c-mask: rgba(31, 27, 24, 0.48);
+  --c-skeleton: #ece6db;
+  --c-skeleton-hi: #f6f2ea;
+
+  /* ───── 字体 ───── */
+  --font-sans: -apple-system, "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  --font-serif: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", serif; /* 仅展示标题，见规范 3.2 */
+  --font-num: "DIN Alternate", "DIN Condensed", "Helvetica Neue", "Roboto", Arial, sans-serif;
+
+  /* 字号 / 行高（只有这 7 档） */
+  --fs-display: 48rpx;  --lh-display: 64rpx;   /* 24/32px 展示标题、订单状态 */
+  --fs-h1: 40rpx;       --lh-h1: 56rpx;        /* 20/28px 页面主标题、大价格 */
+  --fs-h2: 34rpx;       --lh-h2: 48rpx;        /* 17/24px 区块标题、手串名 */
+  --fs-h3: 30rpx;       --lh-h3: 44rpx;        /* 15/22px 卡片标题、按钮、列表主文字 */
+  --fs-body: 28rpx;     --lh-body: 44rpx;      /* 14/22px 正文 */
+  --fs-caption: 24rpx;  --lh-caption: 36rpx;   /* 12/18px 说明、标签 */
+  --fs-micro: 22rpx;    --lh-micro: 32rpx;     /* 11/16px 角标、tab 文字；全站最小字号 */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-bold: 600;
+
+  /* ───── 间距（4/8 栅格） ───── */
+  --sp-1: 8rpx;    /* 4px */
+  --sp-2: 16rpx;   /* 8px */
+  --sp-3: 24rpx;   /* 12px */
+  --sp-4: 32rpx;   /* 16px：页面左右边距、卡片内边距 */
+  --sp-5: 40rpx;   /* 20px */
+  --sp-6: 48rpx;   /* 24px：区块间距 */
+  --sp-8: 64rpx;   /* 32px */
+  --sp-10: 80rpx;  /* 40px */
+  --gutter: 32rpx;
+
+  /* ───── 圆角 ───── */
+  --r-xs: 8rpx;     /* 角标、小标签 */
+  --r-sm: 16rpx;    /* 输入框、珠子格、提示条 */
+  --r-md: 24rpx;    /* 卡片、托盘 */
+  --r-lg: 32rpx;    /* 底部弹层顶部、首页大图 */
+  --r-pill: 999rpx; /* 按钮、筹码 */
+
+  /* ───── 描边 ───── */
+  --bd-hair: 1rpx solid var(--c-line);
+  --bd-field: 2rpx solid var(--c-line-strong);
+  --bd-selected: 2rpx solid var(--c-brand);
+  --bd-danger: 2rpx solid var(--c-danger-line);
+
+  /* ───── 阴影（卡片不用阴影；只有悬浮层用） ───── */
+  --sh-float: 0 4rpx 16rpx rgba(60, 45, 30, 0.10);    /* 托盘上的圆形工具钮、Toast */
+  --sh-bar: 0 -4rpx 24rpx rgba(60, 45, 30, 0.06);     /* 底部操作栏 */
+  --sh-sheet: 0 -16rpx 64rpx rgba(60, 45, 30, 0.14);  /* 底部弹层 */
+  --sh-bead: 0 4rpx 8rpx rgba(40, 28, 18, 0.22);      /* 平面珠子色块 */
+
+  /* ───── 动效 ───── */
+  --dur-fast: 120ms;   /* 按下、选中 */
+  --dur-base: 200ms;   /* 展开、切换、Toast */
+  --dur-slow: 320ms;   /* 弹层进出 */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ───── 尺寸 ───── */
+  --tap-min: 88rpx;      /* 最小点击区 44px */
+  --h-btn-lg: 96rpx;     /* 48px 底栏主按钮 */
+  --h-btn-md: 80rpx;     /* 40px 常规按钮 */
+  --h-btn-sm: 64rpx;     /* 32px 行内按钮（点击区仍补足 88rpx） */
+  --h-cell: 104rpx;      /* 52px 列表项最小高度 */
+  --h-bar: 128rpx;       /* 64px 底部操作栏内容高度（不含安全区） */
+  --h-field: 96rpx;      /* 48px 输入框 */
+  --icon-sm: 32rpx;      /* 16px */
+  --icon-md: 40rpx;      /* 20px */
+  --icon-lg: 48rpx;      /* 24px */
+
+  /* ───── 层级 ───── */
+  --z-bar: 50;
+  --z-sheet: 100;
+  --z-toast: 200;
+
+  /* 页面默认值 */
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * 深色：只有 app.json 打开 "darkmode": true 后才会生效（见 README“待负责人确认”第 9 条）。
+ * 第一期不打开，变量先备好，mockups.html 用的是同一组值。
+ */
+@media (prefers-color-scheme: dark) {
+  page {
+    --c-bg: #151311;
+    --c-surface: #1f1c19;
+    --c-sunken: #282420;
+    --c-tray-a: #332e28;
+    --c-tray-b: #1b1815;
+    --c-line: #36312b;
+    --c-line-strong: #4a443c;
+
+    --c-ink: #f1ece4;
+    --c-ink-2: #c3bbb0;
+    --c-ink-3: #978e83;
+    --c-ink-4: #6b645c;
+
+    --c-brand: #c24a38;
+    --c-brand-press: #a83d2d;
+    --c-brand-tint: #3a211c;
+    --c-brand-ink: #ec8b78;
+    --c-on-brand: #fffdfa;
+
+    --c-gold: #d4b26a;
+    --c-gold-tint: #2e2714;
+
+    --c-ok: #7fc49f;
+    --c-ok-tint: #1a2e24;
+    --c-warn: #e2b25c;
+    --c-warn-tint: #33280f;
+    --c-info: #8fb2d4;
+    --c-info-tint: #1a2632;
+    --c-danger: #f2877a;
+    --c-danger-tint: #3a1b17;
+    --c-danger-line: #6e2e26;
+
+    --c-mask: rgba(0, 0, 0, 0.6);
+    --c-skeleton: #2a2622;
+    --c-skeleton-hi: #36312b;
+
+    --sh-float: 0 4rpx 16rpx rgba(0, 0, 0, 0.4);
+    --sh-bar: 0 -4rpx 24rpx rgba(0, 0, 0, 0.3);
+    --sh-sheet: 0 -16rpx 64rpx rgba(0, 0, 0, 0.5);
+    --sh-bead: 0 4rpx 8rpx rgba(0, 0, 0, 0.5);
+  }
+}

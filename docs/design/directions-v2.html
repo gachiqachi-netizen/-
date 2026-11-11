@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>三个方向对比稿</title>
+<style>
+:root{--page:#e9eaec;--ink:#17181a;--sub:#696c72}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif}
+header,section,.notes{max-width:1240px;margin:0 auto;padding:24px 16px}
+header h1{font-size:24px;margin:8px 0 6px;font-weight:600}
+header p,section>p{margin:0 0 6px;color:var(--sub);max-width:820px}
+section h2{font-size:19px;margin:0 0 4px;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:28px;margin-top:14px}
+figure{margin:0}
+figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
+.phone{width:375px;max-width:calc(100vw - 32px);height:780px;border-radius:38px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 24px 48px -28px rgba(0,0,0,.45)}
+.nav{height:90px;flex:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:11px;position:relative;font-size:16px;font-weight:600}
+.cap{position:absolute;right:12px;bottom:8px;width:87px;height:32px;border-radius:16px}
+.back{position:absolute;left:18px;bottom:11px;font-size:20px;font-weight:400}
+.body{flex:1;overflow:hidden;position:relative}
+.tab{height:80px;flex:none;display:flex;justify-content:space-around;padding-top:9px;font-size:10px}
+.tab div{display:flex;flex-direction:column;align-items:center;gap:3px;width:60px}
+.tab svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ph{display:flex;align-items:flex-end;justify-content:flex-start;font-size:11px;letter-spacing:.5px;padding:10px 12px;position:relative;overflow:hidden}
+.ph span{position:relative}
+.ask{display:flex;align-items:center;gap:10px;height:52px;padding:0 6px 0 18px;font-size:15px}
+.ask .go{margin-left:auto;width:40px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center}
+.ask .go svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.strip{display:flex;gap:14px;overflow:hidden;padding:0 20px}
+.strip .b{flex:none;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px}
+.notes{color:var(--sub);font-size:14px;padding-bottom:56px}
+.notes li{margin:4px 0}
+
+/* 1 白盒 */
+.W{--bg:#fff;--t:#111;--t2:#8b8d92;--line:#ececee;--ph:#f1f2f4;background:var(--bg);color:var(--t)}
+.W .nav{letter-spacing:6px;font-weight:500;font-size:15px}
+.W .cap{border:1px solid var(--line)}
+.W .tab{border-top:1px solid var(--line);color:#a3a5aa} .W .tab .on{color:var(--t)}
+.W .ph{background:var(--ph);color:#a8abb1}
+.W .ask{border-bottom:1px solid var(--t);padding-left:0;height:56px}
+.W .ask .go{background:var(--t);color:#fff}
+.W .btn{height:52px;background:var(--t);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;letter-spacing:1px}
+.W .grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+.W .grid>div{background:#fff;padding-bottom:14px}
+.W .grid .n{font-size:14px;padding:10px 14px 0}
+.W .grid .p{font-size:13px;color:var(--t2);padding:0 14px}
+
+/* 2 叠戴 */
+.S{--bg:#f4f0ea;--surf:#fbf9f6;--t:#2b2724;--t2:#948b82;--acc:#9fb4c2;--ph:#e7e1d9;background:var(--bg);color:var(--t)}
+.S .cap{background:rgba(255,255,255,.6)}
+.S .tab{background:var(--surf);color:#b2aaa1} .S .tab .on{color:var(--t)}
+.S .ph{background:var(--ph);color:#ab9f93;border-radius:26px}
+.S .ask{background:var(--surf);border-radius:26px}
+.S .ask .go{background:var(--t);color:#fff}
+.S .mood{display:flex;gap:8px;flex-wrap:wrap}
+.S .mood span{padding:6px 14px;border-radius:999px;background:rgba(43,39,36,.06);font-size:13px}
+.S .title{font-size:30px;line-height:1.2;font-weight:300;letter-spacing:1px}
+.S .btn{height:50px;border-radius:25px;background:var(--t);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600}
+
+/* 3 实验室 */
+.L{--bg:#f2f2f3;--t:#121314;--t2:#8a8c91;--stage:#0c0d0f;--acc:#d9f05a;background:var(--bg);color:var(--t)}
+.L .nav{background:var(--stage);color:#f2f2f3}
+.L .cap{border:1px solid rgba(255,255,255,.18)}
+.L .tab{background:#fff;color:#a2a4a8} .L .tab .on{color:var(--t)}
+.L .stage{background:radial-gradient(70% 55% at 50% 42%,#2a2d33 0,#121316 60%,#0c0d0f 100%);color:#e9eaec;position:relative}
+.L .floor{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.10),transparent)}
+.L .ask{background:#fff;border-radius:14px;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.L .ask .go{background:var(--t);color:var(--acc);border-radius:10px}
+.L .chip{font-size:11px;padding:4px 8px;border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#c9cbcf}
+.L .btn{height:52px;border-radius:14px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600}
+.L .ruler{position:relative;height:28px;margin:0 20px}
+.L .ruler i{position:absolute;bottom:0;width:1px;background:rgba(255,255,255,.35)}
+</style>
+</head>
+<body>
+<header>
+<h1>串个珠 · 三个方向对比稿</h1>
+<p>按 00 文档的克制预算做：除了珠子和照片，每屏最多 4 种颜色、2 种按钮，不用彩色标签。灰色块是<b>实拍图占位</b>，定方向后换真图。款式名和配色取自 <code>水晶手串热门款选款数据.xlsx</code> 里小红书的高赞笔记：清冷、冰感、叠戴、海盐汽水、白月光。</p>
+<p>三个方向的首页都按负责人 10 月 30 日的意见：AI 配和自己串同等重要，首页直接给心愿输入框；热门款融进“大家在串”，不再单独一块。</p>
+</header>
+
+<section>
+<h2>方向一 · 白盒</h2>
+<p>参考施华洛世奇：纯白、黑字、通栏黑按钮，列表贴边排、没有卡片和圆角，层级全靠字号。水晶靠白底实拍打出通透感。</p>
+<div class="row">
+<figure><figcaption>白盒 · 首页</figcaption>
+<div class="phone W">
+ <div class="nav">串 个 珠<span class="cap"></span></div>
+ <div class="body">
+  <div class="ph" style="height:300px"><span>实拍：手腕上的白月光 · 海蓝宝</span></div>
+  <div style="padding:22px 20px 0">
+   <div style="font-size:26px;font-weight:300;letter-spacing:1px;line-height:1.25">今天，想串一条<br>什么样的？</div>
+   <div class="ask" style="margin-top:14px"><span style="color:#a3a5aa">说一句心愿，比如“想要清冷一点”</span><span class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+   <div style="display:flex;justify-content:space-between;margin-top:14px;font-size:14px"><span>或者，从一颗珠子开始自己串</span><span>›</span></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;padding:26px 20px 10px"><span style="font-size:13px;letter-spacing:3px">大家在串</span><span style="font-size:12px;color:#8b8d92">全部</span></div>
+  <div class="grid">
+   <div><div class="ph" style="height:150px"></div><div class="n">海盐汽水</div><div class="p">¥128</div></div>
+   <div><div class="ph" style="height:150px"></div><div class="n">白月光</div><div class="p">¥98</div></div>
+  </div>
+ </div>
+ <div class="tab"><div class="on"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4z"/></svg>首页</div><div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="5" r="2"/></svg>自己串</div><div><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>AI 配</div><div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>我的</div></div>
+</div></figure>
+
+<figure><figcaption>白盒 · 编辑器</figcaption>
+<div class="phone W">
+ <div class="nav" style="letter-spacing:0;font-weight:600"><span class="back">‹</span>海盐汽水<span class="cap"></span></div>
+ <div class="body">
+  <svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,aqua,clear,aqua,moon,aqua,aqua,clear,aqua,moon,aqua,aqua,clear" data-tilt=".42" data-cx="187" data-cy="170" data-R="118" width="375" height="330" style="display:block"></svg>
+  <div style="display:flex;justify-content:space-between;padding:0 20px;font-size:13px"><span>18 颗 · 152mm</span><span>手围 15cm · 合适</span></div>
+  <div style="height:1px;background:#ececee;margin:16px 0 18px"></div>
+  <div style="display:flex;gap:22px;padding:0 20px 16px;font-size:14px"><span style="font-weight:600;border-bottom:1px solid #111;padding-bottom:4px">水晶</span><span style="color:#8b8d92">月光石</span><span style="color:#8b8d92">玉石</span><span style="color:#8b8d92">配件</span></div>
+  <div class="strip">
+   <div class="b"><svg data-one="aqua" width="54" height="54"></svg>海蓝宝</div>
+   <div class="b"><svg data-one="clear" width="54" height="54"></svg>白水晶</div>
+   <div class="b"><svg data-one="moon" width="54" height="54"></svg>月光石</div>
+   <div class="b"><svg data-one="rose" width="54" height="54"></svg>粉晶</div>
+   <div class="b"><svg data-one="amethyst" width="54" height="54"></svg>紫水晶</div>
+  </div>
+ </div>
+ <div style="padding:12px 20px 30px"><div class="btn">完成 · ¥128</div></div>
+</div></figure>
+</div>
+</section>
+
+<section>
+<h2>方向二 · 叠戴</h2>
+<p>参考设计师珠串品牌和年轻独立站：暖奶油底、细字号大标题、大面积手腕叠戴照，配一句心情短句。强调色只有一点雾蓝，用于选中。编辑器多一个“叠戴预览”，把新串的和已有作品叠在一起看。</p>
+<div class="row">
+<figure><figcaption>叠戴 · 首页</figcaption>
+<div class="phone S">
+ <div class="nav">串个珠<span class="cap"></span></div>
+ <div class="body" style="padding:0 16px">
+  <div class="ph" style="height:320px;align-items:flex-end"><span>实拍：手腕上叠戴三条 · 淡人色系</span></div>
+  <div style="padding:20px 6px 0">
+   <div class="title">淡一点，<br>也很好看</div>
+  </div>
+  <div class="ask" style="margin-top:16px"><span style="color:#a79d93">今天想要什么心情？</span><span class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  <div class="mood" style="margin-top:12px;padding:0 4px"><span>清冷一点</span><span>去去班味</span><span>考前定心</span><span>送闺蜜</span></div>
+  <div style="display:flex;justify-content:space-between;margin:22px 6px 0;font-size:14px"><span>从一颗珠子开始，自己串</span><span>›</span></div>
+ </div>
+ <div class="tab"><div class="on"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4z"/></svg>首页</div><div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="5" r="2"/></svg>自己串</div><div><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>AI 配</div><div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>我的</div></div>
+</div></figure>
+
+<figure><figcaption>叠戴 · 编辑器（开着叠戴预览）</figcaption>
+<div class="phone S">
+ <div class="nav"><span class="back">‹</span>新的一条<span class="cap"></span></div>
+ <div class="body">
+  <div style="margin:0 16px;border-radius:26px;background:radial-gradient(90% 80% at 50% 40%,#fbf9f6 0,#ece6de 100%);height:330px;position:relative">
+   <svg class="ring" data-beads="moon,clear,moon,clear,moon,clear,moon,clear,moon,clear,moon,clear,moon,clear,moon,clear,moon,clear,moon,clear,moon,clear" data-tilt=".38" data-cx="171" data-cy="112" data-R="104" data-fade=".45" width="343" height="330" style="position:absolute;inset:0"></svg>
+   <svg class="ring" data-beads="aqua,clear,aqua,aqua,clear,aqua,aqua,clear,aqua,aqua,clear,aqua,aqua,clear,aqua,aqua,clear,aqua" data-tilt=".38" data-cx="171" data-cy="166" data-R="108" width="343" height="330" style="position:absolute;inset:0"></svg>
+   <svg class="ring" data-beads="rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose,rose" data-tilt=".38" data-cx="171" data-cy="222" data-R="102" data-fade=".45" data-small="1" width="343" height="330" style="position:absolute;inset:0"></svg>
+   <div style="position:absolute;left:16px;top:14px;font-size:12px;color:#948b82">叠戴预览 · 上下两条是你的作品</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;padding:14px 24px 0;font-size:13px"><span>18 颗 · 152mm</span><span style="color:#948b82">手围 15cm · 合适</span></div>
+  <div style="display:flex;gap:20px;padding:18px 24px 14px;font-size:14px"><span style="font-weight:600">冰透</span><span style="color:#948b82">温柔</span><span style="color:#948b82">明亮</span><span style="color:#948b82">深色</span><span style="color:#948b82">点缀</span></div>
+  <div class="strip">
+   <div class="b"><svg data-one="aqua" width="54" height="54"></svg>海蓝宝</div>
+   <div class="b"><svg data-one="clear" width="54" height="54"></svg>白水晶</div>
+   <div class="b"><svg data-one="moon" width="54" height="54"></svg>月光石</div>
+   <div class="b"><svg data-one="prehnite" width="54" height="54"></svg>葡萄石</div>
+   <div class="b"><svg data-one="rose" width="54" height="54"></svg>粉晶</div>
+  </div>
+ </div>
+ <div style="padding:12px 16px 30px;display:flex;align-items:center;gap:14px"><div style="font-size:18px;font-weight:600">¥128</div><div class="btn" style="flex:1">串好了</div></div>
+</div></figure>
+</div>
+</section>
+
+<section>
+<h2>方向三 · 实验室</h2>
+<p>科技感：深色影棚舞台，手串按 3D 实时渲染、打影棚光、可以转；长度、颗数用等宽数字排，像产品参数。AR 试戴放在首页最显眼处。强调色只有一点荧光黄绿，只用在“生成”按钮的箭头上。</p>
+<div class="row">
+<figure><figcaption>实验室 · 首页</figcaption>
+<div class="phone L">
+ <div class="nav">串个珠<span class="cap"></span></div>
+ <div class="body">
+  <div class="stage" style="height:380px">
+   <div class="floor" style="top:250px;width:260px;height:60px"></div>
+   <svg class="ring" data-beads="aqua,clear,aqua,moon,aqua,clear,aqua,moon,aqua,clear,aqua,moon,aqua,clear,aqua,moon,aqua,clear" data-tilt=".46" data-cx="187" data-cy="170" data-R="112" data-dark="1" width="375" height="330" style="position:absolute;top:0;left:0"></svg>
+   <div style="position:absolute;left:20px;right:20px;bottom:18px;display:flex;justify-content:space-between;align-items:flex-end">
+    <div><div style="font-size:22px;font-weight:600">鬼蓝</div><div class="mono" style="font-size:12px;color:#9a9ca1">海蓝宝 · 8mm × 18 · 152mm</div></div>
+    <div style="display:flex;gap:6px"><span class="chip">360°</span><span class="chip">AR 试戴</span></div>
+   </div>
+  </div>
+  <div style="padding:16px 16px 0">
+   <div class="ask"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#121314" stroke-width="1.5" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg><span style="color:#8a8c91">描述心愿，生成一条手串</span><span class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+    <div style="background:#fff;border-radius:14px;padding:14px"><div style="font-weight:600">自己串</div><div style="font-size:12px;color:#8a8c91">从 200 种珠子里挑</div></div>
+    <div style="background:#fff;border-radius:14px;padding:14px"><div style="font-weight:600">拍照识别</div><div style="font-size:12px;color:#8a8c91">拍一条，做同款</div></div>
+   </div>
+  </div>
+ </div>
+ <div class="tab"><div class="on"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4z"/></svg>首页</div><div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="5" r="2"/></svg>自己串</div><div><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>AI 配</div><div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>我的</div></div>
+</div></figure>
+
+<figure><figcaption>实验室 · 编辑器</figcaption>
+<div class="phone L" style="background:#0c0d0f;color:#e9eaec">
+ <div class="nav"><span class="back">‹</span>设计手串<span class="cap"></span></div>
+ <div class="body">
+  <div class="stage" style="height:360px">
+   <div class="floor" style="top:250px;width:280px;height:64px"></div>
+   <svg class="ring" data-beads="strawberry,citrine,strawberry,strawberry,clear,strawberry,strawberry,citrine,strawberry,strawberry,clear,strawberry,strawberry,citrine,strawberry,strawberry,clear,strawberry" data-tilt=".46" data-cx="187" data-cy="165" data-R="120" data-dark="1" width="375" height="330" style="position:absolute;top:0;left:0"></svg>
+   <div style="position:absolute;left:20px;top:10px;font-size:11px;color:#8a8c91">拖动旋转 · 双指缩放</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;padding:14px 20px 4px" class="mono"><span style="font-size:13px">18 PCS</span><span style="font-size:13px">152.0 mm</span><span style="font-size:13px;color:#d9f05a">合适 +2.0</span></div>
+  <div class="ruler" id="ruler"></div>
+  <div style="display:flex;gap:20px;padding:18px 20px 14px;font-size:14px"><span style="font-weight:600">水晶</span><span style="color:#7d8085">玉石</span><span style="color:#7d8085">木</span><span style="color:#7d8085">菩提</span><span style="color:#7d8085">配件</span></div>
+  <div class="strip">
+   <div class="b"><svg data-one="strawberry" data-dark="1" width="54" height="54"></svg>草莓晶</div>
+   <div class="b"><svg data-one="citrine" data-dark="1" width="54" height="54"></svg>黄水晶</div>
+   <div class="b"><svg data-one="clear" data-dark="1" width="54" height="54"></svg>白水晶</div>
+   <div class="b"><svg data-one="rose" data-dark="1" width="54" height="54"></svg>粉晶</div>
+   <div class="b"><svg data-one="aqua" data-dark="1" width="54" height="54"></svg>海蓝宝</div>
+  </div>
+ </div>
+ <div style="padding:12px 16px 30px;display:flex;gap:10px"><div class="btn" style="flex:1;background:#1d1f23;color:#e9eaec">AR 试戴</div><div class="btn" style="flex:1">完成 · ¥128</div></div>
+</div></figure>
+</div>
+</section>
+
+<div class="notes">
+<p>怎么看这三版：</p>
+<ul>
+<li>先看整体气质，不看细节；灰色块换成实拍图后，白盒和叠戴的观感会提升最多。</li>
+<li>首页三版都是“一句心愿就能开始”（AI 配）加“自己串”入口，热门款融进“大家在串”或心情短句。</li>
+<li>小红书数据里“淡人、清冷、冰感、叠戴”是最高频的词，白盒和叠戴更贴合；实验室更能体现 3D 和 AR 的技术，但情绪感最弱。</li>
+<li>可以组合：例如叠戴的首页加白盒的列表和下单；或白盒整体，编辑器换成实验室的深色舞台。</li>
+</ul>
+</div>
+
+<script>
+// 珠子示意：基色、暗部、内部透光、边缘反光、高光。正式版用实拍抠图或 3D 渲染。
+var M={
+ aqua:['#eef9fc','#b7e1ec','#5c9db3',.6],clear:['#ffffff','#eef1f5','#aeb8c6',.8],
+ moon:['#fbfcfe','#e6eaf2','#9fabc0',.65],rose:['#fde7ea','#f1bcc6','#c47f8e',.55],
+ amethyst:['#ece0fa','#b293de','#5f3e96',.5],strawberry:['#fde2e4','#eda2ab','#ad5562',.5],
+ citrine:['#fff4d3','#f3cd75','#b4842b',.55],prehnite:['#f1f8e6','#cfe3b0','#86a86a',.55]};
+var uid=0,NS='http://www.w3.org/2000/svg';
+function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e}
+function bead(svg,cx,cy,r,k,o){
+ o=o||{};var m=M[k],id='g'+(uid++),d=el('defs',{});
+ d.innerHTML='<radialGradient id="'+id+'a" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="'+m[0]+'"/><stop offset=".5" stop-color="'+m[1]+'"/><stop offset="1" stop-color="'+m[2]+'"/></radialGradient>'+
+ '<radialGradient id="'+id+'b" cx="64%" cy="74%" r="42%"><stop offset="0" stop-color="#fff" stop-opacity="'+m[3]+'"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>'+
+ '<radialGradient id="'+id+'c" cx="50%" cy="50%" r="50%"><stop offset=".82" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="'+(o.dark?.5:.35)+'"/></radialGradient>';
+ svg.appendChild(d);
+ var g=el('g',{opacity:o.fade||1});
+ g.innerHTML=(o.shadow===false?'':'<ellipse cx="'+cx+'" cy="'+(cy+r*.95)+'" rx="'+r*.75+'" ry="'+r*.2+'" fill="#000" opacity="'+(o.dark?.45:.1)+'"/>')+
+ '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'a)"/>'+
+ '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'b)"/>'+
+ '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'c)"/>'+
+ '<ellipse cx="'+(cx-r*.34)+'" cy="'+(cy-r*.4)+'" rx="'+r*.26+'" ry="'+r*.14+'" fill="#fff" opacity=".92" transform="rotate(-32 '+(cx-r*.34)+' '+(cy-r*.4)+')"/>'+
+ '<circle cx="'+(cx-r*.12)+'" cy="'+(cy-r*.55)+'" r="'+r*.05+'" fill="#fff" opacity=".9"/>'+
+ (o.dark?'<path d="M'+(cx+r*.55)+' '+(cy-r*.55)+' A'+r+' '+r+' 0 0 1 '+(cx+r*.75)+' '+(cy+r*.4)+'" stroke="#fff" stroke-opacity=".35" stroke-width="'+r*.06+'" fill="none"/>':'');
+ svg.appendChild(g);
+}
+// 斜放的手串：按前后排序，后面的珠子小一点、暗一点
+document.querySelectorAll('svg.ring').forEach(function(svg){
+ var ds=svg.dataset,list=ds.beads.split(','),n=list.length,cx=+ds.cx,cy=+ds.cy,R=+ds.r||+ds.R,t=+ds.tilt,dark=!!ds.dark,fade=+ds.fade||1;
+ svg.setAttribute('viewBox','0 0 '+svg.getAttribute('width')+' '+svg.getAttribute('height'));
+ var br=R*Math.sin(Math.PI/n)*(ds.small?.95:1.02);
+ svg.appendChild(el('ellipse',{cx:cx,cy:cy,rx:R,ry:R*t,fill:'none',stroke:dark?'rgba(255,255,255,.18)':'rgba(60,60,70,.18)','stroke-width':1.2,opacity:fade}));
+ var items=list.map(function(k,i){var a=i/n*Math.PI*2+Math.PI/2.3;return{k:k,x:cx+R*Math.cos(a),y:cy+R*t*Math.sin(a),z:Math.sin(a)}});
+ items.sort(function(a,b){return a.z-b.z}).forEach(function(p){var s=.86+.14*(p.z+1)/2;bead(svg,p.x,p.y,br*s,p.k,{dark:dark,fade:fade*(.82+.18*(p.z+1)/2),shadow:false})});
+});
+document.querySelectorAll('svg[data-one]').forEach(function(svg){svg.setAttribute('viewBox','0 0 54 54');bead(svg,27,25,21,svg.dataset.one,{dark:!!svg.dataset.dark})});
+var ru=document.getElementById('ruler');for(var i=0;i<=60;i++){var t=document.createElement('i');t.style.left=(i/60*100)+'%';t.style.height=(i%10?6:i%5?8:14)+'px';if(i>=26&&i<=36)t.style.background='#d9f05a';ru.appendChild(t)}
+</script>
+</body>
+</html>

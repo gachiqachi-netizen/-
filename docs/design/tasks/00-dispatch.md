@@ -17,15 +17,14 @@
 | 批次 | 可以同时派的卡 | 开工前必须已合并 | 预计 |
 |---|---|---|---|
 | **第 0 步**（负责人） | 推送 `review/admin-workbench-fixes` 和 `design/ui-revamp`；建 `integration/2026-11`（命令见第 4 节） | — | 半小时 |
-| **第 1 批**（9 路并行） | A1 字段契约 · A4a 确认收货和自动完成 · C0a 变量和全局样式 · C0b 图标 · C0c 字标 · C0d 显示函数 · C0e 珠子图 · D0 后台工程 · A0 审核（我来做） | 第 0 步 | 1–2 天 |
+| **第 1 批**（10 路并行） | A1 字段契约 · A4a 确认收货和自动完成 · C0a 变量和全局样式 · C0b 图标 · C0c 字标 · C0d 显示函数 · C0e 珠子图 · C0j 模板排珠改用工作台尺寸规则 · D0 后台工程 · A0 审核（我来做） | 第 0 步 | 1–2 天 |
 | **第 2 批**（5 路并行） | A2 订单展示状态 · A4b 用户订单：单个订单和改地址 · C0f 基础样式和小控件 · C0h 手串图 · D1 后台字段对齐（前半：换契约） | A2 等 A1；A4b 等 A4a；C0f 等 C0a；C0h 等 C0e；D1 等 A1、D0 | 2–3 天 |
 | **第 3 批**（5 路并行） | A4c 后台：改地址、内部备注、取消原因、去掉手动确认 · A5a 售后类型和用户申请 · C0g 弹层、底栏、浮动提示 · C0i AI 输入区 · D2 后台框架和样式 | A4c 等 A4b、A2；A5a 等 A4b；C0g、C0i 等 C0f；D2 等 D1 | 2–3 天 |
-| **第 4 批**（4 路并行） | A5b 模拟退款 · C0z 组件注册和临时页收口 · C2 订单状态改读后端 · D1b 后台字段对齐（后半：订单显示 opsStatus） | A5b 等 A5a；C0z 等 C0a–C0i 全部；C2 等 A2、C0z；D1b 等 A2、D2 | 1–2 天 |
+| **第 4 批**（4 路并行） | A5b 模拟退款 · C0z 组件注册和临时页收口 · C2 订单状态改读后端 · D1b 后台字段对齐（后半：订单显示 opsStatus） | A5b 等 A5a；C0z 等 C0a–C0j 全部；C2 等 A2、C0z；D1b 等 A2、D2 | 1–2 天 |
 
 第 4 批合完 = 15 号文档的 M0 和 M1 的前半段。到时候写第二波的卡。
 
 **等负责人确认后再写卡的**：
-- **尺寸规则里“主珠”怎么算**（15 号文档 E11）：小程序工作台 `pages/editor/logic.js` 算主珠时排除隔片、金属珠和 6mm 以下的珠子；后端 `plans.target_mm`（模板、AI 配、后台工单用）只排除隔片。小隔珠占多数时两边目标长度不同。推荐统一成小程序那份（用户是看着它下单的），统一前不改任何一边。
 - **改手围重串怎么重排珠子**（A5 的后半）、**制作中退款扣多少**（E2）。
 
 ### 为什么这样分
@@ -50,6 +49,7 @@
 | C0b | 新建 `miniprogram/assets/icons/*`、`miniprogram/assets/tab/*`、`miniprogram/tests/icons.test.js`；填 `miniprogram/kit/icons/*`（临时页，空壳已建好） |
 | C0c | 新建 `miniprogram/assets/brand/*`、`miniprogram/components/wordmark/*`、`miniprogram/kit/wordmark/*`（临时页，空壳已建好） |
 | C0d | 新建 `miniprogram/utils/meaning.js`、`money.js`、`fit-text.js`、对应 3 个测试、`tools/check-copy.py` |
+| C0j | `miniprogram/utils/template.js`、新建 `miniprogram/tests/size-rule-shared.test.js` |
 | C0e | 新建 `miniprogram/utils/bead-image.js`、`bead-paint.js`、`miniprogram/components/bead/*`、对应测试、`miniprogram/kit/bead/*`（临时页，空壳已建好） |
 | C0f | 新建 `miniprogram/styles/components.wxss`、`miniprogram/components/state/*`、`miniprogram/tests/ui-basic.test.js`、`miniprogram/kit/basic/*`（临时页，空壳已建好）；改 `miniprogram/app.wxss`（只加一行 `@import`） |
 | C0h | 新建 `miniprogram/components/{bracelet,cell,design-row}/*`、`miniprogram/kit/bracelet/*`（临时页，空壳已建好）；改 `miniprogram/components/bracelet-thumb/*`、`miniprogram/utils/thumb-cache.js` |

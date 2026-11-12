@@ -141,6 +141,42 @@
 
 ---
 
+## C0j 模板排珠改用工作台的尺寸规则
+
+- **批次**：第 1 批　**依赖**：无（后端已在 `integration/2026-11` 里改好）　**大小**：S　**分支**：`agent/C0j-size-rule`
+
+**为什么**：负责人 2026-11-13 定：尺寸规则统一成**小程序工作台** `pages/editor/logic.js` 的 `stats` 那一份。后端已经改好，并留了两边共用的用例 `server/tests/fixtures/size_rule_cases.json`。小程序里还有一处不一致：`utils/template.js` 的 `build` 按“配方”算主珠、而且没有排除金属珠。
+
+规则（以 `logic.stats` 为准，不要改 `logic.js`）：主珠 = 整串里排除隔片、金属珠、6mm 以下珠子后出现最多的直径，一样多取较小的，没有就按 8mm；目标长度 = `Math.round(手围 × 10 + max(8, 2.5 × 主珠 − 5))`。
+
+**只能改**：`miniprogram/utils/template.js`、新建 `miniprogram/tests/size-rule-shared.test.js`。
+
+**步骤**
+1. `utils/template.js` 的 `build(template, catalog, wrist)`：
+   - 开头的校验和 `fixed`（按颗数串）分支**保持不变**。
+   - 删掉自己算 `sizes`、`main`、`target` 的那几行。
+   - 改成和工作台 `fill` 一样的循环：`const logic = require('../pages/editor/logic')`；`beads` 从 `special` 开始，`i = 0`；循环条件 `beads.length < 80`：取 `next = pattern[i % pattern.length]`，算 `const target = logic.stats(beads.concat(next, tail), catalog, wrist).target`、`const length = logic.stats(beads.concat(tail), catalog, wrist).length`；如果 `length + Number(byId[next].mm) / 2 >= target` 就停，否则 `beads.push(next); i++`。最后返回 `beads.concat(tail)`。
+   - `wrist` 没传时按 15（原来就是 `Number(wrist) || 15`）。
+2. 新建 `tests/size-rule-shared.test.js`：
+   ```js
+   const fixture = require('../../server/tests/fixtures/size_rule_cases.json')
+   const logic = require('../pages/editor/logic')
+   const template = require('../utils/template')
+   ```
+   - 对 `fixture.stats` 每一条：`logic.stats(c.ids, fixture.catalog, c.wrist)` 的 `target` 等于 `c.target`、`length` 等于 `c.length`。
+   - 对 `fixture.fill` 每一条：`template.build({ special: c.special, pattern: c.pattern, tail: c.tail }, fixture.catalog, c.wrist)` 深相等 `c.beads`。
+   - 用 `test(c.name, ...)` 让每条用例单独显示。
+3. 原有的 `tests/size-rule.test.js`、`creation-flows.test.js`、`design-reflow.test.js` 必须仍然通过。**不要改这些测试的断言**；有失败就停下来，把失败的用例和输出贴给我。
+
+**验收**：`node --test miniprogram/tests/*.test.js` 全过，新测试 16 条用例全过；在开发者工具里从首页点一个热门款进工作台，状态行显示的颗数和长度截图（好运连连 15cm 应是 19 颗 162mm）。
+
+**提示词**
+```
+你在仓库 串个珠 的小程序里做任务卡 C0j（模板排珠改用工作台的尺寸规则）。先读 docs/design/tasks/00-dispatch.md 的第 1、3、4、5 节，再读 docs/design/tasks/miniprogram-wave1.md 的“共同规矩”和 C0j 这一节，严格按步骤做，只改卡里列出的两个文件，不要改 pages/editor/logic.js，不要改 server/tests/fixtures 里的用例，不要改已有测试的断言。分支 agent/C0j-size-rule，从 origin/integration/2026-11 拉。每步提交一次，提交说明以“C0j:”开头。做完开 PR 后停下。
+```
+
+---
+
 ## C0f 基础样式和小控件（原 D4）
 
 - **批次**：第 2 批　**依赖**：C0a 已合并　**大小**：M　**分支**：`agent/C0f-basic`
@@ -240,7 +276,7 @@
 
 ## C0z 组件注册和收口
 
-- **批次**：第 4 批　**依赖**：C0a–C0i 全部已合并　**大小**：S　**分支**：`agent/C0z-register`
+- **批次**：第 4 批　**依赖**：C0a–C0j 全部已合并　**大小**：S　**分支**：`agent/C0z-register`
 
 **只能改**：`miniprogram/app.json`；各 `miniprogram/kit/*/index.json`（删掉已经变成全局的 `usingComponents` 条目）。
 
@@ -254,7 +290,7 @@
 
 **提示词**
 ```
-你在仓库 串个珠 的小程序里做任务卡 C0z（组件注册和收口）。先确认 origin/integration/2026-11 里已经有 C0a、C0b、C0c、C0d、C0e、C0f、C0g、C0h、C0i 全部的提交，缺任何一个就停下来告诉我。读 docs/design/tasks/miniprogram-wave1.md 的“共同规矩”和 C0z 这一节，只改卡里列出的文件。分支 agent/C0z-register。每步提交一次，提交说明以“C0z:”开头。截图放进 PR，做完开 PR 后停下。
+你在仓库 串个珠 的小程序里做任务卡 C0z（组件注册和收口）。先确认 origin/integration/2026-11 里已经有 C0a、C0b、C0c、C0d、C0e、C0f、C0g、C0h、C0i、C0j 全部的提交，缺任何一个就停下来告诉我。读 docs/design/tasks/miniprogram-wave1.md 的“共同规矩”和 C0z 这一节，只改卡里列出的文件。分支 agent/C0z-register。每步提交一次，提交说明以“C0z:”开头。截图放进 PR，做完开 PR 后停下。
 ```
 
 ---

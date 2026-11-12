@@ -2,8 +2,10 @@
 
 开工前按顺序读：
 
-1. [docs/handoff.md](docs/handoff.md)：项目现状、当前工作分支、下一步做什么。
-2. [docs/codex-tasks.md](docs/codex-tasks.md)：工作守则（第 2 节）、任务清单（第 4 节）、汇报格式（第 2.6 节）。
+1. [docs/design/15-dev-plan.md](docs/design/15-dev-plan.md)：**改版开发总计划**（2026-11-13 起派活以它为准）：分支、字段契约、A–E 五条线的任务、里程碑、交付要求。
+2. [docs/design/README.md](docs/design/README.md)：设计文档的阅读顺序；做哪个任务就读它对应的那一节。
+3. [docs/handoff.md](docs/handoff.md)：项目背景（任务清单部分已被第 1 条取代）。
+4. [docs/codex-tasks.md](docs/codex-tasks.md)：工作守则（第 2 节）、汇报格式（第 2.6 节）。任务清单（第 4 节）已作废，以第 1 条为准。
 
 最重要的几条（详见工作守则）：
 

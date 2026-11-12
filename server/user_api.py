@@ -170,9 +170,24 @@ def order_allowed_actions(order):
     return actions
 
 
+# 只给后台看的订单字段：生产工单（负责人、作业备注）和质检记录（质检员、原因）。用户接口一律不返回。
+INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate')
+# 状态和物流记录只给用户看“什么时候、从什么变成什么”，不带操作人和内部备注。
+_PUBLIC_STATUS_KEYS = ('at', 'group', 'from', 'to')
+_PUBLIC_LOGISTICS_KEYS = ('at', 'action', 'detail')
+
+
+def _pick_list(rows, keys):
+    return [{k: r[k] for k in keys if k in r} for r in (rows or []) if isinstance(r, dict)]
+
+
 def public_order(order):
     """Owner-safe order representation with normalized state and actions."""
-    out = public_design(order)
+    out = {k: v for k, v in public_design(order).items() if k not in INTERNAL_ORDER_FIELDS}
+    if 'statusHistory' in out:
+        out['statusHistory'] = _pick_list(out['statusHistory'], _PUBLIC_STATUS_KEYS)
+    if 'logisticsHistory' in out:
+        out['logisticsHistory'] = _pick_list(out['logisticsHistory'], _PUBLIC_LOGISTICS_KEYS)
     groups = status.derive_status(order)
     out['state'] = {
         key: {'code': groups[field], 'label': status.status_label(field, groups[field])}

@@ -159,13 +159,24 @@ def _fixed(p):
     return None
 
 
+def target_for(wrist, main):
+    """尺寸规则：目标长度 = 手围 × 10 + max(8, 2.5 × 主珠直径 − 5)，取整到毫米。全站只此一处。"""
+    return round(wrist * 10 + max(8, 2.5 * main - 5))
+
+
+def target_mm(ids, item, wrist):
+    """主珠直径（非隔片里最常见的尺寸）和目标长度。"""
+    mids = [item[x]["mm"] for x in ids if not item[x].get("spacer")]
+    main = max(set(mids), key=mids.count) if mids else 8
+    return main, target_for(wrist, main)
+
+
 def _fill(special, pattern, tail, item, wrist, fixed=None):
     if fixed:   # 按颗数串：不看手围
         n = max(0, fixed - len(special) - len(tail))
         return list(special) + [pattern[i % len(pattern)] for i in range(n)] + list(tail)
-    mids = [item[x]["mm"] for x in special + pattern + tail if not item[x].get("spacer")]
-    main = max(set(mids), key=mids.count) if mids else 8
-    target = round(wrist * 10 + max(8, 2.5 * main - 5)) - sum(item[x]["mm"] for x in tail)
+    _, total_target = target_mm(special + pattern + tail, item, wrist)
+    target = total_target - sum(item[x]["mm"] for x in tail)
     out, i = list(special), 0
     while sum(item[x]["mm"] for x in out) + item[pattern[i % len(pattern)]]["mm"] / 2 < target and len(out) < 80:
         out.append(pattern[i % len(pattern)]); i += 1

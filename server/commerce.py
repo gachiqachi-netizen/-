@@ -11,6 +11,8 @@ import uuid
 import kb
 import money
 import payments
+import plans
+import pricing
 import status
 
 ACTOR = "admin"
@@ -233,10 +235,6 @@ def _bead_unit_fen(b):
     return money.yuan_to_fen(b.get("price") or 0)
 
 
-def _sizing_margin(main_mm):
-    return max(8.0, 2.5 * float(main_mm or 8) - 5.0)
-
-
 def expand_template_recipe(db, tpl_or_recipe, wrist=15):
     """根据模板配方（special/pattern/tail/fixed）与用户手围展开为完整珠序列、尺寸与物料清单（BOM）。"""
     if isinstance(wrist, bool) or not isinstance(wrist, (int, float)) or not 8 <= float(wrist) <= 30:
@@ -257,25 +255,11 @@ def expand_template_recipe(db, tpl_or_recipe, wrist=15):
     if missing:
         raise ValueError("模板里有不存在的珠子：" + "、".join(missing))
 
-    non_spacers = [bead_map[x]["mm"] for x in all_refs if not bead_map[x].get("spacer") and (bead_map[x].get("mm") or 0) >= 6]
-    main_mm = max(set(non_spacers), key=non_spacers.count) if non_spacers else 8
-    target_mm = round(wrist_val * 10 + _sizing_margin(main_mm))
-    tail_mm = sum(float(bead_map[x].get("mm") or 0) for x in tail)
-
-    if fixed is not None:
-        if type(fixed) is not int or not 1 <= fixed <= 500:
-            raise ValueError("模板固定颗数不正确")
-        fill_count = max(0, fixed - len(special) - len(tail))
-        seq_ids = special + [pattern[i % len(pattern)] for i in range(fill_count)] + tail
-    else:
-        seq_ids = list(special)
-        i = 0
-        while (sum(float(bead_map[x].get("mm") or 0) for x in seq_ids)
-               + float(bead_map[pattern[i % len(pattern)]].get("mm") or 8) / 2.0 < (target_mm - tail_mm)
-               and len(seq_ids) < 80):
-            seq_ids.append(pattern[i % len(pattern)])
-            i += 1
-        seq_ids.extend(tail)
+    if fixed is not None and (type(fixed) is not int or not 1 <= fixed <= 500):
+        raise ValueError("模板固定颗数不正确")
+    # 尺寸规则只有一份：和用户端排模板用同一个函数（plans._fill / plans.target_mm），不在这里另写。
+    main_mm, target_mm = plans.target_mm(special + pattern + tail, bead_map, wrist_val)
+    seq_ids = plans._fill(special, pattern, tail, bead_map, wrist_val, fixed)
 
     sequence = []
     bom_map = {}
@@ -326,8 +310,8 @@ def expand_template_recipe(db, tpl_or_recipe, wrist=15):
     fit_delta = round(total_mm - target_mm, 1)
     is_rosary = len(seq_ids) >= 54 or bool(fixed and fixed >= 54)
     fit_ok = True if is_rosary else (-4.0 <= fit_delta <= 6.0)
-    goods_fen = sum(m["subtotalFen"] for m in materials)
-    handwork_fen = 1500
+    # 价格只有一份：由 pricing.quote 计算，手工费、运费规则改动只改 pricing.py。
+    priced = pricing.quote([{"unitPriceFen": m["unitPriceFen"], "quantity": m["count"]} for m in materials])
     return {
         "wrist": wrist_val,
         "recipe": {"special": special, "pattern": pattern, "tail": tail, "fixed": fixed},
@@ -341,9 +325,10 @@ def expand_template_recipe(db, tpl_or_recipe, wrist=15):
         "fitOk": fit_ok,
         "sequence": sequence,
         "materials": materials,
-        "goodsFen": goods_fen,
-        "handworkFen": handwork_fen,
-        "totalFen": goods_fen + handwork_fen,
+        "goodsFen": priced["goodsFen"],
+        "handworkFen": priced["handworkFen"],
+        "shippingFen": priced["shippingFen"],
+        "totalFen": priced["totalFen"],
         "warnings": template_warnings(db, {"special": special, "pattern": pattern, "tail": tail}),
     }
 
@@ -543,12 +528,12 @@ def _cross_constraint(order, group, to_):
         if cancelled and to_ != "unfulfilled":
             return "订单已取消，不能继续履约"
         if to_ in ("ready_to_ship", "shipped"):
+            # 每一单发货前都要过质检关口，不依赖工单是否被编辑过。
             qg = order.get("qualityGate")
-            wo = order.get("workOrder") or {}
             if isinstance(qg, dict) and qg.get("passed") is False:
                 return "质检关口不通过，不得进入待发货"
-            if wo.get("qcRequired") and not (isinstance(qg, dict) and qg.get("passed") is True):
-                return "生产工单尚未通过质检关口，不得进入待发货"
+            if not (isinstance(qg, dict) and qg.get("passed") is True):
+                return "还没有通过质检，不能进入待发货"
     elif group == "logisticsStatus":
         if cancelled:
             return "订单已取消，不能继续发货"
@@ -782,7 +767,7 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
         mm = float(snap_item.get("mm") or 0)
         ufen = _bead_unit_fen(snap_item) if ("priceFen" in snap_item or "price" in snap_item) else int(snap_item.get("unitPriceFen") or 0)
         is_spacer = bool(snap_item.get("spacer") or snap_item.get("type") == "spacer")
-        if not is_spacer and mm >= 6:
+        if not is_spacer:   # 和 plans.target_mm 同一个口径：隔片以外都算
             non_spacer_mms.append(mm)
         total_mm += mm
         seq_entry = {
@@ -820,7 +805,7 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
         bom_map[bid]["positions"].append(idx + 1)
 
     main_mm = max(set(non_spacer_mms), key=non_spacer_mms.count) if non_spacer_mms else 8
-    target_mm = round(wrist * 10 + _sizing_margin(main_mm))
+    target_mm = plans.target_for(wrist, main_mm)
     length_mm = round(total_mm, 1) if total_mm % 1 else int(total_mm)
     return {
         "wrist": wrist,
@@ -891,7 +876,7 @@ def build_work_order(order, db=None):
         "sequence": snap.get("sequence", []),
         "materials": snap.get("materials", []),
         "allowMaterialSubstitution": False,
-        "qcRequired": bool(existing.get("qcRequired", False)),
+        "qcRequired": True,
         "qualityGate": qg,
         "createdAt": int(existing.get("createdAt") or order.get("createdAt") or _now()),
         "updatedAt": int(existing.get("updatedAt") or order.get("updatedAt") or order.get("createdAt") or _now()),

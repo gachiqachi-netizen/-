@@ -17,6 +17,7 @@ import unittest
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import app
 import commerce
+import pricing
 import user_api
 from db import DB
 from user_api import token_hash
@@ -77,7 +78,10 @@ class ProductionWorkbenchTest(unittest.TestCase):
         self.assertEqual(exp15["sequence"][0]["seq"], 1)
         self.assertEqual(exp15["sequence"][-1]["id"], b2["id"])
         self.assertEqual(sum(m["count"] for m in exp15["materials"]), exp15["count"])
-        self.assertEqual(exp15["totalFen"], exp15["goodsFen"] + 1500)
+        # 价格由 pricing.quote 统一计算（到手价，含手工费和运费规则），后台不另算
+        priced = pricing.quote([{"unitPriceFen": m["unitPriceFen"], "quantity": m["count"]} for m in exp15["materials"]])
+        self.assertEqual(exp15["totalFen"], priced["totalFen"])
+        self.assertEqual(exp15["handworkFen"], pricing.HANDWORK_FEN)
 
         rosary = commerce.expand_template_recipe(self.db, {
             "special": [b1["id"]],
@@ -396,6 +400,70 @@ class ProductionWorkbenchHandlerTest(unittest.TestCase):
         self.assertEqual(code, 200)
         self.assertEqual(updated_order["fulfillmentStatus"], "ready_to_ship")
 
+
+
+class ReviewFixesTest(unittest.TestCase):
+    """审核修复：用户接口不带内部信息；每一单发货前必须质检；后台展开和用户端同一套尺寸、计价规则。"""
+
+    setUp = ProductionWorkbenchTest.setUp
+    tearDown = ProductionWorkbenchTest.tearDown
+    _quote_for_beads = ProductionWorkbenchTest._quote_for_beads
+    _set_paid = ProductionWorkbenchTest._set_paid
+
+    def _paid_order(self, rid):
+        bead_map = {b["id"]: b for b in self.db.list("beads")}
+        seq = [b["id"] for b in self.db.list("beads") if b.get("onSale", True) and not b.get("spacer") and b.get("mm") == 8][:1] * 20
+        order = user_api.make_order(self.db, {
+            "requestId": rid, "name": "审核单", "beads": seq, "wrist": 15, "gift": False, "cord": 0,
+            "person": "张三", "phone": "13800138000", "addr": "测试地址",
+            "confirmedQuote": self._quote_for_beads(seq),
+        }, "u1")
+        self._set_paid(order["no"])
+        return order["no"]
+
+    def test_public_order_hides_work_order_and_quality_gate(self):
+        no = self._paid_order("req-review-leak-0001")
+        commerce.transition_order_status(self.db, no, "fulfillmentStatus", "producing", "内部：先做这单")
+        commerce.update_work_order(self.db, no, {"assignee": "林师傅", "operatorNote": "内部作业备注"})
+        commerce.record_quality_gate(self.db, no, {"sequenceOk": True, "sizeOk": False, "materialOk": True,
+                                                   "appearanceOk": True, "inspector": "陈质检", "note": "尺寸短了返工"})
+        pub = user_api.public_order(self.db.get("orders", no))
+        self.assertNotIn("workOrder", pub)
+        self.assertNotIn("qualityGate", pub)
+        text = json.dumps(pub, ensure_ascii=False)
+        for secret in ("林师傅", "内部作业备注", "陈质检", "尺寸短了返工", "内部：先做这单", '"actor"'):
+            self.assertNotIn(secret, text)
+        self.assertTrue(all(set(e) <= {"at", "group", "from", "to"} for e in pub["statusHistory"]))
+
+    def test_every_order_needs_passed_quality_gate_before_ready_to_ship(self):
+        no = self._paid_order("req-review-qc-0001")
+        commerce.transition_order_status(self.db, no, "fulfillmentStatus", "producing")
+        with self.assertRaises(ValueError):   # 工单从没被编辑过，也不能跳过质检
+            commerce.transition_order_status(self.db, no, "fulfillmentStatus", "ready_to_ship")
+        commerce.record_quality_gate(self.db, no, {"sequenceOk": True, "sizeOk": True, "materialOk": True,
+                                                   "appearanceOk": True, "inspector": "陈质检"})
+        saved = commerce.transition_order_status(self.db, no, "fulfillmentStatus", "ready_to_ship")
+        self.assertEqual(saved["fulfillmentStatus"], "ready_to_ship")
+
+    def test_admin_expansion_matches_customer_side_size_rule(self):
+        import plans
+        bead_map = {b["id"]: b for b in self.db.list("beads")}
+        small = [b for b in self.db.list("beads") if not b.get("spacer") and (b.get("mm") or 0) < 6]
+        big = [b for b in self.db.list("beads") if not b.get("spacer") and b.get("mm") == 8]
+        if not small or not big:
+            self.skipTest("目录里没有小于 6mm 的珠子")
+        for wrist in (13, 15, 17.5):
+            recipe = {"special": [big[0]["id"]], "pattern": [small[0]["id"], small[0]["id"], big[0]["id"]], "tail": []}
+            exp = commerce.expand_template_recipe(self.db, recipe, wrist=wrist)
+            self.assertEqual(exp["beads"], plans._fill(recipe["special"], recipe["pattern"], [], bead_map, wrist))
+            self.assertEqual(exp["targetMm"], plans.target_mm(recipe["special"] + recipe["pattern"], bead_map, wrist)[1])
+
+    def test_admin_expansion_price_follows_pricing_module(self):
+        tpl = self.db.list("templates")[0]
+        exp = commerce.expand_template_recipe(self.db, tpl, wrist=15)
+        priced = pricing.quote([{"unitPriceFen": m["unitPriceFen"], "quantity": m["count"]} for m in exp["materials"]])
+        self.assertEqual((exp["goodsFen"], exp["handworkFen"], exp["shippingFen"], exp["totalFen"]),
+                         (priced["goodsFen"], priced["handworkFen"], priced["shippingFen"], priced["totalFen"]))
 
 if __name__ == "__main__":
     unittest.main()

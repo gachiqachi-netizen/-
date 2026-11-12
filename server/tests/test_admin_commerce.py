@@ -194,6 +194,7 @@ class AdminCommerceTest(unittest.TestCase):
             commerce.transition_order_status(self.db, no, 'orderStatus', 'completed')
         self.set_paid(no)
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.record_quality_gate(self.db, no, {'sequenceOk': True, 'sizeOk': True, 'materialOk': True, 'appearanceOk': True, 'inspector': '测试质检'})  # 发货前必须过质检
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         with self.assertRaises(ValueError):
             commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'delivered')
@@ -207,6 +208,7 @@ class AdminCommerceTest(unittest.TestCase):
         no = order['no']
         self.set_paid(no)
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.record_quality_gate(self.db, no, {'sequenceOk': True, 'sizeOk': True, 'materialOk': True, 'appearanceOk': True, 'inspector': '测试质检'})  # 发货前必须过质检
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         with self.assertRaises(ValueError):
             commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped')

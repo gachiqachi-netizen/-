@@ -171,6 +171,7 @@ class CrossStateConstraintTest(unittest.TestCase):
         no = self.make_order('sm-link-000001')['no']
         self.set_paid(no)
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.record_quality_gate(self.db, no, {'sequenceOk': True, 'sizeOk': True, 'materialOk': True, 'appearanceOk': True, 'inspector': '测试质检'})  # 发货前必须过质检
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         saved = commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped',
                                                  logistics={'carrierName': '顺丰', 'trackingNo': 'SF123'})
@@ -246,6 +247,7 @@ class CrossStateConstraintTest(unittest.TestCase):
         self.set_paid(no)
         commerce.transition_order_status(self.db, no, 'orderStatus', 'confirmed')
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.record_quality_gate(self.db, no, {'sequenceOk': True, 'sizeOk': True, 'materialOk': True, 'appearanceOk': True, 'inspector': '测试质检'})  # 发货前必须过质检
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
 
         order = self.db.get('orders', no)

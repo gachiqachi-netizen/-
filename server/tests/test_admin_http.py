@@ -98,7 +98,8 @@ class AdminCommerceHTTPTest(unittest.TestCase):
 
     def test_ship_requires_logistics_then_updates(self):
         no = self._order('CGZTEST0002')['no']
-        app.db.put('orders', no, {**app.db.get('orders', no), 'orderStatus': 'confirmed', 'paymentStatus': 'paid', 'fulfillmentStatus': 'ready_to_ship'})
+        app.db.put('orders', no, {**app.db.get('orders', no), 'orderStatus': 'confirmed', 'paymentStatus': 'paid', 'fulfillmentStatus': 'ready_to_ship',
+                                  'qualityGate': {'passed': True, 'inspector': '测试质检'}})
         # 无物流不能发货
         status_code, body = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'fulfillmentStatus', 'to': 'shipped'}, admin='test-admin')
         self.assertEqual(status_code, 400)

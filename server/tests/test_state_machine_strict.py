@@ -86,6 +86,7 @@ class StrictStateMachineTest(unittest.TestCase):
             commerce.transition_order_status(self.db, no, 'orderStatus', 'completed')
         # 已发货（履约 shipped + 物流 shipped）但未签收不能完成
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.record_quality_gate(self.db, no, {'sequenceOk': True, 'sizeOk': True, 'materialOk': True, 'appearanceOk': True, 'inspector': '测试质检'})  # 发货前必须过质检
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped',
                                          logistics={'carrierName': '顺丰', 'trackingNo': 'SF123'})
@@ -113,6 +114,7 @@ class StrictStateMachineTest(unittest.TestCase):
         no = self.make_order('sm-strict-000006')['no']
         self.set_paid(no)
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.record_quality_gate(self.db, no, {'sequenceOk': True, 'sizeOk': True, 'materialOk': True, 'appearanceOk': True, 'inspector': '测试质检'})  # 发货前必须过质检
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         saved = commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped',
                                                  logistics={'carrierName': '顺丰', 'trackingNo': 'SF123'})
@@ -122,6 +124,7 @@ class StrictStateMachineTest(unittest.TestCase):
         no = self.make_order('sm-strict-000008')['no']
         self.set_paid(no)
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'producing')
+        commerce.record_quality_gate(self.db, no, {'sequenceOk': True, 'sizeOk': True, 'materialOk': True, 'appearanceOk': True, 'inspector': '测试质检'})  # 发货前必须过质检
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'ready_to_ship')
         commerce.transition_order_status(
             self.db, no, 'fulfillmentStatus', 'shipped',

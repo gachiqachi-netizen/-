@@ -34,8 +34,11 @@ const LOGISTICS_TRANSITIONS = { not_shipped: ['shipped'], shipped: ['in_transit'
 const AFTER_SALE_TYPES = ['仅退款', '退货退款', '补发'];
 const AFTER_SALE_STATUSES = ['requested', 'reviewing', 'approved', 'rejected', 'returning', 'refunding', 'completed', 'closed'];
 const TERM_TYPES = ['售前说明', '天然材料差异说明', '定制商品说明', '发货与物流说明', '退货退款说明', '售后服务说明'];
+const TERM_SCENARIOS = { all: '全部订单', custom_diy: '自由定制（自己串）', template: '模板同款', ai: 'AI 搭配', gift: '礼盒包装', cord: '编织绳', safety_warning: '含安全警示材质' };
+const WORK_ORDER_STEPS = ['待领料', '配珠排序', '穿制打结', '待质检', '已完工'];
+const WORK_ORDER_STATUS_LABELS = { pending: '待排产', producing: '制作中', qc_passed: '质检通过', qc_failed: '质检不通过', ready_to_ship: '待发货', shipped: '已发货' };
 const TARGETS = { product: '商品', template: '模板', banner: '宣传位', order: '订单', after_sale: '售后', term: '条款' };
-const ACTIONS = { create: '新建', update: '更新', delete: '删除', copy: '复制', archive: '归档', transition: '状态变更', update_logistics: '修改物流', approve: '同意售后', reject: '拒绝售后', returning: '记录退货', receive: '确认收货', complete: '完成售后', close: '关闭售后' };
+const ACTIONS = { create: '新建', update: '更新', delete: '删除', copy: '复制', archive: '归档', transition: '状态变更', update_logistics: '修改物流', update_work_order: '更新工单', quality_gate: '质检关口', approve: '同意售后', reject: '拒绝售后', returning: '记录退货', receive: '确认收货', complete: '完成售后', close: '关闭售后' };
 const WIDE = new Set(['orders', 'aftersales', 'logistics', 'audit']);
 
 // ---------- 状态 ----------

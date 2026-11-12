@@ -1,0 +1,10 @@
+{
+  "name": "beadloop-shadcn-admin",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Beadloop 串个珠 Admin Workbench based on satnaing/shadcn-admin (React 19 + Vite + Tailwind CSS v4 + Lucide React)",
+  "scripts": {
+    "build": "vite build"
+  }
+}

@@ -259,17 +259,42 @@ def make_order(db, data, uid):
         raise PriceChanged()
     enriched = {i: kb.enrich(beads[i]) for i in set(ids)}
     snapshot = [{**{key: enriched[i].get(key, [] if key == 'points' else '')
-                    for key in ('id', 'name', 'mm', 'price', 'photo', 'kb', 'points', 'meaning', 'summary', 'safety')},
+                    for key in ('id', 'name', 'mm', 'mat', 'spacer', 'price', 'photo', 'kb', 'points', 'meaning', 'summary', 'safety')},
                  'photo': beads[i].get('photo'),
                  'priceFen': bead_price_fen(beads[i]),
                  'unitPriceFen': bead_price_fen(beads[i])} for i in ids]
+    raw_note = data.get('customerNote') if 'customerNote' in data else (data.get('note') or data.get('remark') or '')
+    if not isinstance(raw_note, str) or len(raw_note.strip()) > 200:
+        raise ValueError('客户备注不能超过 200 字')
+    customer_note = raw_note.strip()
+    if customer_note:
+        content_security.ensure_allowed(customer_note)
+    tpl_id = str(data.get('tplId') or '').strip()[:100]
+    source = str(data.get('source') or ('template' if tpl_id else 'custom')).strip()[:40]
+    now_ms = int(time.time() * 1000)
     no = 'CGZ' + time.strftime('%y%m%d') + uuid.uuid4().hex[:12].upper()
     import commerce
-    terms_snapshot = commerce.terms_snapshot(db)
+    terms_ctx = {
+        'beads': ids,
+        'tplId': tpl_id,
+        'source': source,
+        'gift': data.get('gift', False),
+        'cord': cord,
+        'hasSafety': any(bool(s.get('safety')) for s in snapshot),
+    }
+    terms_snapshot = commerce.terms_snapshot(db, terms_ctx)
+    design_snapshot = commerce.build_design_snapshot(
+        db,
+        {'beads': ids, 'wrist': wrist, 'cord': cord, 'gift': data.get('gift', False),
+         'customerNote': customer_note, 'tplId': tpl_id, 'source': source, 'createdAt': now_ms},
+        frozen_items=snapshot,
+    )
     groups = status.new_order_status()
     order = {'no': no, 'userId': uid, 'name': str(data.get('name') or '我的手串')[:60], 'beads': ids, 'items': snapshot,
              'wrist': wrist, 'length': sum(Decimal(str(beads[i].get('mm', 0))) for i in ids).__float__(),
              'cord': cord, 'gift': data.get('gift', False), 'promo': 0,
+             'customerNote': customer_note, 'tplId': tpl_id, 'source': source,
+             'designSnapshot': design_snapshot,
              'promotion': promotion_status(),
              'person': data['person'].strip()[:40], 'phone': data['phone'],
              'addr': data['addr'].strip()[:200], 'status': '待支付', 'paymentAvailable': False,
@@ -280,9 +305,11 @@ def make_order(db, data, uid):
              'fulfillmentStatus': groups['fulfillmentStatus'], 'afterSaleStatus': groups['afterSaleStatus'],
              'logisticsStatus': groups['logisticsStatus'],
              'statusHistory': [], 'logistics': None, 'logisticsHistory': [],
+             'qualityGate': None,
              'termsSnapshot': terms_snapshot,
              'termsVersion': hashlib.sha256(json.dumps(terms_snapshot, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:16],
-             'createdAt': int(time.time() * 1000)}
+             'createdAt': now_ms}
+    order['workOrder'] = commerce.build_work_order(order, db=db)
     state, result = db.idempotent_order(request_id, fingerprint, order)
     if state == 'conflict':
         raise IdempotencyConflict('同一个订单请求编号不能用于不同内容')

@@ -357,12 +357,36 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.admin_ok():
                     return self.send(401, {"error": "需要后台口令"})
                 q = self.qs()
-                return self.send(200, commerce.list_terms(db, q.get("q", [""])[0], q.get("status", [""])[0]))
+                return self.send(200, commerce.list_terms(db, q.get("q", [""])[0], q.get("status", [""])[0], q.get("scopeMode", [""])[0]))
+            if path == "/api/admin/work-orders":
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                q = self.qs()
+                return self.send(200, commerce.list_work_orders(db, q.get("q", [""])[0], q.get("status", [""])[0], q.get("assignee", [""])[0]))
             if path == "/api/admin/audit":
                 if not self.admin_ok():
                     return self.send(401, {"error": "需要后台口令"})
                 q = self.qs()
                 return self.send(200, commerce.list_audit(db, q.get("q", [""])[0], q.get("target", [""])[0]))
+            m = re.match(r"^/api/admin/templates/([\w-]+)/expand$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                tpl = db.get("templates", m.group(1))
+                if not tpl:
+                    return self.send(404, {"error": "模板不存在"})
+                q = self.qs()
+                try:
+                    wrist = float(q.get("wrist", ["15"])[0])
+                except (TypeError, ValueError):
+                    return self.send(400, {"error": "手围格式不正确"})
+                return self.send(200, commerce.expand_template_recipe(db, tpl, wrist=wrist))
+            m = re.match(r"^/api/admin/orders/([\w-]+)/work-order$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                wo = commerce.get_work_order(db, m.group(1))
+                return self.send(200, wo) if wo else self.send(404, {"error": "订单不存在"})
             m = re.match(r"^/api/admin/orders/([\w-]+)$", path)
             if m:
                 if not self.admin_ok():
@@ -515,6 +539,15 @@ class Handler(BaseHTTPRequestHandler):
                 result = db.put("banners", rid, data)
                 self.audit_admin_mutation(path + "/" + rid)
                 return self.send(200, result)
+            if path == "/api/admin/templates/expand":
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                tpl_src = data
+                if data.get("templateId") and not data.get("pattern"):
+                    tpl_src = db.get("templates", str(data.get("templateId")))
+                    if not tpl_src:
+                        return self.send(404, {"error": "模板不存在"})
+                return self.send(200, commerce.expand_template_recipe(db, tpl_src, wrist=data.get("wrist", 15)))
             m = re.match(r"^/api/admin/(beads|templates)/([\w-]+)/copy$", path)
             if m:
                 if not self.admin_ok():
@@ -563,7 +596,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(409, {"error": "设计已在其他设备修改，请重新获取后处理冲突", "code": "design_conflict"})
                 return self.send(200, user_api.public_design(saved))
             data = self.body()
-            m = re.match(r"^/api/admin/orders/([\w-]+)/(status|logistics)$", path)
+            m = re.match(r"^/api/admin/orders/([\w-]+)/(status|logistics|work-order|quality-gate)$", path)
             if m:
                 if not self.admin_ok():
                     return self.send(401, {"error": "需要后台口令"})
@@ -573,8 +606,12 @@ class Handler(BaseHTTPRequestHandler):
                     if group not in status.GROUP_FIELDS or not to:
                         return self.send(400, {"error": "请提供 group 和 to"})
                     result = commerce.transition_order_status(db, rid, group, to, data.get("note") or "", data.get("logistics"))
-                else:
+                elif action == "logistics":
                     result = commerce.update_order_logistics(db, rid, data)
+                elif action == "work-order":
+                    result = commerce.update_work_order(db, rid, data)
+                else:
+                    result = commerce.record_quality_gate(db, rid, data)
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
             m = re.match(r"^/api/admin/after-sales/([\w-]+)/transition$", path)

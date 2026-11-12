@@ -51,10 +51,10 @@ svg.i.s{width:18px;height:18px}
 .fx{display:flex;align-items:center}.sb{justify-content:space-between}.g1{gap:var(--s1)}.g2{gap:var(--s2)}
 
 /* 1 按钮：主、次、小号、文字链接 */
-.btn{height:52px;border-radius:var(--r);background:var(--t);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex:1}
+.btn{height:52px;border-radius:var(--pill);background:var(--t);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex:1}
 .btn.sec{background:var(--surf);color:var(--t)}
-/* 小号也是直角 */
-.btn.sm{height:32px;padding:0 14px;font-weight:400;flex:none;display:inline-flex}
+/* 能点的是圆的：所有按钮、输入条、标签都是胶囊 */
+.btn.sm{height:32px;padding:0 12px;font-weight:400;flex:none;display:inline-flex}
 .btn.off{opacity:.35}
 .go{width:40px;height:40px;border-radius:20px;background:var(--t);color:var(--bg);display:flex;align-items:center;justify-content:center;flex:none}
 .link{display:flex;justify-content:space-between;align-items:center}
@@ -85,7 +85,7 @@ svg.i.s{width:18px;height:18px}
 .tabs span{color:var(--t2)}.tabs .on{color:var(--t);font-weight:600}
 
 /* 7 输入条 */
-.ask{display:flex;align-items:center;gap:10px;height:52px;padding:0 6px 0 18px;background:var(--surf);border-radius:var(--r)}
+.ask{display:flex;align-items:center;gap:10px;height:52px;padding:0 6px 0 20px;background:var(--surf);border-radius:var(--pill)}
 .ask .go{margin-left:auto}
 
 /* 8 珠子格 */
@@ -147,9 +147,9 @@ svg.i.s{width:18px;height:18px}
 
 <header>
 <h1>串个珠 · 改版示意稿</h1>
-<p><b>全站用“白盒”，首页也是。</b>纯白、黑字、细分隔线、没有卡片、通栏直角黑按钮、贴边的照片，层级只靠字号。规范见 <code>03-design-system.md</code>，逐页说明见 <code>04-page-redesign.md</code>（稿号一一对应）。每屏 375 宽，1px = 2rpx。</p>
+<p><b>全站用“白盒”，首页也是。</b>纯白、黑字、细分隔线、没有卡片、通栏黑色胶囊按钮、贴边的照片，层级只靠字号。规范见 <code>03-design-system.md</code>，逐页说明见 <code>04-page-redesign.md</code>（稿号一一对应）。每屏 375 宽，1px = 2rpx。</p>
 <p>灰色块是<b>实拍图占位</b>，上面写了该放什么照片；珠子是程序画的过渡效果，正式版优先用实拍抠图。每屏下面一行是按 03 第 10 节检查清单数出来的颜色和按钮。</p>
-<p>全站 8 个颜色、4 档字号、2 档字重、2 档圆角（直角和圆形）、1 种阴影、12 个组件。只在浏览器里看过，没有在微信开发者工具里验证。</p>
+<p>全站 8 个颜色、4 档字号、2 档字重、2 档圆角（能点的是胶囊或圆形，只用来看的是直角）、1 种阴影、12 个组件。只在浏览器里看过，没有在微信开发者工具里验证。</p>
 </header>
 
 <section>
@@ -194,7 +194,7 @@ svg.i.s{width:18px;height:18px}
   <div class="p" style="padding-top:22px">
    <div class="disp">今天，想串一条<br>什么样的？</div>
    <div class="ask" style="margin-top:16px"><span class="t2">说一句心愿，比如“想要清冷一点”</span><span class="go"><svg class="i s"><use href="#i-arrow-right"/></svg></span></div>
-   <div class="fx g1" style="margin-top:10px"><div class="sk" style="height:32px;width:84px"></div><div class="sk" style="height:32px;width:84px"></div><div class="sk" style="height:32px;width:84px"></div></div>
+   <div class="fx g1" style="margin-top:10px"><div class="sk" style="height:32px;width:84px;border-radius:var(--pill)"></div><div class="sk" style="height:32px;width:84px;border-radius:var(--pill)"></div><div class="sk" style="height:32px;width:84px;border-radius:var(--pill)"></div></div>
    <div class="link" style="margin-top:22px"><span>或者，从一颗珠子开始自己串</span><svg class="i s"><use href="#i-chevron-right"/></svg></div>
   </div>
  </div>

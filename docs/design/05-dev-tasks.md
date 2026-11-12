@@ -79,7 +79,7 @@ flowchart LR
   4. `utils/theme.js` 导出 8 个颜色的值（`bg surface line text2 text accent danger mask`），给画布、原生 `switch`、`slider` 用。测试：解析 `tokens.wxss` 里的 `--c-*`，和 `theme.js` 逐项相等；变量总数不超过 30。
   5. `app.json`：`window.navigationBarBackgroundColor` 和 `backgroundColor` `#ffffff`；`tabBar.backgroundColor` `#ffffff`、`color` `#6e6e6e`、`selectedColor` `#111111`、`borderStyle` `white`。
 - **验收**：
-  1. 开发者工具打开首页：页面底是纯白，主按钮是黑底白字、直角，卡片没有边框。截图。
+  1. 开发者工具打开首页：页面底是纯白，主按钮是黑底白字的胶囊，照片和列表是直角，卡片没有边框。截图。
   2. 依次打开 4 个 tab、编辑器、下单页：没有文字看不见、没有页面错位（这一步页面还没逐页改，只要求不坏）。各截一张。
   3. `grep -nE '#[0-9a-fA-F]{3,8}' miniprogram/app.wxss` 没有结果。
   4. 新测试通过；三条测试通过。
@@ -106,7 +106,7 @@ flowchart LR
   3. `c-state`：属性 `type`（`empty` / `error`）、`title`、`desc`、`action`；事件 `action`。
   4. `materials.js` 加纯函数 `safetyItems(rows)`：只取有 `safety` 的材料，返回 `[{name:'朱砂 8mm', text}]`。现有的 `safetyLines` 不动。
 - **验收**：
-  1. 新建一个只在开发版能进的临时页 `pages/_kit/_kit`（D29 删除），把上面每个类和组件各摆一个，和 `mockups.html` 并排截图：按钮高 104rpx、直角；小号 64rpx；行高不小于 112rpx；分隔线 1rpx。
+  1. 新建一个只在开发版能进的临时页 `pages/_kit/_kit`（D29 删除），把上面每个类和组件各摆一个，和 `mockups.html` 并排截图：按钮高 104rpx、胶囊；小号 64rpx、胶囊；行高不小于 112rpx；分隔线 1rpx。
   2. 两个按钮并排不换行；主按钮禁用时变淡。截图。
   3. `c-notice` 的 `danger`：用 `kb/data/beads/bodhi.json` 里最长的一条安全提示测，正文完整显示；带勾选时点整行能勾上并触发 `change`。两张截图。
   4. `components.wxss` 里 `grep -nE '#[0-9a-fA-F]{3,8}|[0-9]px'` 没有结果；测试覆盖 `safetyItems`（有、无、多种）。

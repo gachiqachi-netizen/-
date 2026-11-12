@@ -64,6 +64,15 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
 
 /* AI */
 .ub{max-width:270px;margin-left:auto;background:var(--surf);border-radius:18px 18px 6px 18px;padding:9px 14px;font-size:14px}
+.composer{border-radius:24px;background:#fff;box-shadow:0 0 0 1px var(--line),0 4px 16px rgba(0,0,0,.06);padding:12px 12px 10px 16px}
+.composer .tx{font-size:15px;color:var(--t2);min-height:24px;line-height:1.5;padding-right:4px}
+.composer .tx.on{color:var(--t)}
+.composer .tools2{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.composer .left,.composer .right{display:flex;align-items:center;gap:6px}
+.cbtn{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;color:#444;box-shadow:inset 0 0 0 1px var(--line)}
+.cbtn.dark{background:var(--t);color:#fff;box-shadow:none}
+.cbtn .ic{width:18px;height:18px}
+.ctag{height:30px;padding:0 12px;border-radius:15px;font-size:12px;display:flex;align-items:center;color:#444;box-shadow:inset 0 0 0 1px var(--line)}
 .inbar{display:flex;align-items:center;gap:8px}
 .inbar .f{flex:1;min-height:44px;border-radius:22px;background:var(--surf);display:flex;align-items:center;padding:10px 16px;font-size:14px;color:var(--t2);line-height:1.4}
 .round{width:40px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;flex:none}
@@ -88,10 +97,15 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
 .board{background:#fff;border-radius:20px;padding:24px;display:flex;flex-wrap:wrap;gap:36px;align-items:center}
 .lrow{display:flex;flex-wrap:wrap;gap:36px;align-items:center;padding-bottom:24px;border-bottom:1px solid #eee}
 .lrow:last-child{border-bottom:0;padding-bottom:0}
-.lname{width:220px;font-size:14px;font-weight:600}
+.lname{width:240px;font-size:14px;font-weight:600}
 .lname span{display:block;font-weight:400;font-size:12px;color:var(--sub);margin-top:4px}
+.lnav{width:220px;height:44px;display:flex;align-items:center;justify-content:center;background:#fff;box-shadow:0 0 0 1px #eee;color:#111}
+.ltray{width:170px;height:170px;background:#fafafa;position:relative;display:flex;align-items:center;justify-content:center}
+.lwm{position:absolute;color:#cfcfcf}
+.licon{width:56px;height:56px;border-radius:28px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center}
 .lock{display:flex;align-items:center;gap:10px}
 .lock span{font-size:20px;letter-spacing:5px;font-weight:600;color:#111}
+.board .cell2>div{color:#111}
 .board .cell2{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:var(--sub)}
 .notes{color:var(--sub);font-size:14px;padding-bottom:56px}
 </style>
@@ -108,6 +122,7 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
  <symbol id="i-kb" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.5M11 10h.5M15 10h.5M7 14h10"/></symbol>
  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6a1.5 1.5 0 0 1 3 0v6M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-3l-2-4a1.5 1.5 0 0 1 2.5-1.5L8 13"/></symbol>
  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
@@ -121,22 +136,24 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
 </header>
 
 <section>
-<h2>一、品牌标识（暂名“珠养养”）· 三个方向</h2>
-<p>上一版“一圈小圆点”像加载中的转圈图标，作废。新方向要求：一眼是珠子、不像任何系统图标、16px 也认得出、只用一种颜色。正式稿建议请品牌设计师在选定方向上精修，并先查商标。</p>
+<h2>一、品牌标识（暂名“珠养养”）· 字标方向</h2>
+<p>图形方向（小圆点、小珠子）都偏可爱、偏小程序，作废。首饰品牌的高级感几乎都来自字：国际大牌是纯字标，东方高端品牌是“精致中文字 + 一行衬线英文”。下面三个方案都只用字，每个都放进导航栏、托盘中央和小程序头像里看效果。示意用系统字体，正式稿请品牌设计师定字体、调字距，并确认字体商用授权和商标。</p>
 <div class="board" style="flex-direction:column;align-items:stretch;gap:28px">
- <div class="lrow"><div class="lname">A 一珠一线<br><span>一颗珠子穿在线上，最直白的“串”。</span></div>
-  <div class="cell2"><svg class="lg" data-k="A" data-s="96"></svg>图形</div>
-  <div class="cell2"><div class="lock"><svg class="lg" data-k="A" data-s="40"></svg><span>珠养养</span></div>横版</div>
-  <div class="cell2"><div style="display:flex;gap:12px;align-items:center"><svg class="lg" data-k="A" data-s="16"></svg><svg class="lg" data-k="A" data-s="24"></svg></div>16 / 24px</div></div>
- <div class="lrow"><div class="lname">B 两颗珠（推荐）<br><span>一实一空两颗珠挨着穿在线上：对应名字里的叠字“养养”，也是成对、叠戴、送一条给她。</span></div>
-  <div class="cell2"><svg class="lg" data-k="B" data-s="96"></svg>图形</div>
-  <div class="cell2"><div class="lock"><svg class="lg" data-k="B" data-s="40"></svg><span>珠养养</span></div>横版</div>
-  <div class="cell2"><div style="display:flex;gap:12px;align-items:center"><svg class="lg" data-k="B" data-s="16"></svg><svg class="lg" data-k="B" data-s="24"></svg></div>16 / 24px</div></div>
- <div class="lrow"><div class="lname">C 纯字标<br><span>不要图形，只用字；字距拉开，配一行拼音。最稳，但辨识度靠名字本身。</span></div>
-  <div class="cell2"><div style="display:flex;flex-direction:column;align-items:center"><span style="font-size:26px;letter-spacing:10px;font-weight:600;padding-left:10px">珠养养</span><span style="font-size:9px;letter-spacing:4px;color:#888">ZHU YANG YANG</span></div>字标</div>
-  <div class="cell2"><span style="font-size:13px;letter-spacing:5px;font-weight:600">珠养养</span>小尺寸</div></div>
- <div class="lrow"><div class="lname">B 用在托盘中央<br><span>分隔色，不抢珠子的颜色；分享海报导出时保留。</span></div>
-  <div class="cell2"><div style="width:180px;height:180px;background:#fafafa;display:flex;align-items:center;justify-content:center;position:relative"><div class="logo-c"></div><svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="70" width="180" height="180"></svg></div>托盘</div></div>
+ <div class="lrow"><div class="lname">一 宋体中文 + 衬线拼音（推荐）<br><span>参考东方高端品牌的做法：精致的宋体中文、拉开字距，下面一行衬线大写拼音。中文有温度，拼音给“品牌感”。宋体只用在标识上，界面里不用，所以不会把整站带回“老套”。</span></div>
+  <div class="cell2"><div style="padding:18px 10px"><div style="display:flex;flex-direction:column;align-items:center;line-height:1"><span style="font-family:'Songti SC','STSong','Noto Serif SC',serif;font-size:30px;letter-spacing:11px;padding-left:11px;font-weight:400">珠养养</span><span style="font-family:'Didot','Bodoni 72','Bodoni MT','Times New Roman',serif;font-size:7px;letter-spacing:4.2px;padding-left:4.2px;margin-top:10px">ZHU YANG YANG</span></div></div>主标识</div>
+  <div class="cell2"><div class="lnav"><div style="display:flex;flex-direction:column;align-items:center;line-height:1"><span style="font-family:'Songti SC','STSong','Noto Serif SC',serif;font-size:14px;letter-spacing:5px;padding-left:5px;font-weight:400">珠养养</span><span style="font-family:'Didot','Bodoni 72','Bodoni MT','Times New Roman',serif;font-size:7px;letter-spacing:2.0px;padding-left:2.0px;margin-top:4px">ZHU YANG YANG</span></div></div>导航栏</div>
+  <div class="cell2"><div class="ltray"><svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="66" width="170" height="170"></svg><div class="lwm"><div style="display:flex;flex-direction:column;align-items:center;line-height:1"><span style="font-family:'Songti SC','STSong','Noto Serif SC',serif;font-size:13px;letter-spacing:5px;padding-left:5px;font-weight:400">珠养养</span><span style="font-family:'Didot','Bodoni 72','Bodoni MT','Times New Roman',serif;font-size:7px;letter-spacing:1.8px;padding-left:1.8px;margin-top:4px">ZHU YANG YANG</span></div></div></div>托盘中央</div>
+  <div class="cell2"><div class="licon"><span style="font-family:'Songti SC','STSong','Noto Serif SC',serif;font-size:30px;">珠</span></div>头像</div></div>
+ <div class="lrow"><div class="lname">二 拉丁字标为主<br><span>参考国际首饰品牌：衬线大写拉丁字作主标识，中文退到第二行。国际感最强；但拉丁名要另起（这里先用拼音 ZHUYANG 示意），中文用户记名字会弱一点。</span></div>
+  <div class="cell2"><div style="padding:18px 10px"><div style="display:flex;flex-direction:column;align-items:center;line-height:1"><span style="font-family:'Didot','Bodoni 72','Bodoni MT','Times New Roman',serif;font-size:30px;letter-spacing:6.6px;padding-left:6.6px">ZHUYANG</span><span style="font-family:'Songti SC','STSong','Noto Serif SC',serif;font-size:10px;letter-spacing:9px;padding-left:9px;margin-top:9px">珠养养</span></div></div>主标识</div>
+  <div class="cell2"><div class="lnav"><div style="display:flex;flex-direction:column;align-items:center;line-height:1"><span style="font-family:'Didot','Bodoni 72','Bodoni MT','Times New Roman',serif;font-size:14px;letter-spacing:3.1px;padding-left:3.1px">ZHUYANG</span><span style="font-family:'Songti SC','STSong','Noto Serif SC',serif;font-size:8px;letter-spacing:4px;padding-left:4px;margin-top:4px">珠养养</span></div></div>导航栏</div>
+  <div class="cell2"><div class="ltray"><svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="66" width="170" height="170"></svg><div class="lwm"><div style="display:flex;flex-direction:column;align-items:center;line-height:1"><span style="font-family:'Didot','Bodoni 72','Bodoni MT','Times New Roman',serif;font-size:13px;letter-spacing:2.9px;padding-left:2.9px">ZHUYANG</span><span style="font-family:'Songti SC','STSong','Noto Serif SC',serif;font-size:8px;letter-spacing:4px;padding-left:4px;margin-top:4px">珠养养</span></div></div></div>托盘中央</div>
+  <div class="cell2"><div class="licon"><span style="font-family:'Didot','Bodoni 72','Bodoni MT','Times New Roman',serif;font-size:26px;letter-spacing:1px">ZY</span></div>头像</div></div>
+ <div class="lrow"><div class="lname">三 细无衬线、大字距<br><span>和白盒界面最统一，最克制。高级感全靠留白和字距，辨识度最依赖名字本身。</span></div>
+  <div class="cell2"><div style="padding:18px 10px"><span style="font-size:30px;font-weight:300;letter-spacing:18px;padding-left:18px;line-height:1">珠养养</span></div>主标识</div>
+  <div class="cell2"><div class="lnav"><span style="font-size:15px;font-weight:300;letter-spacing:9px;padding-left:9px;line-height:1">珠养养</span></div>导航栏</div>
+  <div class="cell2"><div class="ltray"><svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="66" width="170" height="170"></svg><div class="lwm"><span style="font-size:12px;font-weight:300;letter-spacing:7px;padding-left:7px;line-height:1">珠养养</span></div></div>托盘中央</div>
+  <div class="cell2"><div class="licon"><span style="font-family:-apple-system,'PingFang SC',sans-serif;font-size:30px;">珠</span></div>头像</div></div>
 </div>
 </section>
 
@@ -281,8 +298,8 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
    <div class="ub" style="margin-left:0;border-radius:18px 18px 18px 6px">考前想要一点定心的感觉</div>
   </div>
  </div>
- <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px">
-  <div class="inbar"><span class="round"><svg class="ic"><use href="#i-plus"/></svg></span><span class="f">说说想要的感觉</span><span class="round"><svg class="ic"><use href="#i-mic"/></svg></span></div>
+ <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px;box-shadow:none;padding-top:6px">
+  <div class="composer"><div class="tx">说说想要的感觉、送谁、预算…</div><div class="tools2"><div class="left"><span class="cbtn"><svg class="ic"><use href="#i-plus"/></svg></span><span class="ctag">手围 15cm</span></div><div class="right"><span class="cbtn" style="box-shadow:none"><svg class="ic"><use href="#i-mic"/></svg></span></div></div></div>
  </div>
 </div>
 <div class="why">一句话说明能做什么、三种输入方式。示例点一下就发送。用户的话用浅灰底、一个角收小的气泡，不再是黑块。</div>
@@ -352,8 +369,8 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
   <div class="alt"><div style="width:64px;height:64px;background:#fafafa;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="aqua,clear,aqua,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="24" width="64" height="64"></svg></div><div style="flex:1"><div class="m b">海盐汽水　¥104</div><div class="s t2">海蓝宝为主，更偏蓝、更清爽；超预算 ¥4</div></div></div>
   <div class="alt"><div style="width:64px;height:64px;background:#fafafa;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="clear,clear,moon,clear,clear,clear,moon,clear,clear,clear,moon,clear,clear,clear,moon,clear,clear,clear,moon,clear,clear" data-R="24" width="64" height="64"></svg></div><div style="flex:1"><div class="m b">素月　¥72</div><div class="s t2">只用白水晶和月光石，更素、更便宜</div></div></div>
  </div>
- <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px">
-  <div class="inbar"><span class="round"><svg class="ic"><use href="#i-plus"/></svg></span><span class="f" style="color:#111">再便宜一点，换成 6mm</span><span class="round dark"><svg class="ic s16"><use href="#i-arrow"/></svg></span></div>
+ <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px;box-shadow:none;padding-top:6px">
+  <div class="composer"><div class="tx on">再便宜一点，换成 6mm</div><div class="tools2"><div class="left"><span class="cbtn"><svg class="ic"><use href="#i-plus"/></svg></span><span class="ctag">手围 15cm</span></div><div class="right"><span class="cbtn dark"><svg class="ic"><use href="#i-up"/></svg></span></div></div></div>
  </div>
 </div>
 <div class="why">回复不是气泡，是一篇通栏小卡片。每一块都有依据：条件来自用户的话，寓意和注意事项来自知识库，数字按规则计算；满足不了的条件直说。</div>
@@ -372,8 +389,8 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
   <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px"><div class="l b">海盐汽水</div><div class="price">¥104</div></div>
   <div class="s t2">21 颗 · 168mm · 刚好合适 · 往下看为什么这样配</div>
  </div>
- <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px">
-  <div class="inbar"><span class="round"><svg class="ic"><use href="#i-plus"/></svg></span><span class="f">还想怎么改，直接说</span><span class="round"><svg class="ic"><use href="#i-mic"/></svg></span></div>
+ <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px;box-shadow:none;padding-top:6px">
+  <div class="composer"><div class="tx">还想怎么改，直接说</div><div class="tools2"><div class="left"><span class="cbtn"><svg class="ic"><use href="#i-plus"/></svg></span><span class="ctag">手围 15cm</span></div><div class="right"><span class="cbtn" style="box-shadow:none"><svg class="ic"><use href="#i-mic"/></svg></span></div></div></div>
  </div>
 </div>
 <div class="why">拍照输入先把“看到了什么”讲出来，让用户确认理解对不对，再给推荐（下面的结构和 07 相同）。</div>
@@ -402,7 +419,7 @@ function logo(svg,k,s,c){svg.setAttribute('width',s);svg.setAttribute('height',s
  if(k==='A')svg.innerHTML='<line x1="4" y1="50" x2="96" y2="50" stroke="'+c+'" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="50" r="26" fill="'+c+'"/>';
  else svg.innerHTML='<line x1="2" y1="50" x2="98" y2="50" stroke="'+c+'" stroke-width="6" stroke-linecap="round"/><circle cx="34" cy="50" r="20" fill="'+c+'"/><circle cx="68" cy="50" r="17" fill="#fff" stroke="'+c+'" stroke-width="6"/>';}
 document.querySelectorAll('svg.lg').forEach(function(s){logo(s,s.dataset.k,+s.dataset.s)});
-document.querySelectorAll('.logo-c').forEach(function(el){el.style.cssText+=';position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;color:#dcdcdc;font-size:12px;letter-spacing:4px;font-weight:500;pointer-events:none';var s=document.createElementNS(NS,'svg');logo(s,'B',34,'#d8d8d8');el.appendChild(s);var t=document.createElement('span');t.textContent='珠养养';el.appendChild(t)});
+document.querySelectorAll('.logo-c').forEach(function(el){el.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;line-height:1"><span style="font-family:\'Songti SC\',\'STSong\',\'Noto Serif SC\',serif;font-size:13px;letter-spacing:5px;padding-left:5px;font-weight:400">珠养养</span><span style="font-family:\'Didot\',\'Bodoni 72\',\'Bodoni MT\',\'Times New Roman\',serif;font-size:7px;letter-spacing:1.8px;padding-left:1.8px;margin-top:4px">ZHU YANG YANG</span></div>';el.style.cssText+=';position:absolute;color:#d4d4d4;pointer-events:none';return;el.style.cssText+=';position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;color:#dcdcdc;font-size:12px;letter-spacing:4px;font-weight:500;pointer-events:none';var s=document.createElementNS(NS,'svg');logo(s,'B',34,'#d8d8d8');el.appendChild(s);var t=document.createElement('span');t.textContent='珠养养';el.appendChild(t)});
 document.querySelectorAll('svg.wave').forEach(function(s){var h='';for(var i=0;i<30;i++){var v=6+Math.abs(Math.sin(i*1.7))*24*(1-Math.abs(i-15)/18);h+='<rect x="'+(i*6)+'" y="'+(18-v/2)+'" width="3" height="'+v+'" rx="1.5" fill="#111"/>'}s.innerHTML=h});
 </script>
 </body>

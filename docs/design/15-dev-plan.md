@@ -1,5 +1,6 @@
 # 15 开发总计划（2026-11-13）
 
+> **能直接派的任务卡在 [tasks/](tasks/00-dispatch.md)**（第一波：后端 7 张、小程序 11 张、后台 4 张，含并行批次、文件归属、每张卡的提示词）。
 > 把 05（小程序 D1–D41、后端 B1–B25）、12（后台 AD1–AD8）、13（运营侧 B26–B40、AD9–AD14）、14（权限 B41–B46、AD15–AD18）合成一份。**以后派活以本文为准**；05、12、13、14 里的任务描述仍然是细节依据，编号对照见附录。
 > 每条任务写了：做什么、怎么做（改哪些文件、函数、接口）、验收、依赖、大小（S ≤ 半天，M 1–2 天，L 3 天以上）。“谁来做”一列留给负责人填，第 6 节有建议。
 
@@ -11,7 +12,7 @@
 | `codex/admin-commerce-hardening-v2` | 后台电商加固（状态机、金额分、迁移、支付真相） | 远端，**我没有完整审核过** |
 | `codex/admin-production-workbench` | 生产工单、质检、条款范围、shadcn 后台 | 远端，审核结论见 12 第 7 节 |
 | `review/admin-workbench-fixes` | 在上一个之上：修用户订单泄露、质检可绕过、计价和尺寸规则重复；加模拟支付 | **只在本地**，214 + 8 个测试通过 |
-| `design/ui-revamp` | 全部设计稿和文档（只改了 `docs/design/` 和根目录 `AGENTS.md` 的阅读顺序） | **只在本地** |
+| `design/ui-revamp` | 全部设计稿和文档（`docs/design/`）、根目录 `AGENTS.md` 的阅读顺序、小程序 `kit/` 分包的 7 个临时页空壳（给第一波组件卡截图用，`app.json` 里加了一个分包） | **只在本地** |
 
 **合并方案**：
 1. 负责人在 GitHub Desktop 推送 `review/admin-workbench-fixes` 和 `design/ui-revamp`。
@@ -64,7 +65,8 @@
 | A6 | 单个订单接口（原 B3） | `GET /api/my/orders/{no}`，只能看自己的 | 看别人的单返回 404 | A2 | S |
 | A7 | 手机号登录（原 B25） | `POST /api/auth/phone`：收 `code`，服务端用 `WECHAT_APP_ID / SECRET` 调微信换手机号，绑到当前 openid 的账号；只返回打码号码；开发环境走假的换号函数（测试里替换） | 测试覆盖：绑定、同号多设备合并、微信接口失败 | E3 | M |
 | A8 | 后台账号和权限（原 B41–B46） | 新表 `admin_users`、`admin_roles`、`admin_sessions`；密码 `hashlib.scrypt`；`app.py` 里把 `admin_ok()` 换成 `admin_auth(permission)`，每个后台接口声明权限点（14 §2.2）；`commerce` 里所有 `actor=ACTOR` 改为传当前账号名；敏感字段打码放在一个函数 `mask_for(order, perms)` 里 | 测试：四个默认角色 × 每个后台接口，结果和 14 §2.3 的表一致；操作记录里没有 `admin` | A1 | L |
-| A9 | 目录字段和知识库关联（原 B16） | 目录接口给每颗珠子带 `meaning.tags`、`meaning.text`、`look`、`safety`；19 个没关联知识库的商品补上 `kb` 字段（数据迁移，名单见 13 §7） | 目录里在售珠子都有寓意，除非知识库里把握是“低” | 无 | S |
+| A9 | 目录字段（原 B16） | 目录接口给每颗珠子带 `meaning.tags`、`meaning.text`、`look`、`safety`（经 `kb.public` 过滤，把握低的不给） | 目录里把握在“中”以上的珠子都有寓意 | 无 | S |
+| A9b | 知识库补把握（数据，不是代码） | 在售商品里有 16 种的知识库寓意把握是“低”，用户端不显示：蜜蜡（mila）、草莓晶（caomei-jing）、红玛瑙（putong-manao）、绿玉髓（lv-yusui）、东陵玉（dongling-yu）、缠丝玛瑙（chansi）、岫玉（xiu-yu）、水草玛瑙（shuicao）等。逐条找出处写进 `sources`，够了再把 `confidence.meaning` 改成 mid / high；3 种金属隔珠隔片本来没有寓意，不用补 | `python3 kb/validate.py` 通过；目录里这些珠子出现寓意 | 无 | M |
 | A10 | 订单数据清理 | 删掉旧字段的兼容写法（`status` 中文字段、`paymentAvailable`）之前，先确认小程序不再读 | 搜小程序和后台代码不再用这两个字段 | C 线完成 | S |
 
 ### B. 后端新功能
@@ -141,6 +143,7 @@
 | E8 | 商标、字标字体授权；珠子实拍图（先 40 种）；热门款名单和一句寓意 | C0、C4 |
 | E9 | 体验环境要不要开模拟支付；待支付保留多久（推荐 24 小时）；签收几天自动确认（推荐 7 天） | A4、C7 |
 | E10 | 后台四个角色的权限分配确认；谁是负责人账号 | A8 |
+| E11 | **尺寸规则里“主珠”的定义统一成哪一份**：小程序工作台排除隔片、金属珠和 6mm 以下的珠子；后端排模板只排除隔片（`review/admin-workbench-fixes` 的 `a25aa67` 让后台工单也跟了后端这份）。推荐统一成小程序那份，后端 `plans.target_mm` 跟着改，并补对照测试。AGENTS.md 说尺寸规则不能改，所以要你拍板 | 后台工单的目标长度、模板和 AI 配的颗数 |
 
 ## 4. 里程碑
 

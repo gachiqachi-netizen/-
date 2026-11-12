@@ -5,6 +5,7 @@
 """
 import glob
 import json
+import math
 import os
 import re
 
@@ -159,27 +160,64 @@ def _fixed(p):
     return None
 
 
+# ---------- 尺寸规则（2026-11-13 负责人定：以小程序工作台 pages/editor/logic.js 的 stats 为准） ----------
+# 目标长度 = 手围 × 10 + max(8, 2.5 × 主珠直径 − 5)，四舍五入到毫米（.5 进位，和 JS 的 Math.round 一致）。
+# 主珠直径 = 整串里（不是配方里）排除隔片、金属珠、6mm 以下的珠子后，出现次数最多的直径；
+#            次数一样时取较小的直径（和 JS 里 Object.keys 的整数键按升序排、再稳定排序的结果一致）；一颗都不剩时按 8mm。
+# 两边共用的测试用例在 server/tests/fixtures/size_rule_cases.json，小程序测试读同一份。
+
+def _js_round(x):
+    return int(math.floor(x + 0.5))
+
+
+def counts_toward_main(b):
+    return not b.get("spacer") and b.get("mat") != "metal" and float(b.get("mm") or 0) >= 6
+
+
+def main_mm(ids, item):
+    """整串的主珠直径。"""
+    counts, order = {}, []
+    for x in ids:
+        b = item[x]
+        if not counts_toward_main(b):
+            continue
+        mm = float(b["mm"])
+        if mm not in counts:
+            order.append(mm)
+        counts[mm] = counts.get(mm, 0) + 1
+    if not counts:
+        return 8
+    ints = sorted(m for m in order if m == int(m))
+    others = [m for m in order if m != int(m)]
+    keys = ints + others                      # JS：整数键升序在前，其余按出现先后
+    best = sorted(keys, key=lambda m: -counts[m])[0]   # 稳定排序：次数一样时保留前面的（较小的）
+    return int(best) if best == int(best) else best
+
+
 def target_for(wrist, main):
-    """尺寸规则：目标长度 = 手围 × 10 + max(8, 2.5 × 主珠直径 − 5)，取整到毫米。全站只此一处。"""
-    return round(wrist * 10 + max(8, 2.5 * main - 5))
+    """目标长度（毫米，整数）。全站只此一处。"""
+    return _js_round(float(wrist) * 10 + max(8, 2.5 * float(main) - 5))
 
 
 def target_mm(ids, item, wrist):
-    """主珠直径（非隔片里最常见的尺寸）和目标长度。"""
-    mids = [item[x]["mm"] for x in ids if not item[x].get("spacer")]
-    main = max(set(mids), key=mids.count) if mids else 8
+    """整串的主珠直径和目标长度。"""
+    main = main_mm(ids, item)
     return main, target_for(wrist, main)
 
 
 def _fill(special, pattern, tail, item, wrist, fixed=None):
+    """按配方排满一圈：每加一颗都按“加上这颗以后的整串”重新算目标长度（和小程序工作台 fill 一致）。"""
     if fixed:   # 按颗数串：不看手围
         n = max(0, fixed - len(special) - len(tail))
         return list(special) + [pattern[i % len(pattern)] for i in range(n)] + list(tail)
-    _, total_target = target_mm(special + pattern + tail, item, wrist)
-    target = total_target - sum(item[x]["mm"] for x in tail)
+    length = lambda ids: sum(float(item[x]["mm"]) for x in ids)
     out, i = list(special), 0
-    while sum(item[x]["mm"] for x in out) + item[pattern[i % len(pattern)]]["mm"] / 2 < target and len(out) < 80:
-        out.append(pattern[i % len(pattern)]); i += 1
+    while len(out) < 80:
+        nxt = pattern[i % len(pattern)]
+        _, target = target_mm(out + [nxt] + list(tail), item, wrist)
+        if length(out + list(tail)) + float(item[nxt]["mm"]) / 2 >= target:
+            break
+        out.append(nxt); i += 1
     return out + list(tail)
 
 
@@ -289,7 +327,7 @@ def size_for_count(count, sizes, wrist):
     """在可选的珠径里挑一个，让 count 颗串起来最接近合适长度。"""
     best = None
     for d in sizes:
-        target = wrist * 10 + max(8, 2.5 * d - 5)
+        target = target_for(wrist, d)
         diff = count * d - target
         if best is None or abs(diff) < abs(best[1]):
             best = (d, diff)

@@ -755,7 +755,6 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
     bom_map = {}
     bom_order = []
     total_mm = 0.0
-    non_spacer_mms = []
     for idx, bid in enumerate(ids):
         snap_item = items[idx] if idx < len(items) and isinstance(items[idx], dict) else None
         if not snap_item:
@@ -767,8 +766,6 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
         mm = float(snap_item.get("mm") or 0)
         ufen = _bead_unit_fen(snap_item) if ("priceFen" in snap_item or "price" in snap_item) else int(snap_item.get("unitPriceFen") or 0)
         is_spacer = bool(snap_item.get("spacer") or snap_item.get("type") == "spacer")
-        if not is_spacer:   # 和 plans.target_mm 同一个口径：隔片以外都算
-            non_spacer_mms.append(mm)
         total_mm += mm
         seq_entry = {
             "seq": idx + 1,
@@ -804,7 +801,8 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
         bom_map[bid]["subtotalFen"] += ufen
         bom_map[bid]["positions"].append(idx + 1)
 
-    main_mm = max(set(non_spacer_mms), key=non_spacer_mms.count) if non_spacer_mms else 8
+    # 主珠和目标长度用同一套尺寸规则（plans.main_mm，和小程序工作台一致），按整串算
+    main_mm = plans.main_mm([s["id"] for s in sequence], {s["id"]: s for s in sequence})
     target_mm = plans.target_for(wrist, main_mm)
     length_mm = round(total_mm, 1) if total_mm % 1 else int(total_mm)
     return {

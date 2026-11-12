@@ -429,6 +429,21 @@ class Handler(BaseHTTPRequestHandler):
                 if not uid:
                     return self.send(401, {"error": "请先登录"})
                 return self.send(201, user_api.create_share(db, data, uid))
+            pay = re.fullmatch(r"/api/my/orders/([\w-]+)/pay", path)
+            if pay:
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                return self.send(200, user_api.start_payment(db, pay.group(1), uid))
+            if path == "/api/payments/mock/notify":
+                import payments
+                if payments.provider() != "mock":
+                    return self.send(404, {"error": "not_found"})
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                return self.send(200, user_api.mock_payment_notify(
+                    db, str(data.get("orderNo") or ""), uid, str(data.get("paymentId") or ""), data.get("result")))
             order_action = re.fullmatch(r"/api/my/orders/([\w-]+)/actions(?:/([a-z_]+))?", path)
             if order_action:
                 uid = self.user()

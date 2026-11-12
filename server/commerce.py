@@ -861,6 +861,8 @@ def build_work_order(order, db=None):
         "status": wo_status,
         "fulfillmentStatus": fulfillment,
         "paymentStatus": groups.get("paymentStatus"),
+        "paymentChannel": order.get("paymentChannel") or "",
+        "mockPayment": order.get("paymentChannel") == "mock",
         "orderStatus": groups.get("orderStatus"),
         "assignee": str(existing.get("assignee") or ""),
         "progress": int(progress),
@@ -1186,6 +1188,55 @@ def customer_order_action(db, no, user_id, action):
         audit_builder=lambda: _audit_record(
             "customer", action, "order", no,
             json.dumps(meta.get("before", {}), ensure_ascii=False, sort_keys=True)))
+
+
+def start_payment(db, no, user_id):
+    """用户发起付款：校验订单归属和状态，记一条付款记录，返回给前端的付款参数。"""
+    out = {}
+
+    def apply(order):
+        if order.get("userId") != user_id:
+            raise KeyError("订单不存在")
+        attempt, params = payments.create_payment(order)
+        out["params"] = params
+        order["updatedAt"] = _now()
+        return order
+
+    saved = _atomic_order_transition(
+        db, no, apply,
+        audit_builder=lambda: _audit_record("customer", "start_payment", "order", no, out.get("params", {}).get("provider", "")))
+    return saved, out["params"]
+
+
+def payment_callback(db, no, callback, user_id=None):
+    """支付回调：走 payments.apply_callback（幂等、金额核对）；付款成功时订单从待确认自动变已确认。
+
+    user_id 只给模拟通道用：模拟回调由用户端发起，必须是自己的订单。真实通道的回调由微信服务器发起，不带 user_id。
+    """
+    meta = {}
+
+    def apply(order):
+        if user_id is not None and order.get("userId") != user_id:
+            raise KeyError("订单不存在")
+        before = status.derive_status(order)
+        result, order = payments.apply_callback(order, callback)
+        meta["result"] = result
+        if result == "paid":
+            append_history(order, "payment", "paymentStatus", before["paymentStatus"], "paid",
+                           "模拟付款成功" if order.get("paymentChannel") == "mock" else "付款成功")
+            if before["orderStatus"] == "pending_confirmation":
+                status.validate_transition("orderStatus", "pending_confirmation", "confirmed")
+                order["orderStatus"] = "confirmed"
+                append_history(order, "payment", "orderStatus", "pending_confirmation", "confirmed", "付款后自动确认")
+            order["status"] = "待串制"  # legacy client compatibility
+        order["updatedAt"] = _now()
+        return order
+
+    saved = _atomic_order_transition(
+        db, no, apply,
+        audit_builder=lambda: _audit_record("payment", "payment_callback", "order", no,
+                                            f"{callback.get('provider', '')} {meta.get('result', '')} {callback.get('amountFen', '')}"))
+    return meta.get("result"), saved
 
 
 def update_order_logistics(db, no, logistics, actor=ACTOR):

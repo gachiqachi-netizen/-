@@ -165,8 +165,14 @@ def order_allowed_actions(order):
         actions.append('view_logistics')
     if isinstance(order.get('beads'), list) and order['beads']:
         actions.append('reorder')
-    # Real payment is not integrated. Never advertise a pay action merely because
-    # the legacy order has paymentAvailable or an unpaid status.
+    # 只有当前有可用的支付通道（开发/体验环境的模拟支付，或以后的微信支付）时才给 pay_order；
+    # 不看订单上旧的 paymentAvailable 字段。
+    import payments
+    if (payments.payment_available()
+            and groups['orderStatus'] in ('pending_confirmation', 'confirmed')
+            and groups['paymentStatus'] == 'unpaid'
+            and groups['afterSaleStatus'] == 'none'):
+        actions.insert(0, 'pay_order')
     return actions
 
 
@@ -200,6 +206,32 @@ def public_order(order):
 def perform_order_action(db, no, uid, action):
     import commerce
     return public_order(commerce.customer_order_action(db, no, uid, action))
+
+
+def start_payment(db, no, uid):
+    import commerce
+    order, params = commerce.start_payment(db, no, uid)
+    return {'payment': params, 'order': public_order(order)}
+
+
+def mock_payment_notify(db, no, uid, payment_id, result):
+    """模拟支付的回调：由用户端点“支付成功 / 支付失败”触发，服务端按付款记录的金额组一个回调，
+    走和真实回调相同的处理。只有模拟通道可用时才存在。"""
+    import commerce, payments
+    if payments.provider() != 'mock':
+        raise KeyError('模拟支付未开启')
+    if result not in ('success', 'fail'):
+        raise ValueError('模拟支付结果只能是 success 或 fail')
+    order = db.get('orders', no)
+    if not order or order.get('userId') != uid:
+        raise KeyError('订单不存在')
+    attempt = next((a for a in (order.get('paymentAttempts') or []) if a.get('id') == payment_id), None)
+    if not attempt:
+        raise ValueError('付款记录不存在')
+    callback = {'id': 'cb_' + payment_id, 'paymentId': payment_id, 'provider': 'mock',
+                'amountFen': attempt['amountFen'], 'result': result}
+    outcome, saved = commerce.payment_callback(db, no, callback, user_id=uid)
+    return {'result': outcome, 'order': public_order(saved)}
 
 
 def create_share(db, data, owner_id):
@@ -312,7 +344,7 @@ def make_order(db, data, uid):
              'designSnapshot': design_snapshot,
              'promotion': promotion_status(),
              'person': data['person'].strip()[:40], 'phone': data['phone'],
-             'addr': data['addr'].strip()[:200], 'status': '待支付', 'paymentAvailable': False,
+             'addr': data['addr'].strip()[:200], 'status': '待支付', 'paymentAvailable': __import__('payments').payment_available(),
              'subtotalFen': subtotal_fen, 'shippingFen': shipping_fen, 'discountFen': discount_fen,
              'payableFen': payable_fen, 'paidFen': 0, 'refundFen': 0,
              'goodsFen': goods_fen, 'shipFen': shipping_fen, 'totalFen': payable_fen,

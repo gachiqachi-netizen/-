@@ -111,3 +111,5 @@ def validate_startup():
             raise SystemExit("生产环境禁止启用 DEV_LOGIN")
         if os.environ.get("DEMO_ORDERS") == "1":
             raise SystemExit("生产环境禁止启用演示下单 DEMO_ORDERS")
+        if (os.environ.get("PAYMENT_PROVIDER") or "").strip().lower() == "mock":
+            raise SystemExit("生产环境禁止使用模拟支付 PAYMENT_PROVIDER=mock")

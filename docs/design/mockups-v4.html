@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工作台与 AI 配</title>
+<style>
+:root{--page:#e9eaec;--sub:#696c72}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:#111;font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif}
+header,section,.notes{max-width:1240px;margin:0 auto;padding:22px 16px}
+header h1{font-size:24px;margin:8px 0 6px;font-weight:600}
+header p,section>p{margin:0 0 6px;color:var(--sub);max-width:880px}
+section h2{font-size:19px;margin:0 0 4px;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:28px;margin-top:14px;align-items:flex-start}
+figure{margin:0;width:375px;max-width:calc(100vw - 32px)}
+figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
+.why{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.55}
+
+.phone{--bg:#fff;--surf:#f4f4f4;--line:#e8e8e8;--t2:#6e6e6e;--t:#111;--red:#c2352b;--pill:999px;
+ width:100%;height:780px;border-radius:38px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:var(--bg);color:var(--t);box-shadow:0 24px 48px -28px rgba(0,0,0,.45)}
+.phone.tall{height:auto;min-height:780px}
+.nav{height:90px;flex:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:11px;position:relative;font-size:16px;font-weight:600}
+.cap{position:absolute;right:12px;bottom:8px;width:87px;height:32px;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line)}
+.nl{position:absolute;left:18px;bottom:12px;font-size:14px;font-weight:400;display:flex;align-items:center;gap:4px}
+.body{flex:1;overflow:hidden;position:relative}
+.p{padding:0 20px}
+.t2{color:var(--t2)} .red{color:var(--red)} .b{font-weight:600}
+.s{font-size:12px} .m{font-size:14px} .l{font-size:17px}
+.hr{height:1px;background:var(--line)}
+.btn{height:50px;border-radius:var(--pill);background:var(--t);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex:1}
+.btn.sec{background:var(--surf);color:var(--t)}
+.btn.sm{height:30px;flex:none;padding:0 12px;font-size:13px;font-weight:400}
+.bar{flex:none;padding:10px 20px 30px;display:flex;align-items:center;gap:16px;box-shadow:0 -6px 18px rgba(0,0,0,.05);background:#fff;position:relative;z-index:3}
+.price{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.s16{width:16px;height:16px}
+
+/* 工作台 */
+.tray{height:250px;background:#fafafa;position:relative;display:flex;align-items:center;justify-content:center}
+.tools{position:absolute;right:14px;top:12px;display:flex;flex-direction:column;gap:16px;color:#555}
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;background:rgba(17,17,17,.9);color:#fff;border-radius:999px;padding:6px 14px;font-size:13px;white-space:nowrap;display:flex;gap:12px;align-items:center;z-index:2}
+.toast u{text-decoration:none;font-weight:600}
+.status{display:flex;align-items:center;gap:12px;padding:10px 20px 6px;font-size:13px}
+.meter{flex:1;height:4px;border-radius:2px;background:var(--line);position:relative}
+.meter b{position:absolute;top:0;height:4px;background:#cfcfcf;border-radius:2px}
+.meter i{position:absolute;top:-4px;width:12px;height:12px;border-radius:6px;background:var(--t);box-shadow:0 0 0 2px #fff;margin-left:-6px}
+.hint{margin:0 20px 6px;font-size:12px;display:flex;justify-content:space-between;align-items:center}
+.picked{display:flex;gap:8px;padding:6px 20px 10px;overflow:hidden}
+.pk{flex:none;display:flex;align-items:center;gap:6px;height:32px;padding:0 12px 0 4px;border-radius:999px;background:var(--surf);font-size:12px}
+.pk.on{background:var(--t);color:#fff}
+.tabs{display:flex;gap:20px;padding:8px 20px 8px;font-size:14px;border-top:1px solid var(--line)}
+.tabs .on{font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 6px;padding:4px 14px}
+.cell{display:flex;flex-direction:column;align-items:center;position:relative;font-size:12px;line-height:1.35}
+.cell .sub{font-size:10px;color:var(--t2)}
+.badge{position:absolute;top:-2px;right:10px;min-width:18px;height:18px;border-radius:9px;background:var(--t);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;padding:0 5px;font-weight:600}
+.warn{position:absolute;top:0;right:12px;width:14px;height:14px;color:var(--red)}
+.cell.off{opacity:.4}
+.mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:4}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;z-index:5;padding:20px 20px 30px}
+.sheet .grab{width:36px;height:4px;border-radius:2px;background:#d6d6d6;margin:-10px auto 14px}
+
+/* AI */
+.ub{max-width:270px;margin-left:auto;background:var(--surf);border-radius:18px 18px 6px 18px;padding:9px 14px;font-size:14px}
+.inbar{display:flex;align-items:center;gap:8px}
+.inbar .f{flex:1;height:44px;border-radius:22px;background:var(--surf);display:flex;align-items:center;padding:0 16px;font-size:14px;color:var(--t2)}
+.round{width:40px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;flex:none}
+.round.dark{background:var(--t);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:28px;padding:0 12px;border-radius:999px;background:var(--surf);font-size:12px;display:flex;align-items:center;gap:4px}
+.h{font-size:13px;font-weight:600;margin:20px 0 6px;letter-spacing:.5px}
+.para{font-size:14px;line-height:1.7}
+.para b{font-weight:600}
+.li{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.alt{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.alt:last-child{border-bottom:0}
+
+/* logo 板 */
+.board{background:#fff;border-radius:20px;padding:24px;display:flex;flex-wrap:wrap;gap:36px;align-items:center}
+.board .cell2{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:var(--sub)}
+.notes{color:var(--sub);font-size:14px;padding-bottom:56px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+ <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+ <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></symbol>
+ <symbol id="i-stack" viewBox="0 0 24 24"><ellipse cx="12" cy="7" rx="8" ry="3"/><ellipse cx="12" cy="12" rx="8" ry="3"/><ellipse cx="12" cy="17" rx="8" ry="3"/></symbol>
+ <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+ <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v7h14v-7"/></symbol>
+ <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></symbol>
+ <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+ <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+ <symbol id="i-kb" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.5M11 10h.5M15 10h.5M7 14h10"/></symbol>
+ <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+ <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6a1.5 1.5 0 0 1 3 0v6M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-3l-2-4a1.5 1.5 0 0 1 2.5-1.5L8 13"/></symbol>
+ <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+ <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></symbol>
+</svg>
+
+<header>
+<h1>工作台与 AI 配（按 08）</h1>
+<p>工作台的重点改成“选珠子好用”：托盘缩到三分之一，加“已选”行和珠子格的数量角标，每一步操作都有反馈。托盘中央放品牌标识（暂名“珠养养”）。AI 配支持语音和拍照，推荐结果写完整：理解了什么、为什么这样配、材料清单、注意事项、怎么调整、另外两条。</p>
+<p>数字全部按尺寸规则算：手围 15cm、8mm 主珠，目标 165mm，合适区间 161–171mm，21 颗 168mm。价格是示意，按目录单价相加。</p>
+</header>
+
+<section>
+<h2>一、品牌标识（暂名“珠养养”）</h2>
+<p>一圈 12 颗小圆点围成环，其中一颗实心，是“你挑的那一颗”。只用主字色和分隔色。正式名字要先查商标。</p>
+<div class="board">
+ <div class="cell2"><svg class="mark" data-s="88" data-c="#111"></svg>图形</div>
+ <div class="cell2"><div style="display:flex;align-items:center;gap:10px"><svg class="mark" data-s="32" data-c="#111"></svg><span style="font-size:20px;letter-spacing:4px;font-weight:500">珠养养</span></div>横版</div>
+ <div class="cell2"><div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg class="mark" data-s="44" data-c="#111"></svg><span style="font-size:15px;letter-spacing:4px;font-weight:500">珠养养</span></div>竖版</div>
+ <div class="cell2"><div style="display:flex;flex-direction:column;align-items:center;gap:6px;color:#d6d6d6"><svg class="mark" data-s="44" data-c="#d6d6d6"></svg><span style="font-size:15px;letter-spacing:4px;font-weight:500">珠养养</span></div>托盘底纹（分隔色）</div>
+ <div class="cell2"><div style="display:flex;gap:14px;align-items:center"><svg class="mark" data-s="16" data-c="#111"></svg><svg class="mark" data-s="24" data-c="#111"></svg></div>16 / 24px</div>
+</div>
+</section>
+
+<section>
+<h2>二、工作台：选珠子好用，每步有反馈</h2>
+<div class="row">
+
+<figure><figcaption>01 刚加了一颗（正反馈）</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-grid"/></svg>我的作品</span><span class="cap"></span></div>
+ <div class="body">
+  <div class="tray">
+   <div class="logo-c"></div>
+   <svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="82" width="220" height="220" data-new="20"></svg>
+   <div class="tools"><svg class="ic"><use href="#i-undo"/></svg><svg class="ic"><use href="#i-stack"/></svg><svg class="ic"><use href="#i-share"/></svg></div>
+   <div class="toast">+1 海蓝宝 · 刚好合适</div>
+  </div>
+  <div class="status"><span class="b">21 颗 · 168mm</span><div class="meter"><b style="left:43%;width:17%"></b><i style="left:55%"></i></div><span>刚好合适</span></div>
+  <div class="picked">
+   <div class="pk"><svg data-one="aqua" width="24" height="24"></svg>海蓝宝 ×11</div>
+   <div class="pk"><svg data-one="clear" width="24" height="24"></svg>白水晶 ×7</div>
+   <div class="pk"><svg data-one="moon" width="24" height="24"></svg>月光石 ×3</div>
+  </div>
+  <div class="tabs"><span class="on">水晶</span><span class="t2">月光石</span><span class="t2">玉石</span><span class="t2">木</span><span class="t2">配件</span></div>
+  <div class="grid">
+   <div class="cell"><svg data-one="aqua" width="50" height="50"></svg><span class="badge">11</span>海蓝宝<span class="sub">8mm ¥6</span></div>
+   <div class="cell"><svg data-one="clear" width="50" height="50"></svg><span class="badge">7</span>白水晶<span class="sub">8mm ¥2</span></div>
+   <div class="cell"><svg data-one="moon" width="50" height="50"></svg><span class="badge">3</span>月光石<span class="sub">8mm ¥8</span></div>
+   <div class="cell"><svg data-one="rose" width="50" height="50"></svg>粉晶<span class="sub">8mm ¥3</span></div>
+   <div class="cell"><svg data-one="amethyst" width="50" height="50"></svg>紫水晶<span class="sub">8mm ¥4</span></div>
+   <div class="cell"><svg data-one="strawberry" width="50" height="50"></svg>草莓晶<span class="sub">8mm ¥6</span></div>
+   <div class="cell"><svg data-one="citrine" width="50" height="50"></svg>黄水晶<span class="sub">8mm ¥5</span></div>
+   <div class="cell"><svg data-one="cinnabar" width="50" height="50"></svg><svg class="ic warn"><use href="#i-alert"/></svg>朱砂<span class="sub">8mm ¥6</span></div>
+  </div>
+ </div>
+ <div class="bar"><div class="price">¥104</div><div class="btn">串好了</div></div>
+</div>
+<div class="why">选珠区占一半屏。“已选”一行告诉你选了什么、各几颗；格子右上角的数字和它对应。刚加的那颗在托盘里有一圈描边，底部冒提示，长度和量尺同时更新。</div>
+</figure>
+
+<figure><figcaption>02 加多了（负反馈 + 怎么办）</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-grid"/></svg>我的作品</span><span class="cap"></span></div>
+ <div class="body">
+  <div class="tray">
+   <div class="logo-c"></div>
+   <svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear,aqua" data-R="82" width="220" height="220" data-new="21"></svg>
+   <div class="tools"><svg class="ic"><use href="#i-undo"/></svg><svg class="ic"><use href="#i-stack"/></svg><svg class="ic"><use href="#i-share"/></svg></div>
+  </div>
+  <div class="status"><span class="b">22 颗 · 176mm</span><div class="meter"><b style="left:43%;width:17%"></b><i style="left:68%"></i></div><span class="b">超出约 11mm</span></div>
+  <div class="hint"><span class="t2">去掉 1 颗刚好合适</span><span class="btn sm sec">去掉最后一颗</span></div>
+  <div class="picked">
+   <div class="pk"><svg data-one="aqua" width="24" height="24"></svg>海蓝宝 ×12</div>
+   <div class="pk"><svg data-one="clear" width="24" height="24"></svg>白水晶 ×7</div>
+   <div class="pk"><svg data-one="moon" width="24" height="24"></svg>月光石 ×3</div>
+  </div>
+  <div class="tabs"><span class="on">水晶</span><span class="t2">月光石</span><span class="t2">玉石</span><span class="t2">木</span><span class="t2">配件</span></div>
+  <div class="grid">
+   <div class="cell"><svg data-one="aqua" width="50" height="50"></svg><span class="badge">12</span>海蓝宝<span class="sub">8mm ¥6</span></div>
+   <div class="cell"><svg data-one="clear" width="50" height="50"></svg><span class="badge">7</span>白水晶<span class="sub">8mm ¥2</span></div>
+   <div class="cell"><svg data-one="moon" width="50" height="50"></svg><span class="badge">3</span>月光石<span class="sub">8mm ¥8</span></div>
+   <div class="cell"><svg data-one="rose" width="50" height="50"></svg>粉晶<span class="sub">8mm ¥3</span></div>
+   <div class="cell"><svg data-one="amethyst" width="50" height="50"></svg>紫水晶<span class="sub">8mm ¥4</span></div>
+   <div class="cell"><svg data-one="strawberry" width="50" height="50"></svg>草莓晶<span class="sub">8mm ¥6</span></div>
+   <div class="cell off"><svg data-one="citrine" width="50" height="50"></svg>黄水晶<span class="sub">暂时缺货</span></div>
+   <div class="cell"><svg data-one="cinnabar" width="50" height="50"></svg><svg class="ic warn"><use href="#i-alert"/></svg>朱砂<span class="sub">8mm ¥6</span></div>
+  </div>
+ </div>
+ <div class="bar"><div class="price">¥110</div><div class="btn">串好了</div></div>
+</div>
+<div class="why">不拦着用户继续加，但马上说清楚：超了多少、怎么办，并给一个一点就好的按钮。缺货的格子变淡、写明原因，点了会晃一下并推荐相似的。</div>
+</figure>
+
+<figure><figcaption>03 点中托盘里的一颗，删除后可撤销</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-grid"/></svg>我的作品</span><span class="cap"></span></div>
+ <div class="body">
+  <div class="tray">
+   <div class="logo-c"></div>
+   <svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,aqua,clear,aqua,clear" data-R="82" width="220" height="220" data-sel="4"></svg>
+   <div class="tools"><svg class="ic"><use href="#i-undo"/></svg><svg class="ic"><use href="#i-stack"/></svg><svg class="ic"><use href="#i-share"/></svg></div>
+   <div class="toast">已删除 1 颗月光石 <u>撤销</u></div>
+  </div>
+  <div class="status"><span class="b">20 颗 · 160mm</span><div class="meter"><b style="left:43%;width:17%"></b><i style="left:41%"></i></div><span class="b">还差约 5mm</span></div>
+  <div class="hint"><span class="t2">第 5 颗</span><span style="display:flex;gap:6px"><span class="btn sm sec">左移</span><span class="btn sm sec">右移</span><span class="btn sm sec">换一颗</span><span class="btn sm sec">删除</span></span></div>
+  <div class="picked">
+   <div class="pk"><svg data-one="aqua" width="24" height="24"></svg>海蓝宝 ×11</div>
+   <div class="pk"><svg data-one="clear" width="24" height="24"></svg>白水晶 ×7</div>
+   <div class="pk on"><svg data-one="moon" width="24" height="24"></svg>月光石 ×2</div>
+  </div>
+  <div class="tabs"><span class="on">水晶</span><span class="t2">月光石</span><span class="t2">玉石</span><span class="t2">木</span><span class="t2">配件</span></div>
+  <div class="grid">
+   <div class="cell"><svg data-one="aqua" width="50" height="50"></svg><span class="badge">11</span>海蓝宝<span class="sub">8mm ¥6</span></div>
+   <div class="cell"><svg data-one="clear" width="50" height="50"></svg><span class="badge">7</span>白水晶<span class="sub">8mm ¥2</span></div>
+   <div class="cell"><svg data-one="moon" width="50" height="50"></svg><span class="badge">2</span>月光石<span class="sub">8mm ¥8</span></div>
+   <div class="cell"><svg data-one="rose" width="50" height="50"></svg>粉晶<span class="sub">8mm ¥3</span></div>
+  </div>
+ </div>
+ <div class="bar"><div class="price">¥96</div><div class="btn">串好了</div></div>
+</div>
+<div class="why">点中一颗：这颗放大，其余变淡，操作出现在状态行下面，就在手指附近。删除后 3 秒内可以撤销；长度从“合适”变成“还差约 5mm”，用户马上知道后果。</div>
+</figure>
+
+<figure><figcaption>04 第一次加朱砂（先说清楚再加）</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-grid"/></svg>我的作品</span><span class="cap"></span></div>
+ <div class="body">
+  <div class="tray"><div class="logo-c"></div><svg class="ring" data-beads="aqua,aqua,clear,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua" data-R="82" width="220" height="220"></svg></div>
+  <div class="mask"></div>
+  <div class="sheet">
+   <div class="grab"></div>
+   <div style="display:flex;gap:14px;align-items:center"><svg data-one="cinnabar" width="56" height="56"></svg><div><div class="l b">朱砂 8mm</div><div class="s t2">朱砂红是传统的“中国红”颜料，常取红火、吉庆的意象</div></div></div>
+   <div style="margin-top:16px;padding:12px 14px;background:var(--surf)">
+    <div class="m b red" style="display:flex;gap:6px;align-items:center"><svg class="ic s16"><use href="#i-alert"/></svg>加之前请了解</div>
+    <div class="m red" style="margin-top:4px">朱砂成分是硫化汞，不宜长期贴身佩戴，不可入口，粉末压制品尤其注意。</div>
+    <div class="m" style="margin-top:6px">不要入口、不要火烤或加热；儿童不宜佩戴。</div>
+   </div>
+   <div class="s t2" style="margin-top:10px">之后加朱砂不再提示；珠子格上会一直有一个小图标。</div>
+   <div style="display:flex;gap:12px;margin-top:16px"><div class="btn sec">不加了</div><div class="btn">知道了，继续加</div></div>
+  </div>
+ </div>
+</div>
+<div class="why">负反馈不是吓人：说清楚是什么、为什么、要注意什么，让用户自己决定。内容逐字来自知识库。</div>
+</figure>
+</div>
+</section>
+
+<section>
+<h2>三、AI 配：语音、拍照、完整的推荐</h2>
+<div class="row">
+
+<figure><figcaption>05 第一次进来</figcaption>
+<div class="phone">
+ <div class="nav">AI 配<span class="cap"></span></div>
+ <div class="body p" style="padding-top:20px">
+  <div class="l b">想要什么感觉，直接说</div>
+  <div class="m t2" style="margin-top:4px">可以打字、按住说话，也可以拍一张喜欢的手串或穿搭。我会按你的手围、预算配好，告诉你为什么这样配。</div>
+  <div class="s t2" style="margin-top:22px;margin-bottom:8px">试试这样说</div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+   <div class="ub" style="margin-left:0;border-radius:18px 18px 18px 6px">想要清冷一点，上班也能戴，100 以内</div>
+   <div class="ub" style="margin-left:0;border-radius:18px 18px 18px 6px">送闺蜜生日，她喜欢粉色</div>
+   <div class="ub" style="margin-left:0;border-radius:18px 18px 18px 6px">考前想要一点定心的感觉</div>
+  </div>
+ </div>
+ <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px">
+  <div class="s t2">按手围 15cm 配 ›</div>
+  <div class="inbar"><span class="round"><svg class="ic"><use href="#i-mic"/></svg></span><span class="f">想要的感觉、送谁、预算</span><span class="round"><svg class="ic"><use href="#i-camera"/></svg></span><span class="round dark"><svg class="ic s16"><use href="#i-arrow"/></svg></span></div>
+ </div>
+</div>
+<div class="why">一句话说明能做什么、三种输入方式。示例点一下就发送。用户的话用浅灰底、一个角收小的气泡，不再是黑块。</div>
+</figure>
+
+<figure><figcaption>06 按住说话</figcaption>
+<div class="phone">
+ <div class="nav">AI 配<span class="cap"></span></div>
+ <div class="body p" style="padding-top:20px">
+  <div class="ub">想要清冷一点，上班也能戴，100 以内</div>
+  <div class="ub" style="margin-top:10px;opacity:.6">送给自己的，平时穿得比较素…</div>
+  <div class="s t2" style="text-align:right;margin-top:4px">正在识别</div>
+ </div>
+ <div class="bar" style="flex-direction:column;align-items:center;gap:10px;padding-top:16px">
+  <svg width="180" height="36" viewBox="0 0 180 36" class="wave"></svg>
+  <div class="s t2">松开发送，上滑取消</div>
+  <div style="width:100%;height:56px;border-radius:28px;background:var(--t);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600"><svg class="ic"><use href="#i-mic"/></svg>松开 发送</div>
+ </div>
+</div>
+<div class="why">按住时有波形（声音被听到的反馈），识别中的文字实时出现在气泡里，说错了松开前上滑取消，发送后也能点气泡改。</div>
+</figure>
+
+<figure><figcaption>07 推荐结果（长页，可滚动）</figcaption>
+<div class="phone tall">
+ <div class="nav">AI 配<span class="cap"></span></div>
+ <div class="body p" style="padding-bottom:16px">
+  <div class="ub">想要清冷一点，上班也能戴，100 以内</div>
+
+  <div class="h">我理解的是</div>
+  <div class="chips"><span class="chip">清冷</span><span class="chip">通勤</span><span class="chip">¥100 以内</span><span class="chip">手围 15cm<svg class="ic s16"><use href="#i-edit"/></svg></span></div>
+
+  <div style="margin-top:16px;background:#fafafa;height:230px;display:flex;align-items:center;justify-content:center;position:relative"><div class="logo-c" style="transform:scale(.85)"></div><svg class="ring" data-beads="moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon" data-R="86" width="220" height="220"></svg></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:12px"><div class="l b">白月光</div><div class="price">¥92</div></div>
+  <div class="s t2">21 颗 · 168mm · 手围 15cm 刚好合适 · 示意效果，以实物为准</div>
+
+  <div class="h">为什么这样配</div>
+  <div class="para"><b>颜色</b>　月白加一点浅蓝，都是低饱和的冷色，和通勤常穿的黑、白、灰、蓝都搭，不抢眼。</div>
+  <div class="para" style="margin-top:8px"><b>材料</b>　月光石转动时有一层光晕，像月光，常用来寓意温柔、浪漫；白水晶古人叫“水精”，比喻纯净、明澈，用来铺底、控制预算；两颗海蓝宝颜色像海水，寓意清澈、宽广，点一点蓝。</div>
+  <div class="para" style="margin-top:8px"><b>尺寸</b>　8mm 通勤不显眼也不小气；按手围 15cm，21 颗总长 168mm，戴上留一指左右的余量。</div>
+  <div class="para t2" style="margin-top:8px;font-size:13px">月光石为主的配法要 ¥130 左右，超出预算，所以这条用白水晶铺底。</div>
+
+  <div class="h">材料清单</div>
+  <div class="li"><span>月光石 8mm × 7</span><span>¥56</span></div>
+  <div class="li"><span>白水晶 8mm × 12</span><span>¥24</span></div>
+  <div class="li"><span>海蓝宝 8mm × 2</span><span>¥12</span></div>
+  <div class="li b"><span>合计</span><span>¥92</span></div>
+
+  <div class="h">戴的时候注意</div>
+  <div class="para" style="font-size:13px">月光石有解理，怕磕碰，避免和硬物撞击；白水晶用清水和软布擦拭即可。</div>
+
+  <div class="h">想调整</div>
+  <div class="chips"><span class="chip"><svg class="ic s16"><use href="#i-refresh"/></svg>更清冷一点</span><span class="chip">换 6mm 更秀气</span><span class="chip">预算再低一点</span><span class="chip">加一点粉</span></div>
+
+  <div style="display:flex;gap:10px;margin-top:18px"><div class="btn sec">放到工作台改</div><div class="btn">去下单</div></div>
+  <div class="m" style="text-align:center;margin-top:12px;display:flex;justify-content:center;gap:6px;align-items:center"><svg class="ic s16"><use href="#i-hand"/></svg>戴上看看 ›</div>
+
+  <div class="h" style="margin-top:26px">另外两种配法</div>
+  <div class="alt"><div style="width:64px;height:64px;background:#fafafa;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="aqua,clear,aqua,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="24" width="64" height="64"></svg></div><div style="flex:1"><div class="m b">海盐汽水　¥104</div><div class="s t2">海蓝宝为主，更偏蓝、更清爽；超预算 ¥4</div></div></div>
+  <div class="alt"><div style="width:64px;height:64px;background:#fafafa;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="clear,clear,moon,clear,clear,clear,moon,clear,clear,clear,moon,clear,clear,clear,moon,clear,clear,clear,moon,clear,clear" data-R="24" width="64" height="64"></svg></div><div style="flex:1"><div class="m b">素月　¥72</div><div class="s t2">只用白水晶和月光石，更素、更便宜</div></div></div>
+ </div>
+ <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px">
+  <div class="inbar"><span class="round"><svg class="ic"><use href="#i-mic"/></svg></span><span class="f">还想怎么改，直接说</span><span class="round"><svg class="ic"><use href="#i-camera"/></svg></span><span class="round dark"><svg class="ic s16"><use href="#i-arrow"/></svg></span></div>
+ </div>
+</div>
+<div class="why">回复不是气泡，是一篇通栏小卡片。每一块都有依据：条件来自用户的话，寓意和注意事项来自知识库，数字按规则计算；满足不了的条件直说。</div>
+</figure>
+
+<figure><figcaption>08 用照片配（先说看到了什么）</figcaption>
+<div class="phone">
+ <div class="nav">AI 配<span class="cap"></span></div>
+ <div class="body p">
+  <div style="margin-left:auto;width:150px;height:190px;background:var(--line);color:#9a9a9a;font-size:11px;display:flex;align-items:flex-end;padding:8px;border-radius:18px 18px 6px 18px">用户的照片：一件浅蓝衬衫</div>
+  <div class="ub" style="margin-top:8px">配一条和这件衣服搭的</div>
+  <div class="h">我从照片里看到</div>
+  <div class="chips"><span class="chip">主色：浅蓝、米白</span><span class="chip">感觉：干净、清爽</span><span class="chip">场合：通勤</span></div>
+  <div class="m t2" style="margin-top:8px">按这个感觉配，手围按 15cm。不对的话点一下标签改。</div>
+  <div style="margin-top:14px;background:#fafafa;height:180px;display:flex;align-items:center;justify-content:center;position:relative"><svg class="ring" data-beads="aqua,clear,aqua,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="68" width="180" height="180"></svg></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px"><div class="l b">海盐汽水</div><div class="price">¥104</div></div>
+  <div class="s t2">21 颗 · 168mm · 刚好合适 · 往下看为什么这样配</div>
+ </div>
+ <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px">
+  <div class="inbar"><span class="round"><svg class="ic"><use href="#i-mic"/></svg></span><span class="f">还想怎么改，直接说</span><span class="round"><svg class="ic"><use href="#i-camera"/></svg></span><span class="round dark"><svg class="ic s16"><use href="#i-arrow"/></svg></span></div>
+ </div>
+</div>
+<div class="why">拍照输入先把“看到了什么”讲出来，让用户确认理解对不对，再给推荐（下面的结构和 07 相同）。</div>
+</figure>
+</div>
+</section>
+
+<div class="notes">注：语音识别需要接第三方服务，没接之前先隐藏语音按钮；照片理解需要多模态模型，接之前先隐藏拍照按钮。价格、长度、颗数全部按规则计算，不让模型自己写数字。</div>
+
+<script>
+var M={aqua:['#eef9fc','#b7e1ec','#5c9db3',.6],clear:['#fff','#eef1f5','#aeb8c6',.8],moon:['#fbfcfe','#e6eaf2','#9fabc0',.65],
+ rose:['#fde7ea','#f1bcc6','#c47f8e',.55],amethyst:['#ece0fa','#b293de','#5f3e96',.5],strawberry:['#fde2e4','#eda2ab','#ad5562',.5],
+ citrine:['#fff4d3','#f3cd75','#b4842b',.55],cinnabar:['#f6b7a5','#c8432d','#6e140b',.25]};
+var uid=0,NS='http://www.w3.org/2000/svg';
+function bead(svg,cx,cy,r,k,o){o=o||{};var m=M[k],id='g'+(uid++),d=document.createElementNS(NS,'defs');
+ d.innerHTML='<radialGradient id="'+id+'a" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="'+m[0]+'"/><stop offset=".5" stop-color="'+m[1]+'"/><stop offset="1" stop-color="'+m[2]+'"/></radialGradient><radialGradient id="'+id+'b" cx="64%" cy="74%" r="42%"><stop offset="0" stop-color="#fff" stop-opacity="'+m[3]+'"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>';
+ svg.appendChild(d);var g=document.createElementNS(NS,'g');g.setAttribute('opacity',o.f||1);
+ g.innerHTML=(o.ring?'<circle cx="'+cx+'" cy="'+cy+'" r="'+(r+3)+'" fill="none" stroke="#111" stroke-width="1.5"/>':'')+'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'a)"/><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'b)"/><ellipse cx="'+(cx-r*.34)+'" cy="'+(cy-r*.4)+'" rx="'+r*.26+'" ry="'+r*.14+'" fill="#fff" opacity=".9" transform="rotate(-32 '+(cx-r*.34)+' '+(cy-r*.4)+')"/>';
+ svg.appendChild(g)}
+document.querySelectorAll('svg.ring').forEach(function(svg){var d=svg.dataset,l=d.beads.split(','),n=l.length,w=+svg.getAttribute('width'),h=+svg.getAttribute('height'),R=+d.r||+d.R,sel=d.sel!==undefined?+d.sel:-1,nw=d.new!==undefined?+d.new:-1;
+ svg.setAttribute('viewBox','0 0 '+w+' '+h);var cx=w/2,cy=h/2,br=R*Math.sin(Math.PI/n)*1.02;
+ l.forEach(function(k,i){var a=i/n*Math.PI*2-Math.PI/2,s=i===sel?1.25:1;bead(svg,cx+R*Math.cos(a),cy+R*Math.sin(a),br*s,k,{f:sel>=0&&i!==sel?.35:1,ring:i===nw||i===sel})})});
+document.querySelectorAll('svg[data-one]').forEach(function(svg){var s=+svg.getAttribute('width');svg.setAttribute('viewBox','0 0 '+s+' '+s);bead(svg,s/2,s/2,s/2-3,svg.dataset.one)});
+function mark(svg,s,c){svg.setAttribute('width',s);svg.setAttribute('height',s);svg.setAttribute('viewBox','0 0 100 100');var h='';for(var i=0;i<12;i++){var a=i/12*Math.PI*2-Math.PI/2,x=50+38*Math.cos(a),y=50+38*Math.sin(a);h+=i===0?'<circle cx="'+x+'" cy="'+y+'" r="9" fill="'+c+'"/>':'<circle cx="'+x+'" cy="'+y+'" r="7" fill="none" stroke="'+c+'" stroke-width="3"/>'}svg.innerHTML=h}
+document.querySelectorAll('svg.mark').forEach(function(s){mark(s,+s.dataset.s,s.dataset.c)});
+document.querySelectorAll('.logo-c').forEach(function(el){el.style.cssText+=';position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;color:#dcdcdc;font-size:12px;letter-spacing:4px;font-weight:500;pointer-events:none';var s=document.createElementNS(NS,'svg');mark(s,30,'#dcdcdc');el.appendChild(s);var t=document.createElement('span');t.textContent='珠养养';el.appendChild(t)});
+document.querySelectorAll('svg.wave').forEach(function(s){var h='';for(var i=0;i<30;i++){var v=6+Math.abs(Math.sin(i*1.7))*24*(1-Math.abs(i-15)/18);h+='<rect x="'+(i*6)+'" y="'+(18-v/2)+'" width="3" height="'+v+'" rx="1.5" fill="#111"/>'}s.innerHTML=h});
+</script>
+</body>
+</html>

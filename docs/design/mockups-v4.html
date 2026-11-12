@@ -64,6 +64,11 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
 
 /* AI */
 .ub{max-width:270px;margin-left:auto;background:var(--surf);border-radius:18px 18px 6px 18px;padding:9px 14px;font-size:14px}
+.tagline{font-size:14px;margin-top:6px;color:#111}
+.tags{font-size:12px;color:var(--t2);margin-top:4px;letter-spacing:.5px}
+.mrow{display:flex;align-items:center;gap:12px;padding:6px 0}
+.mrow .mt{flex:1;min-width:0}
+.rowi{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 20px;border-bottom:1px solid var(--line);font-size:14px}
 .ai{font-size:14px;line-height:1.65;margin:14px 0 10px}
 .rcard{border-radius:16px;box-shadow:0 0 0 1px var(--line);overflow:hidden;background:#fff}
 .rimg{background:#fafafa;height:132px;display:flex;align-items:center;justify-content:center;position:relative}
@@ -339,84 +344,65 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
 <div class="why">按住时有波形（声音被听到的反馈），识别中的文字实时出现在气泡里，说错了松开前上滑取消，发送后也能点气泡改。</div>
 </figure>
 
-<figure><figcaption>07 推荐结果：一条消息 + 一张卡片</figcaption>
+<figure><figcaption>07 推荐结果：先说寓意，再给卡片</figcaption>
 <div class="phone">
  <div class="nav">AI 配<span class="cap"></span></div>
  <div class="body p" style="padding-top:4px">
   <div class="ub">想要清冷一点，上班也能戴，100 以内</div>
-  <div class="ai">按清冷、通勤、¥100 以内、手围 15cm 配了一条。月光石配白水晶，两侧点一颗海蓝宝，都是低饱和的冷色，上班戴不抢眼。</div>
+  <div class="ai">为你配了一条「白月光」。月光石的光晕常用来寓意温柔、浪漫，白水晶古称“水精”，比喻纯净、明澈。清清冷冷的颜色里，藏着一点温柔。</div>
   <div class="rcard">
-   <div class="rimg"><svg class="ring" data-beads="moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon" data-R="50" width="132" height="132"></svg><span class="rmore">详情 ›</span></div>
+   <div class="rimg"><svg class="ring" data-beads="moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon" data-R="50" width="132" height="132"></svg></div>
    <div class="rbody">
-    <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="l b">白月光</div><div class="price" style="font-size:18px">¥92</div></div>
-    <div class="s t2">21 颗 · 168mm · 手围 15cm 合适</div>
-    <div class="rmat"><span><svg data-one="moon" width="16" height="16"></svg>月光石 ×7</span><span><svg data-one="clear" width="16" height="16"></svg>白水晶 ×12</span><span><svg data-one="aqua" width="16" height="16"></svg>海蓝宝 ×2</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="l b">白月光</div><div class="m">¥92</div></div>
+    <div class="tagline">清冷里，藏一点温柔</div>
+    <div class="tags">温柔 · 浪漫 · 纯净 · 明澈</div>
     <div class="rbtns"><span class="btn sec sm">改一改</span><span class="btn sm" style="flex:1;font-weight:600">去下单</span></div>
    </div>
   </div>
-  <div class="alts"><span class="s t2">另外两种</span><span class="apill"><svg data-one="aqua" width="18" height="18"></svg>海盐汽水 ¥104</span><span class="apill"><svg data-one="moon" width="18" height="18"></svg>素月 ¥72</span></div>
+  <div class="alts"><span class="s t2">另外两种</span><span class="apill"><svg data-one="aqua" width="18" height="18"></svg>海盐汽水</span><span class="apill"><svg data-one="moon" width="18" height="18"></svg>素月</span></div>
  </div>
  <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px;box-shadow:none;padding-top:6px">
-  <div class="qr"><span class="chip">更清冷一点</span><span class="chip">换 6mm</span><span class="chip">再便宜一点</span></div>
+  <div class="qr"><span class="chip">更温柔一点</span><span class="chip">换 6mm</span><span class="chip">再便宜一点</span></div>
   <div class="composer"><div class="tx on">再便宜一点，换成 6mm</div><div class="tools2"><div class="left"><span class="cbtn"><svg class="ic"><use href="#i-plus"/></svg></span><span class="ctag">手围 15cm</span></div><div class="right"><span class="cbtn dark"><svg class="ic"><use href="#i-up"/></svg></span></div></div></div>
  </div>
 </div>
-<div class="why">对话里只放“一条消息”：两句话说清按什么配、为什么；一张卡片放图、名字、价格、长度、用了什么、两个按钮。完整的理由、材料清单、注意事项点卡片进详情页。快捷改法贴在输入区上方。</div>
+<div class="why">用户来串珠子，要的是情绪。消息先讲这条手串寓意什么，用知识库里的说法；卡片上最显眼的是名字和一句寓意，价格退到右侧，颗数、材料明细进详情。条件（预算、手围）满足了就不再复述。</div>
 </figure>
 
-<figure><figcaption>08 点卡片进入：手串详情（完整信息在这里）</figcaption>
-<div class="phone tall">
- <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span>白月光<span class="cap"></span></div>
- <div class="body" style="padding-bottom:16px">
-  <div style="background:#fafafa;height:280px;display:flex;align-items:center;justify-content:center;position:relative"><div class="logo-c"></div><svg class="ring" data-beads="moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon" data-R="100" width="260" height="260"></svg></div>
-  <div class="s t2" style="text-align:center;margin-top:6px">示意效果，以实物为准</div>
-  <div class="p">
-  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px"><div style="font-size:20px;font-weight:600">白月光</div><div class="price">¥92</div></div>
-  <div class="m t2" style="margin-top:2px">21 颗 · 168mm · 手围 15cm 合适</div>
-  <div class="sec2">
-   <div class="lab">颜色</div>
-   <div class="para">月白加一点浅蓝，都是低饱和的冷色，和通勤常穿的黑、白、灰、蓝都搭，不抢眼。</div>
+<figure><figcaption>08 手串详情：一页只讲“它寓意什么”</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span><span class="cap"></span></div>
+ <div class="body">
+  <div style="background:#fafafa;height:200px;display:flex;align-items:center;justify-content:center;position:relative"><div class="logo-c"></div><svg class="ring" data-beads="moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon,clear,clear,moon,clear,aqua,clear,moon,clear,clear,moon" data-R="74" width="190" height="190"></svg></div>
+  <div class="p" style="padding-top:14px">
+   <div style="font-size:22px;font-weight:600">白月光</div>
+   <div class="tagline" style="font-size:16px;margin-top:4px">清冷里，藏一点温柔</div>
+   <div class="tags" style="margin-top:6px">温柔 · 浪漫 · 纯净 · 明澈 · 清澈</div>
+   <div class="lab" style="margin-top:16px">每一颗的寓意</div>
+   <div class="mrow"><svg data-one="moon" width="40" height="40"></svg><div class="mt"><div class="m b">月光石</div><div class="s t2">光晕像月光，常用来寓意温柔、浪漫</div></div><div class="s t2">×7</div></div>
+   <div class="mrow"><svg data-one="clear" width="40" height="40"></svg><div class="mt"><div class="m b">白水晶</div><div class="s t2">古称“水精”，比喻纯净、明澈</div></div><div class="s t2">×12</div></div>
+   <div class="mrow"><svg data-one="aqua" width="40" height="40"></svg><div class="mt"><div class="m b">海蓝宝</div><div class="s t2">颜色像海水，寓意清澈、宽广</div></div><div class="s t2">×2</div></div>
   </div>
-  <div class="sec2">
-   <div class="lab">尺寸</div>
-   <div class="para">8mm 通勤不显眼也不小气。按手围 15cm，21 颗总长 168mm，戴上留一指左右的余量。</div>
-  </div>
-
-  <div class="sec2">
-   <div class="lab">用了这些</div>
-   <div class="mat"><svg data-one="moon" width="36" height="36"></svg><div class="mt"><div class="m">月光石 8mm × 7</div><div class="s t2">转动时有一层光晕，常用来寓意温柔、浪漫</div></div><div class="m">¥56</div></div>
-   <div class="mat"><svg data-one="clear" width="36" height="36"></svg><div class="mt"><div class="m">白水晶 8mm × 12</div><div class="s t2">古人叫“水精”，比喻纯净、明澈；用来铺底</div></div><div class="m">¥24</div></div>
-   <div class="mat"><svg data-one="aqua" width="36" height="36"></svg><div class="mt"><div class="m">海蓝宝 8mm × 2</div><div class="s t2">颜色像海水，寓意清澈、宽广；点一点蓝</div></div><div class="m">¥12</div></div>
-   <div class="mat" style="border-bottom:0"><div class="mt m b" style="padding-left:48px">合计</div><div class="m b">¥92</div></div>
-   <div class="note">月光石为主的配法要 ¥130 左右，超出预算，所以用白水晶铺底。</div>
-  </div>
-
-  <div class="sec2">
-   <div class="lab">戴的时候注意</div>
-   <div class="para">月光石怕磕碰，避免和硬物撞击；白水晶用清水和软布擦拭即可。</div>
-  </div>
-
-  <div class="m" style="padding:16px 0 4px">戴上看看 ›</div>
-  </div>
+  <div class="rowi" style="border-top:1px solid var(--line);margin-top:4px;min-height:46px"><span>21 颗 · 手围 15cm 合适</span><span class="t2">›</span></div>
+  <div class="rowi" style="min-height:46px"><span>佩戴与保养</span><span class="t2">›</span></div>
  </div>
  <div class="bar"><div class="price">¥92</div><div class="btn sec" style="flex:0 0 96px">改一改</div><div class="btn">去下单</div></div>
 </div>
-<div class="why">长内容属于页面：颜色、尺寸、每种材料的寓意和价格、注意事项都在这里。热门款、AI 推荐、拍照结果、分享落地页共用这一页，信息一样完整。</div>
+<div class="why">一页一个重点：这条手串寓意什么。名字、一句寓意、几个关键词、每颗珠子的寓意，一屏看完不用滚。尺寸、保养收成两行，点了再看；价格只在底部出现一次。“示意效果，以实物为准”放进尺寸那一行点开后的说明里。</div>
 </figure>
 
-<figure><figcaption>09 用照片配：同样是一条消息 + 卡片</figcaption>
+<figure><figcaption>09 用照片配：同样先说寓意</figcaption>
 <div class="phone">
  <div class="nav">AI 配<span class="cap"></span></div>
  <div class="body p" style="padding-top:4px">
-  <div style="margin-left:auto;width:120px;height:150px;background:var(--line);color:#9a9a9a;font-size:11px;display:flex;align-items:flex-end;padding:8px;border-radius:18px 18px 6px 18px">照片：浅蓝衬衫</div>
-  <div class="ub" style="margin-top:6px">配一条和这件衣服搭的</div>
-  <div class="ai">照片里是浅蓝和米白，感觉干净、清爽，适合通勤。按这个配了一条海蓝宝为主的，不对的话直接告诉我。</div>
+  <div style="display:flex;justify-content:flex-end;gap:8px;align-items:flex-end"><div class="ub" style="margin:0">配一条和这件衣服搭的</div><div style="width:64px;height:80px;flex:none;background:var(--line);color:#9a9a9a;font-size:10px;display:flex;align-items:flex-end;padding:6px;border-radius:12px">照片</div></div>
+  <div class="ai">照片里是浅蓝和米白，很清爽。配了一条「海盐汽水」：海蓝宝颜色像海水，寓意清澈、宽广，像夏天吹来的一阵海风。</div>
   <div class="rcard">
-   <div class="rimg"><svg class="ring" data-beads="aqua,clear,aqua,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="50" width="132" height="132"></svg><span class="rmore">详情 ›</span></div>
+   <div class="rimg"><svg class="ring" data-beads="aqua,clear,aqua,aqua,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,aqua,clear,moon,aqua,clear,aqua,clear" data-R="50" width="132" height="132"></svg></div>
    <div class="rbody">
-    <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="l b">海盐汽水</div><div class="price" style="font-size:18px">¥104</div></div>
-    <div class="s t2">21 颗 · 168mm · 手围 15cm 合适</div>
-    <div class="rmat"><span><svg data-one="aqua" width="16" height="16"></svg>海蓝宝 ×11</span><span><svg data-one="clear" width="16" height="16"></svg>白水晶 ×7</span><span><svg data-one="moon" width="16" height="16"></svg>月光石 ×3</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="l b">海盐汽水</div><div class="m">¥104</div></div>
+    <div class="tagline">清澈又开阔，像一阵海风</div>
+    <div class="tags">清澈 · 宽广 · 纯净</div>
     <div class="rbtns"><span class="btn sec sm">改一改</span><span class="btn sm" style="flex:1;font-weight:600">去下单</span></div>
    </div>
   </div>
@@ -426,7 +412,7 @@ figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
   <div class="composer"><div class="tx">还想怎么改，直接说</div><div class="tools2"><div class="left"><span class="cbtn"><svg class="ic"><use href="#i-plus"/></svg></span><span class="ctag">手围 15cm</span></div><div class="right"><span class="cbtn" style="box-shadow:none"><svg class="ic"><use href="#i-mic"/></svg></span></div></div></div>
  </div>
 </div>
-<div class="why">“从照片里看到了什么”用一句话说在消息里，不再单独列标签；用户觉得不对，直接在输入区说。</div>
+<div class="why">照片只是起点，回复的重点仍然是寓意；“看到了什么”一句话带过。</div>
 </figure>
 </div>
 </section>

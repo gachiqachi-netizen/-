@@ -112,12 +112,13 @@
 
 **为什么**：现在的样式是彩色统计卡片、装饰图标、11–12px 小字和代码名。改成 12 第 3 节的规则：白底黑字、左菜单、表格、右抽屉，红色只给异常。这张卡先做外壳、公共组件和两页（今天、订单列表），其余页面在第二波逐页换。
 
-**只能改**：`admin-web/src/App.tsx`、新建 `admin-web/src/layout/*`、`admin-web/src/ui/*`、`admin-web/src/styles.css`、`admin-web/src/components/OverviewAndProducts.tsx`（只改总览部分）、`admin-web/src/components/OrdersView.tsx`（只改列表部分，不改抽屉里的工单和质检）；重新生成打包文件。
+**只能改**：`admin-web/src/App.tsx`、新建 `admin-web/src/layout/*`、`admin-web/src/ui/*`、`admin-web/src/pages/*`、`admin-web/src/styles.css`、`admin-web/src/components/OverviewAndProducts.tsx`（只改总览部分）、`admin-web/src/components/OrdersView.tsx`（只改列表部分，不改抽屉里的工单和质检）；重新生成打包文件。
 
 **步骤**
 1. **样式变量**（`styles.css`）：照 `docs/design/mockups-admin.html` 源码里的 CSS：页面底 `#f6f6f6`、卡片 `#fff`、正文 `#111`、辅助字 `#888`、分隔线 `#ececec`、卡面 `#f4f4f4`、红 `#c62828`（只给异常）。字号：页面标题 20、正文 14、表头和辅助字 12；表格行高 52。写成 CSS 变量，组件里只用变量。
 2. **公共组件**（`src/ui/`，每个一个文件）：`Button`（`primary` 黑底白字胶囊 / `secondary` 灰底 / `danger` 红字无底 / `disabled` 变淡；不可点时下面可以带一行原因）、`Tabs`（状态分栏，每项带数量）、`Table`（表头灰小字、行高 52、行可点）、`Drawer`（右侧 560 宽、头部标题加副标题、中间可滚、底栏操作右对齐、`danger` 放左边）、`Field`（标签在上、框在下、可带提示和红字错误）、`StatusText`（文字状态，`danger` 时红字，不用彩色徽章）、`EmptyState`、`ErrorState`（一句原因 + 再试一次）、`Skeleton`（行骨架）。
-3. **外壳**（`src/layout/`）：左菜单宽 200（分组小标题灰色；分组和条目照 12 第 2 节；选中项浅灰底加粗；条目右侧可带待处理数）；顶栏（页面标题 + 右侧“搜订单号、手机号后 4 位”搜索框）；内容区。菜单里还没做的页面（评价、知识库、首页、文章、账号与权限）先显示但点了是“这一页在下一波做”的空状态。
+3. **外壳**（`src/layout/`）：左菜单宽 200（分组小标题灰色；分组和条目照 12 第 2 节和 14 第 2 节；选中项浅灰底加粗；条目右侧可带待处理数）；顶栏（页面标题 + 右侧“搜订单号、手机号后 4 位”搜索框）；内容区。
+   - **每个菜单项一个页面文件** `src/pages/<英文名>.tsx`（today、workOrders、orders、afterSales、reviews、products、templates、knowledge、home、articles、terms、accounts、audit），`App.tsx` 里按菜单项路由到它们。已有内容的页面把现有组件包进去；还没做的页面放一个“这一页在下一波做”的空状态。**第二波的后台卡只改自己那个页面文件**，所以这一步一定要做全。
 4. **今天**（稿 A02）：替换原“工作台总览”。一行一件事：待制作、制作中、待质检、待发货、售后待处理、缺货和快没了——数量从现有接口（`/api/admin/orders` 按 `opsStatus` 计数，`/api/admin/after-sales`，`/api/admin/beads` 的 `stock` 字段）算；点一行跳到对应列表并选好分栏。右边“最近操作”取 `/api/admin/audit` 前 4 条。**删掉统计卡片的图标和彩色数字。**
 5. **订单列表**（稿 A06）：分栏 全部 / 待支付 / 待制作 / 制作中 / 待发货 / 已发货 / 已完成 / 售后中，按 `opsStatus.code` 分；列：订单号、手串（缩略图 + 名字 + 颗数手围）、收货人（名字 + 手机号后 4 位）、实付、状态（`opsStatus.label`，`danger` 红字）、下单时间。模拟付款的订单在实付旁边红字“模拟付款”（`paymentChannel === 'mock'`）。**状态只用 `opsStatus`，不自己推算**（A2 已合并时有这个字段；没有时显示“—”并在 PR 里说明）。
 6. 删掉界面上所有字段名和代码名文字（搜 `designSnapshot`、`workOrder`、`qualityGate`、`五维`、`BOM` 这些出现在 JSX 文字里的）。

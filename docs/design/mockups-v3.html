@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>关键页面重画</title>
+<style>
+:root{--page:#e9eaec;--sub:#696c72}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:#111;font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif}
+header,section,.notes{max-width:1240px;margin:0 auto;padding:22px 16px}
+header h1{font-size:24px;margin:8px 0 6px;font-weight:600}
+header p,section>p{margin:0 0 6px;color:var(--sub);max-width:860px}
+section h2{font-size:19px;margin:0 0 4px;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:28px;margin-top:14px}
+figure{margin:0;width:375px;max-width:calc(100vw - 32px)}
+figcaption{font-size:13px;color:var(--sub);margin:0 0 8px}
+figure .why{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.5}
+
+/* 白盒，变量和 tokens.wxss 一致（px = rpx/2） */
+.phone{--bg:#fff;--surf:#f4f4f4;--line:#e8e8e8;--t2:#6e6e6e;--t:#111;--red:#c2352b;--pill:999px;
+ width:100%;height:780px;border-radius:38px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:var(--bg);color:var(--t);box-shadow:0 24px 48px -28px rgba(0,0,0,.45)}
+.nav{height:90px;flex:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:11px;position:relative;font-size:16px;font-weight:600}
+.cap{position:absolute;right:12px;bottom:8px;width:87px;height:32px;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line)}
+.nl{position:absolute;left:18px;bottom:12px;font-size:14px;font-weight:400;display:flex;align-items:center;gap:4px}
+.body{flex:1;overflow:hidden;position:relative}
+.p{padding:0 20px}
+.t2{color:var(--t2)} .red{color:var(--red)} .b{font-weight:600}
+.s{font-size:12px} .m{font-size:14px} .l{font-size:17px} .xl{font-size:28px;line-height:1.2}
+.hr{height:1px;background:var(--line)}
+.rowi{display:flex;align-items:center;justify-content:space-between;min-height:56px;padding:0 20px;border-bottom:1px solid var(--line);font-size:14px;gap:12px}
+.rowi:last-child{border-bottom:0}
+.btn{height:50px;border-radius:var(--pill);background:var(--t);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex:1}
+.btn.sec{background:var(--surf);color:var(--t)}
+.btn.sm{height:32px;flex:none;padding:0 14px;font-size:13px;font-weight:400}
+.bar{flex:none;padding:10px 20px 30px;display:flex;align-items:center;gap:16px;box-shadow:0 -6px 18px rgba(0,0,0,.05);background:#fff;position:relative;z-index:2}
+.price{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.ph{background:var(--line);color:#9a9a9a;font-size:11px;display:flex;align-items:flex-end;padding:8px 10px}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.chk{width:18px;height:18px;border-radius:9px;box-shadow:inset 0 0 0 1.5px var(--t);flex:none;display:inline-flex;align-items:center;justify-content:center}
+.chk.on{background:var(--t)}
+.radio{width:18px;height:18px;border-radius:9px;box-shadow:inset 0 0 0 1.5px #bbb;flex:none}
+.radio.on{box-shadow:inset 0 0 0 5px var(--t)}
+.prog{display:flex;gap:4px;margin-top:14px}
+.prog i{flex:1;height:3px;background:var(--line);border-radius:2px}
+.prog i.on{background:var(--t)}
+.progl{display:flex;margin-top:6px;font-size:11px;color:var(--t2)}
+.progl span{flex:1}
+.wm{letter-spacing:6px;font-size:12px;font-weight:500}
+.drawer{position:absolute;left:0;right:0;bottom:0;background:#fff;box-shadow:0 -8px 24px rgba(0,0,0,.08);padding:8px 0 0}
+.grab{width:36px;height:4px;border-radius:2px;background:#d6d6d6;margin:0 auto 10px}
+.strip{display:flex;gap:14px;padding:0 20px;overflow:hidden}
+.strip .bd{flex:none;width:56px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;position:relative}
+.warn{position:absolute;top:0;right:4px;width:12px;height:12px;color:var(--red)}
+.tabs{display:flex;gap:20px;padding:0 20px 10px;font-size:14px}
+.tabs .on{font-weight:600}
+.bub{max-width:250px;padding:10px 14px;border-radius:18px;font-size:14px}
+.me{background:var(--t);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.ask{display:flex;align-items:center;gap:10px;height:48px;padding:0 5px 0 18px;background:var(--surf);border-radius:var(--pill);font-size:14px}
+.go{margin-left:auto;width:38px;height:38px;border-radius:19px;background:var(--t);color:#fff;display:flex;align-items:center;justify-content:center}
+.tl{position:relative;padding-left:18px}
+.tl::before{content:"";position:absolute;left:4px;top:8px;bottom:8px;width:1px;background:var(--line)}
+.tl .it{position:relative;padding:0 0 14px}
+.tl .it::before{content:"";position:absolute;left:-18px;top:7px;width:9px;height:9px;border-radius:5px;background:var(--line)}
+.tl .it.now::before{background:var(--t)}
+.notes{color:var(--sub);font-size:14px;padding-bottom:56px}
+.notes li{margin:4px 0}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+ <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+ <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+ <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+ <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></symbol>
+ <symbol id="i-stack" viewBox="0 0 24 24"><ellipse cx="12" cy="7" rx="8" ry="3"/><ellipse cx="12" cy="12" rx="8" ry="3"/><ellipse cx="12" cy="17" rx="8" ry="3"/></symbol>
+ <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+ <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v7h14v-7"/></symbol>
+ <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6a1.5 1.5 0 0 1 3 0v6M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-3l-2-4a1.5 1.5 0 0 1 2.5-1.5L8 13"/></symbol>
+ <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></symbol>
+ <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+ <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11"/><path d="M5 15V5h10"/></symbol>
+</svg>
+
+<header>
+<h1>关键页面重画（按 07 产品审视）</h1>
+<p>负责人圈出的问题逐一改：每页只有一个焦点和一个主动作；底部操作栏只放价格和按钮；提醒放在做决定的那一刻；订单状态不用颜色分轻重；“自己串”改成带品牌字标的竖版工作台；补齐售后流程。灰块是实拍图占位，珠子是程序画的示意。</p>
+</header>
+
+<section>
+<h2>一、自己串：竖版工作台</h2>
+<p>点 tab 直接进工作台，不再有中间页。中间这块 3:4 的画面带品牌字标，同时就是分享海报。珠子在底部抽屉里挑。</p>
+<div class="row">
+<figure><figcaption>01 工作台 · 正在串</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-grid"/></svg>我的作品</span><span class="cap"></span></div>
+ <div class="body">
+  <div style="margin:0 20px;aspect-ratio:3/4;background:linear-gradient(#fff,#f6f6f6);position:relative;display:flex;flex-direction:column;align-items:center">
+   <div class="wm" style="margin-top:16px">串 个 珠</div>
+   <svg class="ring" data-beads="aqua,clear,aqua,moon,aqua,aqua,clear,aqua,moon,aqua,aqua,clear,aqua,moon,aqua,aqua,clear,aqua" data-R="104" data-tilt="1" width="300" height="270" style="margin-top:6px"></svg>
+   <div style="position:absolute;left:16px;right:16px;bottom:12px;display:flex;justify-content:space-between;align-items:flex-end">
+    <div><div class="b">海盐汽水</div><div class="s t2">18 颗 · 152mm · 合适</div></div>
+    <div class="s t2">2026.11.12</div>
+   </div>
+   <div style="position:absolute;right:-6px;top:12px;display:flex;flex-direction:column;gap:14px;color:#555">
+    <svg class="ic"><use href="#i-undo"/></svg><svg class="ic"><use href="#i-stack"/></svg><svg class="ic"><use href="#i-share"/></svg>
+   </div>
+  </div>
+  <div class="drawer" style="bottom:0">
+   <div class="grab"></div>
+   <div class="tabs"><span class="on">水晶</span><span class="t2">月光石</span><span class="t2">玉石</span><span class="t2">木</span><span class="t2">配件</span></div>
+   <div class="strip">
+    <div class="bd"><svg data-one="aqua" width="44" height="44"></svg>海蓝宝</div>
+    <div class="bd"><svg data-one="clear" width="44" height="44"></svg>白水晶</div>
+    <div class="bd"><svg data-one="moon" width="44" height="44"></svg>月光石</div>
+    <div class="bd"><svg data-one="rose" width="44" height="44"></svg>粉晶</div>
+    <div class="bd"><svg data-one="cinnabar" width="44" height="44"></svg><svg class="warn"><use href="#i-alert"/></svg>朱砂</div>
+   </div>
+   <div class="bar" style="box-shadow:none;margin-top:6px"><div class="price">¥128</div><div class="btn">串好了</div></div>
+  </div>
+ </div>
+</div>
+<div class="why">焦点：正在串的这条。主动作：加珠子（抽屉）→ 串好了。价格只在底部出现一次。右侧三个图标：撤销、叠戴、分享。</div>
+</figure>
+
+<figure><figcaption>02 工作台 · 第一次进来（空台面）</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-grid"/></svg>我的作品</span><span class="cap"></span></div>
+ <div class="body">
+  <div style="margin:0 20px;aspect-ratio:3/4;background:linear-gradient(#fff,#f6f6f6);position:relative;display:flex;flex-direction:column;align-items:center">
+   <div class="wm" style="margin-top:16px">串 个 珠</div>
+   <svg width="220" height="220" viewBox="0 0 220 220" style="margin-top:20px"><circle cx="110" cy="110" r="84" fill="none" stroke="#d9d9d9" stroke-width="1.5" stroke-dasharray="3 6"/></svg>
+   <div class="m" style="margin-top:4px">从下面挑一颗开始</div>
+   <div style="display:flex;gap:10px;margin-top:16px">
+    <div class="btn sec sm" style="display:flex;gap:6px"><svg class="ic" style="width:16px;height:16px"><use href="#i-spark"/></svg>让 AI 配</div>
+    <div class="btn sec sm" style="display:flex;gap:6px"><svg class="ic" style="width:16px;height:16px"><use href="#i-camera"/></svg>拍照做同款</div>
+   </div>
+  </div>
+  <div class="drawer">
+   <div class="grab"></div>
+   <div class="tabs"><span class="on">水晶</span><span class="t2">月光石</span><span class="t2">玉石</span><span class="t2">木</span><span class="t2">配件</span></div>
+   <div class="strip">
+    <div class="bd"><svg data-one="aqua" width="44" height="44"></svg>海蓝宝</div>
+    <div class="bd"><svg data-one="clear" width="44" height="44"></svg>白水晶</div>
+    <div class="bd"><svg data-one="moon" width="44" height="44"></svg>月光石</div>
+    <div class="bd"><svg data-one="rose" width="44" height="44"></svg>粉晶</div>
+    <div class="bd"><svg data-one="amethyst" width="44" height="44"></svg>紫水晶</div>
+   </div>
+   <div style="height:96px"></div>
+  </div>
+ </div>
+</div>
+<div class="why">空台面不是空白：一句引导加两条捷径。台面上有珠子以后，捷径就消失。</div>
+</figure>
+
+<figure><figcaption>03 分享海报（由工作台导出）</figcaption>
+<div class="phone" style="background:#f4f4f4">
+ <div class="nav" style="background:#f4f4f4">分享<span class="cap"></span></div>
+ <div class="body" style="display:flex;flex-direction:column;align-items:center">
+  <div style="width:300px;aspect-ratio:3/4.4;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.08);position:relative;display:flex;flex-direction:column;align-items:center">
+   <div class="wm" style="margin-top:18px">串 个 珠</div>
+   <svg class="ring" data-beads="aqua,clear,aqua,moon,aqua,aqua,clear,aqua,moon,aqua,aqua,clear,aqua,moon,aqua,aqua,clear,aqua" data-R="92" data-tilt="1" width="260" height="240" style="margin-top:8px"></svg>
+   <div class="l b" style="margin-top:4px">海盐汽水</div>
+   <div class="s t2">海蓝宝 · 白水晶 · 月光石</div>
+   <div style="position:absolute;left:18px;right:18px;bottom:16px;display:flex;justify-content:space-between;align-items:flex-end">
+    <div class="s t2">我自己串的<br>你也来串一条</div>
+    <div style="width:56px;height:56px;border-radius:28px;background:#eee;font-size:9px;color:#999;display:flex;align-items:center;justify-content:center">小程序码</div>
+   </div>
+  </div>
+ </div>
+ <div class="bar"><div class="btn sec">发给朋友</div><div class="btn">保存图片</div></div>
+</div>
+<div class="why">海报就是工作台的画面加小程序码，每一张分享图都带品牌。这是两个并排按钮，按预算算一主一次。</div>
+</figure>
+</div>
+</section>
+
+<section>
+<h2>二、AI 配：对话形式</h2>
+<p>输入框固定在底部，和微信聊天一样。对话区一开始放“别人这样说、配出了这样一条”的示例，让人先看到成品。</p>
+<div class="row">
+<figure><figcaption>04 AI 配 · 第一次进来</figcaption>
+<div class="phone">
+ <div class="nav">AI 配<span class="cap"></span></div>
+ <div class="body p" style="padding-top:6px">
+  <div class="s t2" style="text-align:center;margin-bottom:14px">别人这样说过，点一下用同样的话配一条</div>
+  <div style="display:flex;flex-direction:column;gap:18px">
+   <div><div class="bub me">想要清冷一点，上班也能戴</div>
+    <div style="display:flex;gap:12px;align-items:center;margin-top:8px"><div style="width:96px;height:96px;background:#f6f6f6;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="moon,clear,moon,aqua,moon,clear,moon,aqua,moon,clear,moon,aqua,moon,clear" data-R="34" data-tilt="1" width="96" height="96"></svg></div><div><div class="b m">白月光</div><div class="s t2">月光石 · 白水晶 · 海蓝宝</div><div class="s t2">¥98</div></div></div></div>
+   <div><div class="bub me">送闺蜜生日，她喜欢粉色</div>
+    <div style="display:flex;gap:12px;align-items:center;margin-top:8px"><div style="width:96px;height:96px;background:#f6f6f6;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="rose,strawberry,rose,clear,rose,strawberry,rose,clear,rose,strawberry,rose,clear,rose,strawberry" data-R="34" data-tilt="1" width="96" height="96"></svg></div><div><div class="b m">初恋粉</div><div class="s t2">粉晶 · 草莓晶 · 白水晶</div><div class="s t2">¥88</div></div></div></div>
+   <div><div class="bub me">考前想要一点定心的感觉，100 以内</div>
+    <div style="display:flex;gap:12px;align-items:center;margin-top:8px"><div style="width:96px;height:96px;background:#f6f6f6;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="amethyst,clear,amethyst,amethyst,clear,amethyst,amethyst,clear,amethyst,amethyst,clear,amethyst,amethyst,clear" data-R="34" data-tilt="1" width="96" height="96"></svg></div><div><div class="b m">考前定心</div><div class="s t2">紫水晶 · 白水晶</div><div class="s t2">¥96</div></div></div></div>
+  </div>
+ </div>
+ <div class="bar" style="flex-direction:column;align-items:stretch;gap:8px">
+  <div class="s t2">按 15cm 手围配 ›</div>
+  <div class="ask"><span class="t2">说说你想要的感觉、送谁、预算</span><span class="go"><svg class="ic" style="width:18px;height:18px"><use href="#i-arrow"/></svg></span></div>
+ </div>
+</div>
+<div class="why">焦点：AI 能配出什么（成品）。主动作：说一句。没有大标题，没有空白。</div>
+</figure>
+
+<figure><figcaption>05 手串详情（AI 结果、款式详情共用）</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span>白月光<span class="cap"></span></div>
+ <div class="body">
+  <div style="background:#f6f6f6;height:330px;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="moon,clear,moon,aqua,moon,clear,moon,aqua,moon,clear,moon,aqua,moon,clear,moon,aqua" data-R="110" data-tilt="1" width="300" height="300"></svg></div>
+  <div class="s t2" style="text-align:center;margin-top:6px">示意效果，以实物为准</div>
+  <div class="p" style="margin-top:14px">
+   <div class="xl" style="font-size:24px">白月光</div>
+   <div class="m t2" style="margin-top:4px">像月光落在手腕上，安静、不张扬，通勤和约会都合适。</div>
+  </div>
+  <div class="hr" style="margin:16px 0 0"></div>
+  <div class="rowi"><span>16 颗 · 手围 15cm · 合适</span><span class="t2">改 ›</span></div>
+  <div class="rowi"><span>材料</span><span class="t2">月光石、白水晶、海蓝宝 ›</span></div>
+  <div class="rowi"><span style="display:flex;gap:8px;align-items:center"><svg class="ic"><use href="#i-hand"/></svg>戴上看看</span><span class="t2">›</span></div>
+ </div>
+ <div class="bar"><div class="price">¥98</div><div class="btn sec" style="flex:0 0 96px">改一改</div><div class="btn">去下单</div></div>
+</div>
+<div class="why">“以实物为准”放在图下面，只说一次。底部栏只有价格和按钮。</div>
+</figure>
+</div>
+</section>
+
+<section>
+<h2>三、确认订单：提醒放在按钮上方</h2>
+<p>材料安全提示在选珠子时已经弹过一次；订单页只在材料清单里留一个图标和一行链接，勾选放在提交按钮正上方，和“同意协议”的位置一样。定制商品的退换说明合在同一个勾选里。</p>
+<div class="row">
+<figure><figcaption>06 确认订单</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span>确认订单<span class="cap"></span></div>
+ <div class="body">
+  <div class="rowi" style="min-height:76px"><div><div class="b">小周　138****0000</div><div class="s t2">杭州市西湖区示例路 1 号</div></div><span class="t2">›</span></div>
+  <div style="height:8px;background:var(--surf)"></div>
+  <div style="display:flex;gap:14px;padding:16px 20px;align-items:center">
+   <div style="width:72px;height:72px;background:#f6f6f6;display:flex;align-items:center;justify-content:center"><svg class="ring" data-beads="cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear" data-R="26" data-tilt="1" width="72" height="72"></svg></div>
+   <div style="flex:1"><div class="b m">一点红</div><div class="s t2">18 颗 · 手围 15cm · 合适</div></div><div class="m">¥67.00</div>
+  </div>
+  <div class="rowi"><span>材料</span><span class="t2" style="display:flex;align-items:center;gap:4px">朱砂 <svg class="ic red" style="width:14px;height:14px"><use href="#i-alert"/></svg>、白水晶 ›</span></div>
+  <div class="rowi"><span>穿绳</span><span>弹力线 ›</span></div>
+  <div class="rowi"><span>送礼</span><span class="t2">礼盒和贺卡 ›</span></div>
+  <div style="height:8px;background:var(--surf)"></div>
+  <div class="rowi"><span>商品</span><span>¥67.00</span></div>
+  <div class="rowi"><span>运费</span><span>¥0.00</span></div>
+ </div>
+ <div class="bar" style="flex-direction:column;align-items:stretch;gap:10px">
+  <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.5"><span class="chk"></span><span>我已阅读 <span class="red">材料安全提示</span> 和 <u>定制商品退换说明</u>（非质量问题不支持七天无理由）</span></div>
+  <div style="display:flex;align-items:center;gap:16px"><div class="price">¥67.00</div><div class="btn">提交订单</div></div>
+ </div>
+</div>
+<div class="why">焦点：要寄出的这条手串和金额。决策信息（勾选）贴着提交按钮。红色只出现在一个小图标和一个链接上。</div>
+</figure>
+
+<figure><figcaption>07 订单详情 · 运输中</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span>订单详情<span class="cap"></span></div>
+ <div class="body">
+  <div class="p" style="padding-top:6px">
+   <div class="xl">运输中</div>
+   <div class="m" style="margin-top:4px">快件已到杭州分拨中心，预计明天送到</div>
+   <div class="prog"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+   <div class="progl"><span>下单 11-12</span><span>制作 11-13</span><span>运输 11-14</span><span>签收</span></div>
+  </div>
+  <div class="rowi" style="margin-top:12px;border-top:1px solid var(--line)"><div><div class="m">顺丰 SF1234567890123</div><div class="s t2">11-15 08:12 快件已到杭州分拨中心</div></div><span class="t2">›</span></div>
+  <div style="background:#f6f6f6;height:220px;margin-top:0;display:flex;align-items:center;justify-content:center;position:relative"><svg class="ring" data-beads="cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar" data-R="78" data-tilt="1" width="220" height="210"></svg><div class="s t2" style="position:absolute;left:20px;bottom:10px">一点红 · 18 颗 · 手围 15cm</div></div>
+  <div class="rowi"><span>收货</span><span class="t2">小周 · 杭州市西湖区…</span></div>
+  <div class="rowi"><span>实付</span><span>¥67.00</span></div>
+  <div class="rowi"><span>订单号</span><span class="t2" style="display:flex;gap:6px;align-items:center">CGZ20261112001 <svg class="ic" style="width:14px;height:14px"><use href="#i-copy"/></svg></span></div>
+ </div>
+ <div class="bar"><div class="m t2">更多</div><div style="flex:1"></div><div class="m">联系客服</div></div>
+</div>
+<div class="why">焦点：状态加一句人话。运输中用户不需要动手，所以底部没有主按钮。手串用大图，不是缩略图。状态全部主字色，不用彩色。</div>
+</figure>
+
+<figure><figcaption>08 订单详情 · 已签收（需要用户动手）</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span>订单详情<span class="cap"></span></div>
+ <div class="body">
+  <div class="p" style="padding-top:6px">
+   <div class="xl">已签收</div>
+   <div class="m" style="margin-top:4px">快递显示本人已签收。戴上试试，没问题就确认收货</div>
+   <div class="prog"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+   <div class="progl"><span>下单 11-12</span><span>制作 11-13</span><span>运输 11-14</span><span>签收 11-16</span></div>
+  </div>
+  <div style="background:#f6f6f6;height:220px;margin-top:16px;display:flex;align-items:center;justify-content:center;position:relative"><svg class="ring" data-beads="cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar,cinnabar,clear,cinnabar" data-R="78" data-tilt="1" width="220" height="210"></svg></div>
+  <div class="rowi"><span>物流</span><span class="t2">顺丰 · 已签收 ›</span></div>
+  <div class="rowi"><span>实付</span><span>¥67.00</span></div>
+  <div class="rowi"><span>售后</span><span class="t2">签收后 7 天内可申请 ›</span></div>
+ </div>
+ <div class="bar"><div class="btn sec" style="flex:0 0 110px">晒一晒</div><div class="btn">确认收货</div></div>
+</div>
+<div class="why">需要用户动手时才给主按钮。“晒一晒”是评价晒单的入口，晒单会进首页“大家在串”。</div>
+</figure>
+</div>
+</section>
+
+<section>
+<h2>四、售后：申请退款的完整流程</h2>
+<p>入口在订单详情的“售后”行或“更多”。只列当前阶段能选的类型；提交后进入售后详情，看进度、协商记录，需要寄回时填单号。</p>
+<div class="row">
+<figure><figcaption>09 选择售后类型（已签收 7 天内）</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span>申请售后<span class="cap"></span></div>
+ <div class="body">
+  <div style="display:flex;gap:14px;padding:6px 20px 16px;align-items:center"><div style="width:56px;height:56px;background:#f6f6f6"></div><div><div class="m b">一点红</div><div class="s t2">实付 ¥67.00 · 11-16 签收</div></div></div>
+  <div class="hr"></div>
+  <div class="rowi" style="min-height:72px"><div><div class="m">退货退款</div><div class="s t2">质量问题，寄回后退款</div></div><span class="t2">›</span></div>
+  <div class="rowi" style="min-height:72px"><div><div class="m">补寄配件</div><div class="s t2">掉珠、断线，补寄或寄回修</div></div><span class="t2">›</span></div>
+  <div class="rowi" style="min-height:72px"><div><div class="m">改手围重串</div><div class="s t2">尺寸不合适，寄回按新手围重串</div></div><span class="t2">›</span></div>
+  <div class="p s t2" style="margin-top:18px;line-height:1.7">定制商品非质量问题不支持七天无理由退换。<u>查看售后政策</u></div>
+ </div>
+</div>
+<div class="why">只列这个阶段能选的。“改手围重串”是定制品特有的，最常见的售后原因就是尺寸。</div>
+</figure>
+
+<figure><figcaption>10 填写申请 · 退货退款</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span>退货退款<span class="cap"></span></div>
+ <div class="body">
+  <div class="rowi"><span>原因</span><span>珠子有裂纹 ›</span></div>
+  <div style="padding:14px 20px;border-bottom:1px solid var(--line)">
+   <div class="m">照片 <span class="s t2">必填，最多 6 张</span></div>
+   <div style="display:flex;gap:10px;margin-top:10px"><div class="ph" style="width:72px;height:72px">已选</div><div style="width:72px;height:72px;background:var(--surf);display:flex;align-items:center;justify-content:center;color:#999"><svg class="ic"><use href="#i-plus"/></svg></div></div>
+  </div>
+  <div style="padding:14px 20px;border-bottom:1px solid var(--line)"><div class="m">说明 <span class="s t2">选填</span></div><div class="s t2" style="margin-top:6px">左边第三颗有一条裂纹</div></div>
+  <div class="rowi"><span>退款金额</span><span class="b">¥67.00</span></div>
+  <div class="rowi"><span>联系电话</span><span class="t2">138****0000</span></div>
+  <div class="p s t2" style="margin-top:14px;line-height:1.7">审核通过后，按页面提示寄回。寄回运费：质量问题由我们承担。</div>
+ </div>
+ <div class="bar"><div class="btn">提交申请</div></div>
+</div>
+<div class="why">表单用列表行，不画输入框。金额由后端算好、只读。规则说明放在表单最底下。</div>
+</figure>
+
+<figure><figcaption>11 售后详情 · 待寄回</figcaption>
+<div class="phone">
+ <div class="nav"><span class="nl"><svg class="ic"><use href="#i-back"/></svg></span>售后详情<span class="cap"></span></div>
+ <div class="body">
+  <div class="p" style="padding-top:6px">
+   <div class="xl">请寄回手串</div>
+   <div class="m" style="margin-top:4px">审核已通过。寄回后填写单号，收到后 1–3 天内退款</div>
+   <div class="prog"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+   <div class="progl"><span>提交</span><span>审核</span><span>寄回</span><span>退款</span></div>
+  </div>
+  <div class="rowi" style="margin-top:12px;border-top:1px solid var(--line);min-height:72px"><div><div class="m">寄到：串个珠售后　0571-0000000</div><div class="s t2">杭州市示例区示例路 2 号</div></div><div class="btn sec sm">复制</div></div>
+  <div class="p" style="margin-top:16px">
+   <div class="m b" style="margin-bottom:10px">处理记录</div>
+   <div class="tl">
+    <div class="it now"><div class="m">审核通过，请寄回</div><div class="s t2">11-17 10:02 · 客服</div></div>
+    <div class="it"><div class="m">已提交退货退款申请</div><div class="s t2">11-16 21:40 · 我 · 珠子有裂纹</div></div>
+   </div>
+  </div>
+  <div class="rowi" style="border-top:1px solid var(--line)"><span>退款金额</span><span>¥67.00</span></div>
+ </div>
+ <div class="bar"><div class="m t2" style="flex:0 0 auto">撤销申请</div><div class="btn">填写寄回单号</div></div>
+</div>
+<div class="why">和订单详情同一套结构：状态、一句话、进度、记录。主按钮就是用户现在要做的那一件事。</div>
+</figure>
+</div>
+</section>
+
+<div class="notes">
+<p>还没画、但 07 第 4、5 节已列出的页面：珠子详情、内容页、地址管理、送礼选项、订单已提交、物流详情、修改地址、填写寄回单号、售后列表、评价晒单、消息通知授权、设置、规则文字页。</p>
+</div>
+
+<script>
+var M={aqua:['#eef9fc','#b7e1ec','#5c9db3',.6],clear:['#fff','#eef1f5','#aeb8c6',.8],moon:['#fbfcfe','#e6eaf2','#9fabc0',.65],
+ rose:['#fde7ea','#f1bcc6','#c47f8e',.55],amethyst:['#ece0fa','#b293de','#5f3e96',.5],strawberry:['#fde2e4','#eda2ab','#ad5562',.5],
+ cinnabar:['#f6b7a5','#c8432d','#6e140b',.25]};
+var uid=0,NS='http://www.w3.org/2000/svg';
+function bead(svg,cx,cy,r,k,f){var m=M[k],id='g'+(uid++),d=document.createElementNS(NS,'defs');
+ d.innerHTML='<radialGradient id="'+id+'a" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="'+m[0]+'"/><stop offset=".5" stop-color="'+m[1]+'"/><stop offset="1" stop-color="'+m[2]+'"/></radialGradient><radialGradient id="'+id+'b" cx="64%" cy="74%" r="42%"><stop offset="0" stop-color="#fff" stop-opacity="'+m[3]+'"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>';
+ svg.appendChild(d);var g=document.createElementNS(NS,'g');g.setAttribute('opacity',f||1);
+ g.innerHTML='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'a)"/><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'b)"/><ellipse cx="'+(cx-r*.34)+'" cy="'+(cy-r*.4)+'" rx="'+r*.26+'" ry="'+r*.14+'" fill="#fff" opacity=".9" transform="rotate(-32 '+(cx-r*.34)+' '+(cy-r*.4)+')"/>';
+ svg.appendChild(g)}
+document.querySelectorAll('svg.ring').forEach(function(svg){var d=svg.dataset,l=d.beads.split(','),n=l.length,w=+svg.getAttribute('width'),h=+svg.getAttribute('height'),R=+d.r||+d.R,t=+d.tilt||1;
+ svg.setAttribute('viewBox','0 0 '+w+' '+h);var cx=w/2,cy=h/2,br=R*Math.sin(Math.PI/n)*1.02;
+ l.map(function(k,i){var a=i/n*Math.PI*2-Math.PI/2;return{k:k,x:cx+R*Math.cos(a),y:cy+R*t*Math.sin(a),z:Math.sin(a)}}).sort(function(a,b){return a.z-b.z}).forEach(function(p){bead(svg,p.x,p.y,br,p.k)})});
+document.querySelectorAll('svg[data-one]').forEach(function(svg){var s=+svg.getAttribute('width');svg.setAttribute('viewBox','0 0 '+s+' '+s);bead(svg,s/2,s/2,s/2-3,svg.dataset.one)});
+</script>
+</body>
+</html>

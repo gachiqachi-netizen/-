@@ -1,1 +1,16 @@
-.order-detail{padding-bottom:190rpx}.loading-note{padding:80rpx 0;text-align:center;color:#736b66}.error-card{padding:28rpx;border:1rpx solid #f0c6c3;border-radius:22rpx;background:#fff6f5}.error-card button{margin-top:20rpx;background:#fff;border:1rpx solid #ded8d3}.card{line-height:1.65;word-break:break-all}.state-card{background:linear-gradient(145deg,#fff9f7,#fff);border-color:#f0dfdb}.state-top{display:flex;align-items:center;justify-content:space-between;gap:20rpx}.eyebrow{font-size:22rpx;color:#8a817b}.state-title{font-size:40rpx;font-weight:650;margin-top:4rpx}.state-description{font-size:26rpx;color:#5f5854;margin:16rpx 0 22rpx}.status-badge{flex:none;padding:8rpx 18rpx;border-radius:999rpx;background:#f2efec;font-size:22rpx}.status-normal{color:#1f1b1a}.status-attention{color:#1f1b1a;font-weight:600}.status-danger{background:#ffebea;color:#b42318}.product-name{font-size:32rpx}.price{font-size:34rpx;font-weight:650;color:#c8302e}.spec-line{margin-top:12rpx;color:#4f4945;font-size:26rpx}.section-heading{font-size:30rpx;margin-bottom:16rpx}.material-row{padding:20rpx 0;border-bottom:1rpx solid #eee}.material-row:last-child{border-bottom:0}.caption{font-size:23rpx;color:#736b66}.material-safety{color:#c62828;white-space:pre-line;font-size:24rpx;line-height:1.5;overflow-wrap:break-word}.material-explanation{font-size:24rpx;line-height:1.5;color:#57534e}.amount-card>.row{padding:5rpx 0;color:#625b57}.amount-total{margin-top:12rpx;padding-top:16rpx!important;border-top:1rpx solid #eee;font-size:30rpx;font-weight:600;color:#1f1b1a!important}.address-card .sub{margin-top:8rpx}.payment-note{padding:18rpx 22rpx;border-radius:18rpx;background:#fff8e8;color:#956019;font-size:24rpx}.action-bar{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;gap:14rpx;padding:16rpx 28rpx calc(16rpx + env(safe-area-inset-bottom));background:#fff;box-shadow:0 -4rpx 18rpx #0000000d}.action-button{flex:1;min-width:0;margin:0;padding:18rpx 12rpx;font-size:26rpx;white-space:nowrap}.action-primary{background:#c8302e;color:#fff}.action-secondary{background:#fff;color:#1f1b1a;border:1rpx solid #aaa19b}.action-danger{background:#fff;color:#b42318;border:1rpx solid #d98d88}.action-muted{background:#f2efec;color:#5f5854}.logistics-card{border-color:#dce9e3;background:#f8fcfa}
+.page { min-height: 100vh; background: var(--c-bg); padding: 16rpx 16rpx 180rpx; box-sizing: border-box; color: var(--c-text); }
+.card { background: var(--c-surface); padding: 32rpx; margin-bottom: 16rpx; }
+.state-title { font-size: var(--fs-title); font-weight: var(--fw-bold); }
+.section-title, .product-name { font-weight: var(--fw-bold); }
+.sub { font-size: var(--fs-caption); color: var(--c-text-2); margin-top: 10rpx; }
+.product { display: flex; align-items: center; gap: 20rpx; }
+.amount-row { display: flex; justify-content: space-between; padding-top: 24rpx; }
+.amount-row:last-child { font-weight: var(--fw-bold); }
+.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: flex-end; gap: 12rpx; padding: 16rpx 24rpx; background: var(--c-surface); }
+.action-bar button { margin: 0; }
+.center { text-align: center; }
+.payment-name { margin-top: 36rpx; }
+.payment-amount { font-size: 56rpx; font-weight: var(--fw-bold); margin-top: 8rpx; }
+.sheet-actions, .success-actions { display: flex; gap: 16rpx; margin-top: 36rpx; }
+.reason { padding: 24rpx 0; border-bottom: 1rpx solid var(--c-line); }
+.error { color: var(--c-danger); margin: 16rpx; }

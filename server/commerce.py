@@ -1565,13 +1565,15 @@ def _after_sale_target(action, current, atype):
         return "returning"
     if action == "receive":
         if atype == "改手围重串":
-            raise ValueError("改手围重串的重做流程还没接入")
+            if current != "returning":
+                raise ValueError("改手围重串要先记录寄回物流")
+            return "received"
         if atype == "补寄配件":
             raise ValueError("补寄配件类型没有退货收货环节")
         raise ValueError("真实退款服务尚未接入，不能确认退款收货")
     if action == "complete":
         if atype == "改手围重串":
-            raise ValueError("改手围重串的重做流程还没接入")
+            raise ValueError("重串工单质检并发货后自动完成售后")
         if atype in REFUND_TYPES:
             raise ValueError("真实退款服务尚未接入，不能完成退款售后")
         if current == "approved" and atype == "补寄配件":
@@ -1713,6 +1715,164 @@ def after_sale_detail(db, no):
     out["allowedTransitions"] = after_sale_allowed_states(rec)
     out["allowedActions"] = after_sale_allowed_actions(rec)
     return out
+
+
+def create_rework_order(db, sale_no, actor=ACTOR):
+    """收到改手围寄回件后，从原订单的冻结珠序建立独立重串工单。"""
+    preview = db.get("after_sales", sale_no)
+    preview_order = db.get("orders", preview["orderNo"]) if preview else None
+    original = build_design_snapshot(db, preview_order) if preview_order else None
+    with _AtomicWriter(db) as w:
+        rec = w.lock_after_sale(sale_no)
+        if not rec:
+            raise KeyError("售后记录不存在")
+        if rec.get("type") != "改手围重串" or rec.get("status") != "received":
+            raise ValueError("只有已收到寄回的改手围重串售后才能生成工单")
+        if rec.get("reworkOrder"):
+            return rec["reworkOrder"]
+        order = w.lock_order(rec["orderNo"])
+        if not order:
+            raise KeyError("原订单不存在")
+        wrist = rec.get("newWrist")
+        if type(wrist) not in (int, float) or not 13 <= wrist <= 20:
+            raise ValueError("新手围须在 13–20 cm 之间")
+        if not original:
+            raise KeyError("原订单不存在")
+        sequence = original["sequence"]
+        snapshot = build_design_snapshot(
+            db, {"beads": [item["id"] for item in sequence], "wrist": wrist,
+                 "cord": original.get("cord"), "gift": original.get("gift"),
+                 "customerNote": original.get("customerNote")}, frozen_items=sequence)
+        now = _now()
+        wo = {"workOrderNo": "RWO-" + sale_no, "afterSaleNo": sale_no,
+              "orderNo": rec["orderNo"], "orderName": order.get("name") or "我的手串",
+              "rework": True, "status": "pending", "step": "待领料", "assignee": "",
+              "progress": 0, "paymentStatus": status.derive_status(order)["paymentStatus"],
+              "mockPayment": False, "customerNote": original.get("customerNote") or "",
+              "wrist": wrist, "sequence": snapshot["sequence"],
+              "materials": snapshot["materials"], "count": snapshot["count"],
+              "lengthMm": snapshot["lengthMm"], "targetMm": snapshot["targetMm"],
+              "qualityGate": None, "shipping": None, "createdAt": now, "updatedAt": now}
+        rec["reworkOrder"] = wo
+        rec["updatedAt"] = now
+        w.put_after_sale(sale_no, rec)
+        w.put_audit(_audit_record(actor, "create_rework_order", "after_sale", sale_no,
+                                  f"关联订单 {rec['orderNo']} · 新手围 {wrist}cm"))
+        return wo
+
+
+def update_rework_order(db, sale_no, data, actor=ACTOR):
+    """仅更新重串工单；珠序改动须记线下沟通备注，质检通过才能寄出。"""
+    d = dict(data or {})
+    original = None
+    available = {}
+    if "sequence" in d:
+        preview = db.get("after_sales", sale_no)
+        preview_order = db.get("orders", preview["orderNo"]) if preview else None
+        if preview_order:
+            original = build_design_snapshot(db, preview_order)
+        for bid in d["sequence"] if isinstance(d["sequence"], list) else []:
+            if isinstance(bid, str) and bid not in available:
+                available[bid] = db.get("beads", bid)
+    with _AtomicWriter(db) as w:
+        rec = w.lock_after_sale(sale_no)
+        if not rec or rec.get("type") != "改手围重串" or not rec.get("reworkOrder"):
+            raise KeyError("重串工单不存在")
+        wo = dict(rec["reworkOrder"])
+        if wo["status"] == "shipped":
+            raise ValueError("已发货的重串工单不能修改")
+        audit_action = "update_rework_order"
+        audit_note = ""
+        if "sequence" in d:
+            ids = d["sequence"]
+            note = d.get("note")
+            if not isinstance(note, str) or not note.strip():
+                raise ValueError("修改重串珠序必须填写线下沟通备注")
+            if not isinstance(ids, list) or not 1 <= len(ids) <= 200 or any(
+                    not isinstance(bid, str) or not bid.strip() for bid in ids):
+                raise ValueError("重串珠序不正确")
+            order = w.lock_order(rec["orderNo"])
+            if not order:
+                raise KeyError("原订单不存在")
+            if not original:
+                raise KeyError("原订单不存在")
+            frozen = original["sequence"]
+            original = {item["id"]: item for item in frozen}
+            items = []
+            for bid in ids:
+                item = original.get(bid)
+                if item is None:
+                    item = available.get(bid)
+                    if not item or not status.product_on_sale(item):
+                        raise ValueError("重串珠序包含未知或已下架的新珠子")
+                items.append(item)
+            snapshot = build_design_snapshot(
+                db, {"beads": ids, "wrist": wo["wrist"], "customerNote": wo.get("customerNote")},
+                frozen_items=items)
+            for key in ("sequence", "materials", "count", "lengthMm", "targetMm"):
+                wo[key] = snapshot[key]
+            wo["qualityGate"] = None
+            wo["status"] = "pending"
+            wo["step"] = "配珠排序"
+            wo["operatorNote"] = note.strip()[:300]
+            audit_action = "change_rework_sequence"
+            audit_note = f"珠序 {len(ids)} 颗 · {note.strip()[:300]}"
+        elif "qualityGate" in d:
+            gate_data = d["qualityGate"]
+            if not isinstance(gate_data, dict) or any(type(gate_data.get(key)) is not bool for key in QUALITY_GATE_FIELDS):
+                raise ValueError("质检关口必须完整记录四项检查结果")
+            note = str(gate_data.get("note") or "").strip()[:300]
+            passed = all(gate_data[key] for key in QUALITY_GATE_FIELDS)
+            if not passed and not note:
+                raise ValueError("质检不通过时请填写原因说明")
+            wo["qualityGate"] = {key: gate_data[key] for key in QUALITY_GATE_FIELDS}
+            wo["qualityGate"].update(passed=passed, inspector=str(actor), note=note, checkedAt=_now())
+            wo["status"] = "qc_passed" if passed else "qc_failed"
+            wo["step"] = "已完工" if passed else "待质检"
+            audit_action = "quality_gate_rework"
+            audit_note = "通过" if passed else "不通过：" + note
+        elif "shipping" in d:
+            shipping = d["shipping"]
+            if wo["status"] != "qc_passed":
+                raise ValueError("重串工单质检通过后才能发货")
+            if not isinstance(shipping, dict) or any(
+                    not isinstance(shipping.get(key), str) or not shipping[key].strip()
+                    for key in ("carrierName", "trackingNo")):
+                raise ValueError("请填写快递公司和单号")
+            wo["shipping"] = {key: shipping[key].strip()[:100] for key in ("carrierName", "trackingNo")}
+            wo["status"] = "shipped"
+            wo["shippedAt"] = _now()
+            status.validate_transition("afterSaleStatus", rec["status"], "completed")
+            previous = rec["status"]
+            rec["status"] = "completed"
+            rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", previous, "completed", "重串工单已发货"))
+            order = w.lock_order(rec["orderNo"])
+            if order:
+                order["afterSaleStatus"] = "completed"
+                append_history(order, actor, "afterSaleStatus", previous, "completed", "重串工单已发货")
+                w.put_order(rec["orderNo"], order)
+            audit_action = "ship_rework_order"
+            audit_note = wo["shipping"]["trackingNo"]
+        else:
+            if "assignee" in d:
+                assignee = d["assignee"]
+                if not isinstance(assignee, str) or len(assignee.strip()) > 40:
+                    raise ValueError("负责人名称格式不正确")
+                wo["assignee"] = assignee.strip()
+            if "step" in d:
+                if d["step"] not in WORK_ORDER_STEPS:
+                    raise ValueError("工序阶段不正确")
+                wo["step"] = d["step"]
+                wo["status"] = "producing"
+            if not any(key in d for key in ("assignee", "step")):
+                raise ValueError("没有可更新的重串工单字段")
+            audit_note = f"负责人 {wo['assignee']} · 工序 {wo['step']}"
+        wo["updatedAt"] = _now()
+        rec["reworkOrder"] = wo
+        rec["updatedAt"] = wo["updatedAt"]
+        w.put_after_sale(sale_no, rec)
+        w.put_audit(_audit_record(actor, audit_action, "after_sale", sale_no, audit_note))
+        return wo
 
 
 # ---------------------------------------------------------------- 条款与规则适用范围

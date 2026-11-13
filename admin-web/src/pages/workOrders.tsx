@@ -24,6 +24,7 @@ interface WorkOrderRow {
   wrist?: number;
   count?: number;
   createdAt?: number;
+  afterSaleNo?: string;
 }
 
 /** D4 做单（稿 A03）：分栏是五道工序 + 质检不通过；只列已付款订单 */
@@ -37,8 +38,11 @@ const WorkOrdersPage: React.FC = () => {
 
   const load = () => {
     setError('');
-    apiRequest<WorkOrderRow[]>('/api/admin/work-orders')
-      .then((list) => setRows((list || []).filter((w) => w.paymentStatus === 'paid')))
+    Promise.all([
+      apiRequest<WorkOrderRow[]>('/api/admin/work-orders'),
+      apiRequest<WorkOrderRow[]>('/api/admin/rework-orders'),
+    ])
+      .then(([list, rework]) => setRows([...(list || []).filter((w) => w.paymentStatus === 'paid'), ...(rework || [])]))
       .catch((e) => setError(e.message));
   };
   useEffect(load, []);
@@ -70,19 +74,20 @@ const WorkOrdersPage: React.FC = () => {
   }, [rows, tab, q, assignee]);
 
   const ordered = useMemo(
-    () => (rows || []).filter((w) => w.paymentStatus === 'paid'),
+    () => (rows || []),
     [rows]
   );
   const nextNo = useMemo(() => {
     if (!current) return '';
-    const i = ordered.findIndex((w) => w.orderNo === current);
-    return i >= 0 && i + 1 < ordered.length ? ordered[i + 1].orderNo : '';
+    const i = ordered.findIndex((w) => w.workOrderNo === current);
+    return i >= 0 && i + 1 < ordered.length ? ordered[i + 1].workOrderNo : '';
   }, [current, ordered]);
 
   if (current) {
     return (
       <WorkOrderDetail
-        orderNo={current}
+        orderNo={ordered.find((w) => w.workOrderNo === current)?.orderNo || ''}
+        reworkSaleNo={ordered.find((w) => w.workOrderNo === current)?.afterSaleNo}
         nextNo={nextNo}
         onBack={() => setCurrent('')}
         onNext={(no) => setCurrent(no)}
@@ -126,7 +131,7 @@ const WorkOrdersPage: React.FC = () => {
       ) : (
         <Table<WorkOrderRow>
           rowKey={(w) => w.workOrderNo}
-          onRowClick={(w) => setCurrent(w.orderNo)}
+          onRowClick={(w) => setCurrent(w.workOrderNo)}
           columns={[
             { title: '工单号', width: 150, render: (w) => w.workOrderNo },
             {

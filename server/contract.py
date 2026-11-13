@@ -61,6 +61,9 @@ ACTIONS = {
     "cancel_after_sale": "撤销申请",
     "submit_return": "填写寄回单号",
     "write_review": "写评价",
+    "generate_rework_order": "生成重串工单",
+    "save_rework_sequence": "保存重串珠序",
+    "ship_rework_order": "确认重串发货",
 }
 REVIEW_STATUSES = {"machine_failed": "机审未通过", "pending": "待审核",
                    "published": "已发布", "rejected": "审核未通过", "taken_down": "已下架"}

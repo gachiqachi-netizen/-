@@ -5,9 +5,12 @@ export const CONTRACT = {
     "cancel_order": "取消订单",
     "confirm_receipt": "确认收货",
     "edit_address": "修改地址",
+    "generate_rework_order": "生成重串工单",
     "pay_order": "去支付",
     "reorder": "按这款再串一条",
     "request_after_sale": "申请售后",
+    "save_rework_sequence": "保存重串珠序",
+    "ship_rework_order": "确认重串发货",
     "submit_return": "填写寄回单号",
     "view_logistics": "查看物流",
     "write_review": "写评价"
@@ -317,6 +320,7 @@ export const CONTRACT = {
       "closed": "售后关闭",
       "completed": "售后完成",
       "none": "无售后",
+      "received": "已收到寄回",
       "refunding": "退款中",
       "rejected": "已拒绝",
       "requested": "申请中",
@@ -382,7 +386,7 @@ export const CONTRACT = {
     "用户协议",
     "隐私政策"
   ],
-  "version": "5331b0c6a628",
+  "version": "9d22d15303b9",
   "workOrderStatuses": {
     "pending": "待开始",
     "producing": "制作中",

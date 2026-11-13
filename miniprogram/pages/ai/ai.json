@@ -1,1 +1,9 @@
-{"navigationBarTitleText": "AI 配", "usingComponents": {"bracelet-thumb": "/components/bracelet-thumb/index"}}
+{
+  "navigationBarTitleText": "AI 配",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "c-bracelet": "/components/bracelet/index",
+    "c-composer": "/components/composer/index",
+    "c-toast": "/components/toast/index"
+  }
+}

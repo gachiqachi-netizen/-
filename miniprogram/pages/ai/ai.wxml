@@ -1,18 +1,47 @@
-<view class="chat-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
-  <view wx:if="{{messages.length}}" class="chat-tools"><text>按 {{wrist}}cm 手围配</text><text class="clear" bindtap="clear">清空对话</text></view>
-  <view wx:if="{{!messages.length}}" class="welcome">
-    <view class="welcome-title">想做一条什么样的手串？</view>
-    <view class="sub">告诉我送给谁、想表达什么祝福。</view>
-    <view class="examples"><button data-text="送女朋友，希望她考研顺利" bindtap="example">送女朋友，希望她考研顺利</button><button data-text="送爸妈，保平安" bindtap="example">送爸妈，保平安</button><button data-text="想要好运，100 以内" bindtap="example">想要好运，100 以内</button></view>
+<view class="ai-page">
+  <view class="ai-nav" style="padding-top:{{navTop}}rpx;height:{{navHeight}}rpx">
+    <view wx:if="{{messages.length}}" class="ai-new" bindtap="clear">新对话</view>
+    <text>AI 配</text>
   </view>
-  <view wx:for="{{messages}}" wx:key="index" wx:for-item="message" wx:for-index="mi" class="message {{message.role}}">
-    <view class="bubble">{{message.text}}</view>
-    <view wx:if="{{message.role === 'assistant' && message.source}}" class="answer-source {{message.source === '方案库兜底' ? 'fallback' : ''}}">{{message.source}}</view>
-    <scroll-view wx:if="{{message.results.length}}" scroll-x class="candidates"><view class="candidates-inner"><view wx:for="{{message.results}}" wx:key="id" wx:for-item="result" wx:for-index="ri" class="candidate">
-      <view class="tray"><bracelet-thumb beads="{{result.beads}}" catalog="{{catalog}}"/></view>
-      <view class="candidate-body"><view class="candidate-title">{{result.name}} <text wx:if="{{result.src==='plan'}}" class="badge">精选方案</text><text wx:if="{{result.src==='tpl'}}" class="badge">热门款</text></view><view class="tags"><text wx:for="{{result.tags}}" wx:key="*this" wx:for-item="tag" class="tag">{{tag}}</text><text wx:if="{{result.overBudget}}" class="tag">略超预算</text></view><view class="meaning">{{result.meaning || result.summary}}</view><view wx:if="{{result.swapped && result.swapped.length}}" class="meaning">已换珠：{{result.swapped.join('、')}}</view><view class="candidate-foot"><text>¥{{result.price}}</text><button size="mini" data-message="{{mi}}" data-index="{{ri}}" bindtap="use">用这条</button></view></view>
-    </view></view></scroll-view>
-  </view>
-  <view wx:if="{{busy}}" class="message assistant"><view class="bubble">正在配…</view></view><view wx:if="{{error}}" class="error">{{error}}</view>
-  <view class="composer"><scroll-view wx:if="{{hasResults}}" scroll-x class="refines"><view class="refines-inner"><button wx:for="{{refines}}" wx:key="*this" data-text="{{item}}" bindtap="refine">{{item}}</button></view></scroll-view><view class="askbox"><button class="voice" bindtap="voice" aria-label="语音输入">🎙</button><input value="{{text}}" bindinput="input" placeholder="给谁、想送什么祝福…" maxlength="200" confirm-type="send" bindconfirm="submit"/><button class="send" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">↑</button></view></view>
+  <scroll-view class="ai-chat" scroll-y scroll-into-view="{{scrollTo}}" scroll-with-animation>
+    <view wx:if="{{!messages.length}}" class="ai-welcome">
+      <view class="ai-welcome-title">想要什么感觉，直接说</view>
+      <view class="ai-examples"><view wx:for="{{examples}}" wx:key="*this" class="ai-example" data-text="{{item}}" bindtap="example">{{item}}</view></view>
+    </view>
+    <view wx:for="{{messages}}" wx:key="index" wx:for-item="message" wx:for-index="mi" class="ai-turn">
+      <view wx:if="{{message.time}}" class="ai-time">{{message.time}}</view>
+      <view wx:if="{{message.role === 'me'}}" class="ai-user-line">
+        <text wx:if="{{message.failed}}" class="ai-retry" data-index="{{mi}}" bindtap="retry">重发</text>
+        <view class="ai-user" data-index="{{mi}}" bindtap="editMessage" bindlongpress="copyMessage">{{message.text}}</view>
+      </view>
+      <view wx:else>
+        <view class="ai-answer" data-index="{{mi}}" bindlongpress="copyMessage">{{message.text}}</view>
+        <view wx:if="{{message.results.length}}" class="ai-results">
+          <view class="ai-result-top" data-message="{{mi}}" bindtap="nextCard">
+            <view class="ai-dots"><view wx:for="{{message.results}}" wx:key="index" class="ai-dot {{index === (message.activeIndex || 0) ? 'ai-dot-on' : ''}}" /></view>
+            <text>{{(message.activeIndex || 0) + 1}} / {{message.results.length}}　左右滑看另外两条 ›</text>
+          </view>
+          <scroll-view class="ai-cards" scroll-x enhanced show-scrollbar="{{false}}" scroll-into-view="{{message.scrollId}}" data-message="{{mi}}" bindscroll="cardScroll">
+            <view class="ai-cards-inner">
+              <view wx:for="{{message.results}}" wx:key="index" wx:for-item="result" wx:for-index="ri" id="rec-{{mi}}-{{ri}}" class="ai-card">
+                <view class="ai-card-open" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail"><view class="ai-art"><c-bracelet beads="{{result.beadObjects}}" size="240" /></view></view>
+                <view class="ai-card-body">
+                  <view class="ai-card-heading" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail"><text class="ai-card-name">{{result.name}}</text><text class="ai-price" wx:if="{{result.priceText}}">{{result.priceText}}</text></view>
+                  <view class="ai-size" wx:if="{{result.lengthCm}}">{{result.count}} 颗 · {{result.lengthCm}}cm</view>
+                  <view class="ai-meaning" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail">{{result.meaning || result.line}}</view>
+                  <view class="ai-tags"><text wx:for="{{result.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text></view>
+                  <view class="ai-actions"><button class="c-btn c-btn--sec c-btn--s" data-message="{{mi}}" data-index="{{ri}}" bindtap="use">改一改</button><button class="c-btn c-btn--s" data-message="{{mi}}" data-index="{{ri}}" bindtap="order">去下单</button></view>
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{busy}}" class="ai-wait"><view>{{waitText}}</view><view class="ai-skeleton"><view class="ai-skeleton-art"/><view class="ai-skeleton-line"/><view class="ai-skeleton-line ai-skeleton-short"/></view></view>
+    <view wx:if="{{error}}" class="ai-error">{{error}} <text bindtap="retry" data-index="{{messages.length - 1}}">再试一次</text></view>
+    <view id="chat-end" />
+  </scroll-view>
+  <view class="ai-composer"><c-composer value="{{text}}" placeholder="{{hasResults ? '还想怎么改，直接说' : '说说想要的感觉、送谁、预算…'}}" tag="手围 {{wrist}}cm" chips="{{chips}}" voice="{{false}}" photo="{{false}}" sending="{{busy}}" bind:input="input" bind:send="submit" bind:chip="onChip" bind:tag="onTag" /></view>
+  <c-toast />
 </view>

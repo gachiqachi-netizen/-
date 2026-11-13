@@ -67,14 +67,16 @@ def compiled(entries):
 
 
 class LoadTests(unittest.TestCase):
-    def test_load_returns_empty_table_when_no_route_modules(self):
-        # 仓库里还没有正式路由模块（只有 _example.py，以下划线开头不加载）
-        self.assertEqual(app.ROUTE_TABLE, [])
+    def test_loaded_routes_are_valid(self):
+        for method, pattern, fn, auth in app.ROUTE_TABLE:
+            self.assertIn(method, routes.METHODS)
+            self.assertIn(auth, routes.AUTH_KINDS)
+            self.assertIsInstance(pattern, re.Pattern)
 
     def test_example_module_is_not_loaded(self):
         names = [m.name for m in __import__("pkgutil").iter_modules(routes.__path__)]
         self.assertIn("_example", names)
-        self.assertEqual(app.ROUTE_TABLE, [])
+        self.assertTrue(all(fn.__module__ != "routes._example" for _, _, fn, _ in app.ROUTE_TABLE))
 
 
 class CompileRoutesTests(unittest.TestCase):

@@ -8,12 +8,19 @@ from unittest.mock import patch
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from db import DB
+import app
 import phone_auth
 from routes import auth_phone
 import user_api
 
 
 class PhoneAuthTests(unittest.TestCase):
+    def test_phone_routes_are_loaded(self):
+        self.assertTrue(any(method == "POST" and pattern.fullmatch("/api/auth/phone")
+                            for method, pattern, _, _ in app.ROUTE_TABLE))
+        self.assertTrue(any(method == "GET" and pattern.fullmatch("/api/me")
+                            for method, pattern, _, _ in app.ROUTE_TABLE))
+
     def setUp(self):
         self.db = DB(":memory:")
         self.db.put("users", "first", {"createdAt": 1})

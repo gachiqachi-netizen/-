@@ -97,8 +97,7 @@ $ grep -rnE "new URL|URLSearchParams" miniprogram --include=*.js
 - **“换一颗”只切到工作台，没做“缺货珠子已选中 + 替换状态”预置**：工作台（diy）的替换态属于 C3 卡，本卡只负责 `store.selected(设计)` 后 `wx.switchTab` 到工作台；替换态由 C3 完成后接通。
 - **服务行“质量问题 7 天可退换”没加跳转**：具体规则待 B23（售后规则确认并过法务），先只显示文字、不放“›”避免点了没反应。
 - **分享（分享海报/落地页）不在本卡**：卡片只要求“底部栏改一改、立即下单”，分享由其它卡（D38/D39）承接；本页保留了原生转发 `onShareAppMessage`（兜底回首页）。
-- **到手价与确认订单页可能差 ¥15**：04 第 0 节第 12 条要求到手价 = 珠子 + 运费（无手工费），但 B1（计价改成到手价）尚未合并，后端 `quote()` 仍含 `handworkFen`。本页按新规则前端算到手价，确认订单页（未改）仍按旧报价，浏览价与下单价会有差，等 B1 合并后对齐。
 
 ## 7. 审核修改（打回后才有）
 
-（首次交付，无）
+1. 到手价改按后端 `pricing` 算（A3 已合并，手工费、运费改后台配置），不再前端固定“珠子 + 运费、无手工费”。新增纯函数 `miniprogram/pages/finish/total.js` 的 `totalHand(goodsFen, pricing)`：手工费取 `handworkFen`、运费取 `shippingFen`、`freeShippingThresholdFen` 为 `null` 表示不包邮、否则满额包邮。`finish.js` 的 `load()` 直接存 `c.pricing`，`render()` 用 `totalHand` 算 `shippingFen` / `payableFen`。新增测试 `miniprogram/tests/finish-total.test.js`，覆盖默认、不收手工费、不包邮三种情况。第 6 节那条“差 ¥15”已删除。

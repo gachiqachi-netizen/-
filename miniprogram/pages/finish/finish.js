@@ -5,8 +5,7 @@ const meaning = require('../../utils/meaning')
 const money = require('../../utils/money')
 const nav = require('../../utils/nav')
 const toast = require('../../utils/toast').queue
-
-const DEFAULT_PRICING = { shippingFen: 800, freeShippingThresholdFen: 9900 }
+const { totalHand } = require('./total')
 
 Page({
   data: {
@@ -54,11 +53,7 @@ Page({
     this.setData({ design, loading: true, error: '', down: false })
     api.catalog().then(c => {
       this.catalog = (c && c.beads) || []
-      const p = (c && c.pricing) || {}
-      this.pricing = {
-        shippingFen: Number.isInteger(p.shippingFen) ? p.shippingFen : DEFAULT_PRICING.shippingFen,
-        freeShippingThresholdFen: Number.isInteger(p.freeShippingThresholdFen) ? p.freeShippingThresholdFen : DEFAULT_PRICING.freeShippingThresholdFen,
-      }
+      this.pricing = (c && c.pricing) || {}
       this.loaded = true
       this.render(store.current() || design)
       this.setData({ loading: false })
@@ -98,11 +93,12 @@ Page({
       line: meaning.beadLine(map[id]),
     }))
 
-    // 到手价 = 珠子 + 运费（无单独手工费，见 04 第 0 节第 12 条）
+    // 到手价 = 珠子 + 手工费 + 运费（满额包邮），金额来自后端 pricing（A3）
     let goodsFen = 0
     items.forEach(b => { goodsFen += Math.round(Number(b.price) * 100) })
-    const shippingFen = goodsFen >= this.pricing.freeShippingThresholdFen ? 0 : this.pricing.shippingFen
-    const payableFen = goodsFen + shippingFen
+    const quote = totalHand(goodsFen, this.pricing)
+    const shippingFen = quote.shippingFen
+    const payableFen = quote.payableFen
 
     const line = design.line || design.meaning || meaning.keywords(items).join(' · ')
     const tags = meaning.keywords(items, Infinity).join(' · ')

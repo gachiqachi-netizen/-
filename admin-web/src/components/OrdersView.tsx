@@ -4,6 +4,7 @@ import { CONTRACT } from '../contract';
 import { Tabs } from '../ui/Tabs';
 import { Table } from '../ui/Table';
 import { StatusText } from '../ui/StatusText';
+import OrdersOpsPanel from '../pages/orders/orderOps';
 
 interface OrdersViewProps {
   orders: any[];
@@ -57,6 +58,13 @@ const paidText = (o: any): string =>
   fenText(o.paymentStatus === 'unpaid' ? o.payableFen ?? o.totalFen : o.paidFen || o.payableFen || o.totalFen);
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
+
+// D5a：手机号默认打码（A8c 合并前没有“显示全号”按钮，打码后也不提供明文查看）
+const maskPhone = (phone: string): string => {
+  const digits = String(phone || '').replace(/\D/g, '');
+  if (digits.length < 7) return phone ? `${phone.slice(0, 1)}****` : '';
+  return `${digits.slice(0, 3)}****${digits.slice(-4)}`;
+};
 
 const fmtShort = (ts?: number | string | null): string => {
   if (!ts) return '-';
@@ -546,7 +554,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                     <div style={{ display: 'flex', gap: 12 }}>
                       <span className="zy-table-aux" style={{ width: 48 }}>手机号</span>
                       <span>
-                        {receiverPhone || '-'}{' '}
+                        {receiverPhone ? maskPhone(receiverPhone) : '-'}{' '}
                         {receiverPhone && (
                           <span
                             className="zy-table-aux"
@@ -591,6 +599,23 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                     {historyRows.length === 0 && <div className="zy-empty">还没有记录</div>}
                   </div>
                 </div>
+
+                {/* D5a：内部备注 / 发货前改地址 / 改运单号（D2f 工单卡片前面） */}
+                {detail && (
+                  <OrdersOpsPanel
+                    orderNo={detail.no}
+                    internalNotes={detail.internalNotes || []}
+                    shipped={['shipped', 'in_transit', 'delivered', 'exception', 'returned'].includes(
+                      String(detail.logisticsStatus || '')
+                    )}
+                    logistics={detail.logistics}
+                    onChanged={() => {
+                      loadOrderDetail(detail.no);
+                      onRefresh();
+                    }}
+                    notify={notify}
+                  />
+                )}
 
                 {/* 工单和质检：稿 A07 只有底栏“去工单”。做单页（D4）上线前，点“去工单”在这里展开，做完 D4 后改成跳转 */}
                 {showWork && (

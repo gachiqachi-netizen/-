@@ -46,6 +46,12 @@ test('有 plans 时卡片字段只取 plans，兼容 designs 被删除', async (
   assert.equal(q.data.messages[1].results[0].name, '只有 plans')
 })
 
+test('小数毫米长度四舍五入显示一位厘米', async () => {
+  stub({ plans: [{ name: '海风', beads: ['b'], count: 1, lengthMm: 162.5, payableFen: 300 }], reply: '可以试试。' })
+  const p = page(); p.data.text = '海边'; await p.submit()
+  assert.equal(p.data.messages[1].results[0].lengthCm, '16.3')
+})
+
 test('模型回复里有数字时换成固定句', async () => {
   stub({ plans: [{ name: '海风', beads: ['b'], count: 1, lengthMm: 100, payableFen: 300 }], reply: '18 颗，¥100' })
   const p = page(); p.data.text = '海边'; await p.submit()

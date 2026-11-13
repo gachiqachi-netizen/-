@@ -1,44 +1,36 @@
 const store=require('../../utils/design')
 const auth=require('../../utils/auth')
-const api=require('../../utils/api')
 const orderState=require('../../utils/order-state')
 const ui=require('../home/data')
 
 Page({
-  data:{loggedIn:false,designs:[],cloud:[],cloudStatus:'',loading:false,orders:[],orderStatus:'',orderLoading:false,wrist:15,catalog:[]},
-  onShow(){
-    const loggedIn=auth.hasSession()
-    this.setData({designs:store.list(),loggedIn,wrist:ui.wrist()})
-    api.catalog().then(c=>this.setData({catalog:c.beads||[]})).catch(()=>{})
-    if(loggedIn){this.loadOrders();this.loadCloud()}
-  },
-  wrist(){ui.goWrist()},
-  viewOrder(e){const o=this.data.orders[e.currentTarget.dataset.i];if(o)wx.navigateTo({url:'/features/order-detail/order-detail?no='+encodeURIComponent(o.no)})},
-  mergeWorks(rows){
-    const local=store.list(),seen=new Set(local.map(d=>d.cloudId).filter(Boolean))
-    const extra=rows.filter(d=>!seen.has(d.id)).map(d=>({...d,id:'cloud-'+d.id,cloudId:d.id,cloudUpdatedAt:d.updatedAt,remoteOnly:true}))
-    this.setData({designs:local.concat(extra)})
-  },
-  reorder(e){
-    const o=this.data.orders[e.currentTarget.dataset.i]
-    if(!o||!Array.isArray(o.beads)||!o.beads.length)return wx.showToast({title:'订单材料不可用',icon:'none'})
-    const d=store.create();d.name=o.name||'我的手串';d.wrist=o.wrist||ui.wrist();d.beads=o.beads.slice();d.reorder=true
-    store.selected(d);wx.navigateTo({url:'/pages/order/order'})
-  },
-  goLogin(){wx.navigateTo({url:'/pages/login/login'})},
-  open(e){const d=this.data.designs[e.currentTarget.dataset.i];if(d.remoteOnly)store.save(d);store.selected(d);require('../../utils/nav').openWorkbench(d)},
-  loadCloud(){
-    this.setData({loading:true,cloudStatus:''})
-    auth.authorized('/designs').then(rows=>{this.mergeWorks(rows);this.setData({loggedIn:auth.hasSession(),cloud:rows,cloudStatus:'云端作品已更新'})}).catch(e=>this.setData({cloudStatus:'未能读取云端设计：'+e.message+'。本机设计仍可使用。'})).finally(()=>this.setData({loading:false}))
-  },
-  loadOrders(){
-    this.setData({orderLoading:true,orderStatus:''})
-    auth.authorized('/my/orders').then(rows=>{const orders=(Array.isArray(rows)?rows:[]).map(row=>orderState.decorate(row));this.setData({loggedIn:auth.hasSession(),orders,orderStatus:orders.length?'':'暂无订单'})}).catch(e=>this.setData({orderStatus:'无法读取订单：'+e.message})).finally(()=>this.setData({orderLoading:false}))
-  },
-  openCloud(e){
-    const cloud=this.data.cloud[e.currentTarget.dataset.i];if(!cloud)return
-    const d={id:'cloud-'+cloud.id+'-'+Date.now(),cloudId:cloud.id,cloudUpdatedAt:cloud.updatedAt,name:cloud.name,beads:cloud.beads,wrist:cloud.wrist}
-    for(const key of ['special','pattern','tail','fixed','source','tplId','meaning','edited'])if(cloud[key]!==undefined)d[key]=Array.isArray(cloud[key])?cloud[key].slice():cloud[key]
-    store.save(d);store.selected(d);require('../../utils/nav').openWorkbench(d)
-  }
+ data:{loggedIn:false,name:'',avatar:'',designCount:0,orderCount:0,recent:null,orderError:false,wrist:15},
+ onShow(){
+  const loggedIn=auth.hasSession(),works=store.list()
+  this.setData({loggedIn,name:wx.getStorageSync('cgz_display_name')||'',avatar:wx.getStorageSync('cgz_avatar')||'',designCount:works.length,wrist:ui.wrist(),orderCount:0,recent:null,orderError:false})
+  if(loggedIn)this.loadOrders()
+ },
+ loadOrders(){
+  auth.authorized('/my/orders').then(rows=>{
+   const orders=Array.isArray(rows)?rows:[]
+   this.setData({orderCount:orders.length,recent:orders.length?orderState.decorate(orders[0]):null,orderError:false})
+  }).catch(()=>this.setData({orderError:true}))
+ },
+ chooseAvatar(e){
+  const url=e.detail&&e.detail.avatarUrl
+  if(!url)return
+  wx.setStorageSync('cgz_avatar',url);this.setData({avatar:url});wx.showToast({title:'已保存',icon:'none'})
+ },
+ changeName(e){
+  const name=String(e.detail.value||'').trim().slice(0,20)
+  if(!name)return
+  wx.setStorageSync('cgz_display_name',name);this.setData({name});wx.showToast({title:'已保存',icon:'none'})
+ },
+ goLogin(){auth.goLogin()},
+ goOrders(){if(!this.data.loggedIn)return auth.goLogin({type:'navigate',url:'/features/orders/orders'});wx.navigateTo({url:'/features/orders/orders'})},
+ goWorks(){wx.navigateTo({url:'/features/works/works'})},
+ goWrist(){ui.goWrist()},
+ goAddress(){if(!this.data.loggedIn)return auth.goLogin({type:'navigate',url:'/features/address/address'});wx.navigateTo({url:'/features/address/address'})},
+ goSettings(){wx.navigateTo({url:'/features/settings/settings'})},
+ viewRecent(){if(this.data.recent)wx.navigateTo({url:'/features/order-detail/order-detail?no='+encodeURIComponent(this.data.recent.no)})},
 })

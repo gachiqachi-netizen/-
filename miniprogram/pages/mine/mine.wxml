@@ -1,21 +1,19 @@
 <view class="mine-page">
-  <view wx:if="{{catalogOffline}}" class="offline-note">正在使用离线示例数据</view>
-  <view class="wrist-card" bindtap="wrist"><text>我的手围</text><text class="wrist-value">{{wrist}}cm ›</text></view>
-  <view class="section-title">我的订单</view>
-  <view wx:if="{{!loggedIn}}" class="empty-note">登录后查看订单 <text class="link" bindtap="goLogin">微信登录 ›</text></view>
-  <view wx:elif="{{orderLoading}}" class="empty-note">正在读取订单…</view>
-  <view wx:elif="{{!orders.length}}" class="empty-note">{{orderStatus || '还没有订单。'}}</view>
-  <view wx:for="{{orders}}" wx:key="no" class="item order-item" data-i="{{index}}" bindtap="viewOrder">
-    <view class="traybox"><bracelet-thumb beads="{{item.beads}}" catalog="{{catalog}}"/></view>
-    <view class="body">
-      <view class="order-heading"><view class="name">{{item.name}}</view><view class="status-badge status-{{item.stateView.tone}}">{{item.stateView.label}}</view></view>
-      <view class="spec">{{item.no}} · {{item.wrist}}cm · ¥{{item.total}}</view>
-      <view class="note order-note">{{item.stateView.description}}</view>
-    </view>
-    <view class="chev">›</view>
+ <view class="profile">
+  <button wx:if="{{loggedIn}}" class="avatar" open-type="chooseAvatar" bindchooseavatar="chooseAvatar"><image wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"/></button>
+  <view wx:else class="avatar" bindtap="goLogin"></view>
+  <view class="profile-text" wx:if="{{loggedIn}}">
+   <input type="nickname" placeholder="给自己起个名字 ›" value="{{name}}" bindblur="changeName"/>
+   <view class="caption">{{orderError ? '没连上，下拉再试' : designCount ? '串过 '+designCount+' 条 · 下过 '+orderCount+' 单' : '还没串过，去串第一条'}}</view>
   </view>
-  <view class="section-title">我的作品</view>
-  <view wx:if="{{!designs.length}}" class="empty-note">还没有作品。制作并保存后会出现在这里。</view>
-  <view wx:for="{{designs}}" wx:key="id" class="item" data-i="{{index}}" bindtap="open"><view class="traybox"><bracelet-thumb beads="{{item.beads}}" catalog="{{catalog}}"/></view><view class="body"><view class="name">{{item.name}}</view><view class="spec">{{item.beads.length}} 颗 · 手围 {{item.wrist}}cm</view><view class="note">{{item.cloudId?'已关联云端':'保存在本机'}}</view></view><view class="chev">›</view></view>
-  <view class="cloud-section"><button loading="{{loading}}" bindtap="loadCloud">刷新云端作品</button><view class="empty-note">{{cloudStatus}}</view></view>
+  <view class="profile-text" wx:else bindtap="goLogin"><view class="profile-title">手机号快捷登录 ›</view><view class="caption">登录后，订单和作品换手机也在</view></view>
+ </view>
+ <view class="gap"></view>
+ <view wx:if="{{recent}}" class="recent" bindtap="viewRecent"><view class="recent-thumb"><c-bracelet beads="{{recent.beads}}" size="96"/></view><view class="recent-copy"><view>{{recent.name || '我的手串'}}</view><view class="caption">{{recent.stateView.label}}</view></view><view class="chevron">›</view></view>
+ <view class="row" bindtap="goOrders"><text>我的订单</text><text class="caption">{{orderError ? '没连上，下拉再试' : '全部 ›'}}</text></view>
+ <view class="row" bindtap="goWorks"><text>我的作品</text><text class="caption">{{loggedIn ? designCount+' 条 ›' : '本机 '+designCount+' 条 ›'}}</text></view>
+ <view class="gap"></view>
+ <view class="row" bindtap="goWrist"><text>手围</text><text class="caption">{{wrist}}cm ›</text></view>
+ <view class="row" bindtap="goAddress"><text>地址</text><text class="caption">›</text></view>
+ <view class="row" bindtap="goSettings"><text>设置</text><text class="caption">›</text></view>
 </view>

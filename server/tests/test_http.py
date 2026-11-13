@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import app
 from db import DB
 from user_api import token_hash
+from admin_helpers import owner_headers
 
 
 class HTTPTest(unittest.TestCase):
@@ -70,7 +71,9 @@ class HTTPTest(unittest.TestCase):
         if token:
             headers['Authorization'] = 'Bearer ' + token
         if admin:
-            headers['X-Admin-Token'] = admin
+            if not hasattr(self, 'admin_headers'):
+                self.admin_headers = owner_headers(self.base)
+            headers.update(self.admin_headers)
         if cookie:
             headers['Cookie'] = cookie
         if data is not None:
@@ -94,7 +97,26 @@ class HTTPTest(unittest.TestCase):
             return result
 
     def test_admin_browser_session_logout_rate_limit_and_audit(self):
-        status, _, headers = self.request('/api/admin/session', 'POST', {'password': 'test-admin'},
+        original_db = app.db
+        app.db = DB(':memory:')
+        try:
+            status, _, headers = self.request('/api/admin/session', 'POST', {'password': 'test-admin'},
+                                              with_headers=True)
+            self.assertEqual(status, 200)
+            bootstrap_cookie = headers['Set-Cookie'].split(';', 1)[0]
+            self.assertEqual(self.request('/api/admin/orders', cookie=bootstrap_cookie)[0], 401)
+            self.assertEqual(self.request('/api/admin/accounts/bootstrap', 'POST',
+                                          {'username': 'first-owner', 'name': '负责人',
+                                           'password': 'first-owner-pass'}, cookie=bootstrap_cookie)[0], 201)
+            self.assertEqual(self.request('/api/admin/session', 'POST', {'password': 'test-admin'})[0], 401)
+            self.assertEqual(self.request('/api/admin/orders',
+                                          extra_headers={'X-Admin-Token': 'test-admin'})[0], 401)
+        finally:
+            app.db.conn.close()
+            app.db = original_db
+        owner_headers(self.base, username='browser-owner')
+        status, _, headers = self.request('/api/admin/session', 'POST',
+                                          {'username': 'browser-owner', 'password': 'test-only-owner-pass'},
                                           extra_headers={'X-Forwarded-Proto': 'https'}, with_headers=True)
         self.assertEqual(status, 200)
         set_cookie = headers['Set-Cookie']
@@ -116,8 +138,10 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(self.request('/api/admin/orders', cookie=cookie)[0], 401)
 
         for _ in range(app.ADMIN_LOGIN_LIMIT):
-            self.assertEqual(self.request('/api/admin/session', 'POST', {'password': 'wrong'})[0], 401)
-        self.assertEqual(self.request('/api/admin/session', 'POST', {'password': 'test-admin'})[0], 429)
+            self.assertEqual(self.request('/api/admin/session', 'POST',
+                                          {'username': 'browser-owner', 'password': 'wrong'})[0], 401)
+        self.assertEqual(self.request('/api/admin/session', 'POST',
+                                      {'username': 'browser-owner', 'password': 'test-only-owner-pass'})[0], 429)
 
     def test_admin_page_has_browser_security_headers(self):
         status, _, headers = self.request('/admin', with_headers=True)

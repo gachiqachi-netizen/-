@@ -52,10 +52,15 @@ export default function AccountsPage() {
   const [roleId, setRoleId] = useState('');
   const [busy, setBusy] = useState(false);
   const [temporary, setTemporary] = useState('');
+  const [roleDrafts, setRoleDrafts] = useState<Record<string, string[]>>({});
+  const [roleEditor, setRoleEditor] = useState<Role | 'new' | null>(null);
+  const [roleForm, setRoleForm] = useState({ name: '', dataScope: 'all', permissions: [] as string[] });
+  const [roleError, setRoleError] = useState('');
+  const [roleBusy, setRoleBusy] = useState(false);
 
   async function load() {
     setLoading(true); setError('');
-    try { const result = await apiRequest<ListResponse>('/api/admin/accounts'); setUsers(result.users || []); setRoles(result.roles || []); }
+    try { const result = await apiRequest<ListResponse>('/api/admin/accounts'); setUsers(result.users || []); setRoles(result.roles || []); setRoleDrafts(Object.fromEntries((result.roles || []).map(item => [item.id, item.permissions || []]))); }
     catch (e) { setError((e as Error).message || '账号读取失败'); }
     finally { setLoading(false); }
   }
@@ -99,6 +104,67 @@ export default function AccountsPage() {
     try { await navigator.clipboard.writeText(temporary); setTemporary(''); }
     catch { setActionError('复制失败，请手动复制临时密码'); }
   }
+  function toggleRolePermission(id: string, key: string) {
+    setRoleDrafts(current => {
+      const selected = new Set(current[id] || []);
+      if (selected.has(key)) selected.delete(key); else selected.add(key);
+      return { ...current, [id]: PERMISSIONS.map(item => item.key).filter(item => selected.has(item)) };
+    });
+  }
+  const changedRoles = roles.filter(item => item.id !== 'owner' &&
+    PERMISSIONS.some(permission => (roleDrafts[item.id] || []).includes(permission.key) !== (item.permissions || []).includes(permission.key)));
+  function permissionChanges(before: string[], after: string[]) {
+    const old = new Set(before), next = new Set(after);
+    return {
+      added: PERMISSIONS.filter(item => next.has(item.key) && !old.has(item.key)).map(item => item.label),
+      removed: PERMISSIONS.filter(item => old.has(item.key) && !next.has(item.key)).map(item => item.label),
+    };
+  }
+  function changeSummary(item: Role, next: string[]) {
+    const { added, removed } = permissionChanges(item.permissions || [], next);
+    return `${item.name}\n增加：${added.join('、') || '无'}\n减少：${removed.join('、') || '无'}`;
+  }
+  async function saveRoleChanges() {
+    if (!changedRoles.length || roleBusy) return;
+    const summary = changedRoles.map(item => changeSummary(item, roleDrafts[item.id] || [])).join('\n\n');
+    if (!window.confirm(`保存后立刻对这些角色的账号生效：\n\n${summary}\n\n确认保存？`)) return;
+    setRoleBusy(true); setRoleError('');
+    try {
+      for (const item of changedRoles) await apiRequest(`/api/admin/roles/${encodeURIComponent(item.id)}`, { method: 'PUT', body: { permissions: roleDrafts[item.id] || [] } });
+      await load();
+    } catch (e) { setRoleError((e as Error).message || '保存失败'); }
+    finally { setRoleBusy(false); }
+  }
+  function openRoleEditor(item: Role | 'new') {
+    setRoleEditor(item); setRoleError('');
+    setRoleForm(item === 'new'
+      ? { name: '', dataScope: 'all', permissions: [] }
+      : { name: item.name, dataScope: item.dataScope || 'all', permissions: (roleDrafts[item.id] || item.permissions || []).slice() });
+  }
+  function toggleFormPermission(key: string) {
+    setRoleForm(current => ({ ...current, permissions: current.permissions.includes(key)
+      ? current.permissions.filter(item => item !== key) : [...current.permissions, key] }));
+  }
+  async function saveRoleForm() {
+    if (!roleEditor || roleBusy) return;
+    if (!roleForm.name.trim()) { setRoleError('请填角色名字'); return; }
+    if (roleEditor !== 'new' && roleEditor.id === 'owner') return;
+    if (roleEditor !== 'new' && !window.confirm(`保存后立刻对“${roleEditor.name}”的账号生效：\n\n${changeSummary(roleEditor, roleForm.permissions)}\n\n确认保存？`)) return;
+    setRoleBusy(true); setRoleError('');
+    try {
+      const body = { name: roleForm.name.trim(), dataScope: roleForm.dataScope, permissions: roleForm.permissions };
+      await apiRequest(roleEditor === 'new' ? '/api/admin/roles' : `/api/admin/roles/${encodeURIComponent(roleEditor.id)}`, { method: roleEditor === 'new' ? 'POST' : 'PUT', body });
+      setRoleEditor(null); await load();
+    } catch (e) { setRoleError((e as Error).message || '保存失败'); }
+    finally { setRoleBusy(false); }
+  }
+  async function deleteRole(item: Role) {
+    if (item.builtin || item.id === 'owner' || roleBusy || !window.confirm(`删除“${item.name}”？`)) return;
+    setRoleBusy(true); setRoleError('');
+    try { await apiRequest(`/api/admin/roles/${encodeURIComponent(item.id)}`, { method: 'DELETE' }); await load(); }
+    catch (e) { setRoleError((e as Error).message || '删除失败'); }
+    finally { setRoleBusy(false); }
+  }
   return <div style={surface}>
     <Tabs items={[{ key: 'accounts', label: '账号', count: users.length }, { key: 'roles', label: '角色', count: roles.length }]} active={tab} onChange={setTab} />
     {loading ? <div className="zy-card" style={{ padding: 24 }}>正在读取账号…</div> : error ? <ErrorState reason={error} onRetry={load} /> : null}
@@ -112,14 +178,22 @@ export default function AccountsPage() {
       ]} empty={<EmptyState text="还没有账号" />} />
     </>}
     {!loading && !error && tab === 'roles' && <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={muted}>负责人拥有全部权限，不能修改。敏感信息单独授权。</span><Button disabled reason="角色保存接口尚未提供" onClick={() => {}}>新建角色</Button></div>
-      <div className="zy-card" style={{ padding: 16, color: 'var(--text-aux)' }}>角色权限目前可查看；后端尚未提供创建或修改角色的接口，勾选后不能保存。</div>
-      <div className="zy-card" style={{ overflowX: 'auto' }}><table className="zy-table"><thead><tr><th>分组</th><th>权限点</th>{roles.map(item => <th key={item.id}>{item.name}</th>)}</tr></thead><tbody>{GROUPS.flatMap(group => group.items.map((item, index) => <tr key={item.key}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}><span style={muted}>勾选后点保存，立刻对这个角色的所有账号生效。敏感信息单独授权。</span><div style={{ display: 'flex', gap: 8 }}><Button onClick={() => openRoleEditor('new')}>新建角色</Button><Button variant="primary" disabled={roleBusy || !changedRoles.length} onClick={saveRoleChanges}>保存</Button></div></div>
+      {roleError && !roleEditor && <div role="alert" style={{ color: 'var(--danger)' }}>{roleError}</div>}
+      <div className="zy-card" style={{ overflowX: 'auto' }}><table className="zy-table"><thead><tr><th>分组</th><th>权限点</th>{roles.map(item => <th key={item.id} style={{ minWidth: 130 }}><div>{item.name}</div>{item.id === 'owner' ? <span style={muted}>不能改</span> : <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}><button type="button" style={{ background: 'none', border: 0, color: 'var(--text)', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => openRoleEditor(item)}>编辑</button>{!item.builtin && <button type="button" style={{ background: 'none', border: 0, color: 'var(--danger)', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => deleteRole(item)}>删除</button>}</div>}</th>)}</tr></thead><tbody>{GROUPS.flatMap(group => group.items.map((item, index) => <tr key={item.key}>
         {index === 0 && <td rowSpan={group.items.length}>{group.name}</td>}
         <td>{item.label}{item.sensitive && <span style={{ ...muted, marginLeft: 8 }}>敏感信息</span>}</td>
-        {roles.map(role => <td key={role.id} style={{ textAlign: 'center' }}><input type="checkbox" aria-label={`${role.name}：${item.label}`} checked={role.id === 'owner' || (role.permissions || []).includes(item.key)} disabled readOnly /></td>)}
+        {roles.map(role => <td key={role.id} style={{ textAlign: 'center' }}><input type="checkbox" aria-label={`${role.name}：${item.label}`} checked={role.id === 'owner' || (roleDrafts[role.id] || []).includes(item.key)} disabled={role.id === 'owner' || roleBusy} onChange={() => toggleRolePermission(role.id, item.key)} /></td>)}
       </tr>))}</tbody></table></div>
     </>}
+    {roleEditor && <Drawer title={roleEditor === 'new' ? '新建角色' : '编辑角色'} subtitle={roleEditor === 'new' ? undefined : roleEditor.name} onClose={() => setRoleEditor(null)} footer={<><Button disabled={roleBusy} onClick={() => setRoleEditor(null)}>取消</Button><Button variant="primary" disabled={roleBusy} onClick={saveRoleForm}>保存</Button></>}>
+      <div style={{ display: 'grid', gap: 18 }}>
+        <Field label="角色名字"><input style={inputStyle} value={roleForm.name} disabled={roleEditor !== 'new' && roleEditor.builtin} onChange={e => setRoleForm(current => ({ ...current, name: e.target.value }))} /></Field>
+        <Field label="数据范围"><select style={inputStyle} value={roleForm.dataScope} onChange={e => setRoleForm(current => ({ ...current, dataScope: e.target.value }))}><option value="all">全部</option><option value="own">只看分给我的</option></select></Field>
+        <div className="zy-card" style={{ padding: 16 }}><div className="zy-card-title">权限</div>{GROUPS.map(group => <div key={group.name} style={{ paddingTop: 12 }}><strong>{group.name}</strong><div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, paddingTop: 8 }}>{group.items.map(item => <label key={item.key} style={{ minWidth: 140 }}><input type="checkbox" checked={roleForm.permissions.includes(item.key)} onChange={() => toggleFormPermission(item.key)} /> {item.label}{item.sensitive && <span style={{ ...muted, marginLeft: 4 }}>敏感信息</span>}</label>)}</div></div>)}</div>
+        {roleError && <div role="alert" style={{ color: 'var(--danger)' }}>{roleError}</div>}
+      </div>
+    </Drawer>}
     {drawer && <Drawer title={drawer === 'new' ? '新建账号' : '编辑账号'} subtitle={drawer === 'edit' ? selected?.username : undefined} onClose={closeDrawer} footer={<>
       {drawer === 'edit' && selected?.status !== 'disabled' && <span className="zy-drawer-foot-left"><Button variant="danger" disabled={busy} onClick={disable}>停用账号</Button></span>}
       <Button disabled={busy} onClick={closeDrawer}>取消</Button><Button variant="primary" disabled={busy} onClick={save}>保存</Button>

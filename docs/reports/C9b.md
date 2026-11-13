@@ -25,7 +25,24 @@
 ## 3. 改了的文件
 `git diff --stat origin/integration/2026-11...HEAD`（含本报告）：
 ```
-待补
+ admin-web/src/contract.ts                       |   4 +-
+ docs/reports/C9b.md                             |  77 +++++++++++
+ miniprogram/features/after-sale/detail-model.js |  39 ++++++
+ miniprogram/features/after-sale/detail.js       |  39 +++++-
+ miniprogram/features/after-sale/detail.json     |   4 +-
+ miniprogram/features/after-sale/detail.wxml     |  15 +-
+ miniprogram/features/after-sale/detail.wxss     |   4 +-
+ miniprogram/features/after-sale/return.js       |  28 +++-
+ miniprogram/features/after-sale/return.json     |   4 +-
+ miniprogram/features/after-sale/return.wxml     |   9 +-
+ miniprogram/features/after-sale/return.wxss     |   4 +-
+ miniprogram/tests/after-sale-detail.test.js     | 104 ++++++++++++++
+ miniprogram/utils/contract.js                   |   4 +-
+ server/contract.py                              |   2 +
+ server/routes/my_after_sales.py                 |  91 +++++++++++++
+ server/routes/return_address.py                 |  41 ++++++
+ server/tests/test_my_after_sales.py             | 174 ++++++++++++++++++++++++
+ 17 files changed, 623 insertions(+), 20 deletions(-)
 ```
 
 ## 4. 测试
@@ -46,7 +63,7 @@ python3 kb/validate.py 2>&1 | tail -15
 - `miniprogram/tests/after-sale-detail.test.js` 的 10 个测试：契约状态文字、申请照片和联系电话、寄回动作、单号校验、页面绑定、详情读取、寄回提交、地址复制与空配置、再串一条复制订单、空珠子不跳转。
 
 ## 5. 自查（贴命令和输出）
-- `git log --oneline origin/integration/2026-11..HEAD`：`23112a4`、`18d6a52`、`1260eee`、`9362a38`、`af74e2d`、`eb98ab8`、`ac4a539`、`7ae7550`、`fd55ea0`、`17fff68`、`52ca2fe`，提交说明均以 `C9b:` 开头。
+- `git log --oneline origin/integration/2026-11..HEAD`：`a73afa6`、`23112a4`、`18d6a52`、`1260eee`、`9362a38`、`af74e2d`、`eb98ab8`、`ac4a539`、`7ae7550`、`fd55ea0`、`17fff68`、`52ca2fe`，提交说明均以 `C9b:` 开头。
 - `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\(" miniprogram/features/after-sale/detail.wxss miniprogram/features/after-sale/return.wxss`：无输出。
 - `grep -rnE "new URL|URLSearchParams" miniprogram --include='*.js'`：无输出。
 - `git diff --check origin/integration/2026-11...HEAD`：无输出。

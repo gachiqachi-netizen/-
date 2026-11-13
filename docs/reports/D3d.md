@@ -24,6 +24,8 @@
 
 ```
  admin-web/src/pages/accounts.tsx | 84 +++++++++++++++++++++++++++++++++++++---
+ docs/reports/D3d.md              | 53 ++++++++++++++++++++++++
+ 2 files changed, 132 insertions(+), 5 deletions(-)
 ```
 报告文件：`docs/reports/D3d.md`。未提交 `server/static/admin/shadcn-admin.*`。
 
@@ -37,7 +39,7 @@
 
 ## 5. 自查（贴命令和输出）
 
-- `git log --oneline origin/integration/2026-11..HEAD`：`67768ca D3d: 接通角色保存新建和删除接口`；`865aa51 D3d: 开工`。
+- `git log --oneline origin/integration/2026-11..HEAD`：`cfcae7c D3d: 写交付报告与全量测试结果`；`67768ca D3d: 接通角色保存新建和删除接口`；`865aa51 D3d: 开工`。
 - `git diff --check origin/integration/2026-11...HEAD`：无输出。
 - `npm run build`：最后几行见第 4 节；打包产物已恢复，`git status --short` 为空。
 

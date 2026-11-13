@@ -9,7 +9,7 @@
   <view class="profile-text" wx:else bindtap="goLogin"><view class="profile-title">手机号快捷登录 ›</view><view class="caption">登录后，订单和作品换手机也在</view></view>
  </view>
  <view class="gap"></view>
- <view wx:if="{{recent}}" class="recent" bindtap="viewRecent"><view class="recent-thumb"><c-bracelet beads="{{recent.beads}}" size="96"/></view><view class="recent-copy"><view>{{recent.name || '我的手串'}}</view><view class="caption">{{recent.stateView.label}}</view></view><view class="chevron">›</view></view>
+ <view wx:if="{{recent}}" class="recent" bindtap="viewRecent"><view class="recent-thumb"><c-bracelet beads="{{recentBeads}}" size="96"/></view><view class="recent-copy"><view>{{recent.name || '我的手串'}}</view><view class="caption">{{recent.stateView.label}}</view></view><view class="chevron">›</view></view>
  <view class="row" bindtap="goOrders"><text>我的订单</text><text class="caption">{{orderError ? '没连上，下拉再试' : '全部 ›'}}</text></view>
  <view class="row" bindtap="goWorks"><text>我的作品</text><text class="caption">{{loggedIn ? designCount+' 条 ›' : '本机 '+designCount+' 条 ›'}}</text></view>
  <view class="gap"></view>

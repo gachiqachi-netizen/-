@@ -47,7 +47,8 @@ class StrictStateMachineTest(unittest.TestCase):
 
     def test_unpaid_cannot_complete(self):
         no = self.make_order('sm-strict-000001')['no']
-        commerce.transition_order_status(self.db, no, 'orderStatus', 'confirmed')
+        # A4c：未付款订单不能再手动确认，这里直接把订单置为“已确认、未付款”的旧数据状态
+        self.db.put('orders', no, {**self.db.get('orders', no), 'orderStatus': 'confirmed'})
         with self.assertRaises(ValueError):
             commerce.transition_order_status(self.db, no, 'orderStatus', 'completed')
 

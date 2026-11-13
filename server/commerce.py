@@ -633,6 +633,9 @@ def allowed_order_transitions(order):
             # 「发货」由履约状态联动推进，物流维度不单独提供发货按钮
             states = [s for s in states if s != "shipped"]
         out[group] = [t for t in states if _cross_constraint(order, group, t) is None]
+        if group == "orderStatus" and groups.get("paymentStatus") != "paid":
+            # 付款后由支付回调自动确认，后台不再手动确认未付款订单
+            out[group] = [t for t in out[group] if t != "confirmed"]
     out["paymentStatus"] = []
     out["afterSaleStatus"] = []
     return out
@@ -1128,6 +1131,8 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
         from_ = groups[group]
         meta["from"] = from_
         meta["to"] = to_
+        if group == "orderStatus" and to_ == "confirmed" and groups["paymentStatus"] != "paid":
+            raise ValueError("付款后会自动确认，不用手动确认")
         status.validate_transition(group, from_, to_)
         _check_order_constraints(order, group, to_)
         if from_ == to_:  # 幂等：重复转换直接返回当前状态，不重复写历史/审计

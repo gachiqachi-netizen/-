@@ -1,1 +1,0 @@
-<view style="padding:32rpx"><view>{{error || '正在打开独立手部识别…'}}</view><button wx:if="{{error}}" bindtap="photoTryon">改用照片试戴</button></view>

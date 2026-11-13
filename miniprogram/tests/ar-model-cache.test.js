@@ -45,12 +45,13 @@ test('timeout aborts pending download, quota errors are explicit, unsafe remote 
  const q=fixture();await assert.rejects(createModelLoader(q.wxApi,config,()=>{},{limitBytes:4}).prepare(),/空间/);
  const loader=createModelLoader(f.wxApi,config);await assert.rejects(loader.fetch('beadloop-model://../secret'),/路径/);
 });
-test('legacy AR entry redirects to photo page after subpackage failure',()=>{
+test('tryon opens AR directly and offers photo tryon if navigation fails',()=>{
  let definition;global.Page=d=>definition=d;
- delete require.cache[require.resolve('../pages/ar-tryon/ar-tryon')];require('../pages/ar-tryon/ar-tryon');
- const page={...definition,data:{},setData(d){Object.assign(this.data,d)}};let route='';
- global.wx={redirectTo:o=>{route=o.url;if(o.fail)o.fail({})}};
- page.onLoad();assert.match(page.data.error,/照片试戴/);page.photoTryon();assert.equal(route,'/features/tryon/tryon');
+ delete require.cache[require.resolve('../features/tryon/tryon')];require('../features/tryon/tryon');
+ const page={...definition,data:{error:''},setData(d){Object.assign(this.data,d)}};let route='', fail;
+ global.wx={navigateTo:o=>{route=o.url;fail=o.fail}};
+ page.openAR();assert.equal(route,'/ar-hand/index');assert.equal(page.data.error,'');
+ fail({});assert.match(page.data.error,/照片试戴/);
  delete global.Page;delete global.wx;
 });
 test('AR model download failure exits loading state and provides photo navigation',async()=>{

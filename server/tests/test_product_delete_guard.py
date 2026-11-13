@@ -37,8 +37,8 @@ class ProductDeleteGuardTests(unittest.TestCase):
         app.db = self.old_db
         self.temp.cleanup()
 
-    def delete(self):
-        request = Request(self.base + "/api/admin/beads/" + self.product_id,
+    def delete(self, product_id=None):
+        request = Request(self.base + "/api/admin/beads/" + (product_id or self.product_id),
                           headers=self.headers, method="DELETE")
         try:
             response = self.opener.open(request, timeout=3)
@@ -63,6 +63,11 @@ class ProductDeleteGuardTests(unittest.TestCase):
         self.assertIn("0 个模板、2 个订单", body["error"])
         self.assertNotIn("guard-order", body["error"])
         self.assertIsNotNone(app.db.get("beads", self.product_id))
+
+    def test_missing_product_returns_404(self):
+        code, body = self.delete("missing-guard-bead")
+        self.assertEqual(code, 404)
+        self.assertIn("商品不存在", body["error"])
 
     def test_unreferenced_product_deletes_and_writes_audit(self):
         code, body = self.delete()

@@ -854,6 +854,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(200, {"ok": True})
         except KeyError as e:
             return self.send(404, {"error": str(e)})
+        except ValueError as e:
+            return self.send(400, {"error": str(e)})
         except Exception:
             traceback.print_exc()
             return self.send(500, {"error": "服务暂时不可用，请稍后重试"})

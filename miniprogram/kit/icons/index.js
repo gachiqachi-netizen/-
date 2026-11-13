@@ -1,5 +1,12 @@
-// 组件预览临时页（只在开发版能打开）。由任务卡 C0b 图标 填内容；C11 收尾时整个 kit 分包删除。
 Page({
+  data: {
+    icons: [
+      'back', 'undo', 'stack', 'share', 'save', 'mic', 'plus', 'minus',
+      'up', 'up-on', 'check', 'check-on', 'copy', 'close', 'more',
+      'chevron-right', 'camera', 'image', 'hand', 'spark', 'bead',
+    ],
+    tabs: ['home', 'bead', 'chat', 'me'],
+  },
   onLoad() {
     const info = wx.getAccountInfoSync ? wx.getAccountInfoSync() : null
     const version = info && info.miniProgram ? info.miniProgram.envVersion : 'develop'

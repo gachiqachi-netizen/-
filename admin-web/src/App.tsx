@@ -42,7 +42,7 @@ const NAV_ITEMS = [
 
 export const App: React.FC = () => {
   const [authed, setAuthed] = useState<boolean | null>(null);
-  const [password, setPassword] = useState('local-dev-only');
+  const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -184,9 +184,6 @@ export const App: React.FC = () => {
                   className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-zinc-950 border border-zinc-800 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#c8302e]"
                 />
               </div>
-              <p className="text-[11px] text-zinc-500 mt-1.5">
-                本地开发测试环境默认口令：<code className="text-zinc-300">local-dev-only</code>（由启动时的 <code className="text-zinc-300">ADMIN_TOKEN</code> 决定）
-              </p>
             </div>
 
             {loginError && (

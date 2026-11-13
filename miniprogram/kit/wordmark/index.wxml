@@ -1,2 +1,8 @@
-<!-- 由任务卡 C0c 字标 填内容 -->
-<view class="kit">临时页：C0c 字标</view>
+<view class="kit">
+  <view class="row" wx:for="{{rows}}" wx:key="tone">
+    <view class="label">{{item.label}}</view>
+    <view class="line{{item.dark ? ' dark' : ''}}">
+      <wordmark wx:for="{{sizes}}" wx:for-item="s" wx:key="*this" tone="{{item.tone}}" size="{{s}}" />
+    </view>
+  </view>
+</view>

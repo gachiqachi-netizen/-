@@ -10,6 +10,7 @@ import uuid
 
 import kb
 import money
+import notify
 import payments
 import plans
 import pricing
@@ -952,13 +953,15 @@ def build_work_order(order, db=None):
 
 
 def get_work_order(db, no):
+    import accounts
     order = db.get("orders", no)
     if not order:
         return None
-    return build_work_order(order, db=db)
+    return accounts.mask_order(db, build_work_order(order, db=db))
 
 
 def list_work_orders(db, q="", status_="", assignee=""):
+    import accounts
     rows = db.list("orders")
     rows.sort(key=lambda o: o.get("createdAt", 0), reverse=True)
     q = (q or "").strip().lower()
@@ -978,7 +981,7 @@ def list_work_orders(db, q="", status_="", assignee=""):
             or q in str(wo.get("customerNote") or "").lower()
         ):
             continue
-        out.append(wo)
+        out.append(accounts.mask_order(db, wo))
     return out
 
 
@@ -1038,7 +1041,7 @@ def record_quality_gate(db, no, data, actor=ACTOR):
         if type(val) is not bool:
             raise ValueError("质检关口必须完整记录珠序、尺寸、用料和外观四项检查结果")
         checks[field] = val
-    inspector = str(d.get("inspector") or actor or ACTOR).strip()[:40]
+    inspector = str(actor or ACTOR).strip()[:40]
     if not inspector:
         raise ValueError("请填写质检人员")
     note = str(d.get("note") or "").strip()[:300]
@@ -1091,6 +1094,7 @@ def record_quality_gate(db, no, data, actor=ACTOR):
 
 def order_detail(db, no):
     """订单详情：附五组状态、允许的下一状态、状态历史、物流、售后记录、设计快照、生产工单与质检关口。"""
+    import accounts
     import order_view
     o = db.get("orders", no)
     if not o:
@@ -1106,7 +1110,7 @@ def order_detail(db, no):
     out["logisticsHistory"] = o.get("logisticsHistory", [])
     out["afterSales"] = [a for a in db.list("after_sales") if a.get("orderNo") == no]
     out["termsSnapshot"] = o.get("termsSnapshot", [])
-    return out
+    return accounts.mask_order(db, out)
 
 
 def append_history(order, actor, group, from_, to_, note=""):
@@ -1190,6 +1194,7 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
             _audit_record(actor, "transition", "order", no,
                           f"{group}: {meta['from']} → {meta['to']}")
         ))
+    notify.on_order_transition(db, saved, group, to_, meta.get("idempotent"))
     return saved
 
 
@@ -1417,6 +1422,7 @@ def json_dump_safe(obj):
 
 
 def list_orders(db, q="", filters=None):
+    import accounts
     import order_view
     rows = db.list("orders")
     rows.sort(key=lambda o: o.get("createdAt", 0), reverse=True)
@@ -1437,7 +1443,7 @@ def list_orders(db, q="", filters=None):
         item["workOrder"] = build_work_order(o, db=db)
         item["qualityGate"] = o.get("qualityGate")
         item["allowedTransitions"] = allowed_order_transitions(o)
-        out.append(item)
+        out.append(accounts.mask_order(db, item))
     return out
 
 
@@ -1554,6 +1560,7 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
     if not pre:
         raise KeyError("售后记录不存在")
     order_no = pre["orderNo"]
+    refunded_order = None
 
     with _AtomicWriter(db) as w:
         order = w.lock_order(order_no)
@@ -1569,28 +1576,32 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
             return rec
 
         if target == "refunding":
-            return _refund_in_tx(w, order, rec, no, current, note, actor)
+            rec = _refund_in_tx(w, order, rec, no, current, note, actor)
+            refunded_order = order
+        else:
+            rec["status"] = target
+            rec["updatedAt"] = _now()
+            if target in ("rejected", "closed"):
+                rec["reservedFen"] = 0
+            if result is not None:
+                rec["result"] = str(result)[:500]
+            if return_logistics:
+                rl = {k: str(v or "").strip()[:100] for k, v in (return_logistics or {}).items()
+                      if k in ("carrierCode", "carrierName", "trackingNo")}
+                rec["returnLogistics"] = {**rec.get("returnLogistics", {}), **rl}
+            rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", current, target, note))
+            rec["history"] = rec["history"][-200:]
+            w.put_after_sale(no, rec)
 
-        rec["status"] = target
-        rec["updatedAt"] = _now()
-        if target in ("rejected", "closed"):
-            rec["reservedFen"] = 0
-        if result is not None:
-            rec["result"] = str(result)[:500]
-        if return_logistics:
-            rl = {k: str(v or "").strip()[:100] for k, v in (return_logistics or {}).items()
-                  if k in ("carrierCode", "carrierName", "trackingNo")}
-            rec["returnLogistics"] = {**rec.get("returnLogistics", {}), **rl}
-        rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", current, target, note))
-        rec["history"] = rec["history"][-200:]
-        w.put_after_sale(no, rec)
+            if order:
+                order["afterSaleStatus"] = target
+                append_history(order, actor, "afterSaleStatus", current, target, note)
+                w.put_order(order_no, order)
+            w.put_audit(_audit_record(actor, action, "after_sale", no, f"{rec['type']}: {current} → {target}"))
 
-        if order:
-            order["afterSaleStatus"] = target
-            append_history(order, actor, "afterSaleStatus", current, target, note)
-            w.put_order(order_no, order)
-        w.put_audit(_audit_record(actor, action, "after_sale", no, f"{rec['type']}: {current} → {target}"))
-        return rec
+    if refunded_order is not None:
+        notify.order_event(db, refunded_order, "refunded")
+    return rec
 
 
 def _refund_in_tx(w, order, rec, no, current, note, actor):

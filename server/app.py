@@ -54,6 +54,7 @@ if os.environ.get("DATABASE_URL"):
     db = PostgresDB(os.environ["DATABASE_URL"])
 else:
     db = DB(os.environ.get("DATABASE_PATH") or os.path.join(DATA_DIR, "data.sqlite3"))
+pricing.attach(db)
 user_api.cleanup_sessions(db)
 
 def session_cleanup_loop():
@@ -134,8 +135,11 @@ def on_sale_catalog():
     tpls = [t for t in db.list("templates") if t.get("onSale", True)
             and all(x in ids for x in (t.get("special") or []) + (t.get("pattern") or []) + (t.get("tail") or []))
             and t.get("pattern")]
+    tpls.sort(key=lambda t: (t.get("homeOrder") is None,
+                             t.get("homeOrder") if t.get("homeOrder") is not None else 0, t["id"]))
     tpl_ids = {t["id"] for t in tpls}
     banners = [b for b in db.list("banners") if b.get("on", True) and (not b.get("tpl") or b["tpl"] in tpl_ids)]
+    banners.sort(key=lambda b: (b.get("order", 9999), b["id"]))
     return beads, tpls, banners
 
 
@@ -377,7 +381,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(200, f.read(), "application/json" if fp.endswith(".json") else "application/octet-stream")
             if path == "/api/catalog":
                 beads, tpls, banners = on_sale_catalog()
-                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config()})
+                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config(), "homeArticles": __import__("home").home_articles(db)})
             if path == "/api/meta/contract":
                 import contract
                 return self.send(200, contract.payload())
@@ -642,11 +646,11 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.admin_can(data=data):
                     return
                 if m.group(1) == "beads":
-                    result = commerce.create_product(db, data)
+                    result = commerce.create_product(db, data, actor=self.admin_user["name"])
                     self.audit_admin_mutation(path + "/" + result["id"])
                     return self.send(200, result)
                 if m.group(1) == "templates":
-                    result = commerce.create_template(db, data)
+                    result = commerce.create_template(db, data, actor=self.admin_user["name"])
                     self.audit_admin_mutation(path + "/" + result["id"])
                     return self.send(200, result)
                 err = validate("banners", data)
@@ -670,16 +674,16 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.admin_can(data=data):
                     return
                 if m.group(1) == "beads":
-                    return self.send(200, commerce.copy_product(db, m.group(2)))
-                return self.send(200, commerce.copy_template(db, m.group(2)))
+                    return self.send(200, commerce.copy_product(db, m.group(2), actor=self.admin_user["name"]))
+                return self.send(200, commerce.copy_template(db, m.group(2), actor=self.admin_user["name"]))
             if path == "/api/admin/after-sales":
                 if not self.admin_can(data=data):
                     return
-                return self.send(200, commerce.create_after_sale(db, data))
+                return self.send(200, commerce.create_after_sale(db, data, actor=self.admin_user["name"]))
             if path == "/api/admin/terms":
                 if not self.admin_can(data=data):
                     return
-                return self.send(200, commerce.create_term(db, data))
+                return self.send(200, commerce.create_term(db, data, actor=self.admin_user["name"]))
             if self._route_dispatch("POST", path, data):
                 return
             return self.send(404, {"error": "not_found"})
@@ -724,13 +728,13 @@ class Handler(BaseHTTPRequestHandler):
                     group, to = data.get("group"), data.get("to")
                     if group not in status.GROUP_FIELDS or not to:
                         return self.send(400, {"error": "请提供 group 和 to"})
-                    result = commerce.transition_order_status(db, rid, group, to, data.get("note") or "", data.get("logistics"))
+                    result = commerce.transition_order_status(db, rid, group, to, data.get("note") or "", data.get("logistics"), actor=self.admin_user["name"])
                 elif action == "logistics":
-                    result = commerce.update_order_logistics(db, rid, data)
+                    result = commerce.update_order_logistics(db, rid, data, actor=self.admin_user["name"])
                 elif action == "work-order":
-                    result = commerce.update_work_order(db, rid, data)
+                    result = commerce.update_work_order(db, rid, data, actor=self.admin_user["name"])
                 else:
-                    result = commerce.record_quality_gate(db, rid, data)
+                    result = commerce.record_quality_gate(db, rid, data, actor=self.admin_user["name"])
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
             m = re.match(r"^/api/admin/orders/([\w-]+)/(address|note)$", path)
@@ -739,16 +743,16 @@ class Handler(BaseHTTPRequestHandler):
                     return
                 rid, action = m.groups()
                 if action == "address":
-                    commerce.change_order_address(db, rid, data, actor="admin")
+                    commerce.change_order_address(db, rid, data, actor=self.admin_user["name"])
                 else:
-                    commerce.add_internal_note(db, rid, data.get("text"), actor="admin")
+                    commerce.add_internal_note(db, rid, data.get("text"), actor=self.admin_user["name"])
                 self.audit_admin_mutation(path)
                 return self.send(200, commerce.order_detail(db, rid))
             m = re.match(r"^/api/admin/after-sales/([\w-]+)/transition$", path)
             if m:
                 if not self.admin_can(data=data):
                     return
-                result = commerce.transition_after_sale(db, m.group(1), data.get("action"), data.get("note") or "", data.get("returnLogistics"), data.get("result"))
+                result = commerce.transition_after_sale(db, m.group(1), data.get("action"), data.get("note") or "", data.get("returnLogistics"), data.get("result"), actor=self.admin_user["name"])
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
             m = re.match(r"^/api/admin/(beads|templates|banners|terms|orders)/([\w-]+)$", path)
@@ -759,11 +763,11 @@ class Handler(BaseHTTPRequestHandler):
                 if table == "orders":
                     return self.send(400, {"error": "旧订单状态接口已停用，请使用分组状态接口"})
                 if table == "beads":
-                    result = commerce.update_product(db, rid, data)
+                    result = commerce.update_product(db, rid, data, actor=self.admin_user["name"])
                 if table == "templates":
-                    result = commerce.update_template(db, rid, data)
+                    result = commerce.update_template(db, rid, data, actor=self.admin_user["name"])
                 if table == "terms":
-                    result = commerce.update_term(db, rid, data)
+                    result = commerce.update_term(db, rid, data, actor=self.admin_user["name"])
                 if table == "banners":
                     err = validate("banners", data)
                     if err:
@@ -806,11 +810,11 @@ class Handler(BaseHTTPRequestHandler):
                 return
             table, rid = m.groups()
             if table == "beads":
-                commerce.delete_product(db, rid)
+                commerce.delete_product(db, rid, actor=self.admin_user["name"])
             elif table == "templates":
-                commerce.delete_template(db, rid)
+                commerce.delete_template(db, rid, actor=self.admin_user["name"])
             elif table == "terms":
-                commerce.delete_term(db, rid)
+                commerce.delete_term(db, rid, actor=self.admin_user["name"])
             else:
                 db.delete("banners", rid)
             self.audit_admin_mutation(path)

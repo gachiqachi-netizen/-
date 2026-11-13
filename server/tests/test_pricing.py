@@ -23,10 +23,12 @@ class PricingTest(unittest.TestCase):
         })
         self.assertEqual(pricing.public_config(), {
             'handworkFen': 1500,
+            'handworkEnabled': True,
             'cordFen': 500,
             'giftFen': 1000,
             'freeShippingThresholdFen': 9900,
             'shippingFen': 800,
+            'shippingEnabled': True,
         })
 
     def test_free_shipping_threshold_uses_subtotal_before_shipping(self):

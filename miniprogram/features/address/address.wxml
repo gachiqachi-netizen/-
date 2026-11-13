@@ -1,4 +1,19 @@
-<view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+<view class="address-page">
+  <view class="address-card">
+    <view class="c-row" bindtap="importWechat"><text>用微信地址</text><text class="muted">›</text></view>
+  </view>
+  <view wx:if="{{loading}}" class="address-card state">正在取回地址…</view>
+  <view wx:elif="{{error}}" class="address-card state">{{error}}<text class="retry" bindtap="load">再试一次</text></view>
+  <view wx:elif="{{!rows.length}}" class="address-card state">还没有地址</view>
+  <view wx:else class="address-card">
+    <view wx:for="{{rows}}" wx:key="id" class="address-row">
+      <view class="address-main" data-id="{{item.id}}" bindtap="select">
+        <view class="address-name">{{item.person}}　{{item.phoneLabel}} <text wx:if="{{item.isDefault}}" class="default">默认</text></view>
+        <view class="muted">{{item.addressLine}}</view>
+      </view>
+      <view class="address-edit" data-id="{{item.id}}" bindtap="edit">编辑 ›</view>
+    </view>
+  </view>
+  <c-bar><button bindtap="add">加一个地址</button></c-bar>
+  <c-toast />
 </view>

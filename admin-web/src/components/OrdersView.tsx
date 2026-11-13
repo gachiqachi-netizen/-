@@ -5,6 +5,7 @@ import { Tabs } from '../ui/Tabs';
 import { Table } from '../ui/Table';
 import { StatusText } from '../ui/StatusText';
 import OrdersOpsPanel from '../pages/orders/orderOps';
+import { Can } from '../permissions';
 
 interface OrdersViewProps {
   orders: any[];
@@ -64,6 +65,51 @@ const maskPhone = (phone: string): string => {
   const digits = String(phone || '').replace(/\D/g, '');
   if (digits.length < 7) return phone ? `${phone.slice(0, 1)}****` : '';
   return `${digits.slice(0, 3)}****${digits.slice(-4)}`;
+};
+
+/** 完整联系方式只留在当前订单抽屉，60 秒后清除；复制每次重新走有审计的 reveal。 */
+const ReceiverContact: React.FC<{
+  orderNo: string; person: string; phone: string; addr: string;
+  notify: OrdersViewProps['notify'];
+}> = ({ orderNo, person, phone, addr, notify }) => {
+  const [full, setFull] = useState<{ phone: string; addr: string } | null>(null);
+  useEffect(() => {
+    if (!full) return;
+    const timer = window.setTimeout(() => setFull(null), 60_000);
+    return () => window.clearTimeout(timer);
+  }, [full]);
+  const reveal = async () => {
+    const result = await apiRequest<{ phone?: string; addr?: string }>(`/api/admin/orders/${encodeURIComponent(orderNo)}/reveal`, { method: 'POST' });
+    const contact = { phone: String(result.phone || ''), addr: String(result.addr || '') };
+    setFull(contact);
+    return contact;
+  };
+  const show = async () => {
+    try { await reveal(); }
+    catch (error: any) { notify(error.message || '显示全号失败', 'error'); }
+  };
+  const copy = async (field: 'phone' | 'addr') => {
+    try {
+      const contact = await reveal();
+      if (!contact[field]) throw new Error('没有可复制的联系方式');
+      await navigator.clipboard.writeText(contact[field]);
+      notify('已复制');
+    } catch (error: any) { notify(error.message || '复制失败', 'error'); }
+  };
+  return <div style={{ padding: '14px 16px', display: 'grid', rowGap: 8 }}>
+    <div style={{ display: 'flex', gap: 12 }}><span className="zy-table-aux" style={{ width: 48 }}>收货人</span><span>{person || '-'}</span></div>
+    <div style={{ display: 'flex', gap: 12 }}><span className="zy-table-aux" style={{ width: 48 }}>手机号</span><span>
+      {full?.phone || (phone ? maskPhone(phone) : '-')}{' '}
+      <Can perm="view_full_contact"><>
+        {phone && <button type="button" className="zy-table-aux" onClick={() => void show()}>显示全号</button>}
+        {phone && <button type="button" className="zy-table-aux" onClick={() => void copy('phone')}>复制</button>}
+      </></Can>
+    </span></div>
+    <div style={{ display: 'flex', gap: 12 }}><span className="zy-table-aux" style={{ width: 48 }}>地址</span><span>
+      {full?.addr || addr || '-'}{' '}
+      <Can perm="view_full_contact">{addr && <button type="button" className="zy-table-aux" onClick={() => void copy('addr')}>复制</button>}</Can>
+    </span></div>
+  </div>;
 };
 
 const fmtShort = (ts?: number | string | null): string => {
@@ -546,42 +592,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                 {/* 收货 */}
                 <div className="zy-card" style={{ marginBottom: 16 }}>
                   <div className="zy-card-title">收货</div>
-                  <div style={{ padding: '14px 16px', display: 'grid', rowGap: 8 }}>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                      <span className="zy-table-aux" style={{ width: 48 }}>收货人</span>
-                      <span>{receiverName}</span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                      <span className="zy-table-aux" style={{ width: 48 }}>手机号</span>
-                      <span>
-                        {receiverPhone ? maskPhone(receiverPhone) : '-'}{' '}
-                        {receiverPhone && (
-                          <span
-                            className="zy-table-aux"
-                            style={{ cursor: 'pointer', marginLeft: 4 }}
-                            onClick={() => copyText(receiverPhone)}
-                          >
-                            复制
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                      <span className="zy-table-aux" style={{ width: 48 }}>地址</span>
-                      <span>
-                        {receiverAddr || '-'}{' '}
-                        {receiverAddr && (
-                          <span
-                            className="zy-table-aux"
-                            style={{ cursor: 'pointer', marginLeft: 4 }}
-                            onClick={() => copyText(receiverAddr)}
-                          >
-                            复制
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  </div>
+                  <ReceiverContact key={detail.no} orderNo={detail.no} person={receiverName} phone={receiverPhone} addr={receiverAddr} notify={notify} />
                 </div>
 
                 {/* 记录（只给后台看） */}

@@ -1,7 +1,7 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
-const api = require('../../utils/api')
-const store = require('../../utils/design')
+const api = require('../utils/api')
+const store = require('../utils/design')
 
 function pageWith(catalog) {
   let page
@@ -17,12 +17,12 @@ function pageWith(catalog) {
     removeTabBarRedDot: args => calls.push(['undot', args.index])
   }
   global.getApp = () => ({ globalData: { catalog, apiBase: 'https://example.invalid' } })
-  delete require.cache[require.resolve('./home')]
-  require('./home')
+  delete require.cache[require.resolve('../pages/home/home')]
+  require('../pages/home/home')
   return { page, storage, calls }
 }
 
-const sample = require('../../utils/catalog-preview')
+const sample = require('../utils/catalog-preview')
 const sampleWithBanner = { ...sample, banners: [{ id: 'b1', tpl: sample.templates[0].id, title: '清冷一点' }] }
 
 test('home catalog failure keeps banner and entrances while replacing only templates', async () => {

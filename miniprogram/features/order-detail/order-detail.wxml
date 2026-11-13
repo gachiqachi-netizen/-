@@ -12,7 +12,7 @@
       <view wx:if="{{order.tracking && order.tracking.length}}" class="card" data-code="view_logistics" bindtap="runAction"><view>物流</view><view class="sub">{{order.tracking[0].text}}</view></view>
       <view class="card"><view class="section-title">收货</view><view>{{order.person}} · {{order.phone}}</view><view class="sub">{{order.addr}}</view></view>
       <view class="card product-card">
-        <view class="product" bindtap="viewProduct"><bracelet-thumb beads="{{order.beads}}" /><view><view class="product-name">{{order.name}}</view><view class="sub">{{order.meaning}}</view><view class="sub">{{order.beads.length}} 颗 · 手围 {{order.wrist}}cm</view></view></view>
+        <view class="product" bindtap="viewProduct"><bracelet-thumb beads="{{order.beads}}" catalog="{{catalog}}" /><view><view class="product-name">{{order.name}}</view><view class="sub">{{order.meaning}}</view><view class="sub">{{order.beads.length}} 颗 · 手围 {{order.wrist}}cm</view></view></view>
         <view class="amount-row"><text>珠子</text><text>{{order.goodsPrice}}</text></view><view class="amount-row"><text>运费</text><text>{{order.shippingPrice}}</text></view><view class="amount-row"><text>{{order.paymentStatus === 'unpaid' ? '应付' : '实付'}}</text><text>{{order.payable}}</text></view>
       </view>
       <view class="card"><view class="amount-row" bindtap="copyNo"><text>订单号</text><text>{{order.no}}　复制</text></view><view wx:if="{{order.createdAt}}" class="sub">下单时间 {{order.createdAt}}</view></view>

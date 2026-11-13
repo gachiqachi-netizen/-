@@ -6,9 +6,9 @@ const money = require('../../utils/money')
 const materials = require('../../pages/editor/materials')
 
 Page({
-  data: { order: null, items: [], loading: true, error: '', actionBusy: '', payment: null,
+  data: { order: null, items: [], catalog: [], loading: true, error: '', actionBusy: '', payment: null,
     paymentAmount: '', sheet: '', paidLanding: false, cancelReasons: ['不想要了', '想改一改再下单', '地址填错了', '其他'] },
-  onLoad(q) { this.no = q.no; this.paidIntent = q.paid === '1'; return this.load() },
+  onLoad(q) { this.no = q.no; this.paidIntent = q.paid === '1'; api.catalog().then(c => this.setData({ catalog: c.beads || [] })).catch(() => {}); return this.load() },
   onPullDownRefresh() { return this.load().finally(() => wx.stopPullDownRefresh()) },
   async load() {
     this.setData({ loading: true, error: '' })

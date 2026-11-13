@@ -3721,6 +3721,18 @@
    "instead": ""
   },
   {
+   "word": "改善睡眠",
+   "type": "医疗",
+   "reason": "不能宣称睡眠改善功效",
+   "instead": ""
+  },
+  {
+   "word": "治失眠",
+   "type": "医疗",
+   "reason": "不能宣称治疗失眠",
+   "instead": ""
+  },
+  {
    "word": "情绪稳定",
    "type": "医疗",
    "instead": "气质沉稳"
@@ -3778,6 +3790,30 @@
   {
    "word": "治疗",
    "type": "医疗",
+   "instead": ""
+  },
+  {
+   "word": "治病",
+   "type": "医疗",
+   "reason": "不能宣称疾病治疗功效",
+   "instead": ""
+  },
+  {
+   "word": "根治",
+   "type": "医疗",
+   "reason": "不能宣称疾病可以根治",
+   "instead": ""
+  },
+  {
+   "word": "疗效",
+   "type": "医疗",
+   "reason": "不能宣称医疗疗效",
+   "instead": ""
+  },
+  {
+   "word": "药效",
+   "type": "医疗",
+   "reason": "不能宣称药物功效",
    "instead": ""
   },
   {

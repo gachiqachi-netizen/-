@@ -39,7 +39,7 @@
 
 ## 4. 测试
 
-- `python3 -m unittest discover -s server/tests 2>&1 | tail -15`：`Ran 553 tests in 86.025s`；`OK (skipped=7)`。
+- `python3 -m unittest discover -s server/tests 2>&1 | tail -15`：`Ran 553 tests in 84.796s`；`OK (skipped=7)`。
 - `node --test miniprogram/tests/*.test.js 2>&1 | tail -15`：`tests 162`；`pass 162`；`fail 0`。
 - `python3 kb/validate.py 2>&1 | tail -15`：`已填 200/200 种，有问题 0 条，缺 0 种`。
 - `node --test miniprogram/pages/home/home.test.js 2>&1 | tail -15`：`tests 6`；`pass 6`；`fail 0`。

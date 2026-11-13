@@ -5,6 +5,9 @@
 """
 import json
 import os
+import time
+
+import ai_logs
 
 _provider = None
 _provider_err = None
@@ -155,11 +158,21 @@ def extract_tags(text, history, vocab):
     return p.json(prompt, TAGS_SCHEMA)
 
 
+def _log_design(text, reply, designs, started, p, ok=True, error=None):
+    """B-12：AI 配结束记一次对话记录；记录本身任何失败都不影响返回。"""
+    try:
+        ai_logs.record(None, text, reply, designs, int((time.time() - started) * 1000), p.name,
+                       ok=ok, error="" if error is None else str(error)[:200])
+    except Exception:
+        pass
+
+
 def design(beads, text, history, wrist):
     """AI 配：根据心愿（含之前的对话）给 3 条候选。"""
     p = provider()
     if not p:
         return None
+    started = time.time()
     hist = "\n".join(history[-6:]) or "（无）"
     prompt = (f"你是手串设计师，在和用户聊天帮她配手串。只用下面目录里的珠子，每颗单独卖、可以自由组合。{RULES}\n"
               f"目录（id|名称尺寸|材质|类型|单价|寓意）：\n{catalog_text(beads)}\n\n"
@@ -169,20 +182,26 @@ def design(beads, text, history, wrist):
               "reply 是一句 20-40 字的口语回应；meaning 20-40 字。")
     ids = {b["id"] for b in beads}
     names = {b["id"]: b["name"] for b in beads}
-    out = p.json(prompt, DESIGNS_SCHEMA)
-    designs = _valid_designs(out.get("designs"), ids, 2, names)
-    if not designs:
-        # JSON-only mode guarantees syntax, not that a model copies opaque SKU ids
-        # exactly. Retry once with a compact allow-list; never accept invented ids.
-        allowed = ", ".join(f'{b["id"]}={b["name"]}' for b in beads)
-        retry_prompt = (prompt + "\n\n上一次结果未通过商品目录校验，请重新输出。"
-                        "special 和 pattern 的每个值必须是下列完整 id 之一，不能写珠子名称、颜色、对象或新 id：\n"
-                        + allowed)
-        out = p.json(retry_prompt, DESIGNS_SCHEMA)
+    try:
+        out = p.json(prompt, DESIGNS_SCHEMA)
         designs = _valid_designs(out.get("designs"), ids, 2, names)
         if not designs:
-            raise RuntimeError("AI 给的珠子不在料包里")
-    return {"reply": clean(out.get("reply"), 60), "designs": designs, "by": p.name}
+            # JSON-only mode guarantees syntax, not that a model copies opaque SKU ids
+            # exactly. Retry once with a compact allow-list; never accept invented ids.
+            allowed = ", ".join(f'{b["id"]}={b["name"]}' for b in beads)
+            retry_prompt = (prompt + "\n\n上一次结果未通过商品目录校验，请重新输出。"
+                            "special 和 pattern 的每个值必须是下列完整 id 之一，不能写珠子名称、颜色、对象或新 id：\n"
+                            + allowed)
+            out = p.json(retry_prompt, DESIGNS_SCHEMA)
+            designs = _valid_designs(out.get("designs"), ids, 2, names)
+            if not designs:
+                raise RuntimeError("AI 给的珠子不在料包里")
+        result = {"reply": clean(out.get("reply"), 60), "designs": designs, "by": p.name}
+    except Exception as exc:
+        _log_design(text, "", [], started, p, ok=False, error=exc)
+        raise
+    _log_design(text, result["reply"], result["designs"], started, p)
+    return result
 
 
 def _confidence(v):

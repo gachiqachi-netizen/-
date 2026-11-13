@@ -38,6 +38,8 @@ PBKDF2_ITERATIONS = 600000
 # Method, complete path, permission. More specific paths precede collection paths.
 ROUTE_PERMISSIONS = (
     ("GET", r"/api/admin/audit", "manage_accounts"),
+    ("GET", r"/api/admin/ai-logs", "view_orders"),
+    ("GET", r"/api/admin/ai-stats", "view_orders"),
     ("GET", r"/api/admin/work-orders", "view_work_orders"),
     ("GET", r"/api/admin/orders/[\w-]+/work-order", "view_work_orders"),
     ("GET", r"/api/admin/orders(?:/[\w-]+)?", "view_orders"),

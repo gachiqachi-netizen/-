@@ -191,7 +191,16 @@ def design(beads, text, history, wrist):
         out = p.json(prompt, DESIGNS_SCHEMA)
         designs = _valid_designs(out.get("designs"), ids, 2, names)
         if not designs:
-            raise RuntimeError("AI 给的珠子不在料包里")
+            # JSON-only mode guarantees syntax, not that a model copies opaque SKU ids
+            # exactly. Retry once with a compact allow-list; never accept invented ids.
+            allowed = ", ".join(f'{b["id"]}={b["name"]}' for b in beads)
+            retry_prompt = (prompt + "\n\n上一次结果未通过商品目录校验，请重新输出。"
+                            "special 和 pattern 的每个值必须是下列完整 id 之一，不能写珠子名称、颜色、对象或新 id：\n"
+                            + allowed)
+            out = p.json(retry_prompt, DESIGNS_SCHEMA)
+            designs = _valid_designs(out.get("designs"), ids, 2, names)
+            if not designs:
+                raise RuntimeError("AI 给的珠子不在料包里")
         result = {"message": str(out.get("message") or out.get("reply") or ""), "designs": designs, "by": p.name}
     except Exception as exc:
         _log_design(text, "", [], started, p, ok=False, error=exc)

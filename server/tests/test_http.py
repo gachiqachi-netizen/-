@@ -229,7 +229,7 @@ class HTTPTest(unittest.TestCase):
         listed = self.request('/api/my/orders', token=a)[1]
         public = next(row for row in listed if row['no'] == order['no'])
         self.assertEqual(public['state']['payment'], {'code': 'unpaid', 'label': '待支付'})
-        self.assertEqual(public['allowedActions'], ['cancel_order', 'reorder'])
+        self.assertEqual(public['allowedActions'], ['cancel_order', 'edit_address', 'reorder'])
         self.assertNotIn('userId', public)
         self.assertNotIn('pay', public['allowedActions'])
 

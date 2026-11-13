@@ -1,0 +1,6 @@
+<view class="c-state">
+  <view class="c-state__title">{{title}}</view>
+  <view class="c-state__desc" wx:if="{{desc}}">{{desc}}</view>
+  <button class="c-btn c-btn--sec c-state__action" wx:if="{{action}}" bindtap="onAction">{{action}}</button>
+  <view class="c-link c-state__link" wx:if="{{link}}" bindtap="onLink">{{link}}</view>
+</view>

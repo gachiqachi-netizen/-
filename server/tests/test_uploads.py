@@ -211,6 +211,10 @@ class UserUploadHttpTests(unittest.TestCase):
         cls.old_checker = content_security._image_checker
         for uid, tok in [("owner-1", "o" * 43), ("stranger-1", "s" * 43)]:
             app.db.put("sessions", token_hash(tok), {"userId": uid, "expiresAt": time.time() + 600})
+        # A8a 之后后台登录走 accounts：直接造一个管理员用户和会话，用 Cookie 访问
+        app.db.put("admin_users", "adm1", {"username": "admin", "name": "测试管理员",
+                                           "roleId": "owner", "status": "active", "passwordHash": "x"})
+        app.db.put("admin_sessions", "test-admin-sid", {"userId": "adm1", "expiresAt": time.time() + 600})
         cls.server = ThreadingHTTPServer(("127.0.0.1", 0), app.Handler)
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
@@ -227,13 +231,13 @@ class UserUploadHttpTests(unittest.TestCase):
         cls.env.stop()
         cls.temp.cleanup()
 
-    def get(self, path, token=None, admin=None):
+    def get(self, path, token=None, cookie=None):
         conn = http.client.HTTPConnection("127.0.0.1", self.server.server_port, timeout=3)
         headers = {}
         if token:
             headers["Authorization"] = "Bearer " + token
-        if admin:
-            headers["X-Admin-Token"] = admin
+        if cookie:
+            headers["Cookie"] = cookie
         conn.request("GET", path, headers=headers)
         resp = conn.getresponse()
         body = resp.read()
@@ -268,7 +272,7 @@ class UserUploadHttpTests(unittest.TestCase):
 
     def test_admin_can_view_pending(self):
         record = self.make_upload()
-        status, _, _ = self.get("/uploads/" + record["path"], admin="test-admin")
+        status, _, _ = self.get("/uploads/" + record["path"], cookie="beadloop_admin=test-admin-sid")
         self.assertEqual(status, 200)
 
     def test_passed_visible_to_everyone(self):

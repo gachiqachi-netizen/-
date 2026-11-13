@@ -73,6 +73,38 @@ class AdminAccountsTests(unittest.TestCase):
         self.assertEqual(code, 200)
         return cookie.split(";", 1)[0], body
 
+    def test_bootstrap_login_response_has_only_bootstrap_fields(self):
+        code, body, _ = self.request("/api/admin/session", "POST", {"password": "test-bootstrap-token"})
+        self.assertEqual(code, 200)
+        self.assertEqual(body, {"ok": True, "mustChangePassword": False,
+                                "bootstrap": True, "user": None})
+        self.assertNotIn("passwordHash", json.dumps(body))
+
+    def test_temporary_login_response_requires_password_change(self):
+        owner_cookie, _ = self.owner()
+        code, created, _ = self.request("/api/admin/accounts", "POST",
+                                        {"username": "worker", "name": "做单师傅", "roleId": "maker"},
+                                        cookie=owner_cookie)
+        self.assertEqual(code, 201)
+        code, body, _ = self.request("/api/admin/session", "POST",
+                                      {"username": "worker", "password": created["temporaryPassword"]})
+        self.assertEqual(code, 200)
+        self.assertEqual(body, {"ok": True, "mustChangePassword": True,
+                                "bootstrap": False, "user": {"name": "做单师傅", "roleId": "maker"}})
+        self.assertNotIn("passwordHash", json.dumps(body))
+
+    def test_normal_login_response_can_enter_admin(self):
+        owner_cookie, _ = self.owner()
+        self.assertEqual(self.request("/api/admin/accounts/me/password", "PUT",
+                                      {"oldPassword": "owner-pass-123", "newPassword": "new-owner-pass"},
+                                      cookie=owner_cookie)[0], 200)
+        code, body, _ = self.request("/api/admin/session", "POST",
+                                      {"username": "owner", "password": "new-owner-pass"})
+        self.assertEqual(code, 200)
+        self.assertEqual(body, {"ok": True, "mustChangePassword": False,
+                                "bootstrap": False, "user": {"name": "负责人", "roleId": "owner"}})
+        self.assertNotIn("passwordHash", json.dumps(body))
+
     def test_default_pbkdf2_iterations(self):
         self.assertEqual(self.iterations.temp_original, 600000)
 

@@ -1,12 +1,14 @@
 // 自动生成：python3 tools/export_contract.py，不要手改
 export const CONTRACT = {
   "actions": {
+    "cancel_after_sale": "撤销申请",
     "cancel_order": "取消订单",
     "confirm_receipt": "确认收货",
     "edit_address": "修改地址",
     "pay_order": "去支付",
     "reorder": "按这款再串一条",
     "request_after_sale": "申请售后",
+    "submit_return": "填写寄回单号",
     "view_logistics": "查看物流",
     "write_review": "写评价"
   },
@@ -374,7 +376,7 @@ export const CONTRACT = {
     "用户协议",
     "隐私政策"
   ],
-  "version": "c1d6f8ea0627",
+  "version": "b613840e6da9",
   "workOrderStatuses": {
     "pending": "待开始",
     "producing": "制作中",

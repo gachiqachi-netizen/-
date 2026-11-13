@@ -1,1 +1,4 @@
 .kit{padding:32rpx}
+.h{font-size:var(--fs-caption);color:var(--c-text-2);margin:32rpx 0 16rpx}
+.row{display:flex;align-items:center;gap:24rpx;margin-bottom:16rpx}
+.n{font-size:var(--fs-caption);color:var(--c-text-2)}

@@ -130,4 +130,4 @@ D3b 的角色页现在只能看。接上 A8f 的接口：勾选改完点“保�
 
 ## D9 清理
 
-- **依赖**：D3–D8 都已合并　**只能改**：`server/static/admin.html`、删除 `server/static/admin/{orders,templates,terms,common,after-sales,audit,banners,logistics,products}.js`（不再被加载的旧后台脚本；删之前在 `admin.html` 和 `admin-web` 里搜一遍没有引用）。负责人如果想保留旧后台作备用入口，就改成单独的 `admin-legacy.html`，二选一（E 事项，问负责人）。
+- **依赖**：D3–D8 都已合并　**只能改**：`server/static/admin.html`、删除 `server/static/admin/{orders,templates,terms,common,after-sales,audit,banners,logistics,products}.js`（不再被加载的旧后台脚本；删之前在 `admin.html` 和 `admin-web` 里搜一遍没有引用）。**负责人已定（2026-11-14）：直接删，不保留备用入口。**

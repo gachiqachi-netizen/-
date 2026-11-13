@@ -1,6 +1,7 @@
 """新接口的注册处：每个领域一个文件，文件里定义 ROUTES = [(方法, 正则, 处理函数, 需要什么登录)]。
 
-需要什么登录："public" 不登录；"user" 用户登录；"admin" 后台登录（A8b 以后会变成权限点名字）。
+需要什么登录："public" 不登录；"user" 用户登录；"admin" 后台登录；也可写权限点名字。
+新的后台路由直接写权限点名字，不要再写 "admin"。
 写了别的值，加载时直接报错；分发时也只有明确写 "public" 的才不检查登录。
 路径正则按整条路径匹配（fullmatch），不会只匹配开头。
 
@@ -24,7 +25,9 @@ class Ctx:
         self.ip = ip
 
 
-AUTH_KINDS = ("public", "user", "admin")
+from accounts import PERMISSIONS
+
+AUTH_KINDS = ("public", "user", "admin", *PERMISSIONS)
 METHODS = ("GET", "POST", "PUT", "DELETE")
 
 

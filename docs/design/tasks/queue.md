@@ -19,7 +19,7 @@
 | C2 | agent/C2-order-state | miniprogram-wave1.md | A2、C0z | 任何 |  |  |
 | D2 | agent/D2-admin-shell | admin-wave1.md | D1 | 任何 |  |  |
 | D1b | agent/D1b-admin-order-detail | admin-wave1.md | A2、D2 | 任何 |  |  |
-| A3 | agent/A3-no-handwork | backend-wave2.md | A1 | Codex | B-11b | E1 新单价 |
+| A3 | agent/A3-pricing-settings | backend-wave2.md | A1、A11、A11m | Codex | B-11b |  |
 | A7 | agent/A7-phone-login | backend-wave2.md | A11 | Codex |  |  |
 | A8a | agent/A8a-admin-accounts | backend-wave2.md | A11、A11m | Codex |  |  |
 | A8b | agent/A8b-admin-permissions | backend-wave2.md | A8a | Codex | B-5、B-8 |  |
@@ -82,6 +82,7 @@
 | D5a | agent/D5a-order-detail-ops | admin-wave2.md | D1b、A4c | 任何 |  |  |
 | D5b | agent/D5b-after-sale-admin | admin-wave2.md | A5b、D2 | 任何 |  |  |
 | D6a | agent/D6a-products | admin-wave2.md | B-7、D2 | 任何 |  |  |
+| D6c | agent/D6c-pricing-settings | admin-wave2.md | A3、D2、D6a | 任何 |  |  |
 | D6b | agent/D6b-templates | admin-wave2.md | D2 | 任何 |  |  |
 | D7a | agent/D7a-review-moderation | admin-wave2.md | B-2、D2 | 任何 |  |  |
 | D7b | agent/D7b-home-admin | admin-wave2.md | B-5、D2 | 任何 |  |  |

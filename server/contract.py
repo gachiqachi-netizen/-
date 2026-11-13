@@ -1,6 +1,6 @@
 """对外的代码和中文叫法：唯一来源。前端用的文件由 tools/export_contract.py 生成，不要手改。"""
 import hashlib, json
-import commerce, status
+import commerce, kb, status
 
 GROUPS = [  # 五组状态：key 给前端用，field 是订单里的字段名
     {"key": "order", "field": "orderStatus", "label": "订单"},
@@ -93,6 +93,7 @@ def payload():
         "workOrderSteps": list(commerce.WORK_ORDER_STEPS), "workOrderStatuses": WORK_ORDER_STATUSES,
         "qualityGateItems": QUALITY_GATE_ITEMS,
         "cancelReasons": CANCEL_REASONS,
+        "bannedWords": sorted(kb._load()["banned"], key=lambda word: (-len(word), word)),
     }
     raw = json.dumps(data, ensure_ascii=False, sort_keys=True)
     return {"version": hashlib.sha256(raw.encode("utf-8")).hexdigest()[:12], **data}

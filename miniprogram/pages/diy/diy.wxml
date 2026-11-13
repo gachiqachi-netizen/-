@@ -4,13 +4,14 @@
     <view class="topbar-title" bindtap="works">我的作品 <text class="save-dot" wx:if="{{saveDot}}">●</text> ›</view>
     <view class="topbar-more" bindtap="toggleMore">···</view>
   </view>
-  <view class="tray">
-    <view class="tray-name" bindtap="openSettings"><text>{{design.name || '起个名字'}} ›</text><text class="tray-tags" wx:if="{{beadCount >= 6}}">{{tagLine}}</text></view>
+  <view class="tray {{trayExpanded ? 'tray-expanded' : ''}}" bindtouchstart="trayTouchStart" bindtouchmove="trayTouchMove" bindtouchend="trayTouchEnd">
+    <view class="tray-name" bindtap="openName"><text>{{nameLabel}} ›</text><text class="tray-tags" wx:if="{{beadCount >= 6}}">{{tagLine}}</text></view>
     <view class="tray-empty" wx:if="{{!items.length}}">
       <view class="empty-ring"><c-wordmark tone="line" size="s" /></view>
       <view class="empty-hint">从下面挑一颗开始</view>
     </view>
-    <view wx:else id="workbench-bracelet" class="bracelet-touch" bindtap="selectTray"><c-bracelet beads="{{items}}" size="{{470}}" selected="{{selected}}" wordmark="{{true}}" /><view class="kind-ring" wx:for="{{kindPositions}}" wx:key="index" style="left:{{item.x}}rpx;top:{{item.y}}rpx;width:{{item.box}}rpx;height:{{item.box}}rpx;"></view></view>
+    <view wx:else id="workbench-bracelet" class="bracelet-touch" bindtap="selectTray" bindlongpress="trayLongPress"><view wx:if="{{stackPreview}}" class="stack-extra"><c-bracelet mode="stack" stackBeads="{{stackBeads}}" size="{{330}}" /></view><view class="{{stackPreview ? 'stack-current' : ''}}"><c-bracelet beads="{{items}}" size="{{stackPreview ? 330 : 470}}" selected="{{selected}}" wordmark="{{true}}" /></view><view class="kind-ring" wx:for="{{kindPositions}}" wx:key="index" style="left:{{item.x}}rpx;top:{{item.y}}rpx;width:{{item.box}}rpx;height:{{item.box}}rpx;"></view></view>
+    <view class="stack-label" wx:if="{{stackPreview}}" bindtap="closeStackPreview">叠戴预览 · {{stackLabel}}　✕</view>
     <view class="side-actions">
       <view class="side-action {{canUndo ? '' : 'is-disabled'}}" bindtap="undo">↶<text>撤销</text></view>
       <view class="side-action" bindtap="stack">◎<text>叠戴</text></view>
@@ -36,7 +37,10 @@
     <scroll-view wx:else scroll-y class="bead-scroll" scroll-into-view="{{scrollBeadId}}"><view class="bead-grid"><view class="bead-choice {{outOfStockId === item.id ? 'bead-shake' : ''}} {{focusedBeadId === item.id ? 'bead-focused' : ''}}" wx:for="{{displayBeads}}" wx:key="id" id="bead-{{item.id}}" data-id="{{item.id}}" bindtap="add" bindlongpress="inspect"><view class="bead-visual"><c-bead bead="{{item}}" size="m" state="{{item.stock === 'out_of_stock' ? 'off' : 'normal'}}" /><text class="bead-count" wx:if="{{item.selectedCount}}">{{item.selectedCount}}</text></view><view class="bead-name">{{item.name}}</view><view class="bead-meta">{{item.stock === 'out_of_stock' ? '暂时缺货' : item.mm + 'mm ¥' + item.price}}</view></view></view></scroll-view>
   </view>
   <view class="bottom" wx:if="{{beadCount}}"><view class="bottom-price"><text>{{handPrice}}</text></view><button class="finish" bindtap="finish">串好了</button></view>
-  <view class="more-sheet" wx:if="{{moreOpen}}"><view bindtap="save">保存作品</view><view bindtap="openSettings">设置手围</view><view bindtap="trash">清空手串</view></view>
+  <c-sheet show="{{stackOpen}}" title="和哪几条叠着看" bindclose="closeStack"><view class="stack-help">从你串过的里选，最多两条。只是看效果，不会改这条，也不会一起下单。</view><view class="stack-option" wx:for="{{stackOptions}}" wx:key="id" data-id="{{item.id}}" bindtap="chooseStack"><c-design-row design="{{item}}" catalog="{{catalog}}" sub="{{item.beads.length}} 颗"><view class="stack-check {{item.chosen ? 'is-chosen' : ''}}">{{item.chosen ? '✓' : ''}}</view></c-design-row></view><button slot="footer" class="stack-submit" bindtap="applyStack">叠上看看</button></c-sheet>
+  <c-sheet show="{{moreOpen}}" title="更多" bindclose="toggleMore"><view class="more-option" bindtap="reflowWrist">按手围重排</view><view class="more-option" bindtap="openCount">按颗数串</view><view class="more-option" bindtap="toggleSound">落珠声　{{soundOn ? '开' : '关'}}</view></c-sheet>
+  <c-sheet show="{{countOpen}}" title="按颗数串" bindclose="closeCount"><view class="count-choices"><view wx:for="{{[12,14,18,21,108]}}" wx:key="*this" data-count="{{item}}" bindtap="count">{{item}} 颗</view></view></c-sheet>
+  <c-sheet show="{{nameOpen}}" title="给这条手串起个名字" bindclose="closeName"><view class="name-input-row"><input maxlength="8" value="{{nameDraft}}" placeholder="输入名字" bindinput="nameInput" /><text>{{nameDraft.length}}/8</text></view><view class="name-error" wx:if="{{nameError}}">{{nameError}}</view><view class="name-intro" wx:if="{{nameSuggestions.length}}">按它的寓意，可以叫</view><view class="name-suggestions"><view wx:for="{{nameSuggestions}}" wx:key="*this" data-name="{{item}}" bindtap="chooseName">{{item}}</view></view><button slot="footer" class="name-submit" bindtap="confirmName">好了</button></c-sheet>
   <c-sheet show="{{safetyOpen}}" title="加之前请了解" bindclose="cancelSafety" maskClose="{{false}}"><view class="safety-head"><c-bead bead="{{safetyBead}}" size="s" /><view><view>{{safetyBead.name}} {{safetyBead.mm}}mm</view><view class="safety-meaning">{{safetyBead.meaning || safetyBead.summary}}</view></view></view><view class="safety-body"><view class="safety-note">{{safetyNote}}</view><view>{{safetyCare}}</view></view><view class="safety-hint">之后再加这颗不再弹出；珠子详情和下单时都能看到这段说明。</view><view slot="footer" class="safety-actions"><button bindtap="cancelSafety">不加了</button><button class="safety-confirm" bindtap="confirmSafety">知道了，继续加</button></view></c-sheet>
   <c-sheet show="{{detailOpen}}" title="{{detailBead.name}}" bindclose="closeInspect"><view class="detail-body"><c-bead bead="{{detailBead}}" size="l" /><view>{{detailBead.mm}}mm · ¥{{detailBead.price}}</view><view>{{detailBead.meaning}}</view></view><button slot="footer" class="safety-confirm" bindtap="addInspected">加一颗到手串</button></c-sheet>
   <c-toast />

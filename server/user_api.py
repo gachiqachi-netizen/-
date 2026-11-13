@@ -105,6 +105,8 @@ def design_data(data, owner_id):
     wrist = data.get('wrist', 15)
     if not isinstance(name, str) or len(name) > 60 or not name.strip():
         raise ValueError('请填写设计名称')
+    if kb.banned_in(name):
+        raise ValueError('名字里不要写功效类的词')
     content_security.ensure_allowed(name)
     if not isinstance(beads, list) or len(beads) > 500 or any(not isinstance(i, str) or len(i) > 100 for i in beads):
         raise ValueError('珠子数据格式不正确')

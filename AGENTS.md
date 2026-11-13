@@ -22,6 +22,6 @@
   ```
 - 不接真实支付；不写任何真实密钥、令牌、手机号、地址。
 - 给用户看的文字只讲寓意不讲功效（禁用词表在 `kb/data/attributes.json`）。
-- 金额按“分”的整数计算；尺寸规则不能改（以小程序工作台 `miniprogram/pages/editor/logic.js` 的 `stats` 为准，后端 `server/plans.py` 的 `main_mm`、`target_for`、`_fill` 与它一致；两边共用用例在 `server/tests/fixtures/size_rule_cases.json`，不要只改一边）。
+- 金额按“分”的整数计算；尺寸规则不能改（以小程序工作台 `miniprogram/pages/diy/logic.js` 的 `stats` 为准（`pages/editor/logic.js` 只是转接），后端 `server/plans.py` 的 `main_mm`、`target_for`、`_fill` 与它一致；两边共用用例在 `server/tests/fixtures/size_rule_cases.json`，不要只改一边）。
 - 小程序代码不要依赖 `URL` 等浏览器对象；地址不要写死，一律走 `miniprogram/config.js`。
 - 拿不准产品意图时停下来问，不要猜；没在微信开发者工具或真机上验证过的，不要说“已通过”。

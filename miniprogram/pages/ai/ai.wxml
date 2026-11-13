@@ -26,7 +26,8 @@
               <view wx:for="{{message.results}}" wx:key="index" wx:for-item="result" wx:for-index="ri" id="rec-{{mi}}-{{ri}}" class="ai-card">
                 <view class="ai-card-open" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail"><view class="ai-art"><c-bracelet beads="{{result.beadObjects}}" size="240" /></view></view>
                 <view class="ai-card-body">
-                  <view class="ai-card-heading" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail"><text class="ai-card-name">{{result.name}}</text><text class="ai-price" wx:if="{{result.price !== ''}}">¥{{result.price}}</text></view>
+                  <view class="ai-card-heading" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail"><text class="ai-card-name">{{result.name}}</text><text class="ai-price" wx:if="{{result.priceText}}">{{result.priceText}}</text></view>
+                  <view class="ai-size" wx:if="{{result.lengthCm}}">{{result.count}} 颗 · {{result.lengthCm}}cm</view>
                   <view class="ai-meaning" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail">{{result.meaning || result.line}}</view>
                   <view class="ai-tags"><text wx:for="{{result.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text></view>
                   <view class="ai-actions"><button class="c-btn c-btn--sec c-btn--s" data-message="{{mi}}" data-index="{{ri}}" bindtap="use">改一改</button><button class="c-btn c-btn--s" data-message="{{mi}}" data-index="{{ri}}" bindtap="order">去下单</button></view>

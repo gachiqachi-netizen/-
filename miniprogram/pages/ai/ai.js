@@ -4,6 +4,8 @@ const templates = require('../../utils/template')
 const wrist = require('../home/data').wrist
 const nav = require('../../utils/nav')
 const { queue } = require('../../utils/toast')
+const { totalHand } = require('../finish/total')
+const money = require('../../utils/money')
 
 const STORAGE = 'cgz_ai_chat'
 const EXAMPLES = ['想要清冷一点，上班也能戴', '送闺蜜生日，她喜欢粉色', '想要夏天海边的感觉']
@@ -41,6 +43,7 @@ Page({
     }
     api.catalog().then(c => {
       this.catalog = c.beads || []
+      this.pricing = c.pricing || {}
       this.setData({ catalog: this.catalog })
       if (this.data.messages.length) this.setData({ messages: this.data.messages.map(m => m.results ? { ...m, results: m.results.map(r => this.decorate(r)) } : m) })
     }).catch(() => {})
@@ -57,9 +60,12 @@ Page({
     const fixed = Number.isInteger(t.fixed) && t.fixed > 0 ? t.fixed : null
     const ids = Array.isArray(t.beads) && t.beads.length ? t.beads : ((t.pattern || []).length ? templates.build({ ...t, fixed }, catalog, this.data.wrist) || [] : [])
     const materials = ids.map(id => map[id])
-    const calculatedPrice = ids.length && materials.every(Boolean) ? Math.round((materials.reduce((sum, b) => sum + Number(b.price || 0), 0) + 15) * 100) / 100 : ''
-    const price = Number.isInteger(t.payableFen) ? t.payableFen / 100 : (t.price == null || t.price === '' ? calculatedPrice : t.price)
-    return { ...t, fixed, price, beads: ids, beadObjects: materials.filter(Boolean), line: t.line || t.meaning || t.summary || '', tags: t.tags || (t.line ? t.line.split(/[、·]/).filter(Boolean) : []), count: t.count || ids.length }
+    const goodsFen = materials.length && materials.every(Boolean) ? materials.reduce((sum, b) => sum + (Number.isInteger(b.priceFen) ? b.priceFen : Math.round(Number(b.price || 0) * 100)), 0) : null
+    const payableFen = Number.isInteger(t.payableFen) ? t.payableFen : (goodsFen == null ? null : totalHand(goodsFen, this.pricing).payableFen)
+    const price = payableFen == null ? '' : payableFen / 100
+    const lengthCm = Number.isInteger(t.lengthMm) ? (t.lengthMm / 10).toFixed(1) : ''
+    return { ...t, fixed, price, priceText: payableFen == null ? '' : money.yuan(payableFen), beads: ids, beadObjects: materials.filter(Boolean), line: t.line || t.meaning || t.summary || '', tags: t.tags || (t.line ? t.line.split(/[、·]/).filter(Boolean) : []), count: Number.isInteger(t.count) ? t.count : ids.length, lengthCm }
+
   },
   copyMessage(e) {
     const m = this.data.messages[Number(e.currentTarget.dataset.index)]
@@ -98,7 +104,8 @@ Page({
       let result, aiError, planError
       try {
         const design = await api.request('/ai/design', { text, wrist: wristSize, history: this.data.messages.slice(-6).map(m => (m.role === 'me' ? '用户：' : '你：') + m.text) }, 'POST', { timeout: 180000 })
-        if (Array.isArray(design.designs) && design.designs.length) result = { results: design.designs.map((d, i) => ({ ...d, ...(design.plans || [])[i] })), reply: design.reply || design.message, by: 'ai', quickReplies: design.quickReplies }
+        if (Array.isArray(design.plans) && design.plans.length) result = { results: design.plans.map((p, i) => ({ ...(design.designs || [])[i], name: p.name, beads: p.beads, count: p.count, lengthMm: p.lengthMm, payableFen: p.payableFen, line: p.line, fromPlan: true })), reply: design.reply || design.message, by: 'ai', quickReplies: design.quickReplies }
+        else if (Array.isArray(design.designs) && design.designs.length) result = { results: design.designs, reply: design.reply || design.message, by: 'ai', quickReplies: design.quickReplies }
       } catch (err) { aiError = err }
       if (!result) {
         try { result = await api.request('/plans/match', { text, wrist: wristSize, history }) } catch (err) { planError = err }
@@ -126,11 +133,11 @@ Page({
     const m = this.data.messages[Number(e.currentTarget.dataset.message)]
     return m && m.results && m.results[Number(e.currentTarget.dataset.index)]
   },
-  saveResult(t) { const d = store.fromTemplate(t, this.catalog || [], wrist()); if (typeof wx.setStorageSync === 'function') store.save(d); store.selected(d); return d },
+  saveResult(t) { const d = t.fromPlan && t.beads && t.beads.length ? { ...store.create(), name: t.name, meaning: t.meaning || t.line, beads: t.beads.slice(), wrist: wrist(), source: 'ai' } : store.fromTemplate(t, this.catalog || [], wrist()); if (typeof wx.setStorageSync === 'function') store.save(d); store.selected(d); return d },
   openDetail(e) { const t = this.designAt(e); if (!t) return; this.saveResult(t); wx.navigateTo({ url: '/pages/finish/finish' }) },
   use(e) {
     const t = this.designAt(e)
-    if (!t || !t.pattern || !t.pattern.length) return wx.showToast({ title: '方案无法使用', icon: 'none' })
+    if (!t || (!(t.pattern && t.pattern.length) && !(t.fromPlan && t.beads && t.beads.length))) return wx.showToast({ title: '方案无法使用', icon: 'none' })
     this.saveResult(t); nav.openEditor()
   },
   order(e) { const t = this.designAt(e); if (!t) return; this.saveResult(t); nav.openOrder() },

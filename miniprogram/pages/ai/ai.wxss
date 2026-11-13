@@ -24,6 +24,7 @@
 .ai-card-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12rpx; }
 .ai-card-name { font-size: var(--fs-title); font-weight: var(--fw-bold); }
 .ai-price { font-size: var(--fs-caption); color: var(--c-text-2); }
+.ai-size { margin-top: 8rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
 .ai-meaning { margin-top: 8rpx; font-size: var(--fs-body); }
 .ai-tags { display: flex; gap: 12rpx; flex-wrap: wrap; color: var(--c-text-2); font-size: var(--fs-caption); margin-top: 8rpx; }
 .ai-actions { display: flex; gap: 12rpx; margin-top: 24rpx; }

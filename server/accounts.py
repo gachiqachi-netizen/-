@@ -238,3 +238,67 @@ def require_last_owner(db, user, new_role=None, new_status=None):
     owners = [u for u in db.list("admin_users") if u.get("roleId") == "owner" and u.get("status") == "active"]
     if user.get("status") == "active" and len(owners) <= 1:
         raise ValueError("最后一个在用的负责人不能停用或降级")
+
+
+def public_role(role):
+    return {key: role.get(key) for key in ("id", "name", "permissions", "builtin", "dataScope")}
+
+
+def validate_role(db, name, permissions, data_scope, role_id=None):
+    if not isinstance(name, str) or not name.strip() or len(name.strip()) > 20:
+        raise ValueError("角色名称须为 1–20 字")
+    name = name.strip()
+    if any(role.get("name") == name and role.get("id") != role_id for role in db.list("admin_roles")):
+        raise ValueError("角色名称已存在")
+    if not isinstance(permissions, list) or any(not isinstance(item, str) or item not in PERMISSIONS for item in permissions):
+        raise ValueError("权限点不正确")
+    if data_scope not in ("all", "own"):
+        raise ValueError("数据范围只能是 all 或 own")
+    return name, list(dict.fromkeys(permissions)), data_scope
+
+
+def create_role(db, name, permissions, data_scope):
+    name, permissions, data_scope = validate_role(db, name, permissions, data_scope)
+    role_id = uuid.uuid4().hex
+    db.put("admin_roles", role_id, {"name": name, "permissions": permissions,
+                                     "dataScope": data_scope, "builtin": False})
+    return public_role(db.get("admin_roles", role_id))
+
+
+def update_role(db, role_id, changes):
+    role = db.get("admin_roles", role_id)
+    if role is None:
+        raise ValueError("角色不存在")
+    if role.get("builtin") and "name" in changes and changes["name"] != role["name"]:
+        raise ValueError("内置角色不能改名")
+    if role_id == "owner" and "permissions" in changes and changes["permissions"] != list(PERMISSIONS):
+        raise ValueError("负责人权限不能修改")
+    name, permissions, data_scope = validate_role(
+        db, changes.get("name", role["name"]), changes.get("permissions", role["permissions"]),
+        changes.get("dataScope", role["dataScope"]), role_id)
+    role.update(name=name, permissions=permissions, dataScope=data_scope)
+    db.put("admin_roles", role_id, role)
+    return public_role(db.get("admin_roles", role_id))
+
+
+def delete_role(db, role_id):
+    role = db.get("admin_roles", role_id)
+    if role is None:
+        raise ValueError("角色不存在")
+    if role.get("builtin"):
+        raise ValueError("内置角色不能删除")
+    users = sum(user.get("roleId") == role_id for user in db.list("admin_users"))
+    if users:
+        raise ValueError(f"有 {users} 个账号在用这个角色，先把他们换到别的角色")
+    db.delete("admin_roles", role_id)
+
+
+def current_admin(db, user):
+    role = db.get("admin_roles", user.get("roleId"))
+    if role is None:
+        raise ValueError("角色不存在")
+    permissions = list(PERMISSIONS) if user.get("roleId") == "owner" else list(role.get("permissions") or [])
+    return {"name": user.get("name"), "roleId": user.get("roleId"),
+            "roleName": role.get("name"), "permissions": permissions,
+            "permissionNames": [PERMISSIONS[item] for item in permissions if item in PERMISSIONS],
+            "dataScope": role.get("dataScope"), "mustChangePassword": bool(user.get("mustChangePassword"))}

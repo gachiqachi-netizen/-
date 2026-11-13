@@ -238,6 +238,7 @@ def change_my_order_address(db, no, uid, data):
 def request_after_sale(db, no, uid, data):
     import commerce
     import contract
+    import re
     order = db.get('orders', no)
     if not order or order.get('userId') != uid:
         raise KeyError('订单不存在')
@@ -255,6 +256,16 @@ def request_after_sale(db, no, uid, data):
     if not isinstance(note, str) or len(note) > 500:
         raise ValueError('售后说明不能超过 500 字')
     content_security.ensure_allowed(note)
+    photo_ids = data.get('photoIds')
+    if photo_ids is not None:
+        if not isinstance(photo_ids, list) or len(photo_ids) > 6 or any(
+                not isinstance(rid, str) or not (record := db.get('uploads', rid))
+                or record.get('userId') != uid or record.get('checkStatus') == 'rejected'
+                for rid in photo_ids):
+            raise ValueError('售后照片不正确')
+    phone = data.get('contactPhone')
+    if phone is not None and (not isinstance(phone, str) or not re.fullmatch(r'1\d{10}', phone)):
+        raise ValueError('联系电话格式不正确')
     wrist = data.get('newWrist')
     if atype == '改手围重串':
         if type(wrist) not in (int, float) or not 13 <= wrist <= 20:
@@ -262,6 +273,10 @@ def request_after_sale(db, no, uid, data):
     payload = {'orderNo': no, 'type': atype, 'reason': reason, 'userNote': note,
                'refundFen': commerce.refund_amount_for(order, atype),
                'idempotencyKey': key}
+    if photo_ids is not None:
+        payload['photoIds'] = photo_ids
+    if phone is not None:
+        payload['contactPhone'] = phone
     if atype == '改手围重串':
         payload['newWrist'] = wrist
     sale = commerce.create_after_sale(db, payload, actor='customer')

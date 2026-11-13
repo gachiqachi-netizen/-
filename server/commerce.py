@@ -1525,6 +1525,9 @@ def create_after_sale(db, data, actor=ACTOR):
             rec["idempotencyKey"] = idem_key
         if "newWrist" in data:
             rec["newWrist"] = data["newWrist"]
+        for field in ("photoIds", "contactPhone"):
+            if field in data:
+                rec[field] = data[field]
         w.put_after_sale(no, rec)
 
         order["afterSaleStatus"] = "requested"

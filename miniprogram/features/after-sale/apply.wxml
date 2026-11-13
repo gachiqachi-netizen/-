@@ -1,4 +1,24 @@
 <view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+  <view wx:if="{{loading}}" class="hint">正在读取申请选项…</view>
+  <view wx:if="{{error}}" class="error">{{error}}</view>
+  <button wx:if="{{error && !option}}" bindtap="load">重试</button>
+  <block wx:if="{{option}}">
+    <view class="summary">{{option.label}}</view>
+    <view class="row" bindtap="toggleReasons"><text>原因</text><text>{{reason || '请选择原因'}}　⌄</text></view>
+    <view wx:if="{{reasonOpen}}" class="reasons"><view wx:for="{{reasons}}" wx:key="*this" class="reason" data-reason="{{item}}" bindtap="chooseReason">{{item}}</view></view>
+    <view class="field"><view>照片 <text class="hint">最多 6 张，质量问题必填</text></view>
+      <view class="photos"><view wx:for="{{photos}}" wx:key="path" class="photo">
+        <image src="{{item.path}}" mode="aspectFill" data-index="{{index}}" bindtap="retryPhoto"/>
+        <text wx:if="{{item.busy}}">上传中…</text><text wx:if="{{item.error}}" data-index="{{index}}" bindtap="retryPhoto">{{item.error}}</text>
+        <text class="remove" data-index="{{index}}" bindtap="removePhoto">×</text>
+      </view><button wx:if="{{photos.length < 6}}" class="add" bindtap="addPhoto">＋</button></view>
+      <view wx:if="{{photoError}}" class="error">{{photoError}}</view>
+    </view>
+    <view class="field"><view>说明 <text class="hint">选填</text></view><textarea maxlength="500" placeholder="请描述遇到的问题" value="{{note}}" bindinput="inputNote"/></view>
+    <view class="row"><text>退款金额</text><text>¥{{amount}}</text></view>
+    <view class="field"><view>联系电话</view><input type="number" maxlength="11" value="{{phone}}" bindinput="inputPhone" placeholder="请输入联系电话"/></view>
+    <view wx:if="{{option.type === '改手围重串'}}" class="field"><view>新手围（cm）</view><input type="digit" value="{{newWrist}}" bindinput="inputWrist" placeholder="13–20"/></view>
+    <view class="hint footnote">审核通过后，按页面提示寄回。</view>
+  </block>
 </view>
+<view wx:if="{{option}}" class="bar"><button disabled="{{!reason || submitting}}" loading="{{submitting}}" bindtap="submit">{{submitting ? '正在提交……' : (reason ? '提交申请' : '先选一个原因')}}</button></view>

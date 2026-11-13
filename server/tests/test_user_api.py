@@ -56,7 +56,13 @@ class UserAPITest(unittest.TestCase):
         one = user_api.create_share(self.db, d, 'owner')['shareId']
         two = user_api.create_share(self.db, d, 'owner')['shareId']
         self.assertNotEqual(one, two)
-        self.assertEqual(user_api.read_share(self.db, one), {'name': '测试', 'wrist': 15, 'beads': ['a', 'b']})
+        public_share = user_api.read_share(self.db, one)
+        self.assertIsInstance(public_share['createdAt'], int)
+        self.assertGreater(public_share['createdAt'], 0)
+        self.assertEqual(public_share, {'name': '测试', 'wrist': 15, 'beads': ['a', 'b'],
+                                        'createdAt': public_share['createdAt'],
+                                        'authorLabel': '来自珠养养的一位用户'})
+        self.assertNotIn('userId', public_share)
         self.assertIsNone(user_api.read_share(self.db, 'bad'))
         self.assertIsNone(user_api.read_share(self.db, 'a' * 43))
 

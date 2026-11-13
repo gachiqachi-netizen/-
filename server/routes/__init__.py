@@ -6,6 +6,7 @@
 路径正则按整条路径匹配（fullmatch），不会只匹配开头。
 
 处理函数签名：fn(ctx, match, data) -> (状态码, 返回体)。
+返回二进制时写 (状态码, bytes, Content-Type)。
 ctx 里有 db、user_id（用户登录时）、admin（后台登录时为真）、qs（查询参数）。ctx.ip 是客户端 IP。
 data 是请求 JSON（GET 时为 None）。抛 ValueError 返回 400，抛 KeyError 返回 404。
 """

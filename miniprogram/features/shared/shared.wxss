@@ -1,3 +1,19 @@
-.stage{height:460rpx;position:relative;margin:24rpx auto;width:100%;background:#fafafa;border-radius:24rpx}.bead{width:24rpx;height:24rpx;position:absolute;border-radius:50%;transform:translate(-50%,-50%);box-shadow:inset -3rpx -3rpx 6rpx #0003}
-
-.wrap{padding-bottom:180rpx}.shared-bottom{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;align-items:center;gap:12rpx;padding:20rpx 32rpx calc(20rpx + env(safe-area-inset-bottom));z-index:4}.shared-sum{flex:1;color:#c8302e;font-size:32rpx;font-weight:700}.shared-sum .sub{font-weight:400;font-size:22rpx}.shared-bottom button{margin:0;width:auto;padding:0 20rpx;font-size:26rpx}.shared-bottom .ghost{background:#fff;border:1rpx solid #8f8781}
+.shared-page{padding-bottom:160rpx;background:var(--c-bg);min-height:100vh;color:var(--c-text)}
+.top{padding:20rpx 32rpx;font-size:26rpx}
+.stage{height:660rpx;background:var(--c-surface);position:relative}
+.stage-mark{position:absolute;top:47%;left:0;width:100%;text-align:center;font-family:serif;letter-spacing:8rpx;pointer-events:none}
+.stage-mark text,.brand text{display:block;font-family:serif;font-size:18rpx;letter-spacing:3rpx;margin-top:8rpx}
+.intro{text-align:center;padding:34rpx 24rpx 24rpx}
+.name{font-size:48rpx;font-weight:600;margin:12rpx 0}
+.meaning{font-size:30rpx;margin:8rpx 0}
+.muted{color:var(--c-text-2);font-size:24rpx;line-height:1.6}
+.section{padding:24rpx 40rpx}
+.heading{font-size:30rpx;font-weight:600;margin-bottom:20rpx}
+.note{display:flex;align-items:center;gap:20rpx;padding:20rpx 0;border-bottom:1rpx solid var(--c-line)}
+.note-body{flex:1}.note-name{font-size:28rpx;font-weight:600}
+.brand{text-align:center;padding:44rpx 0;font-family:serif;letter-spacing:8rpx}
+.shared-bottom{position:fixed;bottom:0;left:0;right:0;display:flex;gap:16rpx;padding:16rpx 32rpx calc(16rpx + env(safe-area-inset-bottom));background:var(--c-bg)}
+.shared-bottom button{flex:1;margin:0;font-size:26rpx;border-radius:999rpx}
+.secondary{background:var(--c-bg);color:var(--c-text);border:1rpx solid var(--c-line)}
+.empty{text-align:center;padding:140rpx 40rpx}.empty-title{font-size:40rpx;margin-bottom:16rpx}.empty button{margin-top:40rpx}
+.skeleton{padding:24rpx}.skeleton view{height:50rpx;margin-bottom:24rpx;background:var(--c-surface)}.skeleton view:first-child{height:600rpx}

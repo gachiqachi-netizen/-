@@ -1,1 +1,13 @@
-<view class="wrap"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view><view wx:if="{{loading}}">正在加载设计…</view><view class="error" wx:if="{{error}}">{{error}}</view><view wx:if="{{design}}"><view class="card"><view class="title">{{design.name}}</view><view class="sub">已按你的 {{design.wrist}}cm 手围重新排好 · {{design.beads.length}} 颗</view><view class="sub" wx:if="{{!measured}}">暂按常用 15cm 排列，可在编辑时修改手围。</view><view class="stage"><bracelet3d beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}"/></view><view class="sub" wx:if="{{missing}}">部分材料当前不可用，使用同款后请检查材料。</view></view><view class="card"><view class="title">每颗珠子的寓意</view><view wx:for="{{notes}}" wx:key="id" class="sub">{{item.name}} · {{item.meaning}}</view></view><view class="shared-bottom"><view class="shared-sum">¥{{price}}<view class="sub">按 {{design.wrist}}cm 手围串，含手工费</view></view><button class="ghost" bindtap="use">改成我的</button><button class="primary" bindtap="buySame">买同款</button></view></view></view>
+<view class="shared-page">
+  <view class="top" bindtap="home">首页</view>
+  <view wx:if="{{loading}}" class="skeleton"><view></view><view></view><view></view></view>
+  <view wx:elif="{{deleted}}" class="empty"><view class="empty-title">这条手串看不到了</view><view class="muted">可能已经被主人删除</view><button class="secondary" bindtap="start">我也串一条</button></view>
+  <view wx:elif="{{error}}" class="empty"><view class="empty-title">没连上</view><view class="muted">{{error}}</view><button class="secondary" bindtap="retry">再试一次</button></view>
+  <view wx:elif="{{design}}">
+    <view class="stage"><bracelet3d beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}"/><view class="stage-mark">珠养养<text>ZHU YANG YANG</text></view></view>
+    <view class="intro"><view class="muted">{{authorLabel}}<text wx:if="{{dateLabel}}"> · {{dateLabel}}</text></view><view class="name">{{design.name}}</view><view wx:if="{{meaning}}" class="meaning">{{meaning}}</view><view wx:if="{{tags}}" class="muted">{{tags}}</view></view>
+    <view class="section"><view class="heading">每一颗的寓意</view><view wx:for="{{notes}}" wx:key="id" class="note"><view class="note-body"><view class="note-name">{{item.name}}</view><view class="muted">{{item.meaning}}</view></view><view class="muted">×{{item.count}}</view></view></view>
+    <view class="brand">珠养养<text>ZHU YANG YANG</text></view>
+    <view class="shared-bottom"><button class="secondary" bindtap="start">我也串一条</button><button class="primary" bindtap="use">照这条串一条</button></view>
+  </view>
+</view>

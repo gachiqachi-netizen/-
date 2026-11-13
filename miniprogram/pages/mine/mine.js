@@ -12,6 +12,7 @@ Page({
   api.catalog().then(c=>{this.setData({catalog:c.beads||[]});this.refreshRecentBeads()}).catch(()=>{})
   if(loggedIn)this.loadOrders()
  },
+ onPullDownRefresh(){this.onShow();wx.stopPullDownRefresh()},
  refreshRecentBeads(){
   const beads=this.data.recent&&Array.isArray(this.data.recent.beads)?this.data.recent.beads:[]
   this.setData({recentBeads:beads.map(id=>this.data.catalog.find(b=>b.id===(id.id||id))||id).filter(b=>b&&b.mm)})

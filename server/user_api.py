@@ -18,6 +18,11 @@ import status
 
 SESSION_SECONDS = 30 * 24 * 3600
 
+
+def public_user(user):
+    """Only expose the phone field intended for the signed-in user."""
+    return {'phoneMasked': user.get('phoneMasked')}
+
 class IdempotencyConflict(Exception):
     pass
 

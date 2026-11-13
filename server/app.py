@@ -332,7 +332,10 @@ class Handler(BaseHTTPRequestHandler):
                 uid = self.user()
                 if not uid:
                     return self.send(401, {"error": "请先登录"})
-                return self.send(200, user_api.get_my_order(db, order_detail.group(1), uid))
+                try:
+                    return self.send(200, user_api.get_my_order(db, order_detail.group(1), uid))
+                except KeyError:
+                    return self.send(404, {"error": "订单不存在"})
             if path in ("/api/designs", "/api/my/orders"):
                 uid = self.user()
                 if not uid:

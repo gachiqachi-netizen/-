@@ -1,10 +1,13 @@
-import React from 'react';
-import { fmtTime } from '../../api';
+import React, { useState } from 'react';
+import { apiRequest, fmtTime } from '../../api';
+import { can } from '../../permissions';
 import { Button } from '../../ui/Button';
 import { Drawer } from '../../ui/Drawer';
 import { ErrorState } from '../../ui/ErrorState';
+import { KnowledgeEdit } from './edit';
 
 type Bead = {
+  id?: string;
   name?: string; std?: string; category?: string; aliases?: string[]; summary?: string;
   look?: string; identify?: string[]; confusables?: { name?: string; how?: string }[];
   meaning?: { tags?: string[]; text?: string }; care?: string; safety?: { note?: string };
@@ -27,10 +30,27 @@ function Section({ title, value, level, visible }: { title: string; value: React
 export function KnowledgeDetail({ item, loading, error, canEdit, onClose, onRetry }: {
   item: KbDetail | null; loading: boolean; error: string; canEdit: boolean; onClose: () => void; onRetry: () => void;
 }) {
+  const [editing, setEditing] = useState(false);
+  const [rollbackError, setRollbackError] = useState('');
+  const [rollingBack, setRollingBack] = useState(false);
   const data = item?.data;
   const low = data?.confidence?.meaning === 'low';
+  const permitted = canEdit && can('edit_kb');
+  async function rollback(version: number) {
+    if (!data?.id || !window.confirm(`退回第 ${version} 版？退回后也会记一条新的改动记录，用户端立即生效。`)) return;
+    setRollingBack(true); setRollbackError('');
+    try {
+      await apiRequest(`/api/admin/kb/${encodeURIComponent(data.id)}/rollback`, { method: 'POST', body: { version } });
+      onRetry();
+    } catch (failure) {
+      const err = failure as { message?: string; data?: { errors?: { message?: string }[] } };
+      setRollbackError(err.data?.errors?.map(row => row.message).filter(Boolean).join('；') || err.message || '退回失败');
+    } finally { setRollingBack(false); }
+  }
+  if (editing && item) return <KnowledgeEdit item={item} onCancel={() => setEditing(false)}
+    onSaved={() => { setEditing(false); onRetry(); }} onRefresh={onRetry} />;
   return <Drawer title={data?.name || '品种资料'} subtitle={item ? `第 ${item.version} 版` : undefined}
-    onClose={onClose} footer={canEdit ? <Button disabled reason="编辑功能由 KD2 接入">编辑</Button> : undefined}>
+    onClose={onClose} footer={permitted && item ? <Button onClick={() => setEditing(true)}>编辑</Button> : undefined}>
     {loading ? <div>正在读取资料…</div> : error ? <ErrorState reason={error} onRetry={onRetry} /> : data && item ?
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(180px, 1fr)', gap: 20 }}>
         <div>
@@ -51,9 +71,11 @@ export function KnowledgeDetail({ item, loading, error, canEdit, onClose, onRetr
               {product.name} {product.mm ? `· ${product.mm}mm` : ''}</div>) : <div style={muted}>暂无关联在售商品</div>}
           </div>
           <div className="zy-card" style={{ padding: 16 }}><strong>改动记录</strong>
+            {rollbackError && <div role="alert" style={{ color: 'var(--danger, #b42318)' }}>{rollbackError}</div>}
             {item.history.length ? item.history.map(entry => <div key={entry.version} style={{ marginTop: 12, borderTop: '1px solid var(--line)', paddingTop: 10 }}>
               <strong>第 {entry.version} 版</strong><div style={muted}>{entry.savedBy || '后台'} · {dateLabel(entry.savedAt)}</div>
               {entry.note && <div>{entry.note}</div>}
+              {permitted && <div style={{ marginTop: 6 }}><Button disabled={rollingBack} onClick={() => void rollback(entry.version)}>退回这一版</Button></div>}
             </div>) : <div style={muted}>暂无改动记录</div>}
           </div>
         </aside>

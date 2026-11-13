@@ -39,3 +39,11 @@
 1. **偏离一处（请审核裁量）**：卡的“只能改”是 `src/pages/orders.tsx` 和 `src/pages/orders/`，但 D1b 把订单抽屉做在 `src/components/OrdersView.tsx`，详情操作没有它挂不进去。处理：新面板代码放 `src/pages/orders/orderOps.tsx`（符合只能改），`OrdersView.tsx` 只加了一行 import、一个 maskPhone 函数和一处挂载。若不接受，请打回并指明希望的结构。
 2. A8c 未合并：手机号只打码显示，“显示全号”按钮未做（接口不存在）。复制按钮仍复制完整号码（发货需要）；A8c 合并后应改成调接口鉴权显示。
 3. 样子需要负责人在本地 `npm run dev` 验（A07/A08）。
+
+## 7. 合并 D2f 的冲突解决（2026-11-13 审核后）
+
+- 审核意见：内容与 D2f 冲突合不进去。已按要求 `git merge origin/integration/2026-11`，冲突文件只有 `admin-web/src/components/OrdersView.tsx`。
+- **解法**：以 D2f 的新结构为准——工单区是 `showWork` 控制的"工单"卡片（点底栏"去工单"展开），`OrdersOpsPanel`（内部备注/发货前改地址/改运单号）挂在工单卡片前面，DOM 顺序：…记录 → 内部备注 → 后台操作 → 工单 → 质检。D5a 原有的旧版双卡片工单区（grid 两栏 + Wrench/StatusBadge 版）整段放弃。
+- **手机号打码复查**：D2f 改过的收货区块里，电话仍只有 `maskPhone(receiverPhone)` 一处显示（138****5678 形式），"复制"复制的仍是全号；全库 grep 确认 `detail.phone` 无其他展示点。
+- 重跑三条测试：后端 346 OK(7 skipped)、小程序 146/146、kb 200/200；`npm run build`（tsc + vite）通过，打包产物不提交。
+- 本地起服务（独立 DATA_DIR）真机浏览器验证：订单详情抽屉面板齐全（状态/手串/金额/收货/记录/内部备注/后台操作），点"去工单"展开工单+质检卡片，电话打码生效、全号不外显。

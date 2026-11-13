@@ -144,6 +144,15 @@ def mask_order(db, value):
     return masked(value)
 
 
+def own_scope_name(db):
+    """当前后台账号只可看自己工单时返回其名字；内部调用不限制。"""
+    user = CURRENT_ADMIN.get()
+    if not user:
+        return None
+    role = db.get("admin_roles", user.get("roleId"))
+    return user.get("name") if role and role.get("dataScope") == "own" else None
+
+
 def hash_password(password):
     if not isinstance(password, str) or len(password) < 8:
         raise ValueError("密码至少 8 位")

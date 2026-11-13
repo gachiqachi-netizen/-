@@ -79,7 +79,7 @@
     <view class="sheet-row last">
       <view class="ship-cell">
         <view>运费</view>
-        <view class="ship-sub">满 ¥99 包邮</view>
+        <view class="ship-sub" wx:if="{{shipSub}}">{{shipSub}}</view>
       </view>
       <text class="rv">{{shipping}}</text>
     </view>

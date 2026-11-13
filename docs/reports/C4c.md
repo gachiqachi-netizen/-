@@ -101,3 +101,5 @@ $ grep -rnE "new URL|URLSearchParams" miniprogram --include=*.js
 ## 7. 审核修改（打回后才有）
 
 1. 到手价改按后端 `pricing` 算（A3 已合并，手工费、运费改后台配置），不再前端固定“珠子 + 运费、无手工费”。新增纯函数 `miniprogram/pages/finish/total.js` 的 `totalHand(goodsFen, pricing)`：手工费取 `handworkFen`、运费取 `shippingFen`、`freeShippingThresholdFen` 为 `null` 表示不包邮、否则满额包邮。`finish.js` 的 `load()` 直接存 `c.pricing`，`render()` 用 `totalHand` 算 `shippingFen` / `payableFen`。新增测试 `miniprogram/tests/finish-total.test.js`，覆盖默认、不收手工费、不包邮三种情况。第 6 节那条“差 ¥15”已删除。
+
+2. 配送行不再写死“满 ¥99 包邮”，改按 `pricing.freeShippingThresholdFen`。`total.js` 新增纯函数 `shippingText(shippingFen, thresholdFen)`（运费 0 → `包邮`；门槛是数字 → `运费 ¥8，满 ¥{门槛} 包邮`，门槛用 `money.yuan` 分转元；门槛为 `null` 不包邮 → 只写 `运费 ¥8`）和 `shipNote(shippingFen, thresholdFen)`（尺寸弹层“运费”下的小字，有门槛且收运费时写 `满 ¥{门槛} 包邮`，否则空串）。`finish.js` 的 `shippingRow` 改为 `shippingText(...) + ' · 下单后制作'`，新增 `shipSub` 字段；`finish.wxml` 尺寸弹层的小字改为 `{{shipSub}}` 并用 `wx:if` 空时隐藏。测试补 `shippingText` / `shipNote` 共三种情况。

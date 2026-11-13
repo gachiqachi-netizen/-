@@ -1,6 +1,6 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
-const { totalHand } = require('../pages/finish/total')
+const { totalHand, shippingText, shipNote } = require('../pages/finish/total')
 
 // 默认：收手工费 ¥15、运费 ¥8，满 ¥99 包邮
 test('totalHand：默认收手工费，未满额收运费，满额包邮', () => {
@@ -30,4 +30,18 @@ test('totalHand：不包邮（freeShippingThresholdFen 为 null）恒收运费',
   assert.deepEqual(totalHand(10000, pricing), {
     handworkFen: 1500, subtotalFen: 11500, shippingFen: 800, payableFen: 12300,
   })
+})
+
+// 配送行文案：三种情况
+test('shippingText：有门槛写「运费+满额包邮」，null 只写运费，运费 0 写包邮', () => {
+  assert.equal(shippingText(800, 9900), '运费 ¥8，满 ¥99 包邮')
+  assert.equal(shippingText(800, null), '运费 ¥8')
+  assert.equal(shippingText(0, 9900), '包邮')
+})
+
+// 尺寸弹层小字：有门槛且收运费写满额包邮，其余空串
+test('shipNote：有门槛且收运费写满额包邮，包邮或不包邮时空串', () => {
+  assert.equal(shipNote(800, 9900), '满 ¥99 包邮')
+  assert.equal(shipNote(800, null), '')
+  assert.equal(shipNote(0, 9900), '')
 })

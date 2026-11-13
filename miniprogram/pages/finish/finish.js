@@ -5,7 +5,7 @@ const meaning = require('../../utils/meaning')
 const money = require('../../utils/money')
 const nav = require('../../utils/nav')
 const toast = require('../../utils/toast').queue
-const { totalHand } = require('./total')
+const { totalHand, shippingText, shipNote } = require('./total')
 
 Page({
   data: {
@@ -18,6 +18,7 @@ Page({
     goods: '',          // 珠子价 "¥92"
     shipping: '',       // 运费 "¥8" 或 "包邮"
     shippingRow: '',    // 配送行整句
+    shipSub: '',        // 尺寸弹层「运费」下的小字（满额包邮说明）
     price: '',          // 到手价 "¥100"
     shippingNote: '',   // "到手价，已含运费" / "到手价，包邮"
     line: '',           // 一句寓意
@@ -99,6 +100,7 @@ Page({
     const quote = totalHand(goodsFen, this.pricing)
     const shippingFen = quote.shippingFen
     const payableFen = quote.payableFen
+    const threshold = this.pricing.freeShippingThresholdFen
 
     const line = design.line || design.meaning || meaning.keywords(items).join(' · ')
     const tags = meaning.keywords(items, Infinity).join(' · ')
@@ -111,7 +113,8 @@ Page({
       fitText,
       goods: money.yuan(goodsFen),
       shipping: shippingFen === 0 ? '包邮' : money.yuan(shippingFen),
-      shippingRow: shippingFen === 0 ? '包邮 · 下单后制作' : ('运费 ' + money.yuan(shippingFen) + '，满 ¥99 包邮 · 下单后制作'),
+      shippingRow: shippingText(shippingFen, threshold) + ' · 下单后制作',
+      shipSub: shipNote(shippingFen, threshold),
       price: money.yuan(payableFen),
       shippingNote: shippingFen === 0 ? '到手价，包邮' : '到手价，已含运费',
       line, tags,

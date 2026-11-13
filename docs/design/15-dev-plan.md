@@ -65,7 +65,7 @@
 | A6 | 单个订单接口（原 B3） | `GET /api/my/orders/{no}`，只能看自己的 | 看别人的单返回 404 | A2 | S |
 | A7 | 手机号登录（原 B25） | `POST /api/auth/phone`：收 `code`，服务端用 `WECHAT_APP_ID / SECRET` 调微信换手机号，绑到当前 openid 的账号；只返回打码号码；开发环境走假的换号函数（测试里替换） | 测试覆盖：绑定、同号多设备合并、微信接口失败 | E3 | M |
 | A8 | 后台账号和权限（原 B41–B46） | 新表 `admin_users`、`admin_roles`、`admin_sessions`；密码 `hashlib.scrypt`；`app.py` 里把 `admin_ok()` 换成 `admin_auth(permission)`，每个后台接口声明权限点（14 §2.2）；`commerce` 里所有 `actor=ACTOR` 改为传当前账号名；敏感字段打码放在一个函数 `mask_for(order, perms)` 里 | 测试：四个默认角色 × 每个后台接口，结果和 14 §2.3 的表一致；操作记录里没有 `admin` | A1 | L |
-| A9 | 目录字段（原 B16） | 目录接口给每颗珠子带 `meaning.tags`、`meaning.text`、`look`、`safety`（经 `kb.public` 过滤，把握低的不给） | 目录里把握在“中”以上的珠子都有寓意 | 无 | S |
+| A9 | 目录字段（原 B16）。**2026-11-13 核对：代码里已有**（`kb.enrich` 给目录每颗珠子带 `tags`、`meaning`、`summary`、`safety`，把握低的不给），小程序 C0d 按现有字段读，不单独出卡；把握低的珠子靠 A9b 补出处 | 目录接口给每颗珠子带 `meaning.tags`、`meaning.text`、`look`、`safety`（经 `kb.public` 过滤，把握低的不给） | 目录里把握在“中”以上的珠子都有寓意 | 无 | S |
 | A9b | 知识库补把握（数据，不是代码） | 在售商品里有 16 种的知识库寓意把握是“低”，用户端不显示：蜜蜡（mila）、草莓晶（caomei-jing）、红玛瑙（putong-manao）、绿玉髓（lv-yusui）、东陵玉（dongling-yu）、缠丝玛瑙（chansi）、岫玉（xiu-yu）、水草玛瑙（shuicao）等。KD2 上线后在后台逐条打开，加来源，够了把寓意的把握改成中或高，保存即生效；3 种金属隔珠隔片本来没有寓意，不用补 | 后台保存时检查通过；目录里这些珠子出现寓意 | KD2 | M |
 | A10 | 订单数据清理 | 删掉旧字段的兼容写法（`status` 中文字段、`paymentAvailable`）之前，先确认小程序不再读 | 搜小程序和后台代码不再用这两个字段 | C 线完成 | S |
 

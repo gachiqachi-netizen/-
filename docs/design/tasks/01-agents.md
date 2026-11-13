@@ -17,8 +17,7 @@
 2. **每个会话一开始就要读七万多字。**[AGENTS.md](../../../AGENTS.md) 原来让执行 agent 先读 15 号总计划、README、handoff、codex-tasks；Codex 会自动照做，一张卡还没开工就先花掉两三万 token。
    - 已改成：有任务卡时只读 AGENTS.md、卡片和卡里点名的那几节。
    - 设计稿每份二十多万字，新增 [screen.py](screen.py) 只取一屏（2–4 千字）。
-3. **本机同时开几个会话会互相覆盖。**几个 Kimi 或 Codex CLI 会话在同一个目录里切分支，会把彼此没提交的改动带走或冲掉。已规定一个会话一个 git worktree（第 2 节）。
-4. **一批全合完才开下一批太慢。**例如 C0f 只等 C0a，不用等 A1。改成**依赖合了就开**（第 3 节表里的“什么时候开”）。批次表只用来看大致进度。
+3. **一批全合完才开下一批太慢。**例如 C0f 只等 C0a，不用等 A1。改成**依赖合了就开**（第 3 节表里的“什么时候开”）。批次表只用来看大致进度。
 
 **自审里反驳了自己、但决定保持不变的**
 
@@ -33,67 +32,40 @@
   - 第 1 批的 C0j 要读它建的共用用例文件。
   - 不留的话，要先 revert，再派 A12 重做；C0j 也要等 A12。
 
-## 2. 怎么开会话
+## 2. 怎么派
 
-**谁做什么**：Codex 额度少，只做错了会亏钱或丢数据的后端卡（订单状态、退款，第二波的登录、权限、知识库迁移、支付），一张卡一个会话。其余都给 Kimi：组件、页面、后台页、契约、路由、新增型接口。
+**分工**：Codex 额度少，只做错了会亏钱或丢数据的后端卡（订单状态、退款；第二波的登录、权限、知识库迁移、支付），一张卡一个会话。其余都给 Kimi：契约、路由、组件、页面、后台页、新增型接口；相互独立的小卡放在一个会话里连着做。
 
-**第 0 步（负责人，一次）**：按 [00-dispatch.md](00-dispatch.md) 第 4 节推送两个分支、建 `integration/2026-11`。
+**第 0 步（负责人，一次）**：按 [00-dispatch.md](00-dispatch.md) 第 4 节推送两个分支、建 `integration/2026-11`。之后 Codex 和 Kimi 都从 GitHub 拉这个分支。
 
-**本机开会话（Kimi CLI、Codex CLI）**：每个会话一个独立目录，会话编号见第 3 节。
+**派的时候**：
+- 每个会话粘第 3 节对应的“第一条提示词”；拉代码、建分支、只读什么、怎么交付，提示词里都写了。
+- 这张卡的 PR 合并后，在**同一个会话**里粘“合并后接着粘”那一条。一个会话最多连做 4 张，太长了容易忘规矩。
+- 执行 agent 做完自己 push；能开 PR 就开到 `integration/2026-11`，开不了就把 PR 描述贴出来，你在 GitHub 上开。
 
-```bash
-cd ~/Documents/串个珠
-git fetch origin
-git worktree add ../串个珠-wt/KM-2 origin/integration/2026-11 --detach
-cd ../串个珠-wt/KM-2
-```
+**同时开几路**：一开始 Codex 1 路（CX-1）、Kimi 6 路（KM-1 到 KM-6）。A1、A4a 合并后 Codex 最多 2 路同时（CX-2、CX-3）。
 
-然后在这个目录里启动 kimi（或 codex），粘提示词。
+## 3. 第一波：任务和提示词
 
-- 后台卡（KM-6）第一次进目录先 `cd admin-web && npm ci`。
-- 这个会话的卡全部合并后删掉目录：`git worktree remove ../串个珠-wt/KM-2`。
+**怎么读**：“什么时候开”到了就开这个会话。关键路径：A1 → A2 → A4c → A11/A11m；A4a → A4b → A5a → A5b；C0a → C0f → C0g、C0i（分在两个会话同时做）→ C0z → C2；D0 → D1 → D2 → D1b。四条线同时走，第一波大约 6–8 个工作日（取决于审核和合并的速度）。
 
-**Codex 云端**：仓库选“串个珠”，分支选 `integration/2026-11`。粘同样的提示词，把开头“你已经在自己的工作目录里”那句删掉；它会自己建分支、开 PR。
+### 3.1 Codex 的任务（6 张，全是后端订单和退款）
 
-**推送和开 PR**：执行 agent 自己 `git push`。本机装了 `gh` 就让它直接开 PR；没装就让它把 PR 描述贴出来，你在 GitHub Desktop 里点“Create Pull Request”，base 选 `integration/2026-11`。
+| 会话 | 卡（顺序） | 什么时候开 | 审核 |
+|---|---|---|---|
+| CX-1 | A4a | 马上 | 我审 |
+| CX-2 | A2 | A1 合并后 | 我审 |
+| CX-3 | A4b | A4a 合并后 | 我审 |
+| CX-4 | A5a | A4b 合并后 | 我审 |
+| CX-5 | A4c | A4b、A2 合并后 | 我审 |
+| CX-6 | A5b | A5a 合并后 | 我审 |
 
-**同时开几路**：
-- 一开始可以开 7 路：Codex 1 路（CX-1），Kimi 6 路（KM-1 到 KM-6）。
-- A1、A4a 合并后，Codex 同时最多 2 路（CX-2 和 CX-3）。
-- Kimi 开几路看你盯得过来多少，建议不超过 6 路。
-
-## 3. 第一波：逐个会话的提示词
-
-**怎么用**：
-- “什么时候开”到了就开这个会话，粘“第一条提示词”。
-- 这张卡的 PR 合并后，在**同一个会话**里粘“合并后接着粘”的下一条。
-- 一个会话最多连做 4 张，太长了 Kimi 会忘规矩。
-
-| 会话 | 谁 | 卡（顺序） | 什么时候开 | 审核 |
-|---|---|---|---|---|
-| CX-1 | Codex | A4a | 马上 | 我审 |
-| CX-2 | Codex | A2 | A1 合并后 | 我审 |
-| CX-3 | Codex | A4b | A4a 合并后 | 我审 |
-| CX-4 | Codex | A5a | A4b 合并后 | 我审 |
-| CX-5 | Codex | A4c | A4b、A2 合并后 | 我审 |
-| CX-6 | Codex | A5b | A5a 合并后 | 我审 |
-| KM-1 | Kimi | A1 | 马上 | 我审 |
-| KM-2 | Kimi | C0a → C0f → C0g | 马上 | C0a 我审；C0f、C0g 你看截图 |
-| KM-3 | Kimi | C0e → C0h → C0i | 马上 | 你看截图 |
-| KM-4 | Kimi | C0b、C0c | 马上 | 你看截图 |
-| KM-5 | Kimi | C0d、C0j | 马上 | 我审 |
-| KM-6 | Kimi | D0 → D1 → D2 → D1b | 马上 | D0、D1、D1b 我审；D2 你看截图 |
-| KM-7 | Kimi | A11、A11m | A4c、A5a 合并后 | 我审 |
-| KM-8 | Kimi | C0z → C2 | C0a–C0j 全部合并后 | C0z 你在开发者工具看；C2 我审 |
-
-关键路径：A1 → A2 → A4c → A11/A11m；A4a → A4b → A5a → A5b；C0a → C0f → C0g、C0i（分在两个会话同时做） → C0z → C2；D0 → D1 → D2 → D1b。四条线同时走，第一波大约 6–8 个工作日（取决于审核和合并的速度）。
-
-### CX-1（Codex）：A4a
+#### CX-1：A4a
 
 第一条提示词（马上开）：
 
 ```
-你在仓库“串个珠”里做任务卡 A4a。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 A4a。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -117,12 +89,12 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### CX-2（Codex）：A2
+#### CX-2：A2
 
 第一条提示词（A1 合并后开）：
 
 ```
-你在仓库“串个珠”里做任务卡 A2。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 A2。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -146,12 +118,12 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### CX-3（Codex）：A4b
+#### CX-3：A4b
 
 第一条提示词（A4a 合并后开）：
 
 ```
-你在仓库“串个珠”里做任务卡 A4b。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 A4b。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -175,12 +147,12 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### CX-4（Codex）：A5a
+#### CX-4：A5a
 
 第一条提示词（A4b 合并后开）：
 
 ```
-你在仓库“串个珠”里做任务卡 A5a。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 A5a。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -204,12 +176,12 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### CX-5（Codex）：A4c
+#### CX-5：A4c
 
 第一条提示词（A4b、A2 合并后开）：
 
 ```
-你在仓库“串个珠”里做任务卡 A4c。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 A4c。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -233,12 +205,12 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### CX-6（Codex）：A5b
+#### CX-6：A5b
 
 第一条提示词（A5a 合并后开）：
 
 ```
-你在仓库“串个珠”里做任务卡 A5b。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 A5b。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -262,12 +234,25 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### KM-1（Kimi）：A1
+### 3.2 Kimi 的任务（19 张：契约、路由、小程序组件、后台）
+
+| 会话 | 卡（顺序） | 什么时候开 | 审核 |
+|---|---|---|---|
+| KM-1 | A1 | 马上 | 我审 |
+| KM-2 | C0a → C0f → C0g | 马上 | C0a 我审；C0f、C0g 你看截图 |
+| KM-3 | C0e → C0h → C0i | 马上 | 你看截图 |
+| KM-4 | C0b、C0c | 马上 | 你看截图 |
+| KM-5 | C0d、C0j | 马上 | 我审 |
+| KM-6 | D0 → D1 → D2 → D1b | 马上 | D0、D1、D1b 我审；D2 你看截图 |
+| KM-7 | A11、A11m | A4c、A5a 合并后 | 我审 |
+| KM-8 | C0z → C2 | C0a–C0j 全部合并后 | C0z 你在开发者工具看；C2 我审 |
+
+#### KM-1：A1
 
 第一条提示词（马上开）：
 
 ```
-你在仓库“串个珠”里做任务卡 A1。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 A1。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -291,12 +276,12 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### KM-2（Kimi）：C0a、C0f、C0g
+#### KM-2：C0a、C0f、C0g
 
 第一条提示词（马上开）：
 
 ```
-你在仓库“串个珠”里做任务卡 C0a。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 C0a。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -324,7 +309,7 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 C0a 合并后接着粘（C0f 的依赖：C0a）：
 
 ```
-上一张已合并。接着在同一个工作目录做任务卡 C0f，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C0f:”开头；拿不准就问）。
+上一张已合并。接着在同一个仓库做任务卡 C0f，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C0f:”开头；拿不准就问）。
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C0f-basic origin/integration/2026-11
 先确认依赖已合并：对 "C0a:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
@@ -334,19 +319,19 @@ git fetch origin && git switch -c agent/C0f-basic origin/integration/2026-11
 C0f 合并后接着粘（C0g 的依赖：C0f）：
 
 ```
-上一张已合并。接着在同一个工作目录做任务卡 C0g，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C0g:”开头；拿不准就问）。
+上一张已合并。接着在同一个仓库做任务卡 C0g，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C0g:”开头；拿不准就问）。
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C0g-layer origin/integration/2026-11
 先确认依赖已合并：对 "C0f:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
 交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
 ```
 
-### KM-3（Kimi）：C0e、C0h、C0i
+#### KM-3：C0e、C0h、C0i
 
 第一条提示词（马上开）：
 
 ```
-你在仓库“串个珠”里做任务卡 C0e。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 C0e。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -374,7 +359,7 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 C0e 合并后接着粘（C0h 的依赖：C0e）：
 
 ```
-上一张已合并。接着在同一个工作目录做任务卡 C0h，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C0h:”开头；拿不准就问）。
+上一张已合并。接着在同一个仓库做任务卡 C0h，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C0h:”开头；拿不准就问）。
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C0h-bracelet origin/integration/2026-11
 先确认依赖已合并：对 "C0e:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
@@ -384,19 +369,19 @@ git fetch origin && git switch -c agent/C0h-bracelet origin/integration/2026-11
 C0h 合并后接着粘（C0i 的依赖：C0f）：
 
 ```
-上一张已合并。接着在同一个工作目录做任务卡 C0i，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C0i:”开头；拿不准就问）。
+上一张已合并。接着在同一个仓库做任务卡 C0i，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C0i:”开头；拿不准就问）。
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C0i-composer origin/integration/2026-11
 先确认依赖已合并：对 "C0f:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
 交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
 ```
 
-### KM-4（Kimi）：C0b、C0c
+#### KM-4：C0b、C0c
 
 第一条提示词（马上开）：
 
 ```
-你在仓库“串个珠”里依次做任务卡 C0b、C0c，先做 C0b。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里依次做任务卡 C0b、C0c，先做 C0b。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -424,12 +409,12 @@ git fetch origin && git switch -c agent/C0c-wordmark origin/integration/2026-11�
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### KM-5（Kimi）：C0d、C0j
+#### KM-5：C0d、C0j
 
 第一条提示词（马上开）：
 
 ```
-你在仓库“串个珠”里依次做任务卡 C0d、C0j，先做 C0d。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里依次做任务卡 C0d、C0j，先做 C0d。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -457,12 +442,12 @@ git fetch origin && git switch -c agent/C0j-size-rule origin/integration/2026-11
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### KM-6（Kimi）：D0、D1、D2、D1b
+#### KM-6：D0、D1、D2、D1b
 
 第一条提示词（马上开）：
 
 ```
-你在仓库“串个珠”里做任务卡 D0。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 D0。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -490,7 +475,7 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 D0 合并后接着粘（D1 的依赖：A1 D0）：
 
 ```
-上一张已合并。接着在同一个工作目录做任务卡 D1，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“D1:”开头；拿不准就问）。
+上一张已合并。接着在同一个仓库做任务卡 D1，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“D1:”开头；拿不准就问）。
 卡在 docs/design/tasks/admin-wave1.md。
 git fetch origin && git switch -c agent/D1-admin-contract origin/integration/2026-11
 先确认依赖已合并：对 "A1:" "D0:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
@@ -500,7 +485,7 @@ git fetch origin && git switch -c agent/D1-admin-contract origin/integration/202
 D1 合并后接着粘（D2 的依赖：D1）：
 
 ```
-上一张已合并。接着在同一个工作目录做任务卡 D2，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“D2:”开头；拿不准就问）。
+上一张已合并。接着在同一个仓库做任务卡 D2，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“D2:”开头；拿不准就问）。
 卡在 docs/design/tasks/admin-wave1.md。
 git fetch origin && git switch -c agent/D2-admin-shell origin/integration/2026-11
 先确认依赖已合并：对 "D1:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
@@ -510,19 +495,19 @@ git fetch origin && git switch -c agent/D2-admin-shell origin/integration/2026-1
 D2 合并后接着粘（D1b 的依赖：A2 D2）：
 
 ```
-上一张已合并。接着在同一个工作目录做任务卡 D1b，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“D1b:”开头；拿不准就问）。
+上一张已合并。接着在同一个仓库做任务卡 D1b，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“D1b:”开头；拿不准就问）。
 卡在 docs/design/tasks/admin-wave1.md。
 git fetch origin && git switch -c agent/D1b-admin-order-detail origin/integration/2026-11
 先确认依赖已合并：对 "A2:" "D2:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
 交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
 ```
 
-### KM-7（Kimi）：A11、A11m
+#### KM-7：A11、A11m
 
 第一条提示词（A4c、A5a 合并后开）：
 
 ```
-你在仓库“串个珠”里依次做任务卡 A11、A11m，先做 A11。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里依次做任务卡 A11、A11m，先做 A11。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -549,12 +534,12 @@ git fetch origin && git switch -c agent/A11m-migrations-registry origin/integrat
 全部交付后停下，不要开始卡片以外的工作。
 ```
 
-### KM-8（Kimi）：C0z、C2
+#### KM-8：C0z、C2
 
 第一条提示词（C0a–C0j 全部合并后开）：
 
 ```
-你在仓库“串个珠”里做任务卡 C0z。你已经在自己的工作目录里（一个独立的 git worktree），不要去动别的目录。
+你在 GitHub 仓库“串个珠”里做任务卡 C0z。先拉最新代码：已经有这个仓库就 git fetch origin，没有就先 git clone。
 
 【只读这些，别的文档不要通读，省 token】
 1. AGENTS.md（很短）
@@ -582,7 +567,7 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 C0z 合并后接着粘（C2 的依赖：A2 C0z）：
 
 ```
-上一张已合并。接着在同一个工作目录做任务卡 C2，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C2:”开头；拿不准就问）。
+上一张已合并。接着在同一个仓库做任务卡 C2，规矩和上一张一样（只读规矩、这张卡和它点名的文件；只改“只能改”的文件；只跑相关测试，最后跑三条；每步提交，说明以“C2:”开头；拿不准就问）。
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C2-order-state origin/integration/2026-11
 先确认依赖已合并：对 "A2:" "C0z:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。

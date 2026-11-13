@@ -5,6 +5,9 @@ import { EmptyState } from '../ui/EmptyState';
 import { fenToYuan, fmtTime } from '../api';
 import { CONTRACT } from '../contract';
 import AfterSaleDrawer from './afterSales/detail';
+import ReturnAddressDrawer from './afterSales/returnAddress';
+import { Can } from '../permissions';
+import { Button } from '../ui/Button';
 
 const STATUS_LABELS: Record<string, string> = { ...(CONTRACT.statusLabels.afterSaleStatus || {}) };
 
@@ -29,6 +32,7 @@ const AfterSalesPage: React.FC<{
   const [tab, setTab] = useState('all');
   const [q, setQ] = useState('');
   const [active, setActive] = useState('');
+  const [returnAddressOpen, setReturnAddressOpen] = useState(false);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: afterSales.length, pending: 0, returning: 0, refunding: 0, completed: 0 };
@@ -56,7 +60,7 @@ const AfterSalesPage: React.FC<{
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 12, margin: '16px 0' }}>
+      <div style={{ display: 'flex', gap: 12, margin: '16px 0', alignItems: 'center' }}>
         <input
           className="wo-input"
           style={{ width: 240, height: 34, padding: '0 12px', border: '1px solid #d9d5d1', borderRadius: 8, fontSize: 13 }}
@@ -64,6 +68,7 @@ const AfterSalesPage: React.FC<{
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
+        <Can perm="process_after_sales"><Button onClick={() => setReturnAddressOpen(true)}>寄回地址</Button></Can>
       </div>
       <Tabs items={TABS.map((t) => ({ ...t, count: counts[t.key] }))} active={tab} onChange={setTab} />
       {filtered.length === 0 ? (
@@ -98,6 +103,7 @@ const AfterSalesPage: React.FC<{
           rows={filtered}
         />
       )}
+      {returnAddressOpen && <ReturnAddressDrawer onClose={() => setReturnAddressOpen(false)} />}
       {active ? (
         <AfterSaleDrawer
           afterSaleNo={active}

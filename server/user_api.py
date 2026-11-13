@@ -172,6 +172,10 @@ def order_allowed_actions(order):
             and groups['logisticsStatus'] == 'not_shipped'
             and groups['afterSaleStatus'] == 'none'):
         actions.append('edit_address')
+    if ((groups['orderStatus'] == 'completed' or groups['fulfillmentStatus'] == 'delivered'
+         or groups['logisticsStatus'] == 'delivered')
+            and order.get('reviewStatus') in (None, 'machine_failed')):
+        actions.append('write_review')
     if isinstance(order.get('beads'), list) and order['beads']:
         actions.append('reorder')
     import commerce

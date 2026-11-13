@@ -58,7 +58,10 @@ ACTIONS = {
     "view_logistics": "查看物流",
     "reorder": "按这款再串一条",
     "request_after_sale": "申请售后",
+    "write_review": "写评价",
 }
+REVIEW_STATUSES = {"machine_failed": "机审未通过", "pending": "待审核",
+                   "published": "已发布", "rejected": "审核未通过", "taken_down": "已下架"}
 AFTER_SALE_REASONS = {  # 2026-11-13 负责人定：按常见电商，场景从简；定制商品签收后不支持“不想要了”
     "仅退款": ["不想要了", "拍错了，想重新设计", "等太久了", "其他"],
     "退货退款": ["珠子有裂纹或瑕疵", "和图片不一样", "掉珠或断线", "其他"],
@@ -81,7 +84,7 @@ QUALITY_GATE_ITEMS = {"sequenceOk": "珠子顺序和工单一致", "sizeOk": "�
 def payload():
     data = {
         "groups": GROUPS, "statusLabels": STATUS_LABELS, "customerStatus": CUSTOMER_STATUS,
-        "opsStatus": OPS_STATUS, "actions": ACTIONS,
+        "opsStatus": OPS_STATUS, "actions": ACTIONS, "reviewStatuses": REVIEW_STATUSES,
         "progressSteps": [{"key": k, "label": v} for k, v in PROGRESS_STEPS],
         "afterSaleTypes": list(status.AFTER_SALE_TYPES),
         "afterSaleReasons": AFTER_SALE_REASONS,

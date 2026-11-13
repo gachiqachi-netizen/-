@@ -28,13 +28,13 @@
 `git diff --stat origin/integration/2026-11...HEAD`（交付提交后包含报告）：
 
 ```text
- docs/reports/C4a.md                 |  63 +++++++++++++++++++++
+ docs/reports/C4a.md                 |  69 +++++++++++++++++++++++
  miniprogram/pages/home/home.js      |  76 ++++++++++++++++++++++----
  miniprogram/pages/home/home.json    |   2 +-
  miniprogram/pages/home/home.test.js | 106 ++++++++++++++++++++++++++++++++++++
  miniprogram/pages/home/home.wxml    |  33 ++++++++---
  miniprogram/pages/home/home.wxss    |  36 +++++++++++-
- 6 files changed, 295 insertions(+), 21 deletions(-)
+ 6 files changed, 301 insertions(+), 21 deletions(-)
 ```
 
 ## 4. 测试

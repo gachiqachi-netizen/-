@@ -24,7 +24,7 @@ from db import DB
 
 
 def echo_public(ctx, match, data):
-    return 200, {"kind": "public", "userId": ctx.user_id, "qs": ctx.qs}
+    return 200, {"kind": "public", "userId": ctx.user_id, "qs": ctx.qs, "ip": ctx.ip}
 
 
 def echo_user(ctx, match, data):
@@ -141,6 +141,11 @@ class DispatchHTTPTests(unittest.TestCase):
         self.assertEqual(code, 200)
         self.assertEqual(body["kind"], "public")
         self.assertIsNone(body["userId"])
+
+    def test_public_route_receives_client_ip(self):
+        code, body = self.request("/api/test-routes/ping")
+        self.assertEqual(code, 200)
+        self.assertEqual(body["ip"], "127.0.0.1")
 
     def test_public_route_sees_logged_in_user(self):
         token = self.login_user()

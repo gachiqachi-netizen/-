@@ -462,7 +462,7 @@ def make_order(db, data, uid):
              'designSnapshot': design_snapshot,
              'promotion': promotion_status(),
              'person': data['person'].strip()[:40], 'phone': data['phone'],
-             'addr': data['addr'].strip()[:200], 'status': '待支付', 'paymentAvailable': __import__('payments').payment_available(),
+             'addr': data['addr'].strip()[:200],
              'subtotalFen': subtotal_fen, 'shippingFen': shipping_fen, 'discountFen': discount_fen,
              'payableFen': payable_fen, 'paidFen': 0, 'refundFen': 0,
              'goodsFen': goods_fen, 'shipFen': shipping_fen, 'totalFen': payable_fen,

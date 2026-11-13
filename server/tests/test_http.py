@@ -237,7 +237,10 @@ class HTTPTest(unittest.TestCase):
                    'confirmedQuote': {'totalFen': sub + (0 if sub >= 9900 else 800), 'items': [{'id':bead['id'],'unitPriceFen':round(bead['price'] * 100),'mm':bead['mm']}]}}
         status, order = self.request('/api/my/orders', 'POST', payload, token=a)
         self.assertEqual(status, 201)
-        self.assertEqual(order['status'], '待支付')
+        self.assertEqual(order['customerStatus']['code'], 'pending_payment')
+        self.assertEqual(order['state']['payment']['code'], 'unpaid')
+        self.assertNotIn('status', order)
+        self.assertNotIn('paymentAvailable', order)
         self.assertEqual(self.request('/api/my/orders', 'POST', payload, token=a)[1]['no'], order['no'])
         self.assertEqual(self.request('/api/my/orders', 'POST', {**payload,'name':'其他'}, token=a)[0], 409)
         changed = {**payload, 'requestId': 'http-request-00002', 'confirmedQuote': {**payload['confirmedQuote'], 'totalFen': payload['confirmedQuote']['totalFen'] + 1}}

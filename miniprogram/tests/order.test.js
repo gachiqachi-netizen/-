@@ -42,12 +42,12 @@ async function run() {
     if (path.endsWith('/pay')) return { payment: { mock: true, paymentId: 'pay_test', amountFen: 5300 } }
     requests++
     assert.deepStrictEqual(body.confirmedQuote, { totalFen: 5300, items: [{ id: 'a', unitPriceFen: 500, mm: 8 }] })
-    return { no: 'TEST', status: '待支付', total: 53, requestId: body.requestId }
+    return { no: 'TEST', customerStatus: { code: 'pending_payment', label: '待支付' }, total: 53, requestId: body.requestId }
   }
   let p = page(); p.catalog = next.beads; p.calculate(); p.data.catalogReady = true; next = catalog(5)
   await p.submit(); assert.strictEqual(requests, 0); assert.strictEqual(p.data.sheet, 'price'); assert.strictEqual(p.data.total, '53.00')
   p.acceptPrice(); assert.strictEqual(requests, 0) // Reprice requires a fresh tap on submit.
-  await p.submit(); assert.strictEqual(requests, 1); assert.strictEqual(p.data.order.status, '待支付')
+  await p.submit(); assert.strictEqual(requests, 1); assert.strictEqual(p.data.order.customerStatus.code, 'pending_payment')
 
   p = page(); p.catalog = catalog(3).beads; p.calculate(); p.data.catalogReady = true
   api.catalog = async () => { throw new Error('离线') }

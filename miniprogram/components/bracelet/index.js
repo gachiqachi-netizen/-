@@ -7,14 +7,18 @@ function layout(beads, size) {
   const list = (beads || []).filter(b => b && Number(b.mm) > 0)
   if (!list.length || !size) return []
   const total = list.reduce((s, b) => s + b.mm, 0)
-  const C = Math.PI * size
+  const maxMm = Math.max.apply(null, list.map(b => b.mm))
+  // 所有珠子刚好排满一圈（依次相切）：
+  // 珠径 d = k·mm，圆心半径 rc = size/2 − k·maxMm/2，相切要求 Σd = 2π·rc
+  // ⇒ k·total = π·size − π·k·maxMm ⇒ k = π·size / (total + π·maxMm)
+  const k = Math.PI * size / (total + Math.PI * maxMm)
+  const rc = size / 2 - k * maxMm / 2
   let angle = -Math.PI / 2
   return list.map((bead, index) => {
-    const d = Math.max(8, bead.mm / total * C)
+    const d = Math.max(8, k * bead.mm)
     const step = bead.mm / total * Math.PI * 2
     const mid = angle + step / 2
     angle += step
-    const rc = size / 2 - d / 2
     const box = Math.round(d) + 8 // 外框留 8rpx，选中描边不挤珠子
     return {
       index: index,

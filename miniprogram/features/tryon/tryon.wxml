@@ -4,7 +4,7 @@
     <canvas wx:if="{{photo && photoFallback}}" canvas-id="tryonCanvas" class="photo-stage" style="width:{{width}}px;height:{{height}}px" bindtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd"></canvas>
     <view wx:if="{{photo && !photoFallback}}" class="photo-layer" style="width:{{width}}px;height:{{height}}px"><image class="photo-image" src="{{photo}}" mode="aspectFit"/><photo-ring id="photo3d" class="photo-ring" beads="{{beads}}" catalog="{{catalog}}" size="{{size}}" angle="{{angle}}" tilt="{{flatten}}" hide-back="{{hideBack}}" xpos="{{xpos}}" ypos="{{ypos}}" bind:move="photoMove" bind:rendered="photoLoaded" bind:unavailable="photoUnavailable"/><view wx:if="{{!aligned}}" class="align-frame">把手腕放在这里</view><c-wordmark wx:else class="stage-mark" size="corner"/></view>
     <canvas wx:if="{{photo && !photoFallback}}" canvas-id="composeCanvas" class="compose-canvas" style="width:{{width}}px;height:{{height}}px"></canvas>
-    <view wx:if="{{photo && photoFallback && !aligned}}" class="align-tip">把手腕放在虚线框里</view>
+    <view wx:if="{{photo && photoFallback && !aligned}}" class="align-frame">把手腕放在这里</view><c-wordmark wx:if="{{photo && photoFallback && aligned}}" class="stage-mark" size="corner"/>
   </view>
   <view wx:else class="model-stage"><tryon-model beads="{{beads}}" catalog="{{catalog}}" skin="{{skin}}" wrist="{{wrist}}" bind:unavailable="modelUnavailable"/><view wx:if="{{modelError}}">当前设备暂不支持模型手，请用照片试</view></view>
   <view class="actions"><text bindtap="saveOrChoose">{{aligned?'保存照片':'重拍'}}</text><text bindtap="openModes">换一种方式 ›</text></view>

@@ -32,6 +32,8 @@ interface AfterSaleDetail {
   history?: Array<{ at?: number; actor?: string; from?: string; to?: string; note?: string }>;
   returnLogistics?: { carrierName?: string; trackingNo?: string };
   result?: string;
+  newWrist?: number;
+  reworkOrder?: { workOrderNo: string };
 }
 
 /** D5b 售后审核抽屉（稿 A09）：底栏按钮来自后端 allowedActions */
@@ -87,6 +89,24 @@ const AfterSaleDrawer: React.FC<{
       onChanged();
     } catch (err: any) {
       setFormError(err.message || '操作失败');
+    } finally {
+      setBusy('');
+    }
+  };
+
+  const createRework = async () => {
+    if (!rec || busy) return;
+    setBusy('rework');
+    setFormError('');
+    try {
+      await apiRequest(`/api/admin/after-sales/${encodeURIComponent(afterSaleNo)}/rework-order`, {
+        method: 'POST', body: {},
+      });
+      notify('重串工单已生成');
+      load();
+      onChanged();
+    } catch (err: any) {
+      setFormError(err.message || '生成失败');
     } finally {
       setBusy('');
     }
@@ -153,6 +173,13 @@ const AfterSaleDrawer: React.FC<{
                 </Button>
               </span></Can>
             ))}
+            {rec.type === '改手围重串' && rec.status === 'received' && !rec.reworkOrder ? (
+              <Can perm="process_after_sales"><span style={{ marginLeft: 8 }}>
+                <Button variant="primary" disabled={busy !== ''} onClick={createRework}>
+                  {busy === 'rework' ? '提交中…' : CONTRACT.actions.generate_rework_order}
+                </Button>
+              </span></Can>
+            ) : null}
           </>
         ) : undefined
       }
@@ -168,6 +195,8 @@ const AfterSaleDrawer: React.FC<{
               <div>原因：{rec.reason || '—'}</div>
               <div>用户说明：{rec.userNote || '—'}</div>
               <div>退款金额：{rec.refundFen != null ? `${fenToYuan(rec.refundFen)}（后端算好）` : '—'}</div>
+              {rec.newWrist != null ? <div>新手围：{rec.newWrist}cm</div> : null}
+              {rec.reworkOrder ? <div>重串工单：{rec.reworkOrder.workOrderNo}（到做单页查看）</div> : null}
               <div>联系电话：{rec.phone || '—'}</div>
               {Array.isArray(rec.images) && rec.images.length > 0 && (
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

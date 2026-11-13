@@ -44,6 +44,9 @@ interface WorkOrder {
   materials: BomItem[];
   qualityGate?: { passed?: boolean; inspector?: string; note?: string; checkedAt?: number } | null;
   operatorNote?: string;
+  rework?: boolean;
+  afterSaleNo?: string;
+  shipping?: { carrierName: string; trackingNo: string } | null;
 }
 
 const pickedKey = (woNo: string) => `wo-picked-${woNo}`;
@@ -56,8 +59,9 @@ const readPicked = (woNo: string): Record<string, boolean> => {
 };
 
 /** D4 工单页（稿 A04/A05）：珠序网格 + 领料勾选（只存本机）+ 五段工序 + 质检 */
-const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () => void; onNext: (no: string) => void }> = ({
+const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo: string; onBack: () => void; onNext: (no: string) => void }> = ({
   orderNo,
+  reworkSaleNo,
   nextNo,
   onBack,
   onNext,
@@ -72,21 +76,30 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
   const [failNote, setFailNote] = useState('');
   const [qcError, setQcError] = useState('');
   const [qcBusy, setQcBusy] = useState('');
+  const [sequenceText, setSequenceText] = useState('');
+  const [sequenceNote, setSequenceNote] = useState('');
+  const [shippingCarrier, setShippingCarrier] = useState('');
+  const [shippingTracking, setShippingTracking] = useState('');
+  const [reworkBusy, setReworkBusy] = useState(false);
+  const workPath = reworkSaleNo
+    ? `/api/admin/rework-orders/${encodeURIComponent(reworkSaleNo)}`
+    : `/api/admin/orders/${encodeURIComponent(orderNo)}/work-order`;
 
   const load = () => {
     setError('');
-    apiRequest<WorkOrder>(`/api/admin/orders/${encodeURIComponent(orderNo)}/work-order`)
+    apiRequest<WorkOrder>(workPath)
       .then((w) => {
         setWo(w);
         setAssignee(w.assignee || '');
         setPicked(readPicked(w.workOrderNo));
+        setSequenceText(w.sequence.map((item) => item.id).join(', '));
         if (w.qualityGate && w.qualityGate.passed === false) {
           setFailNote(w.qualityGate.note || '');
         }
       })
       .catch((e) => setError(e.message));
   };
-  useEffect(load, [orderNo]);
+  useEffect(load, [orderNo, reworkSaleNo]);
   useEffect(() => {
     localStorage.removeItem('wo-inspector');
     apiRequest<{ name: string }>('/api/admin/me')
@@ -97,7 +110,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
   const saveStep = (step: string) => {
     if (!wo || step === wo.step) return;
     setSavingStep(step);
-    apiRequest(`/api/admin/orders/${encodeURIComponent(orderNo)}/work-order`, { method: 'PUT', body: { step } })
+    apiRequest(workPath, { method: 'PUT', body: { step } })
       .then(load)
       .catch((e) => setError(e.message))
       .finally(() => setSavingStep(''));
@@ -105,7 +118,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
 
   const saveAssignee = () => {
     if (!wo || (assignee || '') === (wo.assignee || '')) return;
-    apiRequest(`/api/admin/orders/${encodeURIComponent(orderNo)}/work-order`, {
+    apiRequest(workPath, {
       method: 'PUT',
       body: { assignee },
     })
@@ -134,7 +147,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
       return;
     }
     setQcBusy(pass ? 'pass' : 'fail');
-    apiRequest(`/api/admin/orders/${encodeURIComponent(orderNo)}/quality-gate`, {
+    apiRequest(reworkSaleNo ? `${workPath}/quality-gate` : `/api/admin/orders/${encodeURIComponent(orderNo)}/quality-gate`, {
       method: 'PUT',
       body: {
         sequenceOk: !!checks.sequenceOk,
@@ -151,6 +164,41 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
       })
       .catch((e) => setQcError(e.message))
       .finally(() => setQcBusy(''));
+  };
+
+  const saveReworkSequence = async () => {
+    if (!reworkSaleNo || !sequenceNote.trim()) {
+      setError('修改重串珠序必须填写线下沟通备注');
+      return;
+    }
+    setReworkBusy(true);
+    setError('');
+    try {
+      const sequence = sequenceText.split(/[\s,，]+/).map((id) => id.trim()).filter(Boolean);
+      await apiRequest(workPath, { method: 'PUT', body: { sequence, note: sequenceNote.trim() } });
+      setSequenceNote('');
+      load();
+    } catch (err: any) {
+      setError(err.message || '保存失败');
+    } finally {
+      setReworkBusy(false);
+    }
+  };
+
+  const shipRework = async () => {
+    if (!reworkSaleNo) return;
+    setReworkBusy(true);
+    setError('');
+    try {
+      await apiRequest(`${workPath}/ship`, { method: 'PUT', body: {
+        carrierName: shippingCarrier.trim(), trackingNo: shippingTracking.trim(),
+      } });
+      load();
+    } catch (err: any) {
+      setError(err.message || '发货失败');
+    } finally {
+      setReworkBusy(false);
+    }
   };
 
   const seqPositions = useMemo(() => {
@@ -226,6 +274,25 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
       {wo.giftCard ? <div className="wo-note"><strong>贺卡</strong><div className="wo-gift-card">{wo.giftCard}</div></div> : null}
       {wo.hidePrice ? <div className="wo-note wo-red">包裹里不放带价格的单据</div> : null}
       {wo.operatorNote ? <div className="wo-note">作业备注：{wo.operatorNote}</div> : null}
+
+      {wo.rework ? <div className="wo-note">珠子增减和差价已线下沟通</div> : null}
+      {wo.rework && wo.status !== 'shipped' ? <Can perm="work_orders"><div className="wo-note no-print">
+        <div>调整珠序（按顺序填写珠子编号，逗号分隔；可加、减、换）</div>
+        <textarea className="wo-input" style={{ width: '100%', minHeight: 76 }} value={sequenceText}
+          onChange={(e) => setSequenceText(e.target.value)} />
+        <input className="wo-input" style={{ width: '100%' }} value={sequenceNote}
+          placeholder="必填：线下沟通结果" onChange={(e) => setSequenceNote(e.target.value)} />
+        <Button disabled={reworkBusy} onClick={saveReworkSequence}>{CONTRACT.actions.save_rework_sequence}</Button>
+      </div></Can> : null}
+      {wo.rework && wo.status === 'qc_passed' ? <Can perm="process_after_sales"><div className="wo-note no-print">
+        <div>重串发货</div>
+        <input className="wo-input" value={shippingCarrier} placeholder="快递公司"
+          onChange={(e) => setShippingCarrier(e.target.value)} />
+        <input className="wo-input" value={shippingTracking} placeholder="快递单号"
+          onChange={(e) => setShippingTracking(e.target.value)} />
+        <Button disabled={reworkBusy} onClick={shipRework}>{CONTRACT.actions.ship_rework_order}</Button>
+      </div></Can> : null}
+      {wo.rework && wo.shipping ? <div className="wo-note">已发货：{wo.shipping.carrierName} · {wo.shipping.trackingNo}</div> : null}
 
       <div className="wo-section-title">按顺序穿（从 1 开始，穿完回到 1 打结）</div>
       <div className="wo-seq">

@@ -10,6 +10,7 @@ module.exports = {
     "reorder": "按这款再串一条",
     "request_after_sale": "申请售后",
     "save_rework_sequence": "保存重串珠序",
+    "ship_rework_order": "确认重串发货",
     "submit_return": "填写寄回单号",
     "view_logistics": "查看物流",
     "write_review": "写评价"
@@ -385,7 +386,7 @@ module.exports = {
     "用户协议",
     "隐私政策"
   ],
-  "version": "254007666382",
+  "version": "9d22d15303b9",
   "workOrderStatuses": {
     "pending": "待开始",
     "producing": "制作中",

@@ -11,8 +11,6 @@
 
 | 卡 | 分支 | 卡在哪 | 要先合并 | 谁做 | 不能同时做 | 等负责人 |
 |---|---|---|---|---|---|---|
-| A4c | agent/A4c-admin-order-ops | backend-wave1.md | A4b、A2 | Codex |  |  |
-| A5b | agent/A5b-mock-refund | backend-wave1.md | A5a | Codex |  |  |
 | A11 | agent/A11-routes | backend-wave2.md | A4c、A5a | 任何 |  |  |
 | A11m | agent/A11m-migrations-registry | backend-wave2.md | A5a | 任何 |  |  |
 | C0g | agent/C0g-layer | miniprogram-wave1.md | C0f | 任何 |  |  |
@@ -46,7 +44,7 @@
 | B-11c | agent/B-11c-design-delete | backend-wave2.md | A11 | 任何 | B-3 |  |
 | B-12 | agent/B-12-ai-logs | backend-wave2.md | A8b、A11m | 任何 |  |  |
 | B-13 | agent/B-13-tracking | backend-wave2.md | A11 | 任何 |  | 选快递查询服务商 |
-| B-14 | agent/B-14-wechat-pay | backend-wave2.md | A5b | Codex |  | E6 商户号 |
+| B-14 | agent/B-14-wechat-pay | backend-wave2.md | A5b | Codex |  | 负责人确认允许接真实支付、准备好证书和 HTTPS 回调域名 |
 | A5c | agent/A5c-rewrist | backend-wave2.md | A5b | Codex |  | 改手围重串规则 |
 | C1p | agent/C1p-page-shells | miniprogram-wave2.md | C0z | 任何 |  |  |
 | C1a | agent/C1a-login-page | miniprogram-wave2.md | A7、C1p | 任何 |  |  |
@@ -94,4 +92,4 @@
 | D9 | agent/D9-admin-cleanup | admin-wave2.md | D3c、D4、D5a、D5b、D6a、D6b、D7a、D7b、D7c、D8、KD2 | 任何 |  |  |
 | A10 | agent/A10-drop-legacy | backend-wave2.md | C11a、D9 | 任何 |  |  |
 
-已完成（不用再领）：A1、A2、A4a、A4b、A5a、C0a、C0b、C0c、C0d、C0e、C0f、C0h、C0j、D0、D1。A12 不做（尺寸规则已统一）。A9b 是负责人在后台做的数据任务，不在队列里。
+已完成（不用再领）：A1、A2、A4a、A4b、A4c、A5a、A5b、C0a、C0b、C0c、C0d、C0e、C0f、C0h、C0j、D0、D1。A12 不做（尺寸规则已统一）。A9b 是负责人在后台做的数据任务，不在队列里。

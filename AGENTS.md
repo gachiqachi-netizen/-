@@ -2,6 +2,8 @@
 
 **派给你的是一张任务卡时（提示词里有卡号）**：只读提示词里列的东西（本文件、卡片和卡里点名的章节），**不要通读下面 1–4**，省 token。设计稿只用 `python3 docs/design/tasks/screen.py <屏号>` 取一屏。
 
+**省上下文（必须遵守）**：`server/commerce.py`、`server/app.py`、`server/user_api.py` 这类大文件**不许整份读**：先 `grep -n "def 函数名" 文件` 找行号，再 `sed -n "起,止p" 文件` 每次最多读 80 行。测试输出一律截短：`... 2>&1 | tail -15`；有失败时用 `grep -E "^(FAIL|ERROR):" -A12 | head -60` 只看失败的部分。读过的代码记在心里，不要反复重读。
+
 没有任务卡、要了解整个项目时，按顺序读：
 
 1. [docs/design/15-dev-plan.md](docs/design/15-dev-plan.md)：**改版开发总计划**（2026-11-13 起派活以它为准）：分支、字段契约、A–E 五条线的任务、里程碑、交付要求。

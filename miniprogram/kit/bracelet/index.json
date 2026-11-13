@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "预览 · 手串图",
-  "usingComponents": {
-    "bracelet": "../../components/bracelet/index",
-    "cell": "../../components/cell/index",
-    "design-row": "../../components/design-row/index"
-  }
-}

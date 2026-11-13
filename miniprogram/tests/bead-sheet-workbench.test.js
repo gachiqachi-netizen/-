@@ -27,3 +27,16 @@ test('安全珠需先确认，取消不加入',()=>{
  p.cancelSafety()
  assert.equal(p.pendingSheetAdd,null)
 })
+test('长按安全珠会展示知识库安全原文',async()=>{
+ const p=page(0), safe={...bead,kb:'zhusha',safety:'目录提示'}
+ p.data.filtered=[safe]
+ const api=require('../utils/api'),old=api.request
+ api.request=async()=>({safety:{note:'知识库安全原文'},care:'知识库护理原文'})
+ try{
+  p.inspect({currentTarget:{dataset:{id:safe.id}}})
+  await new Promise(resolve=>setImmediate(resolve))
+  assert.equal(p.data.detailOpen,true)
+  assert.equal(p.data.detailSafetyNote,'知识库安全原文')
+  assert.equal(p.data.detailSafetyCare,'知识库护理原文')
+ }finally{api.request=old}
+})

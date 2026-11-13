@@ -51,6 +51,9 @@
   <c-sheet show="{{sheet === 'materials'}}" title="材料" bind:close="closeSheet">
     <view wx:for="{{items}}" wx:key="id" class="sheet-row"><view><view>{{item.name}} {{item.mm}}mm ×{{item.qty}}</view><view class="hint">{{item.explanation}}</view><view wx:if="{{item.safety}}" class="hint">{{item.safety}}</view></view><text>¥{{item.subtotal}}</text></view>
   </c-sheet>
+  <c-sheet show="{{sheet === 'safety'}}" title="材料安全提示" bind:close="closeSheet">
+    <view class="safety-copy">{{safety}}</view>
+  </c-sheet>
   <c-sheet show="{{sheet === 'cord'}}" title="穿绳" bind:close="closeSheet">
     <view class="sheet-row" data-cord="0" bindtap="setCord">弹力线 <text>{{cord === 0 ? '✓' : ''}}</text></view>
     <view class="sheet-row" data-cord="1" bindtap="setCord">编织绳 +¥{{pricing.cordFen / 100}} <text>{{cord === 1 ? '✓' : ''}}</text></view>

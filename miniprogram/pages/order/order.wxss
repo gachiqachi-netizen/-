@@ -27,6 +27,7 @@
 .agreement-error { color: var(--c-danger); }
 .agreement-error .check { border-color: var(--c-danger); }
 .total { font-size: var(--fs-title); font-weight: var(--fw-bold); white-space: nowrap; }
+.safety-copy { white-space: pre-line; line-height: 1.6; }
 .sheet-row { min-height: 88rpx; padding: 16rpx 0; border-bottom: 1rpx solid var(--c-line); }
 .sheet-label { margin-top: 20rpx; font-size: var(--fs-caption); }
 .sheet-actions { display: flex; gap: 16rpx; margin-top: 32rpx; }

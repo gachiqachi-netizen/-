@@ -15,7 +15,7 @@ test('体验和正式请求失败不能降级为示例',async()=>{
 function page(){const p={...definition,data:JSON.parse(JSON.stringify(definition.data)),setData(d){Object.assign(this.data,d)}};store.current=()=>({id:'test',name:'测试',wrist:15,beads:['a','a']});return p}
 test('进入下单强制刷新，改价列明并确认，取消保持禁用',async()=>{
  setup();let modal;wx.showModal=o=>{modal=o;o.success({confirm:false})};wx.request=o=>o.success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:5}]}})
- const p=page();await p.onShow();assert.match(modal.content,/3.00 → ¥5.00/);assert.equal(p.data.quotePending,true);assert.equal(p.data.catalogReady,false);assert.equal(p.data.goods,'10.00');p.confirmQuote();assert.equal(p.data.quotePending,false);assert.equal(p.data.catalogReady,true)
+ const p=page();await p.onShow();assert.match(p.data.quoteChanges[0],/3.00 → ¥5.00/);assert.equal(p.data.quotePending,true);assert.equal(p.data.catalogReady,false);assert.equal(p.data.goods,'10.00');p.confirmQuote();assert.equal(p.data.quotePending,false);assert.equal(p.data.catalogReady,true)
 })
 test('材料下架不可确认，目录失联不可下单',async()=>{
  setup();wx.showModal=o=>o.success({confirm:false});wx.request=o=>o.success({statusCode:200,data:{beads:[]}});const p=page();await p.onShow();assert.match(p.data.quoteChanges[0],/下架/);p.confirmQuote();assert.equal(p.data.catalogReady,false)

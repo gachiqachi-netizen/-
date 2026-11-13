@@ -30,17 +30,19 @@ Page({
       this.setData({ design })
     }
     if (!design) return this.setData({ loading: false })
-    this.loadPromise = this.loadCatalog()
+    const generation = this.quoteGeneration = (this.quoteGeneration || 0) + 1
+    this.loadPromise = this.loadCatalog(generation)
     this.loadAddress()
+    return this.loadPromise
   },
-  async loadCatalog() {
+  async loadCatalog(generation) {
     const design = this.data.design
     const previous = this.catalog || (getApp().globalData.catalog || {}).beads || []
     const oldMap = Object.fromEntries(previous.map(bead => [bead.id, bead]))
     this.setData({ loading: true, catalogReady: false, error: '' })
     try {
       const response = await api.catalog(true)
-      if (design !== this.data.design) return
+      if (design !== this.data.design || (generation && generation !== this.quoteGeneration)) return
       const next = (response.beads || []).filter(bead => bead.onSale !== false)
       const map = Object.fromEntries(next.map(bead => [bead.id, bead]))
       const changes = []
@@ -58,11 +60,11 @@ Page({
       this.setData({ catalogReady: !changes.length && !this.data.missing.length,
         sheet: changes.length ? 'price' : '' })
     } catch (error) {
-      this.setData({ loading: false, catalogReady: false, error: '网络不太好，没能连上服务，点提交再试一次' })
+      if (!generation || generation === this.quoteGeneration) this.setData({ loading: false, catalogReady: false, error: '材料信息加载失败，点提交再试一次' })
     }
   },
   async loadAddress() {
-    if (!auth.hasSession || !auth.hasSession() || this.data.person) return
+    if (typeof wx.getStorageSync !== 'function' || !auth.hasSession || !auth.hasSession() || this.data.person) return
     try {
       const result = await auth.authorized('/my/addresses')
       const rows = result.addresses || []
@@ -92,17 +94,23 @@ Page({
   openGift() { this.setData({ sheet: 'gift' }) },
   input(event) { this.setData({ [event.currentTarget.dataset.key]: event.detail.value }) },
   toggleGift() { this.setData({ gift: !this.data.gift }, () => this.calculate()) },
+  setGift(event) { this.setData({ gift: !!event.detail.value }, () => this.calculate()) },
   toggleHidePrice() { this.setData({ hidePrice: !this.data.hidePrice }) },
   setCord(event) { this.setData({ cord: Number(event.currentTarget.dataset.cord), sheet: '' }, () => this.calculate()) },
   finishGift() { this.setData({ sheet: '' }) },
   toggleAgreed() { this.setData({ agreed: !this.data.agreed, agreeError: false, agreeShake: false }) },
-  openRule(event) { wx.navigateTo({ url: '/features/doc/doc?type=' + encodeURIComponent(event.currentTarget.dataset.type) }) },
+  openRule(event) {
+    const type = event.currentTarget.dataset.type
+    if (type === '材料安全说明') return this.setData({ sheet: 'safety' })
+    wx.navigateTo({ url: '/features/doc/doc?type=' + encodeURIComponent(type) })
+  },
   edit() { nav.openEditor() },
   acceptPrice() {
     if (this.data.missing.length) return this.edit()
     this.submitAfterReprice = false
     this.setData({ sheet: '', quotePending: false, quoteChanges: [], catalogReady: true, error: '' })
   },
+  confirmQuote() { if (!this.data.missing.length) this.acceptPrice() },
   declinePrice() { this.submitAfterReprice = false; this.setData({ sheet: '', error: '请核对新价格后再提交' }) },
 
   calculate() {
@@ -141,7 +149,7 @@ Page({
     if (this.data.busy || this.data.order) return
     if (!design) return this.setData({ error: '没找到要下单的手串' })
     if (this.data.missing.length) return this.setData({ error: '有材料已下架，回去换一颗' })
-    if (this.data.quotePending) return this.setData({ sheet: 'price' })
+    if (this.data.quotePending) return this.setData({ sheet: 'price', error: '请先确认新价格' })
     if (!person.trim() || !phone.trim() || !addr.trim()) {
       this.setData({ addressShake: true, error: '先填收货地址' })
       wx.showToast({ title: '先填收货地址', icon: 'none' })

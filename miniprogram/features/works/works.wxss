@@ -1,6 +1,4 @@
 .works-page { min-height: 100vh; background: var(--c-bg); color: var(--c-text); }
-.works-nav { height: 88rpx; display: flex; align-items: center; justify-content: center; font-size: var(--fs-title); font-weight: var(--fw-bold); position: relative; }
-.works-back { position: absolute; left: 32rpx; font-size: 56rpx; font-weight: var(--fw-regular); line-height: 1; }
 .works-muted { color: var(--c-text-2); }
 .works-row { display: flex; align-items: center; border-bottom: 1rpx solid var(--c-line); position: relative; }
 .works-open { flex: 1; min-width: 0; }

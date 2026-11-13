@@ -36,7 +36,6 @@ Page({
     } catch (_) { this.setData({ failed: true }) }
     finally { this.setData({ loading: false }) }
   },
-  back() { wx.navigateBack() },
   newWork() { const d = store.create(); store.selected(d); nav.openWorkbench(d) },
   open(e) { const d = store.list().find(item => item.id === e.currentTarget.dataset.id); if (d) nav.openWorkbench(d) },
   more(e) { const d = store.list().find(item => item.id === e.currentTarget.dataset.id); if (d) this.setData({ active: d, menu: true }) },

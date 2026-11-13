@@ -1,5 +1,4 @@
 <view class="works-page">
-  <view class="works-nav"><view class="works-back" bindtap="back">‹</view><text>我的作品</text></view>
   <view class="c-row" bindtap="newWork"><text>串一条新的</text><text class="works-muted">›</text></view>
   <view wx:if="{{loading && !works.length}}" class="works-state">正在取回作品…</view>
   <view wx:elif="{{!works.length}}" class="works-empty"><view class="works-empty-title">还没有作品</view><view>串好的手串会存在这里</view><view class="works-link" bindtap="newWork">去串一条 ›</view></view>

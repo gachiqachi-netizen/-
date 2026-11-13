@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest, fmtTime } from '../api';
 import { Button } from '../ui/Button';
+import { Can } from '../permissions';
 import { Drawer } from '../ui/Drawer';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
@@ -169,7 +170,7 @@ export default function AccountsPage() {
     <Tabs items={[{ key: 'accounts', label: '账号', count: users.length }, { key: 'roles', label: '角色', count: roles.length }]} active={tab} onChange={setTab} />
     {loading ? <div className="zy-card" style={{ padding: 24 }}>正在读取账号…</div> : error ? <ErrorState reason={error} onRetry={load} /> : null}
     {!loading && !error && tab === 'accounts' && <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={muted}>每人一个账号，停用后立即不能再进入后台。</span><Button variant="primary" onClick={openNew}>新建账号</Button></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={muted}>每人一个账号，停用后立即不能再进入后台。</span><Can perm="manage_accounts"><Button variant="primary" onClick={openNew}>新建账号</Button></Can></div>
       <Table<Account> rows={users} rowKey={user => user.id} onRowClick={openEdit} columns={[
         { title: '账号', render: user => user.username }, { title: '名字', render: user => user.name },
         { title: '角色', render: user => roleName(roles, user.roleId) },
@@ -178,15 +179,15 @@ export default function AccountsPage() {
       ]} empty={<EmptyState text="还没有账号" />} />
     </>}
     {!loading && !error && tab === 'roles' && <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}><span style={muted}>勾选后点保存，立刻对这个角色的所有账号生效。敏感信息单独授权。</span><div style={{ display: 'flex', gap: 8 }}><Button onClick={() => openRoleEditor('new')}>新建角色</Button><Button variant="primary" disabled={roleBusy || !changedRoles.length} onClick={saveRoleChanges}>保存</Button></div></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}><span style={muted}>勾选后点保存，立刻对这个角色的所有账号生效。敏感信息单独授权。</span><div style={{ display: 'flex', gap: 8 }}><Can perm="manage_accounts"><Button onClick={() => openRoleEditor('new')}>新建角色</Button></Can><Can perm="manage_accounts"><Button variant="primary" disabled={roleBusy || !changedRoles.length} onClick={saveRoleChanges}>保存</Button></Can></div></div>
       {roleError && !roleEditor && <div role="alert" style={{ color: 'var(--danger)' }}>{roleError}</div>}
-      <div className="zy-card" style={{ overflowX: 'auto' }}><table className="zy-table"><thead><tr><th>分组</th><th>权限点</th>{roles.map(item => <th key={item.id} style={{ minWidth: 130 }}><div>{item.name}</div>{item.id === 'owner' ? <span style={muted}>不能改</span> : <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}><button type="button" style={{ background: 'none', border: 0, color: 'var(--text)', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => openRoleEditor(item)}>编辑</button>{!item.builtin && <button type="button" style={{ background: 'none', border: 0, color: 'var(--danger)', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => deleteRole(item)}>删除</button>}</div>}</th>)}</tr></thead><tbody>{GROUPS.flatMap(group => group.items.map((item, index) => <tr key={item.key}>
+      <div className="zy-card" style={{ overflowX: 'auto' }}><table className="zy-table"><thead><tr><th>分组</th><th>权限点</th>{roles.map(item => <th key={item.id} style={{ minWidth: 130 }}><div>{item.name}</div>{item.id === 'owner' ? <span style={muted}>不能改</span> : <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}><Can perm="manage_accounts"><button type="button" style={{ background: 'none', border: 0, color: 'var(--text)', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => openRoleEditor(item)}>编辑</button></Can>{!item.builtin && <Can perm="manage_accounts"><button type="button" style={{ background: 'none', border: 0, color: 'var(--danger)', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => deleteRole(item)}>删除</button></Can>}</div>}</th>)}</tr></thead><tbody>{GROUPS.flatMap(group => group.items.map((item, index) => <tr key={item.key}>
         {index === 0 && <td rowSpan={group.items.length}>{group.name}</td>}
         <td>{item.label}{item.sensitive && <span style={{ ...muted, marginLeft: 8 }}>敏感信息</span>}</td>
         {roles.map(role => <td key={role.id} style={{ textAlign: 'center' }}><input type="checkbox" aria-label={`${role.name}：${item.label}`} checked={role.id === 'owner' || (roleDrafts[role.id] || []).includes(item.key)} disabled={role.id === 'owner' || roleBusy} onChange={() => toggleRolePermission(role.id, item.key)} /></td>)}
       </tr>))}</tbody></table></div>
     </>}
-    {roleEditor && <Drawer title={roleEditor === 'new' ? '新建角色' : '编辑角色'} subtitle={roleEditor === 'new' ? undefined : roleEditor.name} onClose={() => setRoleEditor(null)} footer={<><Button disabled={roleBusy} onClick={() => setRoleEditor(null)}>取消</Button><Button variant="primary" disabled={roleBusy} onClick={saveRoleForm}>保存</Button></>}>
+    {roleEditor && <Drawer title={roleEditor === 'new' ? '新建角色' : '编辑角色'} subtitle={roleEditor === 'new' ? undefined : roleEditor.name} onClose={() => setRoleEditor(null)} footer={<><Button disabled={roleBusy} onClick={() => setRoleEditor(null)}>取消</Button><Can perm="manage_accounts"><Button variant="primary" disabled={roleBusy} onClick={saveRoleForm}>保存</Button></Can></>}>
       <div style={{ display: 'grid', gap: 18 }}>
         <Field label="角色名字"><input style={inputStyle} value={roleForm.name} disabled={roleEditor !== 'new' && roleEditor.builtin} onChange={e => setRoleForm(current => ({ ...current, name: e.target.value }))} /></Field>
         <Field label="数据范围"><select style={inputStyle} value={roleForm.dataScope} onChange={e => setRoleForm(current => ({ ...current, dataScope: e.target.value }))}><option value="all">全部</option><option value="own">只看分给我的</option></select></Field>
@@ -195,15 +196,15 @@ export default function AccountsPage() {
       </div>
     </Drawer>}
     {drawer && <Drawer title={drawer === 'new' ? '新建账号' : '编辑账号'} subtitle={drawer === 'edit' ? selected?.username : undefined} onClose={closeDrawer} footer={<>
-      {drawer === 'edit' && selected?.status !== 'disabled' && <span className="zy-drawer-foot-left"><Button variant="danger" disabled={busy} onClick={disable}>停用账号</Button></span>}
-      <Button disabled={busy} onClick={closeDrawer}>取消</Button><Button variant="primary" disabled={busy} onClick={save}>保存</Button>
+      {drawer === 'edit' && selected?.status !== 'disabled' && <span className="zy-drawer-foot-left"><Can perm="manage_accounts"><Button variant="danger" disabled={busy} onClick={disable}>停用账号</Button></Can></span>}
+      <Button disabled={busy} onClick={closeDrawer}>取消</Button><Can perm="manage_accounts"><Button variant="primary" disabled={busy} onClick={save}>保存</Button></Can>
     </>}>
       <div style={{ display: 'grid', gap: 18 }}>
         <Field label="账号"><input style={inputStyle} value={username} disabled={drawer === 'edit'} onChange={e => setUsername(e.target.value)} autoComplete="off" /></Field>
         <Field label="名字"><input style={inputStyle} value={name} onChange={e => setName(e.target.value)} autoComplete="off" /></Field>
         <Field label="角色"><select style={inputStyle} value={roleId} onChange={e => setRoleId(e.target.value)}>{roles.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field>
         <div className="zy-card"><div className="zy-card-title">这个角色能做什么</div><div style={{ padding: 16, display: 'grid', gap: 12 }}><div><strong>能做</strong><div>{detail.can.join('、') || '暂无'}</div></div><div><strong>不能做</strong><div style={muted}>{detail.cannot.join('、') || '暂无'}</div></div></div></div>
-        {drawer === 'edit' && <Button disabled={busy} onClick={resetPassword}>重置密码</Button>}
+        {drawer === 'edit' && <Can perm="manage_accounts"><Button disabled={busy} onClick={resetPassword}>重置密码</Button></Can>}
         {actionError && <div role="alert" style={{ color: 'var(--danger)' }}>{actionError}</div>}
       </div>
     </Drawer>}

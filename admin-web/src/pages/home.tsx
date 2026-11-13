@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiRequest } from '../api';
 import { Button } from '../ui/Button';
+import { Can } from '../permissions';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 
@@ -73,12 +74,12 @@ const HomePage: React.FC = () => {
         <h2 style={{ fontSize: 18, margin: '0 0 4px' }}>{labels[section]}</h2><div style={muted}>拖动排序 · 点击上下线</div>
         {items[section].length ? items[section].map((row, index) => <div key={row.id} draggable onDragStart={() => setDrag({ section, index })} onDragOver={e => e.preventDefault()} onDrop={() => drop(section, index)} onDragEnd={() => setDrag(null)} style={{ display: 'flex', alignItems: 'center', gap: 12, borderTop: '1px solid #e8e8e8', padding: '14px 0' }}>
           <span aria-label="拖动排序" style={{ cursor: 'grab', color: '#6e6e6e' }}>⋮⋮</span><div style={{ flex: 1, minWidth: 0 }}><div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.title || row.name || row.id}</div><div style={muted}>{section === 'articles' ? (row.status === 'published' ? '文章 · 已发布' : '文章 · 草稿') : section === 'templates' ? (row.status === 'on_sale' ? '在售' : '未在售') : (row.on === false ? '未上线' : '上线')}</div></div>
-          <button type="button" aria-label={`${active(section, row) ? '下线' : '上线'}${row.title || row.name || row.id}`} disabled={!available(section, row)} onClick={() => toggle(section, row.id)} style={{ border: 0, background: 'transparent', cursor: 'pointer', color: '#111' }}>{active(section, row) ? '下线' : '上线'}</button>
+          <Can perm="edit_content"><button type="button" aria-label={`${active(section, row) ? '下线' : '上线'}${row.title || row.name || row.id}`} disabled={!available(section, row)} onClick={() => toggle(section, row.id)} style={{ border: 0, background: 'transparent', cursor: 'pointer', color: '#111' }}>{active(section, row) ? '下线' : '上线'}</button></Can>
         </div>) : <EmptyState text="暂无可配置内容" />}
       </section>)}
     </div>
     <div style={muted}>四个能力入口和“继续上次那条”是固定的；手围由程序按用户设置计算。</div>
-    <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}><Button onClick={() => setPreview(true)}>预览首页</Button><Button variant="primary" disabled={saving || !!error} onClick={() => void publish()}>{saving ? '发布中…' : '发布'}</Button></div>
+    <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}><Button onClick={() => setPreview(true)}>预览首页</Button><Can perm="edit_content"><Button variant="primary" disabled={saving || !!error} onClick={() => void publish()}>{saving ? '发布中…' : '发布'}</Button></Can></div>
     {preview && <div role="dialog" aria-modal="true" aria-label="首页预览" style={{ position: 'fixed', inset: 0, zIndex: 20, background: 'rgba(0,0,0,.45)', display: 'grid', placeItems: 'center', padding: 20 }} onClick={() => setPreview(false)}>
       <div style={{ width: 390, maxWidth: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#fff', padding: 20 }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><strong>首页预览</strong><Button onClick={() => setPreview(false)}>关闭</Button></div>

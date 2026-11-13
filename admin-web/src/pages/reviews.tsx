@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiRequest, fmtTime } from '../api';
 import { CONTRACT } from '../contract';
+import { Can } from '../permissions';
 import { Drawer } from '../ui/Drawer';
 import { EmptyState } from '../ui/EmptyState';
 import { Table } from '../ui/Table';
@@ -92,8 +93,8 @@ const ReviewsPage: React.FC = () => {
       { title: '', width: 70, render: () => '审核 ›' },
     ]} />}
     {active && <Drawer title="审核评价" subtitle={`${statusName(active.status)} · ${fmtTime(active.createdAt)} 提交`} onClose={() => { if (!busy) setSelected(''); }} footer={<>
-      {active.status === 'pending' && <><button type="button" className="zy-drawer-foot-left" disabled={busy} onClick={() => void act('reject')}>驳回</button><button type="button" disabled={busy} onClick={() => void act('approve')}>通过并公开</button></>}
-      {active.status === 'published' && <button type="button" disabled={busy} onClick={() => void act('take-down')}>下架</button>}
+      {active.status === 'pending' && <Can perm="moderate_reviews"><><button type="button" className="zy-drawer-foot-left" disabled={busy} onClick={() => void act('reject')}>驳回</button><button type="button" disabled={busy} onClick={() => void act('approve')}>通过并公开</button></></Can>}
+      {active.status === 'published' && <Can perm="moderate_reviews"><button type="button" disabled={busy} onClick={() => void act('take-down')}>下架</button></Can>}
     </>}>
       <section><h3>评价</h3><div>{active.orderNo} · {'★'.repeat(active.stars)}{'☆'.repeat(5 - active.stars)}</div><p style={active.machine?.textOk === false ? danger : undefined}>{active.text || '只打了星'}</p><div>晒图：{active.photoIds?.length || 0} 张 · {active.anonymous ? '匿名' : '非匿名'}</div></section>
       <section><h3>机审</h3><div style={active.machine?.textOk === false ? danger : undefined}>文字：{active.machine?.textOk === false ? active.machine.textReason || '未通过' : '通过'}</div><div style={active.machine?.photos?.some(p => p.status === 'rejected') ? danger : undefined}>图片：{active.machine?.photos?.length ? active.machine.photos.map(p => p.status === 'passed' ? '通过' : p.status === 'pending' ? '检查中' : '未通过').join('、') : '无'}</div></section>

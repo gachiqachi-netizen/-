@@ -1,9 +1,8 @@
-.page{padding:var(--sp-base)}
-.title{font-size:var(--fs-title);font-weight:var(--fw-bold);margin-bottom:var(--sp-section)}
-.summary{padding:var(--sp-base);background:var(--c-surface);margin-bottom:var(--sp-section)}
+.page{padding:var(--sp-base);min-height:100vh;background:var(--c-surface)}
+.summary{padding:var(--sp-base);background:var(--c-bg);margin-bottom:var(--sp-section)}
 .name,.option-title{font-size:var(--fs-body);font-weight:var(--fw-bold)}
 .hint,.policy{font-size:var(--fs-caption);color:var(--c-text-2)}
-.option{display:flex;align-items:center;justify-content:space-between;min-height:var(--h-row);border-bottom:1rpx solid var(--c-line)}
+.option{display:flex;align-items:center;justify-content:space-between;min-height:var(--h-row);padding:0 var(--sp-base);background:var(--c-bg);border-bottom:1rpx solid var(--c-line)}
 .option text{font-size:var(--fs-title)}
 .policy{margin-top:var(--sp-section)}
 .policy text{color:var(--c-text);text-decoration:underline}

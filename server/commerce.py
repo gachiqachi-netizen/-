@@ -499,6 +499,15 @@ def customer_after_sale_types(order, now_ms):
     return []
 
 
+def refund_amount_for(order, atype):
+    # 制作中退款的扣除规则待负责人定（15 号文档 E2），定了以后只改这里。
+    if atype in REFUND_TYPES:
+        return _paid_fen(order)
+    if atype in ('补寄配件', '改手围重串'):
+        return 0
+    raise ValueError('售后类型不正确')
+
+
 _ACTIVE_AFTER_SALE_STATUSES = ("requested", "reviewing", "approved", "returning", "refunding")
 REFUND_TYPES = ("仅退款", "退货退款", "拒收后退款")
 AFTER_SALE_DAYS = 7

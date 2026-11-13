@@ -3,6 +3,7 @@ module.exports = {
   "actions": {
     "cancel_order": "取消订单",
     "confirm_receipt": "确认收货",
+    "edit_address": "修改地址",
     "pay_order": "去支付",
     "reorder": "按这款再串一条",
     "view_logistics": "查看物流"
@@ -253,7 +254,7 @@ module.exports = {
     "退货退款说明",
     "售后服务说明"
   ],
-  "version": "e55156f49d2f",
+  "version": "70b84c33df13",
   "workOrderStatuses": {
     "pending": "待开始",
     "producing": "制作中",

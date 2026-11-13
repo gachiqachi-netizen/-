@@ -53,6 +53,7 @@ OPS_STATUS = {
 ACTIONS = {
     "pay_order": "去支付",
     "cancel_order": "取消订单",
+    "edit_address": "修改地址",
     "confirm_receipt": "确认收货",
     "view_logistics": "查看物流",
     "reorder": "按这款再串一条",

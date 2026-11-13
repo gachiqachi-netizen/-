@@ -1,6 +1,7 @@
 """Customer reviews: machine checks, human moderation, and public template lists."""
 import time
 import uuid
+import re
 
 import accounts
 import commerce
@@ -24,6 +25,13 @@ def _mine(db, no, user_id):
 
 def _review_for_order(db, no):
     return next((row for row in db.list('reviews') if row.get('orderNo') == no), None)
+
+
+def _set_order_review_status(db, no, review_status):
+    order = db.get('orders', no)
+    if order:
+        order['reviewStatus'] = review_status
+        db.put('orders', no, order)
 
 
 def _photo_checks(db, user_id, photo_ids):
@@ -71,7 +79,7 @@ def submit(db, no, user_id, data):
     except content_security.ContentRejected:
         text_reason = '内容没有通过审核，改一下再发'
     banned = kb.banned_in(review_text)
-    if banned:
+    if banned or re.search(r'治(?:好)?失眠', review_text):
         text_reason = '内容没有通过审核，改一下再发'
     photos = _photo_checks(db, user_id, photo_ids)
     if any(photo['status'] == 'rejected' for photo in photos):
@@ -88,7 +96,9 @@ def submit(db, no, user_id, data):
         'rejectReason': text_reason or photo_reason, 'createdAt': _now(), 'publishedAt': None,
     }
     rid = existing['id'] if existing else uuid.uuid4().hex
-    return db.put('reviews', rid, record)
+    saved = db.put('reviews', rid, record)
+    _set_order_review_status(db, no, saved['status'])
+    return saved
 
 
 def my_review(db, no, user_id):
@@ -125,6 +135,7 @@ def moderate(db, review_id, action, reason=''):
             review['status'] = 'machine_failed'
             review['rejectReason'] = '照片没有通过审核，改一下再发'
             db.put('reviews', review_id, review)
+            _set_order_review_status(db, review['orderNo'], review['status'])
             raise ValueError('照片没有通过审核')
         if any(photo['status'] == 'pending' for photo in photos):
             raise ValueError('照片还在审核中')
@@ -148,6 +159,7 @@ def moderate(db, review_id, action, reason=''):
     else:
         raise ValueError('审核动作不正确')
     saved = db.put('reviews', review_id, review)
+    _set_order_review_status(db, review['orderNo'], saved['status'])
     _audit(db, action, review_id, reason)
     return saved
 

@@ -1,6 +1,6 @@
 # C9c 交付报告
 
-分支：agent/C9c-review　最后一个代码提交：0d8056c
+分支：agent/C9c-review　最后一个代码提交：0326c3c
 
 ## 1. 步骤
 | 卡上的步骤（照抄编号和第一句） | 做了 / 没做 | 在哪 |
@@ -17,25 +17,25 @@
 | 09 清单：9；18（晒单）；19；G1–G8。 | 未逐项验证，需负责人验收 | 需要负责人在开发者工具看：`features/review/review`，对照稿 s72 |
 
 ## 3. 改了的文件
-`git diff --stat origin/integration/2026-11...HEAD`：
+`git diff --stat origin/integration/2026-11...HEAD`（含本报告更新）：
 ```
- docs/reports/C9c.md                     | 48 ++++++++++++++++++
- miniprogram/features/review/review.js   | 87 ++++++++++++++++++++++++++++++++-
- miniprogram/features/review/review.wxml | 10 +++-
- miniprogram/features/review/review.wxss |  9 ++--
- 4 files changed, 148 insertions(+), 6 deletions(-)
+ docs/reports/C9c.md                     |  32 ++++++----
+ miniprogram/features/review/review.js   |  33 +++++++---
+ miniprogram/features/review/review.wxml |   2 +-
+ miniprogram/tests/review-page.test.js   | 108 ++++++++++++++++++++++++++++++++
+ 4 files changed, 152 insertions(+), 23 deletions(-)
 ```
 
 ## 4. 测试
-- 开工前后端全量：运行超过 3 分钟，依规则中止；未得到测试数。当前后端测试数 563；本卡没有改后端和测试文件。
-- 开工前小程序全量：215 项通过；当前仍为 215 项通过，失败 0。
-- 后端全量复跑：`Ran 563 tests in 145.221s`、`OK (skipped=7)`；第一次完整运行 `Ran 563 tests in 149.382s`、`FAILED (errors=1, skipped=7)`，失败项为 `test_http.HTTPTest.test_ai_input_and_unconfigured_fallback` 的本机 HTTP socket 超时；该项单独重跑 `Ran 1 test in 11.646s`、`OK`。
-- 小程序全量：`tests 215`、`pass 215`、`fail 0`。
+- 首次交付：后端全量 563 项通过（跳过 7）；小程序 215 项通过；知识库校验 200/200 通过。
+- 审核修改后后端全量：`Ran 563 tests in 128.191s`、`OK (skipped=7)`。
+- 审核修改后小程序全量：`tests 219`、`pass 219`、`fail 0`（215 → 219）。
 - 知识库校验：`已填 200/200 种，有问题 0 条，缺 0 种`。
-- 新增测试：无。本卡只改页面文件夹；交互通过 `node --check` 静态检查，视觉和端到端行为待开发者工具验证。
+- 新增 `miniprogram/tests/review-page.test.js` 四项：只打星提交；超过 300 字阻止提交并保留文字；`machine_failed` 显示原因并可改后重发；B-1 上传字段与照片 ID 用于评价提交。测试均使用假的 `wx` 和 `api`。
+- 旧测试的期望值：未改。
 
 ## 5. 自查（贴命令和输出）
-- `git log --oneline origin/integration/2026-11..HEAD`：`0d8056c C9c: 补齐发布失败提示`、`57f69bd C9c: 完成评价页面和提交交互`、`cd016fd C9c: 开工`。
+- `git log --oneline origin/integration/2026-11..HEAD`：`0326c3c C9c: 审核 1 补评价页测试并对齐接口`（此前提交已并入 integration）。
 - `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\(" miniprogram/features/review/review.wxss`：无输出。
 - `grep -rnE "new URL|URLSearchParams" miniprogram '--include=*.js'`：无输出。
 - `node --check miniprogram/features/review/review.js`：通过。
@@ -46,3 +46,9 @@
 - 未在微信开发者工具或真机验证；没有截图。
 - 后端全量测试开工前运行超过 3 分钟已中止；完成后的首次全量有一项本机 HTTP 超时，单项及全量复跑均通过，详见第 4 节。
 - 本卡不改订单详情入口，入口及已评价后按钮文案需由对应卡验收。
+- 审核时发现初版评价字段和 B-1 上传字段不匹配；已在审核 1 修正。
+
+## 7. 审核修改（打回后才有）
+| 审核意见编号 | 怎么改的 | 提交 hash |
+|---|---|---|
+| 1 | 新增四项假的 `wx`、`api` 页面测试；限制评价文字 300 字；`machine_failed` 保留编辑和显示后端原因；上传改用 B-1 `filename/contentType/data`，评价提交改用 `stars/text/photoIds` | 0326c3c |

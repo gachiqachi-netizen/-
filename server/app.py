@@ -380,7 +380,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(200, f.read(), "application/json" if fp.endswith(".json") else "application/octet-stream")
             if path == "/api/catalog":
                 beads, tpls, banners = on_sale_catalog()
-                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config()})
+                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config(), "homeArticles": __import__("home").home_articles(db)})
             if path == "/api/meta/contract":
                 import contract
                 return self.send(200, contract.payload())

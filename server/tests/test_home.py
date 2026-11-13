@@ -1,10 +1,14 @@
 """Home content configuration and public catalog ordering."""
 import os
+import json
 import sys
 import tempfile
+import threading
 import unittest
+from http.server import ThreadingHTTPServer
 from types import SimpleNamespace
 from unittest.mock import patch
+from urllib.request import ProxyHandler, build_opener
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import app
@@ -64,6 +68,28 @@ class HomeTest(unittest.TestCase):
         home.save(self.db, {**self.data, 'articles': []})
         self.assertEqual(home.home_articles(self.db), [])
         self.assertIsNone(self.db.get('articles', self.article['id'])['homeOrder'])
+
+    def test_http_catalog_exposes_only_published_ordered_home_articles(self):
+        second = articles.save(self.db, {'title': '第二篇', 'body': ['寓意清澈'], 'status': 'published'})
+        articles.save(self.db, {'title': '不上首页', 'body': ['寓意自在'], 'status': 'published'})
+        home.save(self.db, {**self.data, 'articles': [second['id'], self.draft['id'], self.article['id']]})
+        server = ThreadingHTTPServer(('127.0.0.1', 0), app.Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        with patch.object(app, 'db', self.db):
+            thread.start()
+            try:
+                opener = build_opener(ProxyHandler({}))
+                with opener.open(f'http://127.0.0.1:{server.server_port}/api/catalog', timeout=3) as response:
+                    self.assertEqual(response.status, 200)
+                    catalog = json.load(response)
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join()
+        self.assertEqual([item['id'] for item in catalog['homeArticles']], [second['id'], self.article['id']])
+        for key in ('beads', 'templates', 'banners', 'pricing'):
+            self.assertIn(key, catalog)
+        self.assertEqual([item['id'] for item in catalog['templates'][:2]], ['t2', 't1'])
 
 
 if __name__ == '__main__':

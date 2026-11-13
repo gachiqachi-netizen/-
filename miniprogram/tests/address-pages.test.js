@@ -54,3 +54,17 @@ test('invalid phone stays on edit page and scrolls to phone row', async () => {
   assert.equal(page.data.errors.phone, '手机号是 11 位数字')
   assert.deepEqual(calls, ['#row-phone'])
 })
+
+test('address book stops adding after twenty entries', () => {
+  const previousShow = queue.show
+  const messages = []
+  global.wx = { navigateTo: () => { throw new Error('must not open editor') } }
+  queue.show = item => messages.push(item.text)
+  try {
+    const page = pageOf('../features/address/address')
+    page.setData({ rows: Array.from({ length: 20 }, (_, id) => ({ id })) })
+    page.add()
+    page.importWechat()
+    assert.deepEqual(messages, ['最多保存 20 个地址', '最多保存 20 个地址'])
+  } finally { queue.show = previousShow }
+})

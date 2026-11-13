@@ -676,7 +676,7 @@ class Handler(BaseHTTPRequestHandler):
                          "length": data.get("length"), "cord": data.get("cord", 0), "gift": bool(data.get("gift")),
                          "goods": goods, "ship": ship, "promo": promo, "total": priced["totalFen"] / 100,
                          "person": data["person"].strip()[:20], "phone": data["phone"], "addr": data["addr"].strip()[:120],
-                         "status": "待串制", "createdAt": int(time.time() * 1000)}
+                         "createdAt": int(time.time() * 1000)}
                 db.put("orders", no, order)
                 return self.send(200, order)
             if path == "/api/upload":

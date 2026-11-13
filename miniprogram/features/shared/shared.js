@@ -9,7 +9,7 @@ function viewerWrist() {
 
 function reflow(shared, catalog, wrist) {
   if ((shared.pattern || []).length) return store.fromTemplate(shared, catalog, wrist)
-  return { ...store.create(), ...shared, wrist, beads: (shared.beads || []).slice(), source: 'shared' }
+  return store.fromTemplate({ ...shared, pattern: (shared.beads || []).slice(), source: 'shared' }, catalog, wrist)
 }
 
 function meaningFor(shared, catalog) {
@@ -32,10 +32,28 @@ function dateLabel(milliseconds) {
   return Number.isFinite(date.getTime()) ? `${date.getMonth() + 1} 月 ${date.getDate()} 日串的` : ''
 }
 
+function shortCodeFromScene(scene) {
+  try {
+    const decoded = decodeURIComponent(String(scene || ''))
+    const match = /^s=([A-Za-z0-9_-]{16})$/.exec(decoded)
+    return match ? match[1] : ''
+  } catch (_) { return '' }
+}
+
 Page({
   data: { design: null, catalog: [], notes: [], error: '', loading: true, deleted: false, measured: false, authorLabel: '', dateLabel: '', meaning: '', tags: '' },
   onLoad(options) {
-    const id = options.id || options.scene || ''
+    this.shareOptions = options
+    if (options.scene) {
+      const code = shortCodeFromScene(options.scene)
+      if (!code) { this.setData({ loading: false, deleted: true }); return }
+      api.request('/shares/by-code/' + code).then(result => this.loadShare(result.shareId))
+        .catch(() => this.setData({ loading: false, deleted: true }))
+      return
+    }
+    this.loadShare(options.id || '')
+  },
+  loadShare(id) {
     if (!/^[A-Za-z0-9_-]{43}$/.test(id)) { this.setData({ loading: false, error: '分享链接无效' }); return }
     Promise.all([api.request('/shares/' + id), api.catalog()]).then(([shared, response]) => {
       const catalog = response.beads || [], wrist = viewerWrist()
@@ -51,8 +69,9 @@ Page({
     }).catch(e => this.setData({ loading: false, deleted: e.status === 404, error: e.status === 404 ? '' : '暂时没连上，请再试一次' }))
   },
   home() { wx.switchTab({ url: '/pages/home/home' }) },
+  retry() { this.setData({ loading: true, error: '', deleted: false }); this.onLoad(this.shareOptions || {}) },
   start() { const design = store.create(); store.selected(design); nav.openWorkbench(design) },
   use() { if (!this.data.design) return; const design = this.data.design; store.selected(design); nav.openWorkbench(design); wx.showToast({ title: this.data.measured ? `已按你的 ${design.wrist}cm 手围排成 ${design.beads.length} 颗` : '先按常见的 15cm 排好', icon: 'none' }) }
 })
 
-module.exports = { viewerWrist, reflow, meaningFor, dateLabel }
+module.exports = { viewerWrist, reflow, meaningFor, dateLabel, shortCodeFromScene }

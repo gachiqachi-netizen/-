@@ -200,7 +200,12 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(self.request('/api/designs/' + design['id'], 'PUT', payload, token=b)[0], 404)
         self.assertEqual(self.request('/api/designs/' + design['id'], 'DELETE', token=b)[0], 404)
         _, shared = self.request('/api/shares', 'POST', {'name':'公开作品','beads':['zt8'],'wrist':15,'phone':'13800138000'}, token=a)
-        self.assertEqual(self.request('/api/shares/' + shared['shareId'])[1], {'name':'公开作品','beads':['zt8'],'wrist':15})
+        public_share = self.request('/api/shares/' + shared['shareId'])[1]
+        self.assertEqual(public_share, {'name':'公开作品','beads':['zt8'],'wrist':15,
+                                        'createdAt':public_share['createdAt'],
+                                        'authorLabel':'来自珠养养的一位用户'})
+        self.assertIsInstance(public_share['createdAt'], int)
+        self.assertNotIn('userId', public_share)
 
     def test_template_metadata_survives_legacy_update_over_http(self):
         token = 'a' * 43

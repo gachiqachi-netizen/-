@@ -337,13 +337,17 @@ class Handler(BaseHTTPRequestHandler):
                 return True
             ctx = routes.Ctx(db=db, user_id=user_id, admin=is_admin, qs=self.qs(), ip=self.client_address[0])
             try:
-                status_code, body = fn(ctx, match, data)
+                result = fn(ctx, match, data)
+                status_code, body = result[:2]
             except ValueError as e:
                 self.send(400, {"error": str(e)})
             except KeyError as e:
                 self.send(404, {"error": str(e)})
             else:
-                self.send(status_code, body)
+                if len(result) == 3 and isinstance(body, bytes):
+                    self.send(status_code, body, result[2])
+                else:
+                    self.send(status_code, body)
             return True
         return False
 

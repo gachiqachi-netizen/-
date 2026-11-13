@@ -28,6 +28,10 @@ def echo_public(ctx, match, data):
     return 200, {"kind": "public", "userId": ctx.user_id, "qs": ctx.qs, "ip": ctx.ip}
 
 
+def png_public(ctx, match, data):
+    return 200, b'\x89PNG\r\n\x1a\nraw', 'image/png'
+
+
 def echo_user(ctx, match, data):
     return 200, {"kind": "user", "userId": ctx.user_id}
 
@@ -50,6 +54,7 @@ def ok_admin(ctx, match, data):
 
 TEST_ROUTES = [
     ("GET", r"^/api/test-routes/ping$", echo_public, "public"),
+    ("GET", r"^/api/test-routes/png$", png_public, "public"),
     ("GET", r"^/api/test-routes/me$", echo_user, "user"),
     ("GET", r"^/api/test-routes/admin-info$", echo_admin, "admin"),
     ("POST", r"^/api/test-routes/boom-value$", boom_value, "public"),
@@ -132,6 +137,12 @@ class DispatchHTTPTests(unittest.TestCase):
             resp = e
         with resp:
             return resp.status, json.loads(resp.read())
+
+    def test_binary_route_preserves_png_content_type_and_bytes(self):
+        with self.opener.open(self.base + '/api/test-routes/png', timeout=3) as response:
+            self.assertEqual(response.status, 200)
+            self.assertEqual(response.headers.get_content_type(), 'image/png')
+            self.assertEqual(response.read(), b'\x89PNG\r\n\x1a\nraw')
 
     def login_user(self, uid="u1"):
         token = user_api.secrets.token_urlsafe(32)

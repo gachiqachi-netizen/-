@@ -1,3 +1,1 @@
-{
-  "navigationBarTitleText": "编辑地址"
-}
+{"navigationBarTitleText":"编辑地址","usingComponents":{"c-bar":"/components/bar/index","c-toast":"/components/toast/index"}}

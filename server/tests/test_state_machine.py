@@ -235,6 +235,7 @@ class CrossStateConstraintTest(unittest.TestCase):
 
     def test_order_status_repeat_transition_is_idempotent(self):
         no = self.make_order('sm-idem-000002')['no']
+        o = self.db.get('orders', no); self.db.put('orders', no, {**o, 'paymentStatus': 'paid', 'paidFen': o.get('payableFen') or o.get('totalFen') or 0})  # A4c：只有已付款订单能手动确认
         commerce.transition_order_status(self.db, no, 'orderStatus', 'confirmed')
         before = len(self.db.get('orders', no)['statusHistory'])
         commerce.transition_order_status(self.db, no, 'orderStatus', 'confirmed')

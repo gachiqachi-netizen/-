@@ -184,7 +184,7 @@ def order_allowed_actions(order):
 
 
 # 只给后台看的订单字段：生产工单（负责人、作业备注）和质检记录（质检员、原因）。用户接口一律不返回。
-INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate', 'addressHistory')
+INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate', 'addressHistory', 'internalNotes')
 # 状态和物流记录只给用户看“什么时候、从什么变成什么”，不带操作人和内部备注。
 _PUBLIC_STATUS_KEYS = ('at', 'group', 'from', 'to')
 _PUBLIC_LOGISTICS_KEYS = ('at', 'action', 'detail')
@@ -262,9 +262,9 @@ def request_after_sale(db, no, uid, data):
     return {'afterSale': sale, 'order': public_order(db.get('orders', no))}
 
 
-def perform_order_action(db, no, uid, action):
+def perform_order_action(db, no, uid, action, reason=None):
     import commerce
-    return public_order(commerce.customer_order_action(db, no, uid, action))
+    return public_order(commerce.customer_order_action(db, no, uid, action, reason=reason))
 
 
 def start_payment(db, no, uid):

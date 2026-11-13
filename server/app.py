@@ -304,6 +304,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/catalog":
                 beads, tpls, banners = on_sale_catalog()
                 return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config()})
+            if path == "/api/meta/contract":
+                import contract
+                return self.send(200, contract.payload())
             if path == "/api/promotions/status":
                 return self.send(200, user_api.promotion_status())
             if path == "/api/kb/status":

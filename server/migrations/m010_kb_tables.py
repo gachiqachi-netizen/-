@@ -25,10 +25,11 @@ def up(conn, adapter):
         attrs = json.load(source)
     entries.extend(('dict', key, attrs[key]) for key in DICT_KEYS)
     placeholder = '%s' if adapter.name == 'postgres' else '?'
+    doc_placeholder = '%s::jsonb' if adapter.name == 'postgres' else '?'
     for kind, key, data in entries:
         item_id = f'{kind}:{key}'
         item = dict(kind=kind, key=key, data=data, version=1, updatedBy='导入', updatedAt=now)
         version = dict(itemId=item_id, version=1, data=data, savedBy='导入', savedAt=now, note='首次导入')
         for table, rid, doc in (('kb_items', item_id, item), ('kb_versions', f'{item_id}:1', version)):
             raw = json.dumps(doc, ensure_ascii=False)
-            conn.execute(f'INSERT INTO {table} (id, doc) VALUES ({placeholder}, {placeholder})', (rid, raw))
+            conn.execute(f'INSERT INTO {table} (id, doc) VALUES ({placeholder}, {doc_placeholder})', (rid, raw))

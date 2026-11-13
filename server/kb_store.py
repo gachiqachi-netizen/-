@@ -73,7 +73,8 @@ def save(key, data, by, note):
         history = dict(itemId=item_id, version=version, data=data, savedBy=by, savedAt=now, note=note)
         raw_item = json.dumps(item, ensure_ascii=False)
         raw_history = json.dumps(history, ensure_ascii=False)
-        conn.execute(f'UPDATE kb_items SET doc = {placeholder} WHERE id = {placeholder}', (raw_item, item_id))
-        conn.execute(f'INSERT INTO kb_versions (id, doc) VALUES ({placeholder}, {placeholder})',
+        doc_placeholder = '%s::jsonb' if placeholder == '%s' else '?'
+        conn.execute(f'UPDATE kb_items SET doc = {doc_placeholder} WHERE id = {placeholder}', (raw_item, item_id))
+        conn.execute(f'INSERT INTO kb_versions (id, doc) VALUES ({placeholder}, {doc_placeholder})',
                      (f'{item_id}:{version}', raw_history))
     return version

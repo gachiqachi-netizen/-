@@ -33,6 +33,7 @@ import plans  # noqa: E402
 import status  # noqa: E402
 import commerce  # noqa: E402
 import routes  # noqa: E402
+import uploads  # noqa: E402
 from db import DB  # noqa: E402
 
 ROUTE_TABLE = routes.load()
@@ -344,6 +345,39 @@ class Handler(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _serve_user_upload(self, path):
+        """B-1 读用户上传的图片：没记录、没权限、文件不存在一律同一个 404。
+
+        防目录穿越：URL 解码后取 realpath，必须落在 realpath(UPLOADS/user) 内。
+        带合法且没过期的 k（送审时给微信的临时取图签名）时不看 checkStatus；
+        k 不对或过期则照旧按权限判断。
+        """
+        from urllib.parse import unquote, parse_qs, urlparse
+        rel = unquote(path[len("/uploads/"):]).replace("\\", "/")
+        root = os.path.realpath(os.path.join(UPLOADS, "user"))
+        fp = os.path.realpath(os.path.join(UPLOADS, rel))
+        not_found = {"error": "not_found"}
+        if os.path.commonpath((root, fp)) != root:
+            return self.send(404, not_found)
+        record = uploads.get_by_url_path(db, rel)
+        if record is None:
+            return self.send(404, not_found)
+        qs = parse_qs(urlparse(self.path).query)
+        if not uploads.valid_link(rel, qs):
+            if not uploads.viewer_can_see(record, self.user(), self.admin_ok()):
+                return self.send(404, not_found)
+        ext = fp.rsplit(".", 1)[-1].lower() if "." in fp else ""
+        if ext == "jpeg":
+            ext = "jpg"
+        ctype = {"jpg": "image/jpeg", "png": "image/png", "webp": "image/webp"}.get(ext)
+        if ctype is None or not os.path.isfile(fp):
+            return self.send(404, not_found)
+        headers = {}
+        if record.get("checkStatus") != "passed":
+            headers["Cache-Control"] = "private, no-store"
+        with open(fp, "rb") as f:
+            return self.send(200, f.read(), ctype, headers=headers)
+
     def user(self):
         return user_api.owner(db, self.headers.get("Authorization"))
 
@@ -366,6 +400,8 @@ class Handler(BaseHTTPRequestHandler):
                 ctype = {"js": "application/javascript; charset=utf-8", "css": "text/css; charset=utf-8"}.get(ext, "application/octet-stream")
                 return self.send(200, open(fp, "rb").read(), ctype)
             if path.startswith("/uploads/"):
+                if path.startswith("/uploads/user/"):   # B-1 用户上传：按记录做访问控制
+                    return self._serve_user_upload(path)
                 name = os.path.basename(path)
                 fp = os.path.join(UPLOADS, name)
                 if not os.path.isfile(fp):

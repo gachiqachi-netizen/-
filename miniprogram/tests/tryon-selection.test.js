@@ -16,3 +16,20 @@ test('tryon uses the first popular design when current and saved work are empty'
   const popular = { name: '热门款', beads: ['c'] }
   assert.equal(pickTryonDesign(null, [], [popular]), popular)
 })
+
+test('home tryon entrance preserves the current design', () => {
+  const store = require('../utils/design')
+  const home = require('../pages/home/data')
+  const previous = store.selected
+  const calls = []
+  const previousWx = global.wx
+  store.selected = () => calls.push('selected')
+  global.wx = { navigateTo: ({ url }) => calls.push(url) }
+  try {
+    home.openEditor(null, 'try')
+    assert.deepEqual(calls, ['/features/tryon/tryon'])
+  } finally {
+    store.selected = previous
+    global.wx = previousWx
+  }
+})

@@ -1,6 +1,6 @@
 # C7a 交付报告
 
-分支：agent/C7a-checkout　最后一个代码提交：69af79a
+分支：agent/C7a-checkout　最后一个代码提交：5fbc7ad
 
 ## 1. 步骤
 | 卡上的步骤 | 做了 / 没做 | 在哪 |
@@ -28,7 +28,7 @@
 
 ## 4. 测试
 - 开工前小程序 168 项通过；后端基线测试仍在运行。
-- 定向旧测试未通过：旧测试未设置新规则要求的单勾选，且保留了已删除的尺寸二次确认弹窗断言。等待负责人授权调整后再跑三条全量。
+- 定向旧测试未通过：旧测试未设置新规则要求的单勾选，且保留了已删除的尺寸二次确认弹窗断言。经负责人授权，`order.test.js` 已更新并通过；全量又发现 `material-safety.test.js` 仍要求已删除的二次确认弹窗，正在请求授权调整该测试。
 
 ## 5. 自查（贴命令和输出）
 `git log --oneline origin/integration/2026-11..HEAD`：
@@ -39,7 +39,7 @@
 `git diff --check origin/integration/2026-11...HEAD`：无输出。
 
 ## 6. 没做 / 没验证 / 偏离卡片
-- 等待负责人确认是否允许改 `miniprogram/tests/order.test.js` 的过时二次确认断言；目前未交付。
+- 经负责人授权已改 `miniprogram/tests/order.test.js`；尚需确认是否可改 `miniprogram/tests/material-safety.test.js` 的同类过时断言。
 - 未在微信开发者工具验证。
 
 ## 7. 审核修改（打回后才有）

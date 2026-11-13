@@ -19,6 +19,7 @@ from . import m003_payment_status  # noqa: E402
 from . import m004_money_fen  # noqa: E402
 from . import m005_logistics_status  # noqa: E402
 from . import m006_after_sale_idempotency  # noqa: E402
+from . import m007_after_sale_types  # noqa: E402
 
 # 按版本号升序排列；run_migrations 会再按 VERSION 排序一次作兜底
 MIGRATIONS = [
@@ -28,4 +29,5 @@ MIGRATIONS = [
     m004_money_fen,
     m005_logistics_status,
     m006_after_sale_idempotency,
+    m007_after_sale_types,
 ]

@@ -57,6 +57,14 @@ ACTIONS = {
     "confirm_receipt": "确认收货",
     "view_logistics": "查看物流",
     "reorder": "按这款再串一条",
+    "request_after_sale": "申请售后",
+}
+AFTER_SALE_REASONS = {
+    "仅退款": ["不想要了", "想改一改再下单", "其他"],
+    "退货退款": ["珠子有裂纹", "掉珠或断线", "珠子和图不一样", "其他"],
+    "补寄配件": ["掉珠或断线", "少了配件", "其他"],
+    "改手围重串": ["戴着太紧", "戴着太松"],
+    "拒收后退款": ["不想要了", "其他"],
 }
 PROGRESS_STEPS = [("ordered", "下单"), ("producing", "制作"), ("shipping", "运输"), ("delivered", "签收")]
 PRODUCT_TYPES = {"bead": "珠子", "spacer": "隔珠/隔片", "pendant": "吊坠", "cord": "线材", "packaging": "包装"}
@@ -75,6 +83,7 @@ def payload():
         "opsStatus": OPS_STATUS, "actions": ACTIONS,
         "progressSteps": [{"key": k, "label": v} for k, v in PROGRESS_STEPS],
         "afterSaleTypes": list(status.AFTER_SALE_TYPES),
+        "afterSaleReasons": AFTER_SALE_REASONS,
         "productTypes": PRODUCT_TYPES, "productStatuses": PRODUCT_STATUSES,
         "termTypes": list(status.TERM_TYPES), "termStatuses": TERM_STATUSES, "termScenarios": TERM_SCENARIOS,
         "workOrderSteps": list(commerce.WORK_ORDER_STEPS), "workOrderStatuses": WORK_ORDER_STATUSES,

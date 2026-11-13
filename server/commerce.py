@@ -482,14 +482,42 @@ def _paid_fen(order):
     return int(order.get("paidFen") or 0)
 
 
+def customer_after_sale_types(order, now_ms):
+    groups = status.derive_status(order)
+    if groups['afterSaleStatus'] != 'none' or groups['paymentStatus'] != 'paid':
+        return []
+    logistics = groups['logisticsStatus']
+    if logistics == 'not_shipped':
+        return ['仅退款']
+    if logistics in ('shipped', 'in_transit', 'exception'):
+        return ['拒收后退款']
+    if logistics == 'delivered':
+        signed_at = (order.get('logistics') or {}).get('signedAt')
+        if (type(signed_at) in (int, float) and signed_at <= now_ms
+                and now_ms - signed_at <= AFTER_SALE_DAYS * 24 * 60 * 60 * 1000):
+            return ['退货退款', '补寄配件', '改手围重串']
+    return []
+
+
+def refund_amount_for(order, atype):
+    # 制作中退款的扣除规则待负责人定（15 号文档 E2），定了以后只改这里。
+    if atype in REFUND_TYPES:
+        return _paid_fen(order)
+    if atype in ('补寄配件', '改手围重串'):
+        return 0
+    raise ValueError('售后类型不正确')
+
+
 _ACTIVE_AFTER_SALE_STATUSES = ("requested", "reviewing", "approved", "returning", "refunding")
+REFUND_TYPES = ("仅退款", "退货退款", "拒收后退款")
+AFTER_SALE_DAYS = 7
 
 
 def _reserved_fen(after_sales, order_no):
     """退款类售后尚未释放的预占金额。"""
     total = 0
     for rec in after_sales:
-        if rec.get("orderNo") != order_no or rec.get("type") not in ("仅退款", "退货退款"):
+        if rec.get("orderNo") != order_no or rec.get("type") not in REFUND_TYPES:
             continue
         if rec.get("status") in _ACTIVE_AFTER_SALE_STATUSES:
             total += int(rec.get("reservedFen") or rec.get("requestedFen") or rec.get("refundFen") or 0)
@@ -502,7 +530,7 @@ def _refunded_fen(after_sales, order_no):
     for a in after_sales:
         if a.get("orderNo") != order_no:
             continue
-        if a.get("type") not in ("仅退款", "退货退款"):
+        if a.get("type") not in REFUND_TYPES:
             continue
         total += int(a.get("refundedFen") or 0)
     return total
@@ -1412,7 +1440,7 @@ def create_after_sale(db, data, actor=ACTOR):
                 return out
         if status.derive_status(order)["afterSaleStatus"] != "none":
             raise ValueError("该订单已有进行中的售后")
-        if atype in ("仅退款", "退货退款"):
+        if atype in REFUND_TYPES:
             sales = w.list_after_sales()
             _check_refund_constraints_in(
                 order, refund_fen, _reserved_fen(sales, order_no), _refunded_fen(sales, order_no))
@@ -1421,13 +1449,15 @@ def create_after_sale(db, data, actor=ACTOR):
         rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
                "userNote": str(data.get("userNote") or "")[:500],
                "refundFen": refund_fen, "requestedFen": refund_fen,
-               "reservedFen": refund_fen if atype in ("仅退款", "退货退款") else 0,
+               "reservedFen": refund_fen if atype in REFUND_TYPES else 0,
                "refundedFen": 0, "returnLogistics": {},
                "result": "", "status": "requested",
                "createdAt": _now(), "updatedAt": _now(),
                "history": [status.history_entry(actor, "afterSaleStatus", "none", "requested", reason)]}
         if idem_key:
             rec["idempotencyKey"] = idem_key
+        if "newWrist" in data:
+            rec["newWrist"] = data["newWrist"]
         w.put_after_sale(no, rec)
 
         order["afterSaleStatus"] = "requested"
@@ -1449,19 +1479,23 @@ def _after_sale_target(action, current, atype):
             return "rejected"
         raise ValueError("只有申请中或审核中的售后才能拒绝")
     if action == "returning":
-        if atype != "退货退款":
-            raise ValueError("仅退款/补发没有退货环节")
+        if atype not in ("退货退款", "改手围重串"):
+            raise ValueError("仅退款/补寄配件/拒收后退款没有退货环节")
         if current != "approved":
             raise ValueError("同意后才能记录退货物流")
         return "returning"
     if action == "receive":
-        if atype == "补发":
-            raise ValueError("补发类型没有退货收货环节")
+        if atype == "改手围重串":
+            raise ValueError("改手围重串的重做流程还没接入")
+        if atype == "补寄配件":
+            raise ValueError("补寄配件类型没有退货收货环节")
         raise ValueError("真实退款服务尚未接入，不能确认退款收货")
     if action == "complete":
-        if atype in ("仅退款", "退货退款"):
+        if atype == "改手围重串":
+            raise ValueError("改手围重串的重做流程还没接入")
+        if atype in REFUND_TYPES:
             raise ValueError("真实退款服务尚未接入，不能完成退款售后")
-        if current == "approved" and atype == "补发":
+        if current == "approved" and atype == "补寄配件":
             return "completed"
         raise ValueError("当前状态不能完成售后")
     if action == "close":

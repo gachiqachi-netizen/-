@@ -26,14 +26,14 @@
 ## 3. 改了的文件
 `git diff --stat origin/integration/2026-11...HEAD`（包含本报告修改）：
 ```
- docs/reports/C5c.md                         | 67 +++++++++++++++++++++++++++++
+ docs/reports/C5c.md                         | 69 +++++++++++++++++++++++++++++
  miniprogram/pages/photo/pending-ai-photo.js |  9 ++++
  miniprogram/pages/photo/photo.js            | 61 +++++++++++++++++++-------
  miniprogram/pages/photo/photo.wxml          | 28 +++++++++---
  miniprogram/pages/photo/photo.wxss          |  3 +-
  miniprogram/tests/photo-page-flow.test.js   | 40 +++++++++++++++++
  miniprogram/tests/photo-pending-ai.test.js  | 15 +++++++
- 7 files changed, 200 insertions(+), 23 deletions(-)
+ 7 files changed, 202 insertions(+), 23 deletions(-)
 ```
 
 ## 4. 测试
@@ -55,7 +55,7 @@ python3 kb/validate.py
 - `photo-page-flow.test.js` 三项：拍照后选择用法、AI 页交接对象及跳转、相机权限状态。
 
 ## 5. 自查（贴命令和输出）
-- `git log --oneline origin/integration/2026-11..HEAD`：`1204a51 C5c: 完成拍照核对和 AI 照片交接`、`77351f9 C5c: 记录暂停进度和越界问题`、`c09f59a C5c: 搭建拍照用法和核对页`、`de64731 C5c: 开工`。
+- `git log --oneline origin/integration/2026-11..HEAD`：`8aa264b C5c: 完成交付报告与全量测试记录`、`1204a51 C5c: 完成拍照核对和 AI 照片交接`、`77351f9 C5c: 记录暂停进度和越界问题`、`c09f59a C5c: 搭建拍照用法和核对页`、`de64731 C5c: 开工`。
 - `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\(" miniprogram/pages/photo/photo.wxss`：无输出。
 - `grep -rnE "new URL|URLSearchParams" miniprogram --include='*.js'`：无输出。
 - `git diff --check origin/integration/2026-11...HEAD`：无输出。

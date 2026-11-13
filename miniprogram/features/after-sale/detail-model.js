@@ -15,11 +15,12 @@ function saleView(sale) {
     closed:'你撤销了这次申请。', rejected:sale.result || '请查看处理记录。'
   }
   const history=(sale.history||[]).slice().reverse().map(entry=>({
-    label:labels[entry.to] || '', at:entry.at || '', note:entry.note || '', actor:entry.actor || ''
+    label:labels[entry.status || entry.to] || '', at:entry.at || ''
   }))
+  const actions=sale.customerActions || []
   return {label, description:descriptions[status]||'', returning,
-    canCancel:status==='requested'||status==='reviewing'||returning,
-    canSubmitReturn:returning,
+    canCancel:actions.includes('cancel_after_sale'),
+    canSubmitReturn:actions.includes('submit_return'),
     refund:yuan(sale.refundFen), history,
     photos:Array.isArray(sale.photoIds)?sale.photoIds:[], contactPhone:sale.contactPhone||''}
 }

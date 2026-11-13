@@ -92,7 +92,14 @@
 | D8 | agent/D8-audit-log | admin-wave2.md | D2 | 任何 |  |  |
 | KD1 | agent/KD1-kb-list | admin-wave2.md | K3、D2 | 任何 |  |  |
 | KD2 | agent/KD2-kb-edit | admin-wave2.md | KD1 | 任何 |  |  |
-| D9 | agent/D9-admin-cleanup | admin-wave2.md | D3c、D4、D5a、D5b、D6a、D6b、D7a、D7b、D7c、D8、KD2 | 任何 |  |  |
-| A10 | agent/A10-drop-legacy | backend-wave2.md | C11a、D9 | 任何 |  |  |
+| F1 | agent/F1-workorder-gift | followups.md |  | 任何 |  |  |
+| F2 | agent/F2-reveal-phone | followups.md |  | 任何 |  |  |
+| F3 | agent/F3-return-address | followups.md |  | 任何 |  |  |
+| F4 | agent/F4-drop-ai-legacy | followups.md | C11a | 任何 |  |  |
+| F5 | agent/F5-admin-perm-buttons | followups.md | KD2 | 任何 |  |  |
+| F6 | agent/F6-banned-words | followups.md |  | 任何 |  |  |
+| F7 | agent/F7-design-name-check | followups.md |  | 任何 |  |  |
+| D9 | agent/D9-admin-cleanup | admin-wave2.md | D3c、D4、D5a、D5b、D6a、D6b、D7a、D7b、D7c、D8、KD2、F1、F2、F3、F5 | 任何 |  |  |
+| A10 | agent/A10-drop-legacy | backend-wave2.md | C11a、D9、F4 | 任何 |  |  |
 
 已完成（不用再领）：A1、A2、A4a、A4b、A4c、A5a、A5b、C0a、C0b、C0c、C0d、C0e、C0f、C0h、C0j、D0、D1。A12 不做（尺寸规则已统一）。A9b 是负责人在后台做的数据任务，不在队列里。

@@ -1,8 +1,33 @@
-<view class="wrap login-page">
-  <view class="title">登录串个珠</view>
-  <view class="sub">使用微信登录后，可以同步设计、查看订单。</view>
-  <button class="primary login-button" bindtap="login" loading="{{busy}}" disabled="{{busy}}">微信登录</button>
-  <view class="error" wx:if="{{error}}">{{error}}</view>
-  <view class="sub">暂不登录也可以设计手串；未同步的设计保存在本机。</view>
-  <view class="dev-tip" wx:if="{{dev}}">开发测试登录（仅本地有效）</view>
+<view class="login-page">
+  <view class="login-nav" bindtap="back">‹</view>
+  <view class="login-main">
+    <c-wordmark size="block" />
+    <view class="login-sub">登录后，订单和作品换手机也在</view>
+    <view class="login-action">
+      <button class="c-btn login-button" open-type="getPhoneNumber" bindgetphonenumber="onPhone" loading="{{busy}}" disabled="{{busy}}">{{busy ? '正在登录……' : '手机号快捷登录'}}</button>
+      <view wx:if="{{!agreed}}" class="login-agreement-overlay" bindtap="showAgreement" />
+    </view>
+    <view class="login-note" wx:if="{{error}}">{{error}}</view>
+    <view class="login-cancel" bindtap="back">暂不登录</view>
+    <view class="login-dev" wx:if="{{dev}}">开发版可用测试手机号凭证</view>
+  </view>
+  <view class="login-agreement">
+    <view class="c-check {{agreed ? 'is-on' : ''}}" bindtap="toggleAgreement" />
+    <text>已阅读并同意</text>
+    <text class="login-doc" data-type="用户协议" bindtap="openTerms">《用户协议》</text>
+    <text>和</text>
+    <text class="login-doc" data-type="隐私政策" bindtap="openTerms">《隐私政策》</text>
+  </view>
+  <c-sheet show="{{sheet}}" title="请先阅读并同意" bind:close="closeAgreement">
+    <view class="login-sheet-docs">
+      <text class="login-doc" data-type="用户协议" bindtap="openTerms">《用户协议》</text>
+      <text>和</text>
+      <text class="login-doc" data-type="隐私政策" bindtap="openTerms">《隐私政策》</text>
+    </view>
+    <view class="login-sheet-copy">我们用手机号认出你，订单和作品跟着账号走。</view>
+    <view slot="footer" class="login-sheet-actions">
+      <button class="c-btn c-btn--sec" bindtap="closeAgreement">不同意</button>
+      <button class="c-btn" open-type="getPhoneNumber" bindgetphonenumber="agreeAndPhone" loading="{{busy}}" disabled="{{busy}}">同意并继续</button>
+    </view>
+  </c-sheet>
 </view>

@@ -1,0 +1,45 @@
+/* D4 做单：工单列表 + 工单页（稿 A03–A05）。只服务本页，类名 wo- 开头。 */
+.wo-toolbar{display:flex;gap:12px;margin:16px 0}
+.wo-input{height:34px;padding:0 12px;border:1px solid var(--line,#d9d5d1);border-radius:8px;font-size:13px;background:#fff}
+.wo-bracelet{display:flex;align-items:center;gap:10px}
+.wo-thumb{width:36px;height:36px;border-radius:50%;background:#efeae4;display:flex;align-items:center;justify-content:center;font-size:11px;color:#8a8580;flex:0 0 auto;overflow:hidden}
+.wo-thumb img{width:100%;height:100%;object-fit:cover}
+.wo-spec{font-size:12px;color:#8a8580}
+.wo-red{color:#c8302e}
+.wo-detail-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.wo-detail-title{font-size:18px;font-weight:600}
+.wo-meta{font-size:12px;color:#8a8580}
+.wo-mock{background:#fdeceb;color:#c8302e;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:12px}
+.wo-stats{display:flex;gap:24px;margin:12px 0;flex-wrap:wrap}
+.wo-stat .n{font-size:22px;font-weight:600}
+.wo-stat .l{font-size:12px;color:#8a8580}
+.wo-assignee{display:flex;align-items:center;gap:8px;margin:12px 0;font-size:13px}
+.wo-steps{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
+.wo-step{padding:8px 16px;border:1px solid var(--line,#d9d5d1);border-radius:999px;background:#fff;font-size:14px;cursor:pointer}
+.wo-step-on{background:#1f1b1a;color:#fff;border-color:#1f1b1a}
+.wo-note{background:#f8f6f3;border-radius:8px;padding:10px 12px;font-size:13px;margin:12px 0}
+.wo-qcfail{background:#fdeceb;border-radius:8px;padding:10px 12px;font-size:13px;margin:12px 0;color:#8a2a24}
+.wo-section-title{font-size:14px;font-weight:600;margin:20px 0 10px}
+.wo-seq{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px}
+.wo-cell{display:flex;flex-direction:column;align-items:center;gap:4px;break-inside:avoid}
+.wo-bead{width:34px;height:34px;border-radius:50%;background:#d8d2cb;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6e6862;overflow:hidden;box-shadow:inset -3px -4px 6px rgba(0,0,0,.12)}
+.wo-bead img{width:100%;height:100%;object-fit:cover}
+.wo-seqno{font-size:16px;font-weight:700}
+.wo-beadname{font-size:11px;color:#6e6862;text-align:center}
+.wo-bom{width:100%;border-collapse:collapse}
+.wo-bom th,.wo-bom td{text-align:left;padding:8px 10px;font-size:13px;border-bottom:1px solid #eee9e4}
+.wo-bom th{color:#8a8580;font-weight:400;font-size:12px}
+.wo-pos{color:#8a8580;font-size:12px}
+.wo-qc{border:1px solid var(--line,#d9d5d1);border-radius:12px;padding:16px;margin-top:20px;break-inside:avoid}
+.wo-qc-row{display:flex;align-items:center;gap:8px;font-size:14px;padding:6px 0;cursor:pointer}
+.wo-qc-row input{width:16px;height:16px}
+.wo-qc-fields{display:grid;gap:10px;margin-top:12px}
+.wo-qc-fields input,.wo-qc-fields textarea{height:34px;padding:6px 10px;border:1px solid var(--line,#d9d5d1);border-radius:8px;font-size:13px;font-family:inherit}
+.wo-qc-fields textarea{height:auto;min-height:60px;resize:vertical}
+.wo-qc-actions{display:flex;gap:12px;margin-top:14px;align-items:flex-start}
+.wo-qc-error{color:#c8302e;font-size:12px;margin-top:8px}
+.print-only{display:none}
+@media print{
+  .no-print{display:none !important}
+  .print-only{display:block}
+}

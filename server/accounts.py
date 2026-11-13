@@ -114,6 +114,36 @@ def has_permission(db, user, perm):
     return bool(role and perm in role.get("permissions", ()))
 
 
+def mask_order(db, value):
+    """按当前后台账号权限返回副本，不修改数据库里的订单。"""
+    user = CURRENT_ADMIN.get()
+    if user is None:
+        return value
+    show_contact = has_permission(db, user, "view_full_contact")
+    show_cost = has_permission(db, user, "view_cost")
+
+    def masked(item):
+        if isinstance(item, list):
+            return [masked(child) for child in item]
+        if not isinstance(item, dict):
+            return item
+        result = {}
+        for key, child in item.items():
+            if key == "costFen" and not show_cost:
+                continue
+            if key in ("phone", "mobile", "contactPhone", "recipientPhone") and not show_contact:
+                digits = str(child or "")
+                result[key] = digits[:3] + "****" + digits[-4:] if re.fullmatch(r"1\d{10}", digits) else "***"
+            elif key in ("addr", "address") and isinstance(child, str) and not show_contact:
+                district = re.search(r"^.*?(?:区|县|旗)", child)
+                result[key] = district.group(0) + "***" if district else "***"
+            else:
+                result[key] = masked(child)
+        return result
+
+    return masked(value)
+
+
 def hash_password(password):
     if not isinstance(password, str) or len(password) < 8:
         raise ValueError("密码至少 8 位")

@@ -952,13 +952,15 @@ def build_work_order(order, db=None):
 
 
 def get_work_order(db, no):
+    import accounts
     order = db.get("orders", no)
     if not order:
         return None
-    return build_work_order(order, db=db)
+    return accounts.mask_order(db, build_work_order(order, db=db))
 
 
 def list_work_orders(db, q="", status_="", assignee=""):
+    import accounts
     rows = db.list("orders")
     rows.sort(key=lambda o: o.get("createdAt", 0), reverse=True)
     q = (q or "").strip().lower()
@@ -978,7 +980,7 @@ def list_work_orders(db, q="", status_="", assignee=""):
             or q in str(wo.get("customerNote") or "").lower()
         ):
             continue
-        out.append(wo)
+        out.append(accounts.mask_order(db, wo))
     return out
 
 
@@ -1091,6 +1093,7 @@ def record_quality_gate(db, no, data, actor=ACTOR):
 
 def order_detail(db, no):
     """订单详情：附五组状态、允许的下一状态、状态历史、物流、售后记录、设计快照、生产工单与质检关口。"""
+    import accounts
     import order_view
     o = db.get("orders", no)
     if not o:
@@ -1106,7 +1109,7 @@ def order_detail(db, no):
     out["logisticsHistory"] = o.get("logisticsHistory", [])
     out["afterSales"] = [a for a in db.list("after_sales") if a.get("orderNo") == no]
     out["termsSnapshot"] = o.get("termsSnapshot", [])
-    return out
+    return accounts.mask_order(db, out)
 
 
 def append_history(order, actor, group, from_, to_, note=""):
@@ -1417,6 +1420,7 @@ def json_dump_safe(obj):
 
 
 def list_orders(db, q="", filters=None):
+    import accounts
     import order_view
     rows = db.list("orders")
     rows.sort(key=lambda o: o.get("createdAt", 0), reverse=True)
@@ -1437,7 +1441,7 @@ def list_orders(db, q="", filters=None):
         item["workOrder"] = build_work_order(o, db=db)
         item["qualityGate"] = o.get("qualityGate")
         item["allowedTransitions"] = allowed_order_transitions(o)
-        out.append(item)
+        out.append(accounts.mask_order(db, item))
     return out
 
 

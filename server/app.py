@@ -32,7 +32,10 @@ import kb  # noqa: E402
 import plans  # noqa: E402
 import status  # noqa: E402
 import commerce  # noqa: E402
+import routes  # noqa: E402
 from db import DB  # noqa: E402
+
+ROUTE_TABLE = routes.load()
 
 PORT = int(os.environ.get("PORT", "8800"))
 HOST = os.environ.get("SERVER_HOST", "127.0.0.1").strip()
@@ -266,6 +269,41 @@ class Handler(BaseHTTPRequestHandler):
         from urllib.parse import parse_qs
         return parse_qs(urlparse(self.path).query)
 
+    def _route_dispatch(self, method, path, data=None):
+        # A11 新接口注册表：现有路由都匹配不上、即将 404 之前查这里。命中并处理完返回 True。
+        for mth, pattern, fn, auth in ROUTE_TABLE:
+            if mth != method:
+                continue
+            match = pattern.match(path)
+            if not match:
+                continue
+            if auth == "user":
+                uid = self.user()
+                if not uid:
+                    self.send(401, {"error": "请先登录"})
+                    return True
+                user_id, is_admin = uid, False
+            elif auth == "admin":
+                if not self.admin_ok():
+                    self.send(401, {"error": "需要后台口令"})
+                    return True
+                user_id, is_admin = None, True
+                if method != "GET":
+                    self.audit_admin_mutation(path)
+            else:
+                user_id, is_admin = self.user(), False
+            ctx = routes.Ctx(db=db, user_id=user_id, admin=is_admin, qs=self.qs())
+            try:
+                status_code, body = fn(ctx, match, data)
+            except ValueError as e:
+                self.send(400, {"error": str(e)})
+            except KeyError as e:
+                self.send(404, {"error": str(e)})
+            else:
+                self.send(status_code, body)
+            return True
+        return False
+
     def user(self):
         return user_api.owner(db, self.headers.get("Authorization"))
 
@@ -411,6 +449,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(401, {"error": "需要后台口令"})
                 rec = commerce.after_sale_detail(db, m.group(1))
                 return self.send(200, rec) if rec else self.send(404, {"error": "售后记录不存在"})
+            if self._route_dispatch("GET", path):
+                return
             return self.send(404, {"error": "not_found"})
         except Exception as e:
             traceback.print_exc()
@@ -604,6 +644,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.admin_ok():
                     return self.send(401, {"error": "需要后台口令"})
                 return self.send(200, commerce.create_term(db, data))
+            if self._route_dispatch("POST", path, data):
+                return
             return self.send(404, {"error": "not_found"})
         except user_api.IdempotencyConflict as e:
             return self.send(409, {"error": str(e), "code": "idempotency_conflict"})
@@ -693,6 +735,8 @@ class Handler(BaseHTTPRequestHandler):
                     result = db.put("banners", rid, data)
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
+            if self._route_dispatch("PUT", path, data):
+                return
             return self.send(404, {"error": "not_found"})
         except ValueError as e:
             return self.send(400, {"error": str(e)})
@@ -719,6 +763,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, {"ok": True})
             m = re.match(r"^/api/admin/(beads|templates|banners|terms)/([\w-]+)$", path)
             if not m:
+                if self._route_dispatch("DELETE", path):
+                    return
                 return self.send(404, {"error": "not_found"})
             if not self.admin_ok():
                 return self.send(401, {"error": "需要后台口令"})

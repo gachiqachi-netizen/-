@@ -14,6 +14,6 @@
   <view wx:if="{{!orderNo}}" class="form-card"><view class="form-row"><text>设为默认</text><switch checked="{{isDefault}}" bindchange="toggleDefault"/></view><view wx:if="{{id}}" class="form-row delete" bindtap="remove">删除这个地址</view></view>
   <view wx:if="{{orderNo}}" class="form-card"><view class="form-row" bindtap="openAddressBook">从我的地址里选 <text class="arrow">›</text></view><view class="form-row" bindtap="importWechat">用微信地址 <text class="arrow">›</text></view><view class="hint">发货后不能在这里改，请联系客服。</view></view>
   <view wx:if="{{error && (person || !id)}}" class="error">{{error}}</view>
-  <c-bar><button disabled="{{saving||deleting||loading}}" bindtap="save">{{saving?'正在保存……':'保存'}}</button></c-bar>
+  <c-bar><button class="c-btn" disabled="{{saving||deleting||loading}}" bindtap="save">{{saving?'正在保存……':'保存'}}</button></c-bar>
   <c-toast />
 </view>

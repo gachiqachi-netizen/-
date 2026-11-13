@@ -14,6 +14,6 @@
       <view class="address-edit" data-id="{{item.id}}" bindtap="edit">编辑 ›</view>
     </view>
   </view>
-  <c-bar><button bindtap="add">加一个地址</button></c-bar>
+  <c-bar><button class="c-btn" bindtap="add">加一个地址</button></c-bar>
   <c-toast />
 </view>

@@ -1,0 +1,6 @@
+<view class="c-toast {{anchor ? 'c-toast--' + anchor : ''}}" wx:if="{{current}}">
+  <view class="c-toast__box">
+    <view class="c-toast__text">{{current.text}}</view>
+    <view class="c-toast__action" wx:if="{{current.action}}" bindtap="onAction">{{current.action}}</view>
+  </view>
+</view>

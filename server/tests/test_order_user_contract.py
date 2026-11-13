@@ -113,7 +113,7 @@ class OrderUserContractTest(unittest.TestCase):
         self.assertEqual(public["paymentStatus"], "paid")
         self.assertEqual(public["status"], "已完成")
         self.assertIn("signedAt", public["logistics"])
-        self.assertEqual(public["allowedActions"], ["view_logistics", "reorder", "request_after_sale"])
+        self.assertEqual(public["allowedActions"], ["view_logistics", "write_review", "reorder", "request_after_sale"])
         self.assertEqual(
             [entry["group"] for entry in public["statusHistory"][-3:]],
             ["logisticsStatus", "fulfillmentStatus", "orderStatus"],

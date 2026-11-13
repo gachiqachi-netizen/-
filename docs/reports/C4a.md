@@ -1,6 +1,6 @@
 # C4a 交付报告
 
-分支：`agent/C4a-home`　最后一个代码提交：`3372ac7`（报告后续更新提交见分支 HEAD）
+分支：`agent/C4a-home`　审核 1 提交：`fb718f8`（报告更新提交见分支 HEAD）
 
 ## 1. 步骤
 
@@ -28,42 +28,37 @@
 `git diff --stat origin/integration/2026-11...HEAD`（交付提交后包含报告）：
 
 ```text
- docs/reports/C4a.md                 |  69 +++++++++++++++++++++++
- miniprogram/pages/home/home.js      |  76 ++++++++++++++++++++++----
- miniprogram/pages/home/home.json    |   2 +-
- miniprogram/pages/home/home.test.js | 106 ++++++++++++++++++++++++++++++++++++
- miniprogram/pages/home/home.wxml    |  33 ++++++++---
- miniprogram/pages/home/home.wxss    |  36 +++++++++++-
- 6 files changed, 301 insertions(+), 21 deletions(-)
+ miniprogram/{pages/home => tests}/home.test.js | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 ```
 
 ## 4. 测试
 
 - `python3 -m unittest discover -s server/tests 2>&1 | tail -15`：`Ran 553 tests in 84.796s`；`OK (skipped=7)`。
-- `node --test miniprogram/tests/*.test.js 2>&1 | tail -15`：`tests 162`；`pass 162`；`fail 0`。
+- `node --test miniprogram/tests/*.test.js 2>&1 | tail -15`：`tests 168`；`pass 168`；`fail 0`。
 - `python3 kb/validate.py 2>&1 | tail -15`：`已填 200/200 种，有问题 0 条，缺 0 种`。
-- `node --test miniprogram/pages/home/home.test.js 2>&1 | tail -15`：`tests 6`；`pass 6`；`fail 0`。
-- 测试数：后端开工前 553 → 现在 553；小程序全量开工前 162 → 现在 162；本卡另增首页目录内 6 条测试。
+- `node --test miniprogram/tests/home.test.js 2>&1 | tail -15`：`tests 6`；`pass 6`；`fail 0`。
+- 测试数：后端开工前 553 → 现在 553；小程序全量开工前 162 → 现在 168；本卡新增 6 条首页测试已纳入全量。
 - 新测试：`home catalog failure keeps banner and entrances while replacing only templates` 验证失败仅替换热门款；`home reloads templates for changed wrist and shows the new size` 验证重排提示；`home template card opens bracelet detail with selected design` 验证款式详情路由；`home articles appear only when catalog supplies them and open content page` 验证小知识内容和入口；`home quick entrances keep their distinct destinations` 验证快捷入口；`home banner page target follows configured route` 验证运营配置的轮播目标页。
 - 旧测试期望值未改。
 
 ## 5. 自查（贴命令和输出）
 
-- `git log --oneline origin/integration/2026-11..HEAD`：`C4a:` 开头的开工、页面、测试和报告提交；无其他卡提交。
+- `git log --oneline origin/integration/2026-11..HEAD`：审核 1 提交 `fb718f8 C4a: 审核 1 将首页测试纳入全量运行`；本卡先前提交已在 integration。
 - `git diff --check origin/integration/2026-11...HEAD`：无输出。
 - `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\(" miniprogram/pages/home/home.wxss`：无输出。
 - `grep -rnE "new URL|URLSearchParams" miniprogram --include='*.js'`：无输出。
-- 范围：`home.js`、`home.json`、`home.wxml`、`home.wxss`、`home.test.js` 均在 `miniprogram/pages/home/*`；另有本报告。未改尺寸规则、金额契约、依赖或打包文件。
+- 范围：本次审核仅移动 `miniprogram/pages/home/home.test.js` 到负责人许可的 `miniprogram/tests/home.test.js` 并更新本报告。未改尺寸规则、金额契约、依赖或打包文件。
 
 ## 6. 没做 / 没验证 / 偏离卡片
 
 - 未在微信开发者工具或真机验证，没有截图；需负责人对照 s01–s04 检查 390px 和 320px 宽度。
 - `features/article/article` 目前仍是 C4d 空壳；本卡只接了文章入口，文章内容要等 C4d 合并后验。
 - 文章 `cover` 是上传编号时，目录接口没有图片 URL；首页先显示现有珠子图标占位，不显示无效图片。上传编号到可访问 URL 的映射需要后续接口或负责人确认。
-- 首页针对性测试按“只能改 `miniprogram/pages/home/*`”放在该目录，现有小程序全量通配命令不包含它；已单独运行并在上方报告。
+- 审核 1 已将首页测试移入 `miniprogram/tests/`，全量通配命令现包含这 6 条测试。
 
 ## 7. 审核修改（打回后才有）
 
 | 审核意见编号 | 怎么改的 | 提交 hash |
 |---|---|---|
-| 无 | 无 | 无 |
+| 1 | 将首页测试从页面目录移到 `miniprogram/tests/home.test.js`，调整 `require` 路径；全量小程序测试 168/168 通过；更新第 4 节测试数量和第 6 节说明。 | `fb718f8` |

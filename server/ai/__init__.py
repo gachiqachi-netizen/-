@@ -188,7 +188,7 @@ def design(beads, text, history, wrist):
         designs = _valid_designs(out.get("designs"), ids, 2, names)
         if not designs:
             raise RuntimeError("AI 给的珠子不在料包里")
-    return {"message": clean(out.get("message") or out.get("reply"), 60), "designs": designs, "by": p.name}
+    return {"message": str(out.get("message") or out.get("reply") or ""), "designs": designs, "by": p.name}
 
 
 def _plan_tags(sequence, item):
@@ -225,12 +225,11 @@ def design_response(result, beads, wrist):
             'lengthMm': length_mm,
             'payableFen': pricing.quote(prices)['payableFen'],
         })
-    if re.search(r'\d', result.get('message') or ''):
+    model_message = result.get('message') or ''
+    if re.search(r'\d', model_message) or kb.banned_in(model_message):
         message = '为你配了三条，先看第一条。'
     else:
-        first_tags = _plan_tags(output[0]['beads'], item)
-        message = ('从' + '、'.join(first_tags[:2]) + '的寓意出发，为你配了三条。'
-                   if first_tags else '为你配了三条搭配，先看第一条。')
+        message = model_message or '为你配了三条，先看第一条。'
     return {'message': message, 'plans': output,
             'quickReplies': ['换一组珠子', '看看别的风格', '再调一下预算']}
 

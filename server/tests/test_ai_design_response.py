@@ -111,6 +111,17 @@ class AIDesignResponseTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(body['message'], '为你配了三条，先看第一条。')
 
+    def test_clean_model_message_is_returned_unchanged(self):
+        sentence = '这条以沉稳为意，愿你每天从容。'
+        status, body = self.design(FakeProvider(reply=sentence))
+        self.assertEqual(status, 200)
+        self.assertEqual(body['message'], sentence)
+
+    def test_banned_model_message_uses_fixed_sentence(self):
+        status, body = self.design(FakeProvider(reply='这条手串寓意招财'))
+        self.assertEqual(status, 200)
+        self.assertEqual(body['message'], '为你配了三条，先看第一条。')
+
     def test_fewer_than_three_valid_recipes_returns_fallback_error(self):
         status, body = self.design(FakeProvider(count=2))
         self.assertEqual(status, 502)

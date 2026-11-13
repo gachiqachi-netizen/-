@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Wrench, ShieldCheck } from 'lucide-react';
-import { apiRequest, labelOf, fmtTime } from '../api';
+import { apiRequest, labelOf, fmtTime, fenToYuan } from '../api';
 import { CONTRACT } from '../contract';
 import { BraceletRingPreview } from './BraceletRingPreview';
 import { StatusBadge, statusTone } from './OverviewAndProducts';
@@ -39,7 +39,7 @@ const ORDER_SOURCE_LABELS: Record<string, string> = {
   ai: 'AI 配的',
 };
 
-const yuan = (v?: number | null): string => `¥${Number(v || 0).toFixed(2)}`;
+const yuan = (v?: number | string | null): string => `¥${Number(v || 0).toFixed(2)}`;
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
@@ -328,7 +328,14 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
         const allActions = (['orderStatus', 'fulfillmentStatus', 'logisticsStatus'] as const).flatMap((g) =>
           (transitions[g] || []).map((to: string) => ({ g, to }))
         );
-        const drawerActions = allActions.filter((a) => !(a.g === 'orderStatus' && a.to === 'cancelled'));
+        let drawerActions = allActions.filter((a) => !(a.g === 'orderStatus' && a.to === 'cancelled'));
+        // 制作中总是给“改成待发货”：没通过质检时后端会拒绝，原因原样显示在按钮下面（D1b 验收）
+        if (
+          detail.fulfillmentStatus === 'producing' &&
+          !drawerActions.some((a) => a.g === 'fulfillmentStatus' && a.to === 'ready_to_ship')
+        ) {
+          drawerActions = [...drawerActions, { g: 'fulfillmentStatus', to: 'ready_to_ship' }];
+        }
         const canCancel = allActions.some((a) => a.g === 'orderStatus' && a.to === 'cancelled');
         const historyRows = [
           { at: detail.createdAt, text: '用户下单' },
@@ -483,16 +490,16 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                   <div style={{ padding: '14px 16px', display: 'grid', rowGap: 8 }}>
                     <div style={{ display: 'flex', gap: 12 }}>
                       <span className="zy-table-aux" style={{ width: 48 }}>珠子</span>
-                      <span>{yuan(detail.goods)}</span>
+                      <span>{yuan(fenToYuan(detail.goodsFen))}</span>
                     </div>
                     <div style={{ display: 'flex', gap: 12 }}>
                       <span className="zy-table-aux" style={{ width: 48 }}>运费</span>
-                      <span>{Number(detail.ship) > 0 ? yuan(detail.ship) : '包邮'}</span>
+                      <span>{Number(detail.shipFen) > 0 ? yuan(fenToYuan(detail.shipFen)) : '包邮'}</span>
                     </div>
                     <div style={{ display: 'flex', gap: 12 }}>
                       <span className="zy-table-aux" style={{ width: 48 }}>实付</span>
                       <span>
-                        <strong>{yuan(detail.total || detail.price)}</strong>
+                        <strong>{yuan(fenToYuan(detail.totalFen))}</strong>
                         {detail.paymentChannel === 'mock' && (
                           <span className="zy-danger-text" style={{ marginLeft: 8, fontSize: 'var(--font-aux)' }}>
                             模拟付款

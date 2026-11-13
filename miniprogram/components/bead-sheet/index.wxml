@@ -1,0 +1,14 @@
+<c-sheet show="{{show}}" title="选大小和数量" bindclose="close">
+  <view class="bead-sheet">
+    <swiper class="gallery" indicator-dots="{{false}}" bindchange="slide">
+      <swiper-item wx:for="{{[0,1,2]}}" wx:key="*this"><view class="gallery-slide"><image wx:if="{{images[item]}}" src="{{images[item]}}" mode="aspectFit"/><c-bead wx:else bead="{{selected || bead}}" size="l"/></view></swiper-item>
+    </swiper><view class="gallery-count">{{imageIndex+1}}/3</view>
+    <view class="price">¥{{price}} <text>/ 颗</text></view><view class="name">{{selected.name || bead.name}} · {{selected.mm || bead.mm}}mm</view><view class="meaning">{{selected.meaning || bead.meaning}}</view>
+    <view class="label">尺寸</view><view class="sizes"><button wx:for="{{sizes}}" wx:key="id" class="size {{selected.id === item.id ? 'active' : ''}}" disabled="{{!item.available}}" data-id="{{item.id}}" bindtap="selectSize">{{item.mm}}mm<text wx:if="{{!item.available}}"> 缺货</text></button></view>
+    <view class="quantity"><text>数量</text><view class="step"><button data-delta="-1" bindtap="step">－</button><text>{{quantity}}</text><button data-delta="1" bindtap="step">＋</button></view></view>
+    <view class="hint" wx:if="{{hint}}">{{hint}}</view>
+    <view class="safety" wx:if="{{safetyNote}}">{{safetyNote}}<view wx:if="{{safetyCare}}">{{safetyCare}}</view></view>
+    <view wx:if="{{!selected && similar}}" class="similar" bindtap="similar">看看相似的：{{similar.name}} ›</view>
+  </view>
+  <view slot="footer"><button class="submit" disabled="{{!selected}}" bindtap="add">{{selected ? '加 ' + quantity + ' 颗到手串' : '暂时缺货'}}</button></view>
+</c-sheet>

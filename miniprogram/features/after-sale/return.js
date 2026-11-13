@@ -6,7 +6,7 @@ Page({
   onLoad(query){this.no=query&&query.no||'';return this.load()},
   async load(){
     if(!this.no)return this.setData({error:'缺少售后编号'})
-    try{const response=await auth.authorized('/my/after-sales/'+encodeURIComponent(this.no));this.setData({sale:response.afterSale,error:''})}
+    try{const response=await auth.authorized('/my/after-sales/'+encodeURIComponent(this.no));const sale=response.afterSale;this.setData({sale:(sale.customerActions||[]).includes('submit_return')?sale:null,error:(sale.customerActions||[]).includes('submit_return')?'':'当前不能填写寄回单号'})}
     catch(error){this.setData({error:error.message||'售后记录暂时无法读取'})}
   },
   toggleCarriers(){this.setData({carrierOpen:!this.data.carrierOpen})},

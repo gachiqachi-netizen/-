@@ -4,7 +4,7 @@ const { saleView } = require('./detail-model')
 const { queue } = require('../../utils/toast')
 Page({
   data:{sale:null,view:null,order:null,error:'',loading:false,historyOpen:false,cancelOpen:false,
-    cancelLabel:contract.actions.cancel_after_sale,returnLabel:contract.actions.submit_return},
+    cancelLabel:contract.actions.cancel_after_sale,returnLabel:contract.actions.submit_return,reapplyLabel:contract.actions.request_after_sale},
   onLoad(query){this.no=query&&query.no||'';return this.load()},
   onShow(){if(this.no&&this.data.sale)this.load()},
   async load(){
@@ -28,8 +28,9 @@ Page({
   async confirmCancel(){
     if(!this.data.view||!this.data.view.canCancel)return
     try{const response=await auth.authorized('/my/after-sales/'+encodeURIComponent(this.no)+'/cancel',{},'POST');this.showRecord(response.afterSale);this.closeCancel();queue.show({text:'已撤销申请'})}
-    catch(error){this.setData({error:error.message||'撤销失败，请重试'})}
+    catch(error){queue.show({text:error.message||'撤销失败，请重试'})}
   },
   goReturn(){wx.navigateTo({url:'/features/after-sale/return?no='+encodeURIComponent(this.no)})},
+  reapply(){const sale=this.data.sale;if(sale&&sale.orderNo)wx.navigateTo({url:'/features/after-sale/type?no='+encodeURIComponent(sale.orderNo)})},
   copyAddress(){const address=this.data.sale&&this.data.sale.returnAddress;if(!address)return;wx.setClipboardData({data:[address.person,address.phone,address.address].filter(Boolean).join(' '),success:()=>queue.show({text:'寄回地址已复制'})})}
 })

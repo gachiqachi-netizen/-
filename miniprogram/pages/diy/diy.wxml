@@ -1,7 +1,7 @@
 <view class="workbench">
   <view class="topbar">
     <view class="topbar-back" bindtap="back">‹</view>
-    <view class="topbar-title" bindtap="works">我的作品 ›</view>
+    <view class="topbar-title" bindtap="works">我的作品 <text class="save-dot" wx:if="{{saveDot}}">●</text> ›</view>
     <view class="topbar-more" bindtap="toggleMore">···</view>
   </view>
   <view class="tray">
@@ -10,7 +10,7 @@
       <view class="empty-ring"><c-wordmark tone="line" size="s" /></view>
       <view class="empty-hint">从下面挑一颗开始</view>
     </view>
-    <c-bracelet wx:else beads="{{items}}" size="{{470}}" selected="{{selected}}" wordmark="{{true}}" />
+    <view wx:else id="workbench-bracelet" class="bracelet-touch" bindtap="selectTray"><c-bracelet beads="{{items}}" size="{{470}}" selected="{{selected}}" wordmark="{{true}}" /><view class="kind-ring" wx:for="{{kindPositions}}" wx:key="index" style="left:{{item.x}}rpx;top:{{item.y}}rpx;width:{{item.box}}rpx;height:{{item.box}}rpx;"></view></view>
     <view class="side-actions">
       <view class="side-action {{canUndo ? '' : 'is-disabled'}}" bindtap="undo">↶<text>撤销</text></view>
       <view class="side-action" bindtap="stack">◎<text>叠戴</text></view>
@@ -18,20 +18,26 @@
       <view class="side-action" bindtap="toggleMore">⋯<text>更多</text></view>
     </view>
   </view>
+  <view class="bead-flight" wx:if="{{flight}}" style="left: {{flight.x}}px; top: {{flight.y}}px;"><c-bead bead="{{flight.bead}}" size="s" /></view>
   <view class="status">
-    <view class="status-main"><text>{{beadCount}} 颗 · {{lengthMm}}mm</text><text>{{fit || '还没有珠子'}}</text></view>
-    <view class="meter"><view class="meter-zone"></view><view class="meter-dot" style="left: {{meterFill}}%;"></view></view>
+    <view class="status-main"><text>{{beadCount}} 颗 · {{lengthMm}}mm</text><text class="{{fitState === 'long' ? 'fit-over' : ''}}">{{fit || '还没有珠子'}}</text></view>
+    <view class="meter {{meterShake ? 'meter-shake' : ''}}"><view class="meter-zone"></view><view class="meter-dot" style="left: {{meterFill}}%;"></view></view>
   </view>
-  <scroll-view scroll-x class="picked-row"><view class="picked-list"><text wx:if="{{!picked.length}}">已选的珠子会排在这里</text><view class="picked-chip" wx:for="{{picked}}" wx:key="id"><c-bead bead="{{item.bead}}" size="s" />{{item.name}} ×{{item.n}}</view></view></scroll-view>
+  <view class="feedback-row" wx:if="{{fitState === 'long' && overHint}}"><text>{{overHint}}</text><text bindtap="removeLast">去掉最后一颗</text></view>
+  <view class="feedback-row" wx:if="{{selected >= 0 && !selectedKind}}"><text>第 {{selected + 1}} 颗 · {{selectedLabel}}</text><text data-delta="-1" bindtap="move">左移</text><text data-delta="1" bindtap="move">右移</text><text bindtap="replaceSelected">换一颗</text><text bindtap="remove">删除</text></view>
+  <view class="feedback-row" wx:if="{{selectedKind}}"><text>已选同种珠子</text><text bindtap="removeKind">全部去掉</text><text bindtap="replaceSelected">换成别的</text></view>
+  <scroll-view scroll-x class="picked-row"><view class="picked-list"><text wx:if="{{!picked.length}}">已选的珠子会排在这里</text><view class="picked-chip {{selectedKind === item.id ? 'picked-active' : ''}}" wx:for="{{picked}}" wx:key="id" data-id="{{item.id}}" bindtap="selectKind"><c-bead bead="{{item.bead}}" size="s" />{{item.name}} ×{{item.n}}</view></view></scroll-view>
   <view class="picker">
     <view class="picker-head"><text class="picker-title">挑珠子</text><text class="picker-selected" wx:if="{{selected >= 0}}" bindtap="remove">{{selectedLabel}} · 移除</text></view>
     <scroll-view scroll-x class="category-scroll"><view class="categories"><view class="category {{cat === 'all' ? 'active' : ''}}" data-id="all" bindtap="category">全部</view><view class="category {{cat === item.id ? 'active' : ''}}" wx:for="{{cats}}" wx:key="id" data-id="{{item.id}}" bindtap="category">{{item.name}}</view></view></scroll-view>
     <view class="sizes"><view class="size {{size === 'all' ? 'active' : ''}}" data-size="all" bindtap="sizeFilter">全部尺寸</view><view class="size {{size == item ? 'active' : ''}}" wx:for="{{sizes}}" wx:key="*this" data-size="{{item}}" bindtap="sizeFilter">{{item}}mm</view></view>
     <c-state wx:if="{{error}}" title="材料暂时没加载出来" desc="{{error}}" action="重试" bindaction="retryCatalog" />
     <view class="skeleton" wx:elif="{{!catalogReady}}"><view wx:for="{{[1,2,3,4,5,6,7,8]}}" wx:key="*this" class="skeleton-item"></view></view>
-    <scroll-view wx:else scroll-y class="bead-scroll"><view class="bead-grid"><view class="bead-choice" wx:for="{{displayBeads}}" wx:key="id" data-id="{{item.id}}" bindtap="add"><view class="bead-visual"><c-bead bead="{{item}}" size="m" /><text class="bead-count" wx:if="{{item.selectedCount}}">{{item.selectedCount}}</text></view><view class="bead-name">{{item.name}}</view><view class="bead-meta">{{item.mm}}mm ¥{{item.price}}</view></view></view></scroll-view>
+    <scroll-view wx:else scroll-y class="bead-scroll" scroll-into-view="{{scrollBeadId}}"><view class="bead-grid"><view class="bead-choice {{outOfStockId === item.id ? 'bead-shake' : ''}} {{focusedBeadId === item.id ? 'bead-focused' : ''}}" wx:for="{{displayBeads}}" wx:key="id" id="bead-{{item.id}}" data-id="{{item.id}}" bindtap="add" bindlongpress="inspect"><view class="bead-visual"><c-bead bead="{{item}}" size="m" state="{{item.stock === 'out_of_stock' ? 'off' : 'normal'}}" /><text class="bead-count" wx:if="{{item.selectedCount}}">{{item.selectedCount}}</text></view><view class="bead-name">{{item.name}}</view><view class="bead-meta">{{item.stock === 'out_of_stock' ? '暂时缺货' : item.mm + 'mm ¥' + item.price}}</view></view></view></scroll-view>
   </view>
   <view class="bottom" wx:if="{{beadCount}}"><view class="bottom-price"><text>{{handPrice}}</text></view><button class="finish" bindtap="finish">串好了</button></view>
   <view class="more-sheet" wx:if="{{moreOpen}}"><view bindtap="save">保存作品</view><view bindtap="openSettings">设置手围</view><view bindtap="trash">清空手串</view></view>
+  <c-sheet show="{{safetyOpen}}" title="加之前请了解" bindclose="cancelSafety" maskClose="{{false}}"><view class="safety-head"><c-bead bead="{{safetyBead}}" size="s" /><view><view>{{safetyBead.name}} {{safetyBead.mm}}mm</view><view class="safety-meaning">{{safetyBead.meaning || safetyBead.summary}}</view></view></view><view class="safety-body"><view class="safety-note">{{safetyNote}}</view><view>{{safetyCare}}</view></view><view class="safety-hint">之后再加这颗不再弹出；珠子详情和下单时都能看到这段说明。</view><view slot="footer" class="safety-actions"><button bindtap="cancelSafety">不加了</button><button class="safety-confirm" bindtap="confirmSafety">知道了，继续加</button></view></c-sheet>
+  <c-sheet show="{{detailOpen}}" title="{{detailBead.name}}" bindclose="closeInspect"><view class="detail-body"><c-bead bead="{{detailBead}}" size="l" /><view>{{detailBead.mm}}mm · ¥{{detailBead.price}}</view><view>{{detailBead.meaning}}</view></view><button slot="footer" class="safety-confirm" bindtap="addInspected">加一颗到手串</button></c-sheet>
   <c-toast />
 </view>

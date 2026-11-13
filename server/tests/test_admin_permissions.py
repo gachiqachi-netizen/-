@@ -41,6 +41,42 @@ class AdminPermissionsTests(unittest.TestCase):
         self.assertEqual(accounts.route_permission('PUT', '/api/admin/beads/one',
                                                   {'name': 'a'}), 'edit_products')
 
+    def test_legacy_endpoint_mapping(self):
+        cases = (
+            ('GET', '/api/admin/orders', 'view_orders'),
+            ('GET', '/api/admin/orders/no', 'view_orders'),
+            ('GET', '/api/admin/orders/no/work-order', 'view_work_orders'),
+            ('GET', '/api/admin/work-orders', 'view_work_orders'),
+            ('GET', '/api/admin/after-sales', 'process_after_sales'),
+            ('GET', '/api/admin/terms', 'publish_terms'),
+            ('GET', '/api/admin/audit', 'manage_accounts'),
+            ('GET', '/api/admin/beads', 'edit_products'),
+            ('GET', '/api/admin/templates', 'edit_templates'),
+            ('GET', '/api/admin/banners', 'edit_content'),
+            ('POST', '/api/admin/beads', 'edit_products'),
+            ('POST', '/api/admin/templates', 'edit_templates'),
+            ('POST', '/api/admin/banners', 'edit_content'),
+            ('POST', '/api/admin/after-sales', 'process_after_sales'),
+            ('POST', '/api/admin/terms', 'publish_terms'),
+            ('PUT', '/api/admin/orders/no/logistics', 'process_orders'),
+            ('PUT', '/api/admin/orders/no/work-order', 'work_orders'),
+            ('PUT', '/api/admin/orders/no/address', 'edit_order_address'),
+            ('PUT', '/api/admin/orders/no/note', 'edit_order_address'),
+            ('PUT', '/api/admin/after-sales/no/transition', 'process_after_sales'),
+            ('PUT', '/api/admin/templates/no', 'edit_templates'),
+            ('PUT', '/api/admin/banners/no', 'edit_content'),
+            ('PUT', '/api/admin/terms/no', 'publish_terms'),
+            ('DELETE', '/api/admin/beads/no', 'edit_products'),
+            ('DELETE', '/api/admin/templates/no', 'edit_templates'),
+            ('DELETE', '/api/admin/banners/no', 'edit_content'),
+            ('DELETE', '/api/admin/terms/no', 'publish_terms'),
+            ('GET', '/api/admin/accounts', 'manage_accounts'),
+            ('POST', '/api/admin/shares/token/take-down', 'edit_content'),
+        )
+        for method, path, expected in cases:
+            with self.subTest(method=method, path=path):
+                self.assertEqual(accounts.route_permission(method, path), expected)
+
     def test_permissions_are_loaded_from_role_record(self):
         role = self.db.get('admin_roles', 'operator')
         role['permissions'] = ['view_orders']

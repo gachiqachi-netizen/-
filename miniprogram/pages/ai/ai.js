@@ -30,9 +30,15 @@ Page({
     this.setData({ navTop: (info.statusBarHeight || 0) * ratio, navHeight: menu ? (menu.bottom - (info.statusBarHeight || 0) + menu.top - (info.statusBarHeight || 0)) * ratio : 88 })
   },
   onShow() {
-    this.setData({ wrist: wrist() })
+    const currentWrist = wrist()
+    if (this.lastWrist && this.lastWrist !== currentWrist) queue.show({ text: `已按 ${currentWrist}cm 重新判断` })
+    this.lastWrist = currentWrist
+    this.setData({ wrist: currentWrist })
     const old = typeof wx.getStorageSync === 'function' && wx.getStorageSync(STORAGE)
-    if (Array.isArray(old) && !this.data.messages.length) this.setData({ messages: old, hasResults: old.some(m => m.results && m.results.length) })
+    if (Array.isArray(old) && !this.data.messages.length) {
+      const latest = old.slice().reverse().find(m => m.results && m.results.length)
+      this.setData({ messages: old, hasResults: !!latest, chips: latest ? quickReplies(latest.results[latest.activeIndex || 0]) : [] })
+    }
     api.catalog().then(c => {
       this.catalog = c.beads || []
       this.setData({ catalog: this.catalog })

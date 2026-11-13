@@ -18,7 +18,7 @@ class SharesAdminTest(unittest.TestCase):
         self.db = DB(os.path.join(self.temp.name, 'shares.db'))
         self.share_id = 's' * 43
         self.db.put('shares', self.share_id, {'name': '山间手串', 'beads': ['a']})
-        self.ctx = SimpleNamespace(db=self.db, qs={})
+        self.ctx = SimpleNamespace(db=self.db, qs={}, ip='127.0.0.1')
 
     def tearDown(self):
         self.db.conn.close()
@@ -48,6 +48,23 @@ class SharesAdminTest(unittest.TestCase):
         match = re.fullmatch(r'([a-z]{43})', 'z' * 43)
         with self.assertRaises(KeyError):
             shares_admin.take_down(self.ctx, match, {'reason': '用户举报'})
+
+    def test_public_report_has_daily_ip_limit(self):
+        match = re.fullmatch(r'([a-z]{43})', self.share_id)
+        for _ in range(20):
+            self.assertEqual(shares_admin.report_share(self.ctx, match, {'reason': '不合适'})[0], 201)
+        self.assertEqual(shares_admin.report_share(self.ctx, match, {'reason': '不合适'})[0], 429)
+        self.assertEqual(len(self.db.list('share_reports')), 20)
+        self.ctx.ip = '127.0.0.2'
+        self.assertEqual(shares_admin.report_share(self.ctx, match, {'reason': '不合适'})[0], 201)
+
+    def test_report_rejects_missing_share_or_reason(self):
+        match = re.fullmatch(r'([a-z]{43})', self.share_id)
+        with self.assertRaises(ValueError):
+            shares_admin.report_share(self.ctx, match, {})
+        missing = re.fullmatch(r'([a-z]{43})', 'z' * 43)
+        with self.assertRaises(KeyError):
+            shares_admin.report_share(self.ctx, missing, {'reason': '不合适'})
 
 
 if __name__ == '__main__':

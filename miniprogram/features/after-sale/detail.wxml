@@ -6,7 +6,7 @@
     </view>
     <view class="card link" bindtap="openHistory"><text>协商历史</text><text>›</text></view>
     <view class="card"><view class="row"><text>售后类型</text><text>{{sale.type}}</text></view><view class="row"><text>原因</text><text>{{sale.reason}}</text></view><view class="row" wx:if="{{sale.refundFen}}"><text>退款金额</text><text>¥{{view.refund}}</text></view><view class="row"><text>申请时间</text><text>{{sale.createdAt}}</text></view><view class="row"><text>售后编号</text><text>{{sale.no}}</text></view><view class="row" wx:if="{{view.contactPhone}}"><text>联系电话</text><text>{{view.contactPhone}}</text></view><view class="row" wx:if="{{view.photos.length}}"><text>申请照片</text><text>{{view.photos.length}} 张</text></view></view>
-    <view class="card product" wx:if="{{order}}"><view class="product-name">{{order.designSnapshot.name || order.name}}</view><view class="hint">{{order.designSnapshot.beads.length}} 颗 · 手围 {{order.wrist}}cm</view></view>
+    <view class="card product" wx:if="{{product}}"><c-design-row design="{{product}}" catalog="{{catalog}}" sub="{{productSub}}"/></view>
     <view class="actions" wx:if="{{view.canCancel || view.canSubmitReturn || view.canReorder || sale.status === 'closed' || (sale.status === 'rejected' && sale.result)}}"><button wx:if="{{view.canCancel}}" bindtap="openCancel">{{cancelLabel}}</button><button wx:if="{{sale.status === 'closed'}}" bindtap="reapply">{{reapplyLabel}}</button><button wx:if="{{view.canReorder}}" bindtap="copyAgain">再串一条</button><text wx:if="{{sale.status === 'rejected' && sale.result}}" class="hint">{{sale.result}}</text><button wx:if="{{view.canSubmitReturn}}" class="primary" bindtap="goReturn">{{returnLabel}}</button></view>
   </block>
 </view>

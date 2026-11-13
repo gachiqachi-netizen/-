@@ -13,6 +13,23 @@ Page({
     this.setData({ id, orderNo, title: orderNo ? '修改地址' : id ? '编辑地址' : '加一个地址' })
     if (id) this.load(id)
   },
+  retryLoad() { if (this.data.id) this.load(this.data.id) },
+  openAddressBook() {
+    wx.navigateTo({ url: '/features/address/address?mode=select', events: {
+      selectAddress: address => this.setData({ person: address.person || '', phone: address.phone || '',
+        region: address.region || [], regionText: (address.region || []).join(' '),
+        detail: address.detail || '', errors: {} }),
+    } })
+  },
+  importWechat() {
+    wx.chooseAddress({
+      success: address => this.setData({ person: address.userName || '', phone: address.telNumber || '',
+        region: [address.provinceName, address.cityName, address.countyName],
+        regionText: [address.provinceName, address.cityName, address.countyName].join(' '),
+        detail: address.detailInfo || '', errors: {} }),
+      fail: () => queue.show({ text: '没拿到微信地址，可以手动加一个' }),
+    })
+  },
   async load(id) {
     this.setData({ loading: true, error: '' })
     try {

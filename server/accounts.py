@@ -2,6 +2,7 @@
 import hashlib
 import hmac
 import contextvars
+import os
 import secrets
 import time
 import uuid
@@ -30,24 +31,29 @@ ROLE_PERMISSIONS = {
 }
 ROLE_NAMES = {"owner": "负责人", "operator": "运营", "service": "客服", "maker": "做单师傅"}
 CURRENT_ADMIN = contextvars.ContextVar("current_admin", default=None)
+PBKDF2_ITERATIONS = 600000
 
 
 def hash_password(password):
     if not isinstance(password, str) or len(password) < 8:
         raise ValueError("密码至少 8 位")
-    salt = secrets.token_bytes(16)
-    digest = hashlib.scrypt(password.encode(), salt=salt, n=2**14, r=8, p=1)
-    return f"scrypt${salt.hex()}${digest.hex()}"
+    salt = os.urandom(16)
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, PBKDF2_ITERATIONS)
+    return f"pbkdf2_sha256${PBKDF2_ITERATIONS}${salt.hex()}${digest.hex()}"
 
 
 def verify_password(password, stored):
     try:
-        method, salt_hex, digest_hex = stored.split("$")
-        if method != "scrypt":
+        method, rounds_text, salt_hex, digest_hex = stored.split("$")
+        if method != "pbkdf2_sha256" or not rounds_text.isdecimal():
             return False
-        actual = hashlib.scrypt(password.encode(), salt=bytes.fromhex(salt_hex), n=2**14, r=8, p=1)
-        return hmac.compare_digest(actual, bytes.fromhex(digest_hex))
-    except (AttributeError, TypeError, ValueError):
+        rounds = int(rounds_text)
+        salt, expected = bytes.fromhex(salt_hex), bytes.fromhex(digest_hex)
+        if not 1 <= rounds <= 10000000 or len(salt) != 16 or len(expected) != 32:
+            return False
+        actual = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, rounds)
+        return hmac.compare_digest(actual, expected)
+    except (AttributeError, TypeError, ValueError, OverflowError):
         return False
 
 

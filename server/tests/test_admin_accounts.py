@@ -8,6 +8,7 @@ import unittest
 from http.server import ThreadingHTTPServer
 from urllib.error import HTTPError
 from urllib.request import ProxyHandler, Request, build_opener
+from unittest.mock import patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
@@ -18,6 +19,10 @@ from db import DB
 
 class AdminAccountsTests(unittest.TestCase):
     def setUp(self):
+        self.iterations = patch.object(accounts, "PBKDF2_ITERATIONS", 1000)
+        self.iterations.start()
+        with app._admin_lock:
+            app._admin_login_failures.clear()
         self.temp = tempfile.TemporaryDirectory()
         self.old_db, self.old_token = app.db, app.ADMIN_TOKEN
         app.db = DB(os.path.join(self.temp.name, "admin.db"))
@@ -29,6 +34,7 @@ class AdminAccountsTests(unittest.TestCase):
         self.opener = build_opener(ProxyHandler({}))
 
     def tearDown(self):
+        self.iterations.stop()
         self.server.shutdown()
         self.server.server_close()
         self.thread.join()
@@ -67,15 +73,20 @@ class AdminAccountsTests(unittest.TestCase):
         self.assertEqual(code, 200)
         return cookie.split(";", 1)[0], body
 
-    def test_default_roles_and_password_scrypt(self):
+    def test_default_pbkdf2_iterations(self):
+        self.assertEqual(self.iterations.temp_original, 600000)
+
+    def test_default_roles_and_password_pbkdf2(self):
         roles = {r["id"]: r for r in app.db.list("admin_roles")}
         self.assertEqual(set(roles), set(accounts.ROLE_NAMES))
         self.assertEqual(len(roles["owner"]["permissions"]), 21)
         self.assertEqual(roles["maker"]["permissions"], list(accounts.ROLE_PERMISSIONS["maker"]))
         hashed = accounts.hash_password("long-pass")
-        self.assertTrue(hashed.startswith("scrypt$"))
+        self.assertTrue(hashed.startswith("pbkdf2_sha256$1000$"))
         self.assertTrue(accounts.verify_password("long-pass", hashed))
         self.assertFalse(accounts.verify_password("wrong-pass", hashed))
+        self.assertFalse(accounts.verify_password("long-pass", "scrypt$bad$hash"))
+        self.assertFalse(accounts.verify_password("long-pass", "pbkdf2_sha256$bad$hash"))
         with self.assertRaises(ValueError):
             accounts.hash_password("short")
 
@@ -88,7 +99,7 @@ class AdminAccountsTests(unittest.TestCase):
         self.assertEqual(self.request("/api/admin/session", "POST", {"password": "test-bootstrap-token"})[0], 401)
         self.assertEqual(self.request("/api/admin/accounts/bootstrap", "POST",
                                       {"username": "another", "name": "另一人", "password": "another-pass"},
-                                      cookie=cookie)[0], 401)
+                                      cookie=cookie)[0], 403)
         self.assertEqual(self.request("/api/admin/accounts", token="test-bootstrap-token")[0], 401)
 
     def test_session_persists_and_disabled_user_loses_access(self):

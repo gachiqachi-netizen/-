@@ -2,7 +2,6 @@
 import csv
 import io
 
-import accounts
 import money
 
 
@@ -12,19 +11,12 @@ def _price_fen(bead):
     return money.yuan_to_fen(bead.get("price"))
 
 
-def _visible_bead(db, bead):
-    result = dict(bead)
-    if not accounts.has_permission(db, accounts.CURRENT_ADMIN.get(), "view_cost"):
-        result.pop("costFen", None)
-    return result
-
-
-def group_beads(db, rows):
+def group_beads(rows):
     """按品种名称分组，同组内按尺寸由小到大列商品。"""
     groups = {}
     for bead in rows:
         name = bead.get("name") or ""
-        groups.setdefault(name, []).append(_visible_bead(db, bead))
+        groups.setdefault(name, []).append(bead)
     return [{"name": name, "sizes": sorted(items, key=lambda item: (item.get("mm") or 0, item.get("id") or ""))}
             for name, items in sorted(groups.items())]
 

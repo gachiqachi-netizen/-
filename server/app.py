@@ -433,6 +433,10 @@ class Handler(BaseHTTPRequestHandler):
                                                 {k: q.get(k, [""])[0] for k in status.GROUP_FIELDS})
                 elif m.group(1) == "beads":
                     rows = commerce.list_products(db, q.get("q", [""])[0], q.get("type", [""])[0], q.get("status", [""])[0])
+                    import accounts, pricing_admin
+                    if q.get("group", [""])[0] == "1":
+                        rows = pricing_admin.group_beads(rows)
+                    rows = accounts.mask_order(db, rows)
                 elif m.group(1) == "templates":
                     rows = commerce.list_templates(db, q.get("q", [""])[0], q.get("status", [""])[0])
                 else:

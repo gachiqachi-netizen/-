@@ -1,7 +1,6 @@
 {
   "pages": [
     "pages/home/home",
-    "pages/editor/editor",
     "pages/ai/ai",
     "pages/mine/mine",
     "pages/finish/finish",

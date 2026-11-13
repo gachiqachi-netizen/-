@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict')
-const materials=require('../pages/editor/materials')
+const materials=require('../pages/diy/materials')
 test('material rows group by SKU, keep first order and calculate integer fen',()=>{
  const rows=materials.fromCatalog(['b','a','b'],[{id:'a',name:'甲',mm:6,price:0.1},{id:'b',name:'乙',mm:8,price:0.29,points:['圆珠','红色'],meaning:'寓意美好',safety:{note:'不可入口'}}])
  assert.deepEqual(rows.map(r=>[r.id,r.qty,r.subtotalFen]),[['b',2,58],['a',1,10]])

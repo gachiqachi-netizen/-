@@ -26,7 +26,7 @@ Page({
     store.selected(d);wx.navigateTo({url:'/pages/order/order'})
   },
   goLogin(){wx.navigateTo({url:'/pages/login/login'})},
-  open(e){const d=this.data.designs[e.currentTarget.dataset.i];if(d.remoteOnly)store.save(d);store.selected(d);wx.navigateTo({url:'/pages/editor/editor'})},
+  open(e){const d=this.data.designs[e.currentTarget.dataset.i];if(d.remoteOnly)store.save(d);store.selected(d);require('../../utils/nav').openWorkbench(d)},
   loadCloud(){
     this.setData({loading:true,cloudStatus:''})
     auth.authorized('/designs').then(rows=>{this.mergeWorks(rows);this.setData({loggedIn:auth.hasSession(),cloud:rows,cloudStatus:'云端作品已更新'})}).catch(e=>this.setData({cloudStatus:'未能读取云端设计：'+e.message+'。本机设计仍可使用。'})).finally(()=>this.setData({loading:false}))
@@ -39,6 +39,6 @@ Page({
     const cloud=this.data.cloud[e.currentTarget.dataset.i];if(!cloud)return
     const d={id:'cloud-'+cloud.id+'-'+Date.now(),cloudId:cloud.id,cloudUpdatedAt:cloud.updatedAt,name:cloud.name,beads:cloud.beads,wrist:cloud.wrist}
     for(const key of ['special','pattern','tail','fixed','source','tplId','meaning','edited'])if(cloud[key]!==undefined)d[key]=Array.isArray(cloud[key])?cloud[key].slice():cloud[key]
-    store.save(d);store.selected(d);wx.navigateTo({url:'/pages/editor/editor'})
+    store.save(d);store.selected(d);require('../../utils/nav').openWorkbench(d)
   }
 })

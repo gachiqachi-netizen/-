@@ -1,7 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 const fixture = require('../../server/tests/fixtures/size_rule_cases.json')
-const logic = require('../pages/editor/logic')
+const logic = require('../pages/diy/logic')
 const template = require('../utils/template')
 
 fixture.stats.forEach(c => {

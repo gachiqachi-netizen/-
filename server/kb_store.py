@@ -8,6 +8,11 @@ from datetime import datetime, timezone
 DICT_KEYS = frozenset(('banned', 'meaning_tags', 'terms', 'dims', 'grade_families'))
 
 
+def _sqlite_path():
+    data_dir = os.environ.get('DATA_DIR') or os.path.dirname(__file__)
+    return os.environ.get('DATABASE_PATH') or os.path.join(data_dir, 'data.sqlite3')
+
+
 @contextmanager
 def _connection():
     url = os.environ.get('DATABASE_URL')
@@ -16,8 +21,7 @@ def _connection():
         with psycopg.connect(url, connect_timeout=10) as conn:
             yield conn, '%s'
     else:
-        path = os.environ.get('DATABASE_PATH') or os.path.join(os.path.dirname(__file__), 'data.sqlite3')
-        with closing(sqlite3.connect(path, timeout=10)) as conn:
+        with closing(sqlite3.connect(_sqlite_path(), timeout=10)) as conn:
             with conn:
                 yield conn, '?'
 
@@ -49,19 +53,16 @@ def snapshot():
 
 def stamp():
     """A stable cache marker that changes after every save."""
-    if not os.environ.get('DATABASE_URL'):
-        path = os.environ.get('DATABASE_PATH') or os.path.join(os.path.dirname(__file__), 'data.sqlite3')
-        try:
-            main = os.stat(path).st_mtime_ns
-        except FileNotFoundError:
-            return None
-        try:
-            wal = os.stat(path + '-wal').st_mtime_ns
-        except FileNotFoundError:
-            wal = None
-        return (path, main, wal)
     with _connection() as (conn, _):
-        count, latest = conn.execute("SELECT count(*), max(doc->>'updatedAt') FROM kb_items").fetchone()
+        try:
+            if isinstance(conn, sqlite3.Connection):
+                count, latest = conn.execute("SELECT count(*), max(json_extract(doc, '$.updatedAt')) FROM kb_items").fetchone()
+            else:
+                count, latest = conn.execute("SELECT count(*), max(doc->>'updatedAt') FROM kb_items").fetchone()
+        except sqlite3.OperationalError as exc:
+            if 'no such table' in str(exc):
+                return None
+            raise
     return (count, latest) if count else None
 
 

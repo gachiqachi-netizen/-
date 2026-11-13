@@ -150,6 +150,11 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(headers['X-Content-Type-Options'], 'nosniff')
         self.assertIn("frame-ancestors 'none'", headers['Content-Security-Policy'])
 
+    def test_admin_page_uses_new_bundle(self):
+        status, body = self.request('/admin')
+        self.assertEqual(status, 200)
+        self.assertIn('/admin/shadcn-admin.js', body)
+
     def test_local_model_files_served_without_escaping_folder(self):
         folder = os.path.join(self.temp.name, 'models')
         os.makedirs(os.path.join(folder, 'handpose', 'v1'))

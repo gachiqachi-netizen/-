@@ -12,7 +12,7 @@ Page({
       const rows=await auth.authorized('/my/orders')
       const raw=(Array.isArray(rows)?rows:[]).find(o=>o.no===this.no)
       if(!raw)throw new Error('未找到该订单')
-      const order=orderState.decorate(raw)
+      const order=Object.assign({},raw,{state:orderState.view(raw)})
       this.setData({order,items:materials.fromSnapshot(order.items||[])})
     }catch(e){this.setData({error:e.message})}
     finally{this.setData({loading:false})}

@@ -482,6 +482,23 @@ def _paid_fen(order):
     return int(order.get("paidFen") or 0)
 
 
+def customer_after_sale_types(order, now_ms):
+    groups = status.derive_status(order)
+    if groups['afterSaleStatus'] != 'none' or groups['paymentStatus'] != 'paid':
+        return []
+    logistics = groups['logisticsStatus']
+    if logistics == 'not_shipped':
+        return ['仅退款']
+    if logistics in ('shipped', 'in_transit', 'exception'):
+        return ['拒收后退款']
+    if logistics == 'delivered':
+        signed_at = (order.get('logistics') or {}).get('signedAt')
+        if (type(signed_at) in (int, float) and signed_at <= now_ms
+                and now_ms - signed_at <= AFTER_SALE_DAYS * 24 * 60 * 60 * 1000):
+            return ['退货退款', '补寄配件', '改手围重串']
+    return []
+
+
 _ACTIVE_AFTER_SALE_STATUSES = ("requested", "reviewing", "approved", "returning", "refunding")
 REFUND_TYPES = ("仅退款", "退货退款", "拒收后退款")
 AFTER_SALE_DAYS = 7

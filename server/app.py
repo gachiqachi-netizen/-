@@ -327,6 +327,15 @@ class Handler(BaseHTTPRequestHandler):
             if m:
                 shared = user_api.read_share(db, m.group(1))
                 return self.send(200, shared) if shared else self.send(404, {"error": "分享不存在"})
+            order_detail = re.fullmatch(r"/api/my/orders/([\w-]+)", path)
+            if order_detail:
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                try:
+                    return self.send(200, user_api.get_my_order(db, order_detail.group(1), uid))
+                except KeyError:
+                    return self.send(404, {"error": "订单不存在"})
             if path in ("/api/designs", "/api/my/orders"):
                 uid = self.user()
                 if not uid:
@@ -432,6 +441,13 @@ class Handler(BaseHTTPRequestHandler):
                 if not uid:
                     return self.send(401, {"error": "请先登录"})
                 return self.send(201, user_api.create_share(db, data, uid))
+            address_change = re.fullmatch(r"/api/my/orders/([\w-]+)/address", path)
+            if address_change:
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                return self.send(200, user_api.change_my_order_address(
+                    db, address_change.group(1), uid, data))
             pay = re.fullmatch(r"/api/my/orders/([\w-]+)/pay", path)
             if pay:
                 uid = self.user()

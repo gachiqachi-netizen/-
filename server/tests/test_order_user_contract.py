@@ -58,7 +58,7 @@ class OrderUserContractTest(unittest.TestCase):
             "afterSale": {"code": "none", "label": "无售后"},
             "logistics": {"code": "not_shipped", "label": "未发货"},
         })
-        self.assertEqual(public["allowedActions"], ["cancel_order", "reorder"])
+        self.assertEqual(public["allowedActions"], ["cancel_order", "edit_address", "reorder"])
         self.assertNotIn("pay", public["allowedActions"])
 
         legacy = user_api.public_order({"no": "OLD", "status": "已发货", "beads": ["zt8"]})

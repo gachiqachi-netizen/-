@@ -139,11 +139,55 @@
 
 ## A9b 知识库补把握（数据任务，不写代码）
 
-- **依赖**：无　**大小**：M　**适合**：负责人或做调研的人，不需要程序员
+- **依赖**：KD2 上线（之后在后台里直接改）　**大小**：M　**适合**：负责人或运营，不需要程序员
 
 在售商品里 16 种的知识库寓意把握是“低”，用户端不显示寓意：蜜蜡（mila）、草莓晶（caomei-jing）、红玛瑙（putong-manao）、绿玉髓（lv-yusui）、东陵玉（dongling-yu）、缠丝玛瑙（chansi）、岫玉（xiu-yu）、水草玛瑙（shuicao）等（完整名单：在 `server/` 下跑 `python3 -c "import kb,..."` 的覆盖检查，或看后台 A17 页）。
 
-每一条：在 `kb/data/beads/<大类>.json` 里找到这一种，查出处（书、标准、可靠的文化资料），写进 `sources`；出处够了再把 `confidence.meaning` 改成 `mid` 或 `high`。寓意只写文化说法，不写功效（`kb/SCHEMA.md` 的规则）。改完跑 `python3 kb/validate.py`。
+每一条：在后台“知识库”里打开这一种，查出处（书、标准、可靠的文化资料），加进“来源”；出处够了把“寓意的把握”改成中或高，保存（保存即生效）。寓意只写文化说法，不写功效（后台会自动检查）。
+
+---
+
+## K 知识库搬进后台（简化版，3 张）
+
+依据：[16-knowledge-base.md](../16-knowledge-base.md)。顺序：K1 → K2 → K3，串行。
+
+### K1 知识库存进数据库
+
+- **依赖**：A11　**大小**：M
+
+**只能改**：新建 `server/migrations/m010_kb_tables.py`、`server/kb_store.py`、`server/tests/test_kb_store.py`；改 `server/kb.py`（只改 `_load()` 和缓存）。
+
+**步骤**
+1. 迁移建两张表：`kb_items`（`id, kind: bead|dict, key, data JSON, version, updatedBy, updatedAt`）、`kb_versions`（`itemId, version, data JSON, savedBy, savedAt, note`）。`kind=bead` 的 `key` 是品种编号（如 `mila`），`kind=dict` 的 `key` 是 `banned` / `meaning_tags` / `terms` / `dims` / `grade_families`。**没有草稿：存进去就是生效的内容。**
+2. 迁移里**第一次导入**：读 `kb/data/beads/*.json` 和 `kb/data/attributes.json`，每个品种、每个词典各一行，`data` 等于文件内容，`version = 1`，`updatedBy = "导入"`，同时写一条 `kb_versions`。表里已有数据时不再导入（能重复跑）。
+3. `kb_store.py`：`snapshot()` 返回和现在 `_load()` 一样结构的数据（`{"beads": {...}, "attrs": {...}}`）；`stamp()` 返回最近一次保存的时间（缓存用）；`save(key, data, by, note)`：`version + 1`，更新 `kb_items`，写一条 `kb_versions`（一个事务）。
+4. `kb.py` 的 `_load()`：改成从 `kb_store.snapshot()` 取；缓存按 `stamp()` 判断是否过期（替换现在按文件修改时间）。**`kb.py` 的其他函数一个都不改。**数据库里没有知识库数据时（比如测试环境），退回读 `kb/data/*.json`，并打一行警告。
+5. 测试：导入后 `kb.get("mila")`、`kb.enrich(...)`、`kb.banned_in("招财")` 的结果和改之前完全一样（用改之前的文件读法算一遍做对照）；`save` 之后 `kb.get` 立刻拿到新的，`kb_versions` 多一条。
+
+### K2 校验抽成共用模块
+
+- **依赖**：K1　**大小**：S
+
+**只能改**：新建 `server/kb_rules.py`、`server/tests/test_kb_rules.py`；改 `kb/validate.py`（改成调用 `kb_rules`，命令行用法和输出不变）。
+
+`kb_rules.check_bead(item, dicts) -> [错误]`，每条错误 `{"field", "message"}`，`message` 是给运营看的中文（例：“‘招财’是禁用词：只写寓意，不写功效”“把握改成中或高，至少要有一条不是‘常识’的来源”）。规则：16 第 2 节第 4 条，加上现在 `kb/validate.py` 里已有的全部检查（逐条搬过来，不删）。测试：现有 200 种全部通过；每条规则一个失败用例。`python3 kb/validate.py` 的输出和改之前一样（PR 里贴对比）。
+
+### K3 后台接口：查、改（保存即生效）、改动记录、退回
+
+- **依赖**：K2、A8b（权限点）　**大小**：M
+
+**只能改**：新建 `server/routes/kb_admin.py`、`server/tests/test_kb_admin.py`、迁移 `server/migrations/m011_kb_permission.py`；`server/accounts.py` 的 `PERMISSIONS` 加 `edit_kb`（编辑知识库），默认给负责人和运营（迁移给已有的这两个角色补上）。
+
+接口（都要登录后台；查看所有人能用）：
+- `GET /api/admin/kb?q=&category=&meaningConfidence=`：列表（`q` 搜名字、别名、商家叫法）；每项带大类、寓意关键词、`meaningConfidence`、关联在售商品数、`updatedAt`。另返回三个数字：品种数、在售商品里用户端不显示寓意的（`lowConfidence`、`spacer` 两类分开）、最近 7 天改过的。
+- `GET /api/admin/kb/{key}`：`data`、`version`、关联在售商品（编号、名字、尺寸）、最近 20 条改动记录（版本、谁、什么时候、备注）。
+- `POST /api/admin/kb/{key}/check`：只检查不保存，返回错误列表（编辑页实时提示用）。
+- `PUT /api/admin/kb/{key}`（`edit_kb`）：body `{data, version, note}`。先跑 `kb_rules.check_bead`，有错返回 400 和错误列表，**不保存**；`version` 和库里不一样返回 409“别人刚改过，请刷新”；没错就 `kb_store.save`，写操作记录（`audit`），返回新 `version` 和受影响的在售商品。
+- `POST /api/admin/kb/{key}/rollback`（`edit_kb`）：`{"version": 5}`，把第 5 版的内容当作一次新保存（同样先检查，检查不过返回 400）。
+
+**不做**：新建品种、草稿和发布、词典编辑、导入导出（16 第 3 节）。
+
+测试：没登录 401、没 `edit_kb` 403；有禁用词保存返回 400 且库里没变；版本冲突 409；保存后 `kb.get` 和 `kb.enrich` 立刻是新内容；退回生成新版本、内容等于第 N 版；操作记录有人名；蜜蜡把握从低改中、补一条来源后，3 个在售商品的寓意在 `/api/beads` 里出现。
 
 ---
 

@@ -1,0 +1,15 @@
+<view class="c-bar-holder" style="height: {{holderHeight}}px;">
+  <view class="c-bar">
+    <view class="c-bar__top">
+      <slot name="top" />
+    </view>
+    <view class="c-bar__main">
+      <view class="c-bar__left">
+        <slot name="left" />
+      </view>
+      <view class="c-bar__btn">
+        <slot />
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,36 @@
+/* 浮动提示（任务卡 C0g，稿 85）。黑底白字胶囊，内容区底部中央，默认让开 c-bar。 */
+.c-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 144rpx);
+  transform: translateX(-50%);
+  z-index: 950;
+  max-width: calc(100vw - 80rpx);
+  box-sizing: border-box;
+}
+
+/* 页面传 anchor 加类名改位置，如 .c-toast--tray（工作台托盘底部，类写在页面 wxss 里） */
+.c-toast__box {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 32rpx;
+  border-radius: var(--r-pill);
+  background: var(--c-text);
+  color: var(--c-bg);
+  font-size: var(--fs-body);
+  line-height: var(--lh-tight);
+}
+
+.c-toast__text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c-toast__action {
+  flex: none;
+  margin-left: var(--sp-tight);
+  font-weight: var(--fw-bold);
+  text-decoration: underline;
+  text-underline-offset: 6rpx;
+}

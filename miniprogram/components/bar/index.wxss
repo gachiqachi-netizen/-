@@ -1,0 +1,43 @@
+/* 底部操作栏（任务卡 C0g）。固定底部 + 阴影 + 安全区；原位置留同高占位。 */
+.c-bar-holder {
+  width: 100%;
+}
+
+.c-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--sp-tight) var(--sp-base) calc(var(--sp-tight) + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  background: var(--c-bg);
+  box-shadow: var(--shadow-float);
+}
+
+.c-bar__top {
+  margin-bottom: var(--sp-tight);
+}
+
+.c-bar__main {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-base);
+}
+
+.c-bar__left {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c-bar__btn {
+  flex: none;
+  display: flex;
+  align-items: center;
+  min-width: 320rpx;
+}

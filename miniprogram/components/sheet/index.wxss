@@ -1,0 +1,65 @@
+/* 底部弹层（任务卡 C0g）。直角、200ms 升起、内容区最高 60% 屏、带底部安全区。 */
+.c-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  pointer-events: none;
+}
+
+.c-sheet.is-on {
+  pointer-events: auto;
+}
+
+.c-sheet__mask {
+  position: absolute;
+  inset: 0;
+  background: var(--c-mask);
+  opacity: 0;
+  transition: opacity var(--dur);
+}
+
+.c-sheet.is-on .c-sheet__mask {
+  opacity: 1;
+}
+
+.c-sheet__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--sp-base) calc(var(--sp-tight) + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  background: var(--c-bg);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-float);
+  transform: translateY(100%);
+  transition: transform var(--dur) ease-out;
+}
+
+.c-sheet.is-on .c-sheet__panel {
+  transform: translateY(0);
+}
+
+.c-sheet__grab {
+  align-self: center;
+  width: 64rpx;
+  height: 8rpx;
+  margin: var(--sp-tight) 0;
+  border-radius: var(--r-pill);
+  background: var(--c-line);
+}
+
+.c-sheet__title {
+  padding: var(--sp-tight) 0;
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+
+.c-sheet__body {
+  flex: 1;
+  min-height: 0;
+}

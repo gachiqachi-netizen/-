@@ -6,10 +6,15 @@ import io
 import json
 import os
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+import kb
 import kb_rules
+import reviews
+from db import DB
 
 
 class KBRulesTest(unittest.TestCase):
@@ -104,3 +109,27 @@ class KBRulesTest(unittest.TestCase):
     def test_invalid_mode_rejected(self):
         with self.assertRaises(ValueError):
             self.errors(self.items['hupo'], 'unknown')
+
+    def test_new_medical_banned_words_match(self):
+        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {'DATA_DIR': directory}):
+            self.assertIn('治失眠', kb.banned_in('能治失眠'))
+            for word in ('治病', '根治', '疗效', '药效', '改善睡眠'):
+                with self.subTest(word=word):
+                    self.assertIn(word, kb.banned_in('宣传' + word))
+
+    def test_review_with_insomnia_claim_fails_machine_check(self):
+        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {'DATA_DIR': directory}):
+            db = DB(os.path.join(directory, 'reviews.db'))
+            try:
+                db.put('users', 'u1', {'phoneHash': 'test-hash'})
+                db.put('orders', 'F6-ORDER', {
+                    'no': 'F6-ORDER', 'userId': 'u1', 'orderStatus': 'completed',
+                    'paymentStatus': 'paid', 'fulfillmentStatus': 'delivered',
+                    'logisticsStatus': 'delivered', 'afterSaleStatus': 'none'})
+                with patch('content_security.ensure_allowed'):
+                    result = reviews.submit(db, 'F6-ORDER', 'u1',
+                                            {'stars': 5, 'text': '能治失眠'})
+                self.assertEqual(result['status'], 'machine_failed')
+                self.assertFalse(result['machine']['textOk'])
+            finally:
+                db.conn.close()

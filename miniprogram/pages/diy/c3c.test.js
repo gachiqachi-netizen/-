@@ -77,3 +77,29 @@ test('更多可切落珠声，按 108 颗进入多圈串', () => {
   assert.equal(p.data.fit,'多圈串')
   assert.equal(p.data.countOpen,false)
 })
+test('起名只从珠子 tags 推荐；禁用词不能保存，输入最多八字', () => {
+  const p=page(Array(21).fill('a'))
+  p.setData({tags:['清澈','招财','平安']})
+  p.openName()
+  assert.deepEqual(p.data.nameSuggestions,['清澈','清澈平安'])
+  p.nameInput({detail:{value:'招财手串'}})
+  assert.equal(p.data.nameError,'名字里不要写功效类的词')
+  p.confirmName()
+  assert.equal(p.data.design.name,'当前')
+  p.nameInput({detail:{value:'清澈的海风天空啊呀'}})
+  assert.equal(p.data.nameDraft,'清澈的海风天空啊')
+  p.chooseName({currentTarget:{dataset:{name:'清澈平安'}}})
+  p.confirmName()
+  assert.equal(p.data.design.name,'清澈平安')
+  assert.equal(p.data.nameOpen,false)
+})
+test('没起名就点串好了，用所选珠子的安全 tags 推荐首名', () => {
+  const p=page(Array(21).fill('a'))
+  p.data.design.name='我的手串'
+  p.save=()=>{}
+  let navigated=''
+  wx.navigateTo=({url})=>{navigated=url}
+  p.finish()
+  assert.equal(p.data.design.name,'清澈')
+  assert.equal(navigated,'/pages/finish/finish')
+})

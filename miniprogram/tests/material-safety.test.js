@@ -15,7 +15,7 @@ test('safety notice stays visible and unchecked agreement blocks submission',asy
  const oldCatalog=api.catalog,oldAuth=auth.authorized,oldSession=auth.hasSession
  global.Page=p=>{definition=p};global.wx={getStorageSync:()=>({}),setStorageSync(){},reLaunch(){},vibrateShort(){}}
  const bead={id:'safe-test',name:'测试材料',mm:8,price:1,safety:'不可入口',points:['圆珠'],meaning:'寓意美好'}
- api.catalog=async()=>({beads:[bead]});auth.hasSession=()=>true;auth.authorized=async()=>{posts++;return {no:'test'}}
+ api.catalog=async()=>({beads:[bead]});auth.hasSession=()=>true;auth.authorized=async path=>{if(path==='/my/orders')posts++;return {no:'test'}}
  try{
   delete require.cache[require.resolve('../pages/order/order')];require('../pages/order/order')
   const p={...definition,data:{...definition.data,design:{name:'测试',beads:Array(21).fill(bead.id),wrist:15},person:'测试',phone:'1'+'0'.repeat(10),addr:'测试占位'},catalog:[bead],setData(data){Object.assign(this.data,data)}}

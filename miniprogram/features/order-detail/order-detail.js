@@ -3,9 +3,10 @@ const api = require('../../utils/api')
 const store = require('../../utils/design')
 const orderState = require('../../utils/order-state')
 const money = require('../../utils/money')
+const materials = require('../../pages/editor/materials')
 
 Page({
-  data: { order: null, loading: true, error: '', actionBusy: '', payment: null,
+  data: { order: null, items: [], loading: true, error: '', actionBusy: '', payment: null,
     paymentAmount: '', sheet: '', paidLanding: false, cancelReasons: ['不想要了', '想改一改再下单', '地址填错了', '其他'] },
   onLoad(q) { this.no = q.no; this.paidIntent = q.paid === '1'; return this.load() },
   onPullDownRefresh() { return this.load().finally(() => wx.stopPullDownRefresh()) },
@@ -13,13 +14,14 @@ Page({
     this.setData({ loading: true, error: '' })
     try {
       const raw = await auth.authorized('/my/orders/' + encodeURIComponent(this.no), null, 'GET')
+      if (!raw) throw new Error('未找到该订单')
       const order = Object.assign({}, raw, { state: orderState.view(raw),
         payable: money.yuan(Number.isInteger(raw.payableFen) ? raw.payableFen : 0),
         goodsPrice: money.yuan(Number.isInteger(raw.goodsFen) ? raw.goodsFen : 0),
         shippingPrice: money.yuan(Number.isInteger(raw.shippingFen) ? raw.shippingFen : 0) })
       const paidLanding = !!this.paidIntent && raw.paymentStatus === 'paid'
       this.paidIntent = false
-      this.setData({ order, paidLanding })
+      this.setData({ order, items: materials.fromSnapshot(raw.items || []), paidLanding })
     } catch (e) { this.setData({ error: e.message || '订单读取失败', order: null }) }
     finally { this.setData({ loading: false }) }
   },

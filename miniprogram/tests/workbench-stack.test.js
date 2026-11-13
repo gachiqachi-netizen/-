@@ -5,9 +5,9 @@ const storage = {}
 global.Page = page => { definition = page }
 global.getApp = () => ({globalData:{apiBase:'http://localhost'}})
 global.wx = {getStorageSync:key=>storage[key],setStorageSync:(key,value)=>{storage[key]=value},hideTabBar(){}}
-require('./diy')
-const store = require('../../utils/design')
-const {layout} = require('../../components/bracelet/index')
+require('../pages/diy/diy')
+const store = require('../utils/design')
+const {layout} = require('../components/bracelet/index')
 const catalog = [{id:'a',name:'海蓝宝',mat:'crystal',mm:8,price:4,tags:['清澈']},{id:'b',name:'月光石',mat:'crystal',mm:8,price:6,tags:['平安']}]
 function page(beads = ['a','b']) {
   const p = {...definition,data:{...definition.data,design:{id:'current',name:'当前',wrist:15,beads:beads.slice()},catalog,catalogReady:true},setData(patch){Object.assign(this.data,patch)},saveDraftSoon(){},playSound(){},vibrate(){}}

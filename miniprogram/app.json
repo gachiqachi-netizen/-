@@ -79,7 +79,21 @@
       "pages": [
         "tryon/tryon",
         "shared/shared",
-        "order-detail/order-detail"
+        "order-detail/order-detail",
+        "works/works",
+        "reviews/reviews",
+        "doc/doc",
+        "article/article",
+        "orders/orders",
+        "logistics/logistics",
+        "address/address",
+        "address-edit/address-edit",
+        "after-sale/type",
+        "after-sale/apply",
+        "after-sale/detail",
+        "after-sale/return",
+        "review/review",
+        "settings/settings"
       ]
     },
     {

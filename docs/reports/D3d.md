@@ -24,7 +24,7 @@
 
 ```
  admin-web/src/pages/accounts.tsx | 84 +++++++++++++++++++++++++++++++++++++---
- docs/reports/D3d.md              | 53 ++++++++++++++++++++++++
+ docs/reports/D3d.md              | 53 +++++++++++++++++++++++++
  2 files changed, 132 insertions(+), 5 deletions(-)
 ```
 报告文件：`docs/reports/D3d.md`。未提交 `server/static/admin/shadcn-admin.*`。

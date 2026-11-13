@@ -100,10 +100,8 @@ Page({
   edit() { nav.openEditor() },
   acceptPrice() {
     if (this.data.missing.length) return this.edit()
-    const resume = this.submitAfterReprice
     this.submitAfterReprice = false
     this.setData({ sheet: '', quotePending: false, quoteChanges: [], catalogReady: true, error: '' })
-    if (resume) this.submit()
   },
   declinePrice() { this.submitAfterReprice = false; this.setData({ sheet: '', error: '请核对新价格后再提交' }) },
 

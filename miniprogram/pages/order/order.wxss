@@ -32,6 +32,10 @@
 .sheet-label { margin-top: 20rpx; font-size: var(--fs-caption); }
 .sheet-actions { display: flex; gap: 16rpx; margin-top: 32rpx; }
 .counter { text-align: right; font-size: var(--fs-caption); color: var(--c-text-2); }
+.payment-copy, .payment-name, .payment-amount { text-align: center; }
+.payment-copy { color: var(--c-text-2); font-size: var(--fs-caption); }
+.payment-name { margin-top: 36rpx; color: var(--c-text-2); }
+.payment-amount { margin-top: 8rpx; font-size: 60rpx; font-weight: var(--fw-bold); }
 textarea { width: 100%; min-height: 120rpx; background: var(--c-surface); padding: 16rpx; box-sizing: border-box; }
 input { min-height: 88rpx; border-bottom: 1rpx solid var(--c-line); }
 .shake { animation: shake .25s ease-in-out; }

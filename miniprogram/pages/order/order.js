@@ -19,7 +19,7 @@ Page({
     items: [], beads: [], missing: [], goods: '0.00', handwork: '0.00',
     cordPrice: '0.00', giftPrice: '0.00', ship: '0.00', shipNote: '', total: '0.00',
     catalogReady: false, quotePending: false, quoteChanges: [], length: '0.0',
-    fit: '', safety: '', hasSafety: false, loading: true },
+    fit: '', safety: '', hasSafety: false, loading: true, payment: null, paymentAmount: '0.00' },
 
   onShow() {
     const design = store.current()
@@ -195,7 +195,7 @@ Page({
       wx.setStorageSync(KEY, pending)
       this.setData({ order })
       if (wx.vibrateShort) wx.vibrateShort({ type: 'medium' })
-      nav.orderComplete(order.no)
+      await this.startPayment(order.no)
     } catch (error) {
       if (error.status === 401) { auth.goLogin({ type: 'submitOrder' }); return }
       if (error.code === 'price_changed') {
@@ -215,6 +215,36 @@ Page({
         ? '这笔订单可能已经提交过了，先去“我的订单”看看'
         : '网络不太好，没能连上服务，点提交再试一次' })
     } finally { this.setData({ busy: false }) }
+  },
+  async startPayment(no) {
+    try {
+      const started = await auth.authorized('/my/orders/' + encodeURIComponent(no) + '/pay', {}, 'POST')
+      const payment = started.payment
+      if (!payment || !payment.mock || !Number.isInteger(payment.amountFen)) throw new Error('模拟支付暂不可用')
+      this.setData({ payment, paymentAmount: price(payment.amountFen), sheet: 'payment' })
+    } catch (error) {
+      this.setData({ error: error.message || '付款暂不可用' })
+      nav.orderComplete(no)
+    }
+  },
+  async finishPayment(event) {
+    const payment = this.data.payment, no = this.data.order && this.data.order.no
+    if (!payment || !no || this.data.busy) return
+    this.setData({ busy: true, error: '' })
+    try {
+      await auth.authorized('/payments/mock/notify', { orderNo: no, paymentId: payment.paymentId,
+        result: event.currentTarget.dataset.result }, 'POST')
+      const fresh = await auth.authorized('/my/orders/' + encodeURIComponent(no), null, 'GET')
+      this.setData({ payment: null, sheet: '' })
+      wx.reLaunch({ url: '/features/order-detail/order-detail?no=' + encodeURIComponent(no) +
+        (fresh.paymentStatus === 'paid' ? '&paid=1' : '') })
+    } catch (error) { this.setData({ error: error.message || '付款结果未确认，请查看订单详情' }) }
+    finally { this.setData({ busy: false }) }
+  },
+  paymentClose() {
+    const no = this.data.order && this.data.order.no
+    this.setData({ payment: null, sheet: '' })
+    if (no) nav.orderComplete(no)
   },
   home() { wx.switchTab({ url: '/pages/home/home' }) },
 })

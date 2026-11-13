@@ -1,12 +1,12 @@
 const api = require('../../utils/api')
 const store = require('../../utils/design')
 const logic = require('../../pages/editor/logic')
+const { pickTryonDesign } = require('./selection')
 const SKINS = ['#e9c2a6','#d7ad91','#b98462','#80543d']
 Page({
   data: { showDesigns:false, showModes:false, designName:'', designChoices:[], aligned:false, fromOrder:false, mode:'photo', photo:'', width:320, height:400, size:38, angle:0, flatten:45, hideBack:false, photoFallback:false, photoReady:false, xpos:0, ypos:0, saving:false, error:'', skin:SKINS[1], skins:SKINS, catalog:[], beads:[], wrist:15, length:'--', fit:'', price:'--', missing:0, modelError:false },
   onLoad(options={}) {
     const current=store.current(), saved=store.list().filter(d=>d.beads&&d.beads.length)
-    const design=(current&&current.beads&&current.beads.length?current:saved[0])||null
     const width=Math.max(200,Math.min(430,wx.getSystemInfoSync().windowWidth-32))
     this.x=width/2;this.y=width*.625
     this.setData({width,height:Math.round(width*1.25),xpos:this.x,ypos:this.y,fromOrder:options.from==='order'})
@@ -17,8 +17,8 @@ Page({
       const popular=(c.templates||[]).map(t=>({...t,beads:templates.build(t,catalog,15)})).filter(t=>t.beads&&t.beads.length)
       this.choices=[...saved.map(d=>({...d,group:'我的作品'})),...popular.map(t=>({...t,group:'热门款'}))]
       this.setData({catalog,designChoices:this.choices.map((d,i)=>({index:i,name:d.name,group:d.group}))})
+      const design=pickTryonDesign(current,saved,popular)
       if(design)this.useDesign(design)
-      else if(popular.length)this.useDesign(popular[0])
       else this.setData({error:'暂时没有可试戴的手串'})
       if(this.design)this.startBestMode()
     }).catch(()=>this.setData({error:'材料信息暂不可用，请稍后重试'}))

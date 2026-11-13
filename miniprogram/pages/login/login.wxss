@@ -1,4 +1,17 @@
-.login-page { padding-top: 80rpx; }
-.login-page .title { margin-bottom: 16rpx; }
-.login-button { margin: 48rpx 0 24rpx; }
-.dev-tip { margin-top: 32rpx; font-size: 22rpx; color: #9b5b18; }
+.login-page { min-height: 100vh; background: var(--c-bg); color: var(--c-text); position: relative; box-sizing: border-box; padding: 0 32rpx; }
+.login-nav { height: 88rpx; padding-top: env(safe-area-inset-top); display: flex; align-items: center; font-size: 56rpx; }
+.login-main { display: flex; flex-direction: column; align-items: center; padding-top: 120rpx; }
+.login-sub { margin-top: 44rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
+.login-action { width: 100%; position: relative; margin-top: 192rpx; }
+.login-button { width: 100%; }
+.login-agreement-overlay { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+.login-cancel { margin-top: 36rpx; color: var(--c-text-2); font-size: var(--fs-body); }
+.login-note { margin-top: 20rpx; color: var(--c-text-2); font-size: var(--fs-caption); text-align: center; }
+.login-dev { margin-top: 28rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
+.login-agreement { position: absolute; left: 16rpx; right: 16rpx; bottom: calc(40rpx + env(safe-area-inset-bottom)); display: flex; justify-content: center; align-items: center; flex-wrap: wrap; font-size: var(--fs-caption); color: var(--c-text-2); }
+.login-agreement .c-check { margin-right: 12rpx; }
+.login-doc { color: var(--c-text); }
+.login-sheet-docs { text-align: center; margin-top: 12rpx; }
+.login-sheet-copy { color: var(--c-text-2); font-size: var(--fs-caption); text-align: center; margin: 24rpx 0; }
+.login-sheet-actions { display: flex; gap: 16rpx; }
+.login-sheet-actions .c-btn { flex: 1; }

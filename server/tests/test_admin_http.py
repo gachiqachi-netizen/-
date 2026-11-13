@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import app
 import status
 from db import DB
+from admin_helpers import owner_headers
 
 
 class AdminCommerceHTTPTest(unittest.TestCase):
@@ -27,6 +28,7 @@ class AdminCommerceHTTPTest(unittest.TestCase):
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
         cls.base = 'http://127.0.0.1:' + str(cls.server.server_port)
+        cls.admin_headers = owner_headers(cls.base)
 
     @classmethod
     def tearDownClass(cls):
@@ -40,7 +42,7 @@ class AdminCommerceHTTPTest(unittest.TestCase):
     def request(self, path, method='GET', data=None, admin=None):
         headers = {'Content-Type': 'application/json'}
         if admin:
-            headers['X-Admin-Token'] = admin
+            headers.update(self.admin_headers)
         raw = json.dumps(data).encode() if data is not None else None
         req = Request(self.base + path, data=raw, headers=headers, method=method)
         try:

@@ -17,9 +17,7 @@ interface OrdersViewProps {
 }
 
 // 分栏和状态用同一套词，状态词只从契约取（docs/design/12-admin.md 第 4、5 节）
-const ORDER_TABS = (['all'] as const).concat(Object.keys(CONTRACT.opsStatus) as any).filter(
-  (k) => ['all', 'unpaid', 'to_make', 'producing', 'ready_to_ship', 'shipped', 'completed', 'after_sale'].includes(k)
-);
+const ORDER_TABS = ['all', 'unpaid', 'to_make', 'producing', 'ready_to_ship', 'shipped', 'completed', 'after_sale'];
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 

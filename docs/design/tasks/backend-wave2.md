@@ -9,7 +9,7 @@
 > | 编号 | 文件 | 卡 |
 > |---|---|---|
 > | 007 | `m007_after_sale_types.py` | A5a（第一波，手动登记） |
-> | 008 | `m008_unit_prices.py` | A3 |
+> | 008 | `m008_pricing_settings.py`（`settings`） | A3 |
 > | 009 | `m009_admin_accounts.py`（`admin_users`、`admin_roles`、`admin_sessions`） | A8a |
 > | 010 | `m010_kb_tables.py`（`kb_items`、`kb_versions`） | K1 |
 > | 011 | `m011_kb_permission.py` | K3 |
@@ -82,20 +82,29 @@
 
 ---
 
-## A3 计价去掉手工费
+## A3 手工费和运费改成后台可配置（2026-11-13 负责人定，取代原“去掉手工费”）
 
-- **依赖**：A1；**负责人给出新单价表（E1）**　**大小**：S
+- **依赖**：A1、A11、A11m　**大小**：M　**不能和 B-11b 同时做**（都改 `pricing.py`）
 
-**只能改**：`server/pricing.py`、`server/seed.py`（单价）、新建 `server/migrations/m008_unit_prices.py`、`docs/data/unit-prices.csv`（负责人给的表，原样放进来）、相关测试的期望值。
+**负责人的决定**：手工费、运费不写死在代码里，和商品单价一样在后台定：每一项能选“收 / 不收”，收的话收多少；运费另有“满多少包邮”。商品单价照旧在商品里改（D6a），**不再需要负责人给新单价表**。
+
+**只能改**：`server/pricing.py`、新建 `server/migrations/m008_pricing_settings.py`、`server/routes/pricing_settings.py`、`server/tests/test_pricing_settings.py`；`server/app.py` 只加一行（启动时 `pricing.attach(db)`，放在 `db` 建好之后）；相关测试的期望值。
 
 **步骤**
-1. 负责人的表格式：`id,priceFen`，每行一个商品编号和新单价（整数分）。放到 `docs/data/unit-prices.csv`。表里没有的商品单价不变。
-2. `pricing.HANDWORK_FEN = 0`（字段保留，返回 0，兼容旧前端）。
-3. `m008_unit_prices.py`：读这张表，更新库里对应商品的 `price`（元）和 `priceFen`；照 m006 的格式（`VERSION`、`NAME`、`up(conn, adapter)`），能重复跑。`seed.py` 里的单价同步改。
-4. 测试：所有写死 `1500` 的测试改成用 `pricing.HANDWORK_FEN`（这是期望值跟着规则走，不算改断言的意思）；新加一个用例：好运连连 15cm 的到手价 = 珠子合计 +（不满 ¥99 时）运费；旧订单的金额不变（订单里存的是下单时的快照）。
+1. 迁移 `m008_pricing_settings.py`：`NEW_TABLES = ("settings",)`，建表后写入一行 `id = "pricing"`：
+   `{"handwork": {"enabled": true, "fen": 1500}, "shipping": {"enabled": true, "fen": 800, "freeThresholdFen": 9900}, "updatedBy": "导入", "updatedAt": ...}`（就是现在代码里的数，上线后价格不变）。已有这一行就不写（能重复跑）。
+2. `pricing.py`：
+   - 现有常量保留，作为数据库里没有配置时的默认值。
+   - `attach(db)`：记住数据库；`config()`：读 `settings/pricing`，读不到就用默认值。
+   - `quote()` 和 `public_config()` 改成用 `config()` 的数：手工费不收时 `handworkFen = 0`；运费不收时 `shippingFen` 恒为 0；收运费时 `freeThresholdFen` 为 `null` 表示不包邮，否则满额包邮。**其他调用处一行不改**（`app.py`、`commerce.py`、`user_api.py` 继续调 `pricing.quote` / `public_config`）。
+   - `public_config()` 多返回 `handworkEnabled`、`shippingEnabled`（小程序以后按它决定显不显示这一行），原有字段名不变。
+3. 路由 `routes/pricing_settings.py`（`auth: "admin"`，A8b 以后改成权限点 `edit_prices`）：
+   - `GET /api/admin/pricing-settings`：返回当前配置。
+   - `PUT /api/admin/pricing-settings`：收上面的结构；金额是 0–100000 的整数分（写元存分由后台页面做）；`enabled` 是布尔；`freeThresholdFen` 是整数分或 `null`；不合法抛 `ValueError`。保存时记 `updatedBy`（当前后台账号的名字，A8a 的 `accounts.CURRENT_ADMIN`）、`updatedAt`。
+4. 旧订单不受影响：订单里存的是下单时的报价快照，改配置只影响之后的报价和下单。
+5. 测试：默认配置下报价和改之前一模一样（拿现有 `test_pricing` 的几组数对照）；手工费关掉后报价里 `handworkFen = 0`；运费关掉后不管多少钱都是 0；包邮门槛改成 `null` 后永远收运费；改配置前下的订单金额不变；不合法的金额（负数、小数、字符串、超上限）返回 400；没登录后台 401；`GET /api/catalog` 的 `pricing` 跟着配置变。
 
-**停下来问**：表里有库里不存在的编号；新单价让某个热门款价格变化超过 30%（列出来给负责人看）。
-
+**停下来问**：要改上面列出的调用处才能做下去。
 ---
 
 ## A7 手机号登录
@@ -128,7 +137,7 @@
 
 **步骤**
 1. 三张表（迁移里建）：`admin_users`（`id, username, name, roleId, status(active/disabled), passwordHash, mustChangePassword, createdAt, lastLoginAt`）、`admin_roles`（`id, name, permissions[], builtin, dataScope`）、`admin_sessions`（`sid, userId, expiresAt`）。迁移里写入四个默认角色（14 第 2.3 节的表，权限点名字用 14 第 2.2 节表里的中文名对应的英文代码，代码表写在 `accounts.py` 顶部 `PERMISSIONS` 常量里，一一对应）。
-2. 密码：`hashlib.scrypt(password, salt=随机16字节, n=2**14, r=8, p=1)`，存 `scrypt$<salt hex>$<hash hex>`；至少 8 位。
+2. 密码：`hashlib.pbkdf2_hmac("sha256", password, salt=随机16字节, 600000)`，存 `pbkdf2_sha256$<迭代次数>$<salt hex>$<hash hex>`；至少 8 位。（原写 scrypt，macOS 自带 Python 没有，2026-11-13 改。）
 3. 登录 `POST /api/admin/session`：收 `{"username","password"}`；失败 5 次锁 10 分钟（沿用现有计数）；成功写 `admin_sessions`，cookie 不变。`ADMIN_TOKEN` **只在 `admin_users` 为空时**能登录，而且这个会话只能调“创建第一个负责人”接口。
 4. `admin_ok()` 改成查 `admin_sessions`（不再查进程内存），并把当前账号放到 `self.admin_user`；停用账号的会话立即失效。
 5. 账号接口（`auth: "admin"`，A8b 后改成权限点 `manage_accounts`）：列表、新建（返回一次性临时密码）、改名字和角色、停用、重置密码、改自己的密码（`mustChangePassword` 为真时只能调这个）。最后一个在用的负责人不能停用、不能改成别的角色。

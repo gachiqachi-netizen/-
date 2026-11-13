@@ -75,6 +75,10 @@ class AddressTests(unittest.TestCase):
         self.assertEqual(len(addresses.list_for(self.db, "bob")), 0)
 
     def test_phone_and_required_fields_are_checked(self):
+        # 下单使用 1\d{10}，地址簿沿用同一规则。
+        accepted = payload()
+        accepted["phone"] = "10000000000"
+        self.assertEqual(addresses.create(self.db, "alice", accepted)["phone"], "10000000000")
         bad = payload()
         bad["phone"] = "123"
         with self.assertRaisesRegex(ValueError, "手机号"):

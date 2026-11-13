@@ -25,7 +25,7 @@ def _fields(data, current=None):
             result[key] = data[key]
     if not isinstance(result.get("person"), str) or not result["person"].strip():
         raise ValueError("请填写收货人")
-    if not isinstance(result.get("phone"), str) or not re.fullmatch(r"1[3-9]\d{9}", result["phone"]):
+    if not isinstance(result.get("phone"), str) or not re.fullmatch(r"1\d{10}", result["phone"]):
         raise ValueError("手机号格式不正确")
     region = result.get("region")
     if not isinstance(region, list) or not region or any(not isinstance(x, str) or not x.strip() for x in region):

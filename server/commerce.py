@@ -1156,27 +1156,29 @@ def customer_order_action(db, no, user_id, action):
         else:
             if not (groups["orderStatus"] == "confirmed"
                     and groups["paymentStatus"] == "paid"
-                    and groups["fulfillmentStatus"] == "shipped"
+                    and groups["fulfillmentStatus"] in ("shipped", "delivered")
                     and groups["afterSaleStatus"] == "none"
-                    and groups["logisticsStatus"] in ("shipped", "in_transit")):
+                    and groups["logisticsStatus"] in ("shipped", "in_transit", "delivered")):
                 raise ValueError("当前订单状态不能确认收货")
-            status.validate_transition("logisticsStatus", groups["logisticsStatus"], "delivered")
-            _check_order_constraints(order, "logisticsStatus", "delivered")
-            order["logisticsStatus"] = "delivered"
-            status.validate_transition("fulfillmentStatus", groups["fulfillmentStatus"], "delivered")
-            _check_order_constraints(order, "fulfillmentStatus", "delivered")
-            order["fulfillmentStatus"] = "delivered"
+            if groups["logisticsStatus"] != "delivered":
+                status.validate_transition("logisticsStatus", groups["logisticsStatus"], "delivered")
+                _check_order_constraints(order, "logisticsStatus", "delivered")
+                order["logisticsStatus"] = "delivered"
+                logistics = dict(order.get("logistics") or {})
+                logistics.setdefault("signedAt", now)
+                order["logistics"] = logistics
+                append_history(order, "customer", "logisticsStatus", groups["logisticsStatus"], "delivered", "用户确认收货")
+            if groups["fulfillmentStatus"] != "delivered":
+                status.validate_transition("fulfillmentStatus", groups["fulfillmentStatus"], "delivered")
+                _check_order_constraints(order, "fulfillmentStatus", "delivered")
+                order["fulfillmentStatus"] = "delivered"
+                append_history(order, "customer", "fulfillmentStatus", groups["fulfillmentStatus"], "delivered", "用户确认收货")
             status.validate_transition("orderStatus", groups["orderStatus"], "completed")
             _check_order_constraints(order, "orderStatus", "completed")
             order["orderStatus"] = "completed"
             order["status"] = "已完成"  # legacy client compatibility
-            logistics = dict(order.get("logistics") or {})
-            logistics.setdefault("signedAt", now)
-            order["logistics"] = logistics
             order.setdefault("logisticsHistory", []).append(
                 {"at": now, "actor": "customer", "action": "确认收货", "detail": "用户确认已收到商品"})
-            append_history(order, "customer", "logisticsStatus", groups["logisticsStatus"], "delivered", "用户确认收货")
-            append_history(order, "customer", "fulfillmentStatus", groups["fulfillmentStatus"], "delivered", "用户确认收货")
             append_history(order, "customer", "orderStatus", groups["orderStatus"], "completed", "用户确认收货")
         order["updatedAt"] = now
         return order

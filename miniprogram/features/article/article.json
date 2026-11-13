@@ -1,3 +1,8 @@
 {
-  "navigationBarTitleText": "文章"
+  "navigationBarTitleText": "珠养养小知识",
+  "usingComponents": {
+    "c-bead": "/components/bead/index",
+    "c-bar": "/components/bar/index",
+    "c-state": "/components/state/index"
+  }
 }

@@ -1,4 +1,18 @@
 <view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+  <view wx:if="{{loading}}" class="loading">内容正在加载</view>
+  <c-state wx:elif="{{error}}" title="暂时看不到这篇内容" desc="{{error}}" action="再试一次" bind:action="load" />
+  <view wx:else>
+    <view class="hero">
+      <image wx:if="{{coverUrl}}" class="cover" src="{{coverUrl}}" mode="aspectFill" />
+      <c-bead wx:else bead="{{bead}}" size="l" />
+    </view>
+    <view class="content">
+      <button class="share" open-type="share">分享</button>
+      <view class="title">{{article.title}}</view>
+      <view wx:for="{{article.body}}" wx:key="index" class="paragraph">{{item}}</view>
+    </view>
+    <c-bar wx:if="{{showButton}}">
+      <button class="c-btn" bindtap="followButton">{{article.button.text}}</button>
+    </c-bar>
+  </view>
 </view>

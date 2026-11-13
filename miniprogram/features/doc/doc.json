@@ -1,3 +1,4 @@
 {
-  "navigationBarTitleText": "内容"
+  "navigationBarTitleText": "说明",
+  "usingComponents": { "c-state": "/components/state/index" }
 }

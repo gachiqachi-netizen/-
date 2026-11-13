@@ -1,16 +1,188 @@
-const api=require('../../utils/api'),store=require('../../utils/design'),auth=require('../../utils/auth')
-const keyOf=d=>d&&JSON.stringify([d.name,d.wrist,d.beads])
-function validSuggestion(s,beads,map){return !!(s&&typeof s.text==='string'&&s.text.trim()&&((s.op==='accent'&&map[s.id]&&beads.length)||(s.op==='swapAll'&&map[s.to]&&beads.includes(s.from)&&s.from!==s.to)))}
-function applySuggestion(beads,s){const out=beads.slice();if(s.op==='swapAll')return out.map(id=>id===s.from?s.to:id);if(s.op==='accent'){const n=Math.min(out.length,6,Math.max(1,Number(s.count)||2));for(let i=0;i<n;i++)out[Math.round(i*out.length/n)%out.length]=s.id}return out}
-Page({data:{design:null,review:'',suggestions:[],canUndo:false,loading:false,error:'',shareId:'',shareBusy:false,shareError:'',items:[],catalog:[],renderFallback:false,price:'--',length:'--',previewWarning:'',saveNote:''},
- saveDesign(){if(!this.data.design)return;store.save(this.data.design);this.setData({saveNote:"已保存到我的作品"});wx.showToast({title:"已保存",icon:"success"})},
- onShow(){const design=store.current(),key=keyOf(design);if(key!==this.shareKey)this.setData({shareId:'',shareError:''});if(key!==this.designKey){this.designKey=key;this.undoState=null;this.setData({review:'',suggestions:[],canUndo:false,error:''})}this.setData({design});if(!design)return;api.catalog().then(c=>{if(keyOf(store.current())!==key)return;this.catalog=c.beads||[];this.setData({catalog:this.catalog});this.renderDesign(design)}).catch(()=>this.setData({previewWarning:'材料信息加载失败，暂无法计算价格。',price:'--'}))},
- renderDesign(design){const map=Object.fromEntries((this.catalog||[]).map(b=>[b.id,b]));let sum=0,len=0,missing=0;const items=design.beads.map((id,i)=>{const b=map[id];if(!b){missing++;return null}sum+=Math.round(Number(b.price)*100);len+=Number(b.mm)||0;const a=2*Math.PI*i/design.beads.length-Math.PI/2;return {id:i,x:50+35*Math.cos(a),y:50+35*Math.sin(a),color:(b.c||[])[0]||'#aaa'}}).filter(Boolean);this.setData({design,items,price:missing?'--':((sum+1500)/100).toFixed(2),length:missing?'--':(len/10).toFixed(1),previewWarning:missing?'部分材料已下架，请返回检查设计。':''})},
- review(){const d=this.data.design;if(!d||this.data.loading)return;const reviewKey=keyOf(d);this.setData({loading:true,error:''});api.request('/ai/review',{beads:d.beads.slice(),wrist:d.wrist},'POST',{timeout:180000}).then(r=>{if(keyOf(store.current())!==reviewKey){this.setData({error:'设计已更改，请重新评价。'});return}const map=Object.fromEntries((this.catalog||[]).map(b=>[b.id,b])), suggestions=(Array.isArray(r.sugg)?r.sugg:[]).filter(s=>validSuggestion(s,d.beads,map)).slice(0,2).map(s=>({...s,applied:false}));this.undoState=null;this.setData({review:[r.praise,r.meaning].filter(Boolean).join('\n'),suggestions,canUndo:false})}).catch(e=>this.setData({error:'评价暂不可用：'+e.message})).finally(()=>this.setData({loading:false}))},
- apply(e){const i=Number(e.currentTarget.dataset.index),s=this.data.suggestions[i],d=this.data.design,map=Object.fromEntries((this.catalog||[]).map(b=>[b.id,b]));if(!d||!s||s.applied||!validSuggestion(s,d.beads,map))return this.setData({error:'建议已不适用，请重新评价。'});const old=JSON.parse(JSON.stringify(d)),prior=this.data.suggestions.map(x=>({...x})),beads=applySuggestion(d.beads,s);if(beads.join(',')===d.beads.join(','))return this.setData({error:'当前设计已符合这条建议。'});this.undoState={design:old,suggestions:prior};const next={...d,beads},suggestions=this.data.suggestions.map((x,j)=>({...x,applied:j===i||x.applied}));this.persist(next);this.setData({suggestions,canUndo:true,error:''})},
- undo(){if(!this.undoState)return;const {design,suggestions}=this.undoState;this.undoState=null;this.persist(design);this.setData({suggestions,canUndo:false,error:''})},
- persist(d){store.save(d);store.selected(d);this.designKey=keyOf(d);this.shareKey=null;this.setData({shareId:'',shareError:'',saveNote:'修改已保存在本机'});this.renderDesign(d);store.sync(d).then(()=>{if(keyOf(store.current())===keyOf(d))this.setData({saveNote:'修改已同步'})}).catch(()=>{if(keyOf(store.current())===keyOf(d))this.setData({saveNote:'修改已保存在本机，暂未同步'})})},
- renderUnavailable(){this.setData({renderFallback:true})},
-  share(){wx.navigateTo({url:'/pages/share/share'})},edit(){wx.navigateBack()},tryon(){wx.navigateTo({url:'/features/tryon/tryon'})},order(){require('../../utils/nav').openOrder()},
- prepareShare(){if(this.data.shareBusy)return;const d=this.data.design,snapshot={name:d.name,wrist:d.wrist,beads:d.beads.slice()},key=keyOf(d);this.setData({shareBusy:true,shareError:''});auth.authorized('/shares',snapshot).then(r=>{if(keyOf(store.current())!==key){this.setData({shareError:'设计已更改，请重新准备分享。'});return}this.shareKey=key;this.setData({shareId:r.shareId})}).catch(e=>this.setData({shareError:'分享准备失败：'+e.message})).finally(()=>this.setData({shareBusy:false}))},
- onShareAppMessage(){return this.data.shareId&&keyOf(store.current())===this.shareKey?{title:'看看我设计的手串',path:'/features/shared/shared?id='+encodeURIComponent(this.data.shareId)}:{title:'串个珠',path:'/pages/home/home'}}})
+const api = require('../../utils/api')
+const store = require('../../utils/design')
+const logic = require('../editor/logic')
+const meaning = require('../../utils/meaning')
+const money = require('../../utils/money')
+const nav = require('../../utils/nav')
+const toast = require('../../utils/toast').queue
+
+const DEFAULT_PRICING = { shippingFen: 800, freeShippingThresholdFen: 9900 }
+
+Page({
+  data: {
+    design: null,
+    items: [],          // 按顺序的珠子对象数组（供手串圆环）
+    counts: [],         // 详情里的每颗珠子 {id, bead, n, line}
+    beadsCount: 0,
+    lengthText: '',     // 总长 "168mm"
+    fitText: '',        // "合适" / "还差约 5mm" / "超出约 11mm"
+    goods: '',          // 珠子价 "¥92"
+    shipping: '',       // 运费 "¥8" 或 "包邮"
+    shippingRow: '',    // 配送行整句
+    price: '',          // 到手价 "¥100"
+    shippingNote: '',   // "到手价，已含运费" / "到手价，包邮"
+    line: '',           // 一句寓意
+    tags: '',           // 寓意关键词
+    loading: true,
+    error: '',
+    down: false,        // 款式已下架
+    outOfStock: false,  // 有珠子缺货
+    outOfStockName: '',
+    showSize: false,
+    showWrist: false,
+    current: 0,
+    slides: [{ kind: 'bracelet' }],
+  },
+
+  onLoad() {
+    this.wristBefore = null
+    this.loaded = false
+    this.load()
+  },
+
+  onShow() {
+    if (this.loaded) this.refreshDesign()
+  },
+
+  load() {
+    const design = store.current()
+    if (!design || !design.beads || !design.beads.length) {
+      this.setData({ loading: false, down: true, design: design || null })
+      return
+    }
+    this.wristBefore = design.wrist
+    this.setData({ design, loading: true, error: '', down: false })
+    api.catalog().then(c => {
+      this.catalog = (c && c.beads) || []
+      const p = (c && c.pricing) || {}
+      this.pricing = {
+        shippingFen: Number.isInteger(p.shippingFen) ? p.shippingFen : DEFAULT_PRICING.shippingFen,
+        freeShippingThresholdFen: Number.isInteger(p.freeShippingThresholdFen) ? p.freeShippingThresholdFen : DEFAULT_PRICING.freeShippingThresholdFen,
+      }
+      this.loaded = true
+      this.render(store.current() || design)
+      this.setData({ loading: false })
+    }).catch(e => {
+      this.setData({ loading: false, error: e.message || '加载失败，请稍后重试' })
+    })
+  },
+
+  refreshDesign() {
+    const design = store.current()
+    if (!design || !design.beads || !design.beads.length) return
+    const changed = this.wristBefore != null && design.wrist !== this.wristBefore
+    this.wristBefore = design.wrist
+    this.render(design)
+    if (changed) toast.show({ text: '已按 ' + design.wrist + 'cm 重新判断' })
+  },
+
+  render(design) {
+    const map = Object.fromEntries(this.catalog.map(b => [b.id, b]))
+    const items = design.beads.map(id => map[id]).filter(Boolean)
+    const missingCount = design.beads.length - items.length
+    const st = logic.stats(design.beads, this.catalog, design.wrist)
+
+    // 缺货：还在目录里但标了 out_of_stock；或珠子已下架（不在目录里）
+    const outOfStockBeads = items.filter(b => b.stock === 'out_of_stock')
+    const down = items.length === 0
+    const outOfStock = !down && (outOfStockBeads.length > 0 || missingCount > 0)
+    const outOfStockName = outOfStockBeads.length ? outOfStockBeads[0].name : (missingCount ? '部分材料' : '')
+
+    // 详情里的每颗珠子（按 id 去重，带数量）
+    const countsMap = {}
+    items.forEach(b => { countsMap[b.id] = (countsMap[b.id] || 0) + 1 })
+    const counts = Object.keys(countsMap).map(id => ({
+      id,
+      bead: map[id],
+      n: countsMap[id],
+      line: meaning.beadLine(map[id]),
+    }))
+
+    // 到手价 = 珠子 + 运费（无单独手工费，见 04 第 0 节第 12 条）
+    let goodsFen = 0
+    items.forEach(b => { goodsFen += Math.round(Number(b.price) * 100) })
+    const shippingFen = goodsFen >= this.pricing.freeShippingThresholdFen ? 0 : this.pricing.shippingFen
+    const payableFen = goodsFen + shippingFen
+
+    const line = design.line || design.meaning || meaning.keywords(items).join(' · ')
+    const tags = meaning.keywords(items, Infinity).join(' · ')
+    const fitText = st.fit === '长度基本合适' ? '合适' : st.fit
+
+    this.setData({
+      design, items, counts,
+      beadsCount: design.beads.length,
+      lengthText: st.length + 'mm',
+      fitText,
+      goods: money.yuan(goodsFen),
+      shipping: shippingFen === 0 ? '包邮' : money.yuan(shippingFen),
+      shippingRow: shippingFen === 0 ? '包邮 · 下单后制作' : ('运费 ' + money.yuan(shippingFen) + '，满 ¥99 包邮 · 下单后制作'),
+      price: money.yuan(payableFen),
+      shippingNote: shippingFen === 0 ? '到手价，包邮' : '到手价，已含运费',
+      line, tags,
+      down, outOfStock, outOfStockName,
+    })
+  },
+
+  onSwiperChange(e) {
+    this.setData({ current: e.detail.current })
+  },
+
+  openSize() {
+    this.setData({ showSize: true })
+  },
+  closeSize() {
+    this.setData({ showSize: false })
+  },
+  goWrist() {
+    this.setData({ showSize: false })
+    wx.navigateTo({ url: '/pages/wrist/wrist?source=finish' })
+  },
+
+  tryon() {
+    wx.navigateTo({ url: '/features/tryon/tryon' })
+  },
+
+  edit() {
+    this.goWorkbench()
+  },
+  replace() {
+    this.goWorkbench()
+  },
+  goWorkbench() {
+    const d = this.data.design
+    if (d) store.selected(d)
+    wx.switchTab({ url: '/pages/diy/diy' })
+  },
+
+  order() {
+    if (this.data.outOfStock) return this.replace()
+    if (wx.getStorageSync('cgz_wrist_confirmed')) return nav.openOrder()
+    this.setData({ showWrist: true })
+  },
+  confirmWrist() {
+    const d = this.data.design
+    const wrist = d && d.wrist ? d.wrist : 15
+    wx.setStorageSync('cgz_wrist', wrist)
+    wx.setStorageSync('cgz_wrist_confirmed', true)
+    this.setData({ showWrist: false })
+    nav.openOrder()
+  },
+  measureWrist() {
+    this.setData({ showWrist: false })
+    wx.navigateTo({ url: '/pages/wrist/wrist?source=finish' })
+  },
+  closeWrist() {
+    this.setData({ showWrist: false })
+  },
+
+  retry() {
+    this.load()
+  },
+  goHome() {
+    wx.switchTab({ url: '/pages/home/home' })
+  },
+
+  onShareAppMessage() {
+    return { title: this.data.design ? this.data.design.name : '串个珠', path: '/pages/home/home' }
+  },
+})

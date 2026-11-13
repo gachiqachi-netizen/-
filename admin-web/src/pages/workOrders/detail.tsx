@@ -223,7 +223,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
       </div></Can>
 
       {wo.customerNote ? <div className="wo-note">客户备注：{wo.customerNote}</div> : null}
-      {wo.giftCard ? <div className="wo-note"><strong>贺卡</strong><div>{wo.giftCard}</div></div> : null}
+      {wo.giftCard ? <div className="wo-note"><strong>贺卡</strong><div className="wo-gift-card">{wo.giftCard}</div></div> : null}
       {wo.hidePrice ? <div className="wo-note wo-red">包裹里不放带价格的单据</div> : null}
       {wo.operatorNote ? <div className="wo-note">作业备注：{wo.operatorNote}</div> : null}
 

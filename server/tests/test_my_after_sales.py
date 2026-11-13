@@ -129,9 +129,6 @@ class MyAfterSalesTests(unittest.TestCase):
                          {**good, 'phone': '10000000000'})[1]['phone'], '10000000000')
 
 
-if __name__ == '__main__':
-    unittest.main()
-
 class ReturnAddressPermissionHTTPTests(unittest.TestCase):
     def test_account_without_process_after_sales_gets_403(self):
         import app
@@ -171,3 +168,7 @@ class ReturnAddressPermissionHTTPTests(unittest.TestCase):
             db.conn.close()
             app.db = old_db
             temp.cleanup()
+
+
+if __name__ == '__main__':
+    unittest.main()

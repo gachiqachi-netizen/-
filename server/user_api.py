@@ -169,6 +169,9 @@ def order_allowed_actions(order):
         actions.append('edit_address')
     if isinstance(order.get('beads'), list) and order['beads']:
         actions.append('reorder')
+    import commerce
+    if commerce.customer_after_sale_types(order, int(time.time() * 1000)):
+        actions.append('request_after_sale')
     # 只有当前有可用的支付通道（开发/体验环境的模拟支付，或以后的微信支付）时才给 pay_order；
     # 不看订单上旧的 paymentAvailable 字段。
     import payments
@@ -221,6 +224,42 @@ def change_my_order_address(db, no, uid, data):
     import commerce
     return public_order(commerce.change_order_address(
         db, no, data, actor='customer', owner_id=uid))
+
+
+def request_after_sale(db, no, uid, data):
+    import commerce
+    import contract
+    order = db.get('orders', no)
+    if not order or order.get('userId') != uid:
+        raise KeyError('订单不存在')
+    atype = data.get('type')
+    key = data.get('idempotencyKey')
+    repeated = (isinstance(key, str) and any(
+        rec.get('orderNo') == no and rec.get('idempotencyKey') == key
+        for rec in db.list('after_sales')))
+    if not repeated and atype not in commerce.customer_after_sale_types(order, int(time.time() * 1000)):
+        raise ValueError('这个阶段不能申请这种售后')
+    reason = data.get('reason')
+    if reason not in contract.AFTER_SALE_REASONS.get(atype, []):
+        raise ValueError('售后原因不正确')
+    note = data.get('userNote', '')
+    if not isinstance(note, str) or len(note) > 500:
+        raise ValueError('售后说明不能超过 500 字')
+    content_security.ensure_allowed(note)
+    wrist = data.get('newWrist')
+    if atype == '改手围重串':
+        if type(wrist) not in (int, float) or not 13 <= wrist <= 20:
+            raise ValueError('新手围须在 13–20 cm 之间')
+    payload = {'orderNo': no, 'type': atype, 'reason': reason, 'userNote': note,
+               'refundFen': commerce.refund_amount_for(order, atype),
+               'idempotencyKey': key}
+    if atype == '改手围重串':
+        payload['newWrist'] = wrist
+    sale = commerce.create_after_sale(db, payload, actor='customer')
+    sale = dict(sale)
+    sale['history'] = _pick_list(sale.get('history'),
+                                 ('at', 'group', 'from', 'to', 'note'))
+    return {'afterSale': sale, 'order': public_order(db.get('orders', no))}
 
 
 def perform_order_action(db, no, uid, action):

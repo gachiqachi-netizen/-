@@ -1456,6 +1456,8 @@ def create_after_sale(db, data, actor=ACTOR):
                "history": [status.history_entry(actor, "afterSaleStatus", "none", "requested", reason)]}
         if idem_key:
             rec["idempotencyKey"] = idem_key
+        if "newWrist" in data:
+            rec["newWrist"] = data["newWrist"]
         w.put_after_sale(no, rec)
 
         order["afterSaleStatus"] = "requested"

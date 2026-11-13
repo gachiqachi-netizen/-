@@ -10,8 +10,7 @@
     "pages/login/login",
     "pages/diy/diy",
     "pages/wrist/wrist",
-    "pages/share/share",
-    "pages/ar-tryon/ar-tryon"
+    "pages/share/share"
   ],
   "window": {
     "navigationBarTitleText": "珠养养",

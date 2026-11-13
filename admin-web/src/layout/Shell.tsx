@@ -144,7 +144,7 @@ export const Shell: React.FC<ShellProps> = ({
         <main className="zy-content">
           {loadError ? <div role="alert">{loadError}</div> :
             !me ? <div>正在读取权限…</div> :
-            denied ? <div role="alert"><h2>你没有这个页面的权限</h2><p>需要“{pageNeed(active)}”，找负责人开通。</p></div> : children}
+            denied ? <div className="zy-card zy-empty" role="alert"><h2>你没有这个页面的权限</h2><p>需要“{pageNeed(active)}”，找负责人开通。</p></div> : children}
         </main>
       </div>
     </div>

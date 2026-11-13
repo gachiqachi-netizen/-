@@ -14,15 +14,16 @@
     "pages/ar-tryon/ar-tryon"
   ],
   "window": {
-    "navigationBarTitleText": "串个珠",
+    "navigationBarTitleText": "珠养养",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#ffffff"
   },
   "tabBar": {
-    "color": "#736b66",
-    "selectedColor": "#c8302e",
+    "color": "#6e6e6e",
+    "selectedColor": "#111111",
     "backgroundColor": "#ffffff",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/home/home",

@@ -847,7 +847,12 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(429, {"error": "请求较多，请稍后重试"})
         try:
             if path == "/api/ai/design":
-                out = ai.design(beads, str(data.get("text") or "")[:200], history, wrist)
+                raw = ai.design(beads, str(data.get("text") or "")[:200], history, wrist)
+                if raw is not None:
+                    raw["designs"] = content_security.filter_ai_entries(raw["designs"])
+                    out = ai.design_response(raw, beads, wrist)
+                else:
+                    out = None
             elif path == "/api/ai/photo":
                 out = ai.photo(beads, image)
             elif path == "/api/ai/review":

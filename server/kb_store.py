@@ -49,16 +49,19 @@ def snapshot():
 
 def stamp():
     """A stable cache marker that changes after every save."""
-    with _connection() as (conn, _):
+    if not os.environ.get('DATABASE_URL'):
+        path = os.environ.get('DATABASE_PATH') or os.path.join(os.path.dirname(__file__), 'data.sqlite3')
         try:
-            if isinstance(conn, sqlite3.Connection):
-                count, latest = conn.execute("SELECT count(*), max(json_extract(doc, '$.updatedAt')) FROM kb_items").fetchone()
-            else:
-                count, latest = conn.execute("SELECT count(*), max(doc->>'updatedAt') FROM kb_items").fetchone()
-        except sqlite3.OperationalError as exc:
-            if 'no such table' in str(exc):
-                return None
-            raise
+            main = os.stat(path).st_mtime_ns
+        except FileNotFoundError:
+            return None
+        try:
+            wal = os.stat(path + '-wal').st_mtime_ns
+        except FileNotFoundError:
+            wal = None
+        return (path, main, wal)
+    with _connection() as (conn, _):
+        count, latest = conn.execute("SELECT count(*), max(doc->>'updatedAt') FROM kb_items").fetchone()
     return (count, latest) if count else None
 
 

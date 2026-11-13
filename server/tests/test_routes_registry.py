@@ -57,9 +57,9 @@ TEST_ROUTES = [
     ("POST", r"^/api/test-routes/admin-write$", ok_admin, "admin"),
     ("GET", r"/api/test-routes/prefix", echo_public, "public"),
 ]
-# 绕过加载检查、直接塞进表里的未知登录要求（模拟以后写成权限点名字）
+# 绕过加载检查、直接塞进表里的未知登录要求
 RAW_ROUTES = [
-    ("GET", re.compile(r"/api/test-routes/perm-only"), echo_public, "edit_kb"),
+    ("GET", re.compile(r"/api/test-routes/perm-only"), echo_public, "unknown_permission"),
 ]
 
 
@@ -83,7 +83,7 @@ class LoadTests(unittest.TestCase):
 class CompileRoutesTests(unittest.TestCase):
     def test_unknown_auth_rejected_at_load(self):
         with self.assertRaises(ValueError):
-            routes.compile_routes([("GET", r"/api/x", echo_public, "edit_kb")])
+            routes.compile_routes([("GET", r"/api/x", echo_public, "unknown_permission")])
 
     def test_unknown_method_rejected_at_load(self):
         with self.assertRaises(ValueError):

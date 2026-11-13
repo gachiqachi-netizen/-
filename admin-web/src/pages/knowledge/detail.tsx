@@ -14,6 +14,7 @@ export type KbDetail = { data: Bead; version: number; products: { id: string; na
   history: { version: number; savedBy?: string; savedAt?: string; note?: string }[] };
 const confidence: Record<string, string> = { high: '高', mid: '中', low: '低' };
 const muted: React.CSSProperties = { color: 'var(--text-aux)', fontSize: 12 };
+const dateLabel = (value?: string) => value ? fmtTime(Number.isNaN(Number(value)) ? Date.parse(value) : value) : '—';
 
 function Section({ title, value, level, visible }: { title: string; value: React.ReactNode; level?: string; visible: boolean }) {
   return <section style={{ padding: '16px 0', borderBottom: '1px solid var(--line)' }}>
@@ -51,7 +52,7 @@ export function KnowledgeDetail({ item, loading, error, canEdit, onClose, onRetr
           </div>
           <div className="zy-card" style={{ padding: 16 }}><strong>改动记录</strong>
             {item.history.length ? item.history.map(entry => <div key={entry.version} style={{ marginTop: 12, borderTop: '1px solid var(--line)', paddingTop: 10 }}>
-              <strong>第 {entry.version} 版</strong><div style={muted}>{entry.savedBy || '后台'} · {fmtTime(entry.savedAt)}</div>
+              <strong>第 {entry.version} 版</strong><div style={muted}>{entry.savedBy || '后台'} · {dateLabel(entry.savedAt)}</div>
               {entry.note && <div>{entry.note}</div>}
             </div>) : <div style={muted}>暂无改动记录</div>}
           </div>

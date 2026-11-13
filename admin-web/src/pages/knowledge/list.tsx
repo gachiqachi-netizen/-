@@ -16,6 +16,7 @@ const categoryName: Record<string, string> = {
   jade: '玉石', kernel: '果核', manmade: '人造材料', organic: '有机宝石', wood: '木材',
 };
 const muted: React.CSSProperties = { color: 'var(--text-aux)', fontSize: 12 };
+const dateLabel = (value?: string) => value ? fmtTime(Number.isNaN(Number(value)) ? Date.parse(value) : value) : '—';
 
 export function KnowledgeList({ data, rows, query, category, meaningConfidence, quick, onQuery, onCategory,
   onConfidence, onQuick, onOpen }: {
@@ -59,7 +60,7 @@ export function KnowledgeList({ data, rows, query, category, meaningConfidence, 
         { title: '寓意把握', render: row => <span style={row.meaningConfidence === 'low' ? { color: 'var(--danger)' } : undefined}>{confidence[row.meaningConfidence || ''] || '—'}</span> },
         { title: '关联在售商品', render: row => <span style={row.meaningConfidence === 'low' ? { color: 'var(--danger)' } : undefined}>
           {row.onSaleCount || 0} 个{row.meaningConfidence === 'low' && row.onSaleCount ? ' · 用户端不显示寓意' : ''}</span> },
-        { title: '最后修改', render: row => fmtTime(row.updatedAt) },
+        { title: '最后修改', render: row => dateLabel(row.updatedAt) },
       ]} />
   </div>;
 }

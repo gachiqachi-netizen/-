@@ -86,6 +86,19 @@ class AdminPermissionsTests(unittest.TestCase):
         self.assertTrue(accounts.has_permission(self.db, user, 'view_orders'))
         self.assertFalse(accounts.has_permission(self.db, user, 'edit_products'))
 
+    def test_every_admin_route_has_permission_mapping(self):
+        for method, pattern, _, auth in app.ROUTE_TABLE:
+            if auth != 'admin':
+                continue
+            path = pattern.pattern.strip('^$')
+            path = path.replace('([a-f0-9]{32})', '0' * 32)
+            path = path.replace('([A-Za-z0-9_-]{43})', 'a' * 43)
+            path = path.replace('([A-Za-z0-9_-]+)', 'sample')
+            path = path.replace('(publish|unpublish)', 'publish')
+            with self.subTest(method=method, pattern=pattern.pattern):
+                self.assertIsNotNone(pattern.fullmatch(path))
+                self.assertIsNotNone(accounts.route_permission(method, path))
+
     def test_route_registry_accepts_permission_names(self):
         table = routes.compile_routes([('GET', '/api/admin/demo', lambda *_: (200, {}), 'view_orders')])
         self.assertEqual(table[0][3], 'view_orders')
@@ -108,3 +121,61 @@ class AdminPermissionsTests(unittest.TestCase):
             self.assertEqual(replies[-1], (403, {'error': '你没有这个操作的权限', 'need': '看订单'}))
             handler.admin_user = {'roleId': 'owner'}
             self.assertTrue(handler.admin_can())
+
+
+class ProductPermissionHTTPTests(unittest.TestCase):
+    def setUp(self):
+        import threading
+        from http.server import ThreadingHTTPServer
+        self.temp = tempfile.TemporaryDirectory()
+        self.old_db = app.db
+        app.db = DB(os.path.join(self.temp.name, 'products.db'))
+        app.db.put('beads', 'one', {'name': '原名', 'type': 'bead', 'mat': 'stone',
+                                     'mm': 8, 'price': 10.0, 'priceFen': 1000,
+                                     'status': 'draft', 'images': []})
+        self.server = ThreadingHTTPServer(('127.0.0.1', 0), app.Handler)
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.base = f'http://127.0.0.1:{self.server.server_port}'
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join()
+        app.db.conn.close()
+        app.db = self.old_db
+        self.temp.cleanup()
+
+    def request_as(self, role, data):
+        import json
+        from urllib.request import Request, ProxyHandler, build_opener
+        from urllib.error import HTTPError
+        user, _ = accounts.create_user(app.db, 'test-' + role, role, role, 'test-password')
+        sid = accounts.create_session(app.db, user['id'], 60)
+        request = Request(self.base + '/api/admin/beads/one', data=json.dumps(data).encode(), method='PUT',
+                          headers={'Content-Type': 'application/json', 'Cookie': 'beadloop_admin=' + sid})
+        try:
+            response = build_opener(ProxyHandler({})).open(request, timeout=3)
+        except HTTPError as error:
+            response = error
+        with response:
+            return response.status, json.loads(response.read())
+
+    def test_operator_can_save_name_with_unchanged_price(self):
+        status, body = self.request_as('operator', {'name': '新名', 'type': 'bead', 'mat': 'stone',
+            'mm': 8, 'price': 10.0, 'priceFen': 1000, 'status': 'draft'})
+        self.assertEqual(status, 200)
+        self.assertEqual(body['name'], '新名')
+
+    def test_operator_cannot_change_price(self):
+        status, body = self.request_as('operator', {'name': '原名', 'type': 'bead', 'mat': 'stone',
+            'mm': 8, 'price': 12.0, 'priceFen': 1200, 'status': 'draft'})
+        self.assertEqual(status, 403)
+        self.assertEqual(body['need'], '改价格')
+        self.assertEqual(app.db.get('beads', 'one')['priceFen'], 1000)
+
+    def test_owner_can_change_price(self):
+        status, body = self.request_as('owner', {'name': '原名', 'type': 'bead', 'mat': 'stone',
+            'mm': 8, 'price': 12.0, 'priceFen': 1200, 'status': 'draft'})
+        self.assertEqual(status, 200)
+        self.assertEqual(body['priceFen'], 1200)

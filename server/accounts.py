@@ -4,6 +4,7 @@ import hmac
 import contextvars
 import os
 import re
+import money
 import secrets
 import time
 import uuid
@@ -46,7 +47,13 @@ ROUTE_PERMISSIONS = (
     ("GET", r"/api/admin/banners", "edit_content"),
     ("GET", r"/api/admin/terms", "publish_terms"),
     ("GET", r"/api/admin/accounts", "manage_accounts"),
+    ("POST", r"/api/admin/accounts/bootstrap", "manage_accounts"),
+    ("PUT", r"/api/admin/accounts/me/password", "manage_accounts"),
     ("GET", r"/api/admin/shares", "edit_content"),
+    ("GET", r"/api/admin/articles(?:/[\w-]+)?", "edit_content"),
+    ("POST", r"/api/admin/articles(?:/[\w-]+/(?:publish|unpublish))?", "edit_content"),
+    ("PUT", r"/api/admin/articles/[\w-]+", "edit_content"),
+    ("DELETE", r"/api/admin/articles/[\w-]+", "edit_content"),
     ("POST", r"/api/admin/accounts(?:/[\w-]+(?:/disable|/reset-password)?)?", "manage_accounts"),
     ("PUT", r"/api/admin/accounts/[\w-]+", "manage_accounts"),
     ("POST", r"/api/admin/shares/[\w-]+/take-down", "edit_content"),
@@ -73,9 +80,7 @@ ROUTE_PERMISSIONS = (
 )
 
 
-def route_permission(method, path, data=None):
-    if path == "/api/admin/accounts/bootstrap" or path == "/api/admin/accounts/me/password":
-        return None
+def route_permission(method, path, data=None, db=None):
     if method == "PUT" and re.fullmatch(r"/api/admin/orders/[\w-]+/status", path):
         if isinstance(data, dict) and data.get("to") in ("cancelled", "canceled"):
             return "cancel_orders"
@@ -84,7 +89,18 @@ def route_permission(method, path, data=None):
             return "refund"
     if method == "PUT" and re.fullmatch(r"/api/admin/beads/[\w-]+", path):
         if isinstance(data, dict) and any(key in data for key in ("price", "priceFen")):
-            return "edit_prices"
+            existing = db.get("beads", path.rsplit("/", 1)[-1]) if db is not None else None
+            if existing is None:
+                return "edit_prices"
+            try:
+                old_fen = (money.parse_fen(existing["priceFen"]) if existing.get("priceFen") is not None
+                           else money.yuan_to_fen(existing["price"]))
+                if ("priceFen" in data and money.parse_fen(data["priceFen"]) != old_fen) or (
+                    "price" in data and money.yuan_to_fen(data["price"]) != old_fen
+                ):
+                    return "edit_prices"
+            except (KeyError, ValueError):
+                return "edit_prices"
     return next((perm for verb, pattern, perm in ROUTE_PERMISSIONS
                  if verb == method and re.fullmatch(pattern, path)), None)
 

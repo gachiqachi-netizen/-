@@ -1,10 +1,27 @@
-<view class="home"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
-  <swiper class="banner" autoplay interval="4000" circular indicator-dots indicator-color="#dedbd7" indicator-active-color="#5e5753" wx:if="{{banners.length}}">
-    <swiper-item wx:for="{{banners}}" wx:key="id"><view class="slide" data-i="{{index}}" bindtap="bannerTap"><view class="slide-copy"><text class="badge">{{item.tag}}</text><text class="slide-title">{{item.title}}</text><text class="slide-sub">{{item.sub}}</text><text class="slide-go">{{item.tpl?'去看看':'去设计一条'}} ›</text></view><view class="slide-art" wx:if="{{item.card}}"><image class="thumb-image" wx:if="{{item.card.coverUrl}}" src="{{item.card.coverUrl}}" mode="aspectFit"/><bracelet-thumb wx:else style="position:absolute;left:0;top:0;width:100%;height:100%" beads="{{item.card.beads}}" catalog="{{catalog}}"/></view></view></swiper-item>
+<view class="home">
+  <view class="brand"><c-wordmark tone="text" size="nav" /></view>
+  <swiper class="banner" autoplay interval="4000" circular indicator-dots wx:if="{{banners.length}}">
+    <swiper-item wx:for="{{banners}}" wx:key="id">
+      <view class="slide" data-i="{{index}}" bindtap="bannerTap">
+        <view class="slide-copy"><text class="slide-title">{{item.title}}</text><text class="slide-sub">{{item.keywords}}</text><text class="slide-go">去看看 ›</text></view>
+        <view class="slide-art" wx:if="{{item.card}}"><image class="thumb-image" wx:if="{{item.coverUrl || item.card.coverUrl}}" src="{{item.coverUrl || item.card.coverUrl}}" mode="aspectFit"/><bracelet-thumb wx:else beads="{{item.card.beads}}" catalog="{{catalog}}" /></view>
+      </view>
+    </swiper-item>
   </swiper>
-  <view class="quick"><view class="quick-item selected" bindtap="start"><view class="quick-icon">⊕</view><text>自己 DIY</text></view><view class="quick-item" bindtap="ai"><view class="quick-icon">✧</view><text>AI 配寓意</text></view><view class="quick-item" bindtap="photo"><view class="quick-icon">▣</view><text>拍照做同款</text></view><view class="quick-item" bindtap="tryLast"><view class="quick-icon">◎</view><text>拍照试戴</text></view></view>
-  <view class="section-head"><text class="heading">热门款</text><text class="wrist-link" bindtap="wrist">{{wristConfirmed?'已按你的 '+wrist+'cm 手围配好':'先按常见的 '+wrist+'cm 配，量一下更准'}} ›</text></view>
-  <view class="error" wx:if="{{error}}">{{error}}</view>
-  <view class="template-grid"><view class="tpl" wx:for="{{templates}}" wx:key="id"><view class="traybox" data-i="{{index}}" bindtap="use"><image class="thumb-image" wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" mode="aspectFill"/><bracelet-thumb wx:else style="position:absolute;left:0;top:0;width:100%;height:100%" beads="{{item.beads}}" catalog="{{catalog}}"/></view><view class="tpl-body"><text class="nm" data-i="{{index}}" bindtap="use">{{item.name}}</text><view class="tags"><text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text></view><view class="foot"><text class="price">¥{{item.price}}</text><text class="spec">{{item.beads.length}} 颗 · {{item.length}}mm</text></view><view class="cardacts"><button class="cardact" data-i="{{index}}" bindtap="tryCard">试戴</button><button class="cardact" data-i="{{index}}" bindtap="use">用这款</button></view></view></view></view>
-  <view wx:if="{{!templates.length && !error}}" class="empty-note">热门款暂不可用。</view>
+  <view class="quick">
+    <view class="quick-item" bindtap="start"><view class="quick-icon"><image src="/assets/icons/bead.svg" /></view><text>自己串</text></view>
+    <view class="quick-item" bindtap="ai"><view class="quick-icon"><image src="/assets/icons/spark.svg" /></view><text>AI 配</text></view>
+    <view class="quick-item" bindtap="photo"><view class="quick-icon"><image src="/assets/icons/camera.svg" /></view><text>拍照做同款</text></view>
+    <view class="quick-item" bindtap="tryLast"><view class="quick-icon"><image src="/assets/icons/hand.svg" /></view><text>试戴</text></view>
+  </view>
+  <view class="section-head"><text class="heading">热门款</text><text class="offline-note" wx:if="{{offline}}">离线数据，联网后更新</text><text class="wrist-link" wx:if="{{!error}}" bindtap="wrist">{{wristConfirmed ? '按你的 ' + wrist + 'cm 手围排好' : '先按常见的 ' + wrist + 'cm 排，量一下更准'}} ›</text></view>
+  <view class="error-state" wx:if="{{error}}"><text>{{error}}</text><text class="retry" bindtap="load">再试一次</text></view>
+  <view class="template-grid" wx:elif="{{templates.length}}">
+    <view class="tpl" wx:for="{{templates}}" wx:key="id" data-i="{{index}}" bindtap="use">
+      <view class="traybox"><image class="thumb-image" wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" mode="aspectFill"/><bracelet-thumb wx:else beads="{{item.beads}}" catalog="{{catalog}}" /></view>
+      <view class="tpl-body"><text class="nm">{{item.name}}</text><text class="meaning">{{item.meaning}}</text><text class="price">¥{{item.price}}</text></view>
+    </view>
+  </view>
+  <view wx:elif="{{!loading}}" class="empty-note">热门款暂不可用。</view>
+  <view class="articles" wx:if="{{homeArticles.length}}"><view class="heading">珠子小知识</view><view class="article-row" wx:for="{{homeArticles}}" wx:key="id" data-i="{{index}}" bindtap="articleTap"><image class="article-image" src="{{item.image}}" mode="aspectFill"/><view class="article-copy"><text class="article-title">{{item.title}}</text><text class="article-summary">{{item.summary}}</text></view><text class="arrow">›</text></view></view>
 </view>

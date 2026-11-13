@@ -71,3 +71,28 @@ class KBStoreTest(unittest.TestCase):
         kb._cache['stamp'] = None
         with self.assertWarnsRegex(RuntimeWarning, '退回读取'):
             self.assertEqual(kb.get('mila')['id'], 'mila')
+
+    def test_data_dir_selects_database_for_snapshot_and_save(self):
+        data_dir = os.path.join(self.temp.name, 'data')
+        os.mkdir(data_dir)
+        target = os.path.join(data_dir, 'data.sqlite3')
+        with sqlite3.connect(target) as conn:
+            migrate.run_migrations(conn, migrate.SQLiteAdapter())
+        with mock.patch.dict(os.environ, {'DATA_DIR': data_dir}):
+            os.environ.pop('DATABASE_PATH', None)
+            self.assertEqual(kb_store._sqlite_path(), target)
+            self.assertEqual(kb_store.snapshot()['beads']['mila']['id'], 'mila')
+            changed = {**kb_store.snapshot()['beads']['mila'], 'name': '数据目录测试'}
+            kb_store.save('mila', changed, '测试', '目录')
+            self.assertEqual(kb_store.snapshot()['beads']['mila']['name'], '数据目录测试')
+        with sqlite3.connect(self.path) as conn:
+            raw = conn.execute("SELECT doc FROM kb_items WHERE id = 'bead:mila'").fetchone()[0]
+        self.assertNotEqual(json.loads(raw)['data']['name'], '数据目录测试')
+
+    def test_stamp_ignores_order_writes_and_changes_on_save(self):
+        before = kb_store.stamp()
+        with sqlite3.connect(self.path) as conn:
+            conn.execute("INSERT INTO orders (id, doc) VALUES (?, ?)", ('test-order', '{}'))
+        self.assertEqual(kb_store.stamp(), before)
+        kb_store.save('mila', {**kb.get('mila'), 'name': '版本变化'}, '测试', '时间')
+        self.assertNotEqual(kb_store.stamp(), before)

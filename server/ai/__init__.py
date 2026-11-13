@@ -81,12 +81,18 @@ DESIGNS_SCHEMA = {
     "additionalProperties": False,
 }
 # 拍照做同款：AI 只认珠子，不做设计（对看图模型要求低，认错了用户在页面上点一下就能换）
+PHOTO_FAILURE_REASONS = ("dark", "blurry", "no_bracelet", "unknown_beads")
+
 PHOTO_SCHEMA = {
     "type": "object",
     "properties": {
         "ok": {"type": "boolean"}, "seen": {"type": "string"},
         "main": {"type": "string"}, "accent": {"type": "string"}, "metal": {"type": "string"},
         "every": {"type": "integer"},
+        "mainConfidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "accentConfidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "metalConfidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "reason": {"type": "string", "enum": list(PHOTO_FAILURE_REASONS)},
     },
     "required": ["ok", "seen", "main", "accent", "metal", "every"],
     "additionalProperties": False,
@@ -179,6 +185,16 @@ def design(beads, text, history, wrist):
     return {"reply": clean(out.get("reply"), 60), "designs": designs, "by": p.name}
 
 
+def _confidence(v):
+    """模型自报的把握 0–1；给不出（缺字段、字符串、越界）就返回 None，不编数字。"""
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        return None
+    v = float(v)
+    if v < 0 or v > 1:
+        return None
+    return v
+
+
 def photo(beads, image):
     """拍照做同款：认出照片里的主珠、配珠、金属点缀各最像料包里哪一颗。排法和颗数由前台按手围算。"""
     p = provider()
@@ -188,18 +204,30 @@ def photo(beads, image):
               f"目录（id|名称尺寸|材质|类型|单价|寓意）：\n{catalog_text(beads)}\n\n"
               "看照片里的手串，回答：ok=照片里有没有手串；main=数量最多的那种珠子在目录里最像的 id（颜色优先，其次材质）；"
               "accent=第二种珠子最像的 id，没有填空字符串；metal=金属隔珠或隔片最像的 id（只能是金属配件），没有填空字符串；"
-              "every=配珠或隔珠大约每几颗出现一次（2-6）；seen=一句 15-30 字的话，说看到的颜色、材质和排法。")
+              "every=配珠或隔珠大约每几颗出现一次（2-6）；seen=一句 15-30 字的话，说看到的颜色、材质和排法。"
+              "mainConfidence/accentConfidence/metalConfidence=你对每个识别结果有多大把握，0 到 1 之间的小数（颜色材质都对、看得清就给 0.8 以上，"
+              "只猜得像就低一些）；accent 或 metal 为空时对应的 confidence 也填空字符串。"
+              "ok 为 false 时回答 reason：照片太暗填 dark、太模糊填 blurry、照片里没有手串填 no_bracelet、手串认不出是哪种珠子填 unknown_beads。")
     out = p.json(prompt, PHOTO_SCHEMA, image=image)
     by_id = {b["id"]: b for b in beads}
     body = {i for i, b in by_id.items() if not b.get("spacer") and b.get("mat") != "metal" and "佛头" not in b["name"]}
     metal = {i for i, b in by_id.items() if b.get("mat") == "metal"}
     main = out.get("main") if out.get("main") in body else ""
-    if out.get("ok") and not main:
-        raise RuntimeError("AI 给的珠子不在料包里")
+    if not out.get("ok"):
+        # ok=false 就是"照片里没有手串"，模型没给合法原因时按原意归为 no_bracelet，不猜暗不猜糊
+        reason = out.get("reason") if out.get("reason") in PHOTO_FAILURE_REASONS else "no_bracelet"
+        return {"ok": False, "reason": reason, "seen": clean(out.get("seen"), 60), "by": p.name}
+    if not main:
+        # 说好了有手串但认不出料包里哪种：整体失败带原因，不再抛错走 502
+        return {"ok": False, "reason": "unknown_beads", "seen": clean(out.get("seen"), 60), "by": p.name}
     accent = out.get("accent") if out.get("accent") in body and out.get("accent") != main else ""
-    return {"ok": bool(out.get("ok")), "seen": clean(out.get("seen"), 60), "main": main, "accent": accent,
-            "metal": out.get("metal") if out.get("metal") in metal else "",
-            "every": max(2, min(6, int(out.get("every") or 4))), "by": p.name}
+    metal_id = out.get("metal") if out.get("metal") in metal else ""
+    return {"ok": True, "seen": clean(out.get("seen"), 60), "main": main, "accent": accent,
+            "metal": metal_id,
+            "every": max(2, min(6, int(out.get("every") or 4))), "by": p.name,
+            "confidence": {"main": _confidence(out.get("mainConfidence")),
+                           "accent": _confidence(out.get("accentConfidence")) if accent else None,
+                           "metal": _confidence(out.get("metalConfidence")) if metal_id else None}}
 
 
 def review(beads, chosen, wrist, fit_ok):

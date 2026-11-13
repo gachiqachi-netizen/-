@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>串个珠 · 改版示意稿（全站白盒）</title>
+<style>
+/* 画布本身的样式（不属于小程序） */
+*{box-sizing:border-box}
+body{margin:0;background:#e9eaec;color:#17181a;font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif}
+header,section,footer{max-width:1660px;margin:0 auto;padding:24px 16px}
+header h1{font-size:24px;margin:8px 0 6px;font-weight:600}
+header p,footer p,footer li{margin:0 0 6px;color:#696c72;max-width:860px;font-size:14px}
+section h2{font-size:19px;margin:0 0 4px;font-weight:600}
+section>p{margin:0;color:#696c72;font-size:14px;max-width:860px}
+.canvas{display:flex;flex-wrap:wrap;gap:36px 28px;margin-top:16px;align-items:flex-start}
+figure{margin:0;width:375px;max-width:calc(100vw - 32px)}
+figcaption{font-size:14px;font-weight:600;margin:0 0 8px}
+figcaption small{font-weight:400;color:#696c72;margin-left:6px}
+.chk{font-size:12px;color:#696c72;margin:8px 2px 0;line-height:1.5}
+
+/* ===== 以下是小程序里的规范，px = rpx ÷ 2 ===== */
+.phone{
+  --bg:#ffffff;--surf:#f4f4f4;--line:#e8e8e8;--t2:#6e6e6e;--t:#111111;--acc:#4a7189;--red:#c2352b;--mask:rgba(0,0,0,.45);
+  --r:0px;--pill:999px;--shadow:0 -4px 16px rgba(0,0,0,.08);
+  --s1:8px;--s2:20px;--s3:32px;
+  width:375px;max-width:100%;height:780px;border-radius:38px;overflow:hidden;position:relative;display:flex;flex-direction:column;
+  background:var(--bg);color:var(--t);font-size:14px;line-height:1.6;box-shadow:0 24px 48px -28px rgba(0,0,0,.45)}
+.phone.tall{height:auto;min-height:780px}
+.nav{height:90px;flex:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:11px;position:relative;font-size:17px;font-weight:600}
+.nav .capsule{position:absolute;right:12px;bottom:8px;width:87px;height:32px;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line)}
+.nav .back{position:absolute;left:14px;bottom:10px;width:24px;height:24px}
+.body{flex:1;overflow:hidden;position:relative}
+.tall .body{overflow:visible}
+.tab{height:80px;flex:none;display:flex;justify-content:space-around;padding-top:9px;font-size:10px;background:#fff;color:var(--t2)}
+.tab div{display:flex;flex-direction:column;align-items:center;gap:3px;width:60px}
+.tab .on{color:var(--t)}
+svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+svg.i.s{width:18px;height:18px}
+
+/* 字：4 档字号、2 档字重 */
+.disp{font-size:28px;line-height:1.25;font-weight:400;letter-spacing:1px}
+.ttl{font-size:17px;line-height:1.25;font-weight:600}
+.cap{font-size:12px;color:var(--t2)}
+.t2{color:var(--t2)}.b{font-weight:600}.acc{color:var(--acc)}.red{color:var(--red)}
+.num{font-variant-numeric:tabular-nums}
+
+/* 布局 */
+.p{padding-left:var(--s2);padding-right:var(--s2)}
+.mt1{margin-top:var(--s1)}.mt2{margin-top:var(--s2)}.mt3{margin-top:var(--s3)}
+.fx{display:flex;align-items:center}.sb{justify-content:space-between}.g1{gap:var(--s1)}.g2{gap:var(--s2)}
+
+/* 1 按钮：主、次、小号、文字链接 */
+.btn{height:52px;border-radius:var(--pill);background:var(--t);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex:1}
+.btn.sec{background:var(--surf);color:var(--t)}
+/* 能点的是圆的：所有按钮、输入条、标签都是胶囊 */
+.btn.sm{height:32px;padding:0 12px;font-weight:400;flex:none;display:inline-flex}
+.btn.off{opacity:.35}
+.go{width:40px;height:40px;border-radius:20px;background:var(--t);color:var(--bg);display:flex;align-items:center;justify-content:center;flex:none}
+.link{display:flex;justify-content:space-between;align-items:center}
+
+/* 2 列表行 */
+.row{min-height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-left:var(--s2);padding:10px var(--s2) 10px 0;border-bottom:1px solid var(--line)}
+.row.last,.row:last-child{border-bottom:0}
+.row .v{text-align:right;color:var(--t)}
+.row .ph{color:var(--t2)}
+
+/* 3 提示 */
+.notice{background:var(--surf);padding:16px var(--s2)}
+.notice.danger{color:var(--red)}
+.box{width:20px;height:20px;background:var(--t);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.box.un{background:var(--bg);box-shadow:inset 0 0 0 20px var(--line)}
+
+/* 4 底部操作栏 */
+.bar{flex:none;background:#fff;box-shadow:var(--shadow);padding:12px var(--s2) 30px;display:flex;align-items:center;gap:var(--s2);position:relative}
+.bar .btn{flex:0 0 60%}
+.bar.full .btn{flex:1}
+
+/* 5 弹层 */
+.mask{position:absolute;inset:0;background:var(--mask)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:var(--r) var(--r) 0 0;box-shadow:var(--shadow);padding:20px 0 30px}
+
+/* 6 文字分段 */
+.tabs{display:flex;gap:20px;padding:0 var(--s2);white-space:nowrap;overflow:hidden}
+.tabs span{color:var(--t2)}.tabs .on{color:var(--t);font-weight:600}
+
+/* 7 输入条 */
+.ask{display:flex;align-items:center;gap:10px;height:52px;padding:0 6px 0 20px;background:var(--surf);border-radius:var(--pill)}
+.ask .go{margin-left:auto}
+
+/* 8 珠子格 */
+.beads{display:grid;grid-template-columns:repeat(5,1fr);gap:14px 0;padding:0 10px}
+.beads>div{display:flex;flex-direction:column;align-items:center;font-size:12px;position:relative;line-height:1.4}
+.beads .dot{position:absolute;top:0;right:12px;width:8px;height:8px;border-radius:4px;background:var(--red)}
+
+/* 10 款式格 */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+.grid>div{background:var(--bg);padding-bottom:14px}
+.grid .n{padding:10px 14px 0}.grid .pr{font-size:12px;color:var(--t2);padding:0 14px}
+
+/* 照片占位（实拍图到位后替换）和骨架 */
+.photo{background:var(--line);color:var(--t2);font-size:11px;letter-spacing:.5px;display:flex;align-items:flex-end;padding:10px 12px;border-radius:var(--r);position:relative;overflow:hidden}
+.sk{background:var(--surf)}
+
+/* 11 状态占位 */
+.state{text-align:center;padding:80px 40px 0}
+.state .btn{width:160px;flex:none;margin:24px auto 0}
+
+/* 12 订单进度 */
+.prog{display:grid;grid-template-columns:repeat(4,1fr);padding:0 var(--s2)}
+.prog div{color:var(--t2)}.prog .done{color:var(--t)}.prog .now{color:var(--acc);font-weight:600}
+.prog small{display:block;font-size:12px;font-weight:400;color:var(--t2);min-height:19px}
+
+.thumb{width:72px;height:72px;flex:none}
+.bubble{background:var(--surf);padding:10px 14px;border-radius:var(--r);max-width:260px;margin-left:auto}
+.slider{height:2px;background:var(--line);flex:1;position:relative}
+.slider i{position:absolute;top:-9px;width:20px;height:20px;border-radius:10px;background:var(--t)}
+.sw{width:44px;height:26px;border-radius:13px;background:var(--t);position:relative;flex:none}
+.sw i{position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:10px;background:#fff}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+ <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+ <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+ <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+ <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+ <symbol id="i-undo" viewBox="0 0 24 24"><path d="M8 5 4 9l4 4"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+ <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+ <symbol id="i-image" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14"/><path d="m4 16 5-5 4 4 3-3 4 4"/></symbol>
+ <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12"/><path d="M5 16V4h10"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+ <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 3 20h18z"/><path d="M12 10v5M12 17.5v.5"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+ <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 12v8h14v-8"/></symbol>
+ <symbol id="i-layers" viewBox="0 0 24 24"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3M4 17c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+ <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></symbol>
+ <symbol id="i-more" viewBox="0 0 24 24"><path d="M6 12h.01M12 12h.01M18 12h.01"/></symbol>
+ <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></symbol>
+ <symbol id="t-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4z"/></symbol>
+ <symbol id="t-diy" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="5" r="2"/></symbol>
+ <symbol id="t-ai" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+ <symbol id="t-mine" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+</svg>
+
+<header>
+<h1>串个珠 · 改版示意稿</h1>
+<p><b>全站用“白盒”，首页也是。</b>纯白、黑字、细分隔线、没有卡片、通栏黑色胶囊按钮、贴边的照片，层级只靠字号。规范见 <code>03-design-system.md</code>，逐页说明见 <code>04-page-redesign.md</code>（稿号一一对应）。每屏 375 宽，1px = 2rpx。</p>
+<p>灰色块是<b>实拍图占位</b>，上面写了该放什么照片；珠子是程序画的过渡效果，正式版优先用实拍抠图。每屏下面一行是按 03 第 10 节检查清单数出来的颜色和按钮。</p>
+<p>全站 8 个颜色、4 档字号、2 档字重、2 档圆角（能点的是胶囊或圆形，只用来看的是直角）、1 种阴影、12 个组件。只在浏览器里看过，没有在微信开发者工具里验证。</p>
+</header>
+
+<section>
+<h2>一、首页</h2>
+<p>一张贴边的上身图、一句话、一个输入条。心情快捷词是叠戴方向留下来的功能，样子是白盒的小号次按钮。</p>
+<div class="canvas">
+
+<figure><figcaption>01 首页<small>第一屏</small></figcaption>
+<div class="phone" data-nav="串个珠" data-tab="0">
+ <div class="body">
+  <div class="photo" style="height:300px">实拍：手腕上叠戴三条 · 淡人色系</div>
+  <div class="p" style="padding-top:22px">
+   <div class="disp">今天，想串一条<br>什么样的？</div>
+   <div class="ask" style="margin-top:16px"><span class="t2">说一句心愿，比如“想要清冷一点”</span><span class="go"><svg class="i s"><use href="#i-arrow-right"/></svg></span></div>
+   <div class="fx g1" style="margin-top:10px"><span class="btn sec sm">清冷一点</span><span class="btn sec sm">去去班味</span><span class="btn sec sm">考前定心</span><span class="btn sec sm">送闺蜜</span></div>
+   <div class="link" style="margin-top:22px"><span>或者，从一颗珠子开始自己串</span><svg class="i s"><use href="#i-chevron-right"/></svg></div>
+  </div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1（发送键）、次小号 4｜文字链接 1</p></figure>
+
+<figure><figcaption>02 首页<small>往下滑：大家在串</small></figcaption>
+<div class="phone" data-nav="串个珠" data-tab="0">
+ <div class="body">
+  <div class="row"><span>接着串上次那条<span class="cap" style="margin-left:8px">海盐汽水 · 12 颗</span></span><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  <div class="row last"><span>拍一张照片，做同款</span><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  <div class="p ttl" style="padding-top:28px;padding-bottom:12px">大家在串</div>
+  <div class="grid">
+   <div><div class="photo" style="height:150px">实拍：海盐汽水</div><div class="n">海盐汽水</div><div class="pr">¥128</div></div>
+   <div><div class="photo" style="height:150px">实拍：白月光</div><div class="n">白月光</div><div class="pr">¥98</div></div>
+   <div><div class="photo" style="height:150px">实拍：初恋粉</div><div class="n">初恋粉</div><div class="pr">¥88</div></div>
+   <div><div class="photo" style="height:150px">实拍：周一不慌</div><div class="n">周一不慌</div><div class="pr">¥76</div></div>
+  </div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：无。款式格贴边，两格之间只有一条细缝</p></figure>
+
+<figure><figcaption>03 首页<small>加载中</small></figcaption>
+<div class="phone" data-nav="串个珠" data-tab="0">
+ <div class="body">
+  <div class="sk" style="height:300px"></div>
+  <div class="p" style="padding-top:22px">
+   <div class="disp">今天，想串一条<br>什么样的？</div>
+   <div class="ask" style="margin-top:16px"><span class="t2">说一句心愿，比如“想要清冷一点”</span><span class="go"><svg class="i s"><use href="#i-arrow-right"/></svg></span></div>
+   <div class="fx g1" style="margin-top:10px"><div class="sk" style="height:32px;width:84px;border-radius:var(--pill)"></div><div class="sk" style="height:32px;width:84px;border-radius:var(--pill)"></div><div class="sk" style="height:32px;width:84px;border-radius:var(--pill)"></div></div>
+   <div class="link" style="margin-top:22px"><span>或者，从一颗珠子开始自己串</span><svg class="i s"><use href="#i-chevron-right"/></svg></div>
+  </div>
+ </div>
+</div>
+<p class="chk">加载态：骨架块占住图片和快捷词的位置，标题、输入条和入口照常可用。颜色：白、黑、灰（3）｜按钮：主 1</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>二、自己串</h2>
+<p>工作台：开始一条新的，或者接着改旧的。</p>
+<div class="canvas">
+
+<figure><figcaption>04 自己串<small>工作台</small></figcaption>
+<div class="phone" data-nav="自己串" data-tab="1">
+ <div class="body">
+  <div class="p" style="padding-top:12px">
+   <div class="disp">串一条<br>自己的</div>
+   <div class="fx mt2"><div class="btn">从空白开始</div></div>
+   <div class="link mt2"><span>拍一张照片，做同款</span><svg class="i s"><use href="#i-chevron-right"/></svg></div>
+  </div>
+  <div class="fx sb p mt3"><span class="ttl">我的作品</span><span class="cap">3 条 · 已同步</span></div>
+  <div class="mt1">
+   <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="sea" data-s="72"></svg><div><div>海盐汽水</div><div class="cap">18 颗 · 手围 15cm</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+   <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="moon" data-s="72"></svg><div><div>白月光</div><div class="cap">22 颗 · 手围 15cm</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+   <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="pink" data-s="72"></svg><div><div>初恋粉</div><div class="cap">24 颗 · 手围 15cm · 只在这台手机上</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  </div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1｜文字链接 1</p></figure>
+
+<figure><figcaption>05 自己串<small>空：还没有作品</small></figcaption>
+<div class="phone" data-nav="自己串" data-tab="1">
+ <div class="body">
+  <div class="p" style="padding-top:12px">
+   <div class="disp">串一条<br>自己的</div>
+   <div class="fx mt2"><div class="btn">从空白开始</div></div>
+   <div class="link mt2"><span>拍一张照片，做同款</span><svg class="i s"><use href="#i-chevron-right"/></svg></div>
+  </div>
+  <div class="p mt3"><span class="ttl">我的作品</span></div>
+  <div class="p mt1 t2">还没有作品。串好的手串会自动存在这里。</div>
+ </div>
+</div>
+<p class="chk">空状态：区块里只写一句话，不放插画，也不再放第二个按钮。颜色 3｜按钮：主 1</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>三、编辑器</h2>
+<p>舞台直接放在白底上。尺寸只用一行字说明；选中的分段加粗，不用底色。有安全提示的珠子在格子右上角有一个红点。</p>
+<div class="canvas">
+
+<figure><figcaption>06 编辑器</figcaption>
+<div class="phone" data-nav="海盐汽水" data-back="1">
+ <div class="body">
+  <div style="position:relative"><svg class="ring" data-b="sea" data-tilt=".42" data-cx="187" data-cy="150" data-R="112" width="375" height="290" style="display:block"></svg>
+   <div class="fx g2" style="position:absolute;right:20px;top:4px"><svg class="i"><use href="#i-undo"/></svg><svg class="i"><use href="#i-layers"/></svg><svg class="i"><use href="#i-more"/></svg></div></div>
+  <div class="fx sb p"><span>18 颗 · 152mm</span><span>手围 15cm · 合适</span></div>
+  <div style="height:1px;background:var(--line);margin:16px 0 18px"></div>
+  <div class="fx sb" style="padding-right:20px"><div class="tabs"><span class="on">水晶</span><span>玉石</span><span>木</span><span>菩提</span><span>配件</span></div><svg class="i s"><use href="#i-filter"/></svg></div>
+  <div class="beads mt2" style="margin-top:16px">
+   <div><svg data-one="aqua"></svg>海蓝宝<span class="cap">8mm · ¥6</span></div>
+   <div><svg data-one="clear"></svg>白水晶<span class="cap">8mm · ¥2</span></div>
+   <div><svg data-one="moon"></svg>月光石<span class="cap">8mm · ¥8</span></div>
+   <div><svg data-one="rose"></svg>粉晶<span class="cap">8mm · ¥3</span></div>
+   <div><svg data-one="amethyst"></svg>紫水晶<span class="cap">8mm · ¥4</span></div>
+   <div><svg data-one="strawberry"></svg>草莓晶<span class="cap">8mm · ¥6</span></div>
+   <div><svg data-one="citrine"></svg>黄水晶<span class="cap">8mm · ¥5</span></div>
+   <div><svg data-one="prehnite"></svg>葡萄石<span class="cap">8mm · ¥7</span></div>
+   <div><svg data-one="cinnabar"></svg>朱砂<span class="cap">8mm · ¥6</span></div>
+   <div><svg data-one="obsidian"></svg>黑曜石<span class="cap">8mm · ¥3</span></div>
+  </div>
+ </div>
+ <div class="bar full"><div class="btn">串好了 · ¥128</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1</p></figure>
+
+<figure><figcaption>07 编辑器<small>叠戴预览</small></figcaption>
+<div class="phone" data-nav="海盐汽水" data-back="1">
+ <div class="body">
+  <div style="position:relative;height:290px">
+   <svg class="ring" data-b="moon" data-tilt=".38" data-cx="187" data-cy="92" data-R="98" data-fade=".45" width="375" height="290" style="position:absolute;inset:0"></svg>
+   <svg class="ring" data-b="sea" data-tilt=".38" data-cx="187" data-cy="142" data-R="104" width="375" height="290" style="position:absolute;inset:0"></svg>
+   <svg class="ring" data-b="pink" data-tilt=".38" data-cx="187" data-cy="194" data-R="98" data-fade=".45" data-small="1" width="375" height="290" style="position:absolute;inset:0"></svg>
+   <div class="cap" style="position:absolute;left:20px;top:6px">叠戴预览 · 上下两条是你的作品</div>
+   <div class="fx g2" style="position:absolute;right:20px;top:4px"><svg class="i"><use href="#i-undo"/></svg><svg class="i"><use href="#i-layers"/></svg><svg class="i"><use href="#i-more"/></svg></div>
+  </div>
+  <div class="fx sb p"><span>18 颗 · 152mm</span><span>手围 15cm · 合适</span></div>
+  <div style="height:1px;background:var(--line);margin:16px 0 18px"></div>
+  <div class="fx sb" style="padding-right:20px"><div class="tabs"><span class="on">水晶</span><span>玉石</span><span>木</span><span>菩提</span><span>配件</span></div><svg class="i s"><use href="#i-filter"/></svg></div>
+  <div class="beads" style="margin-top:16px">
+   <div><svg data-one="aqua"></svg>海蓝宝<span class="cap">8mm · ¥6</span></div>
+   <div><svg data-one="clear"></svg>白水晶<span class="cap">8mm · ¥2</span></div>
+   <div><svg data-one="moon"></svg>月光石<span class="cap">8mm · ¥8</span></div>
+   <div><svg data-one="rose"></svg>粉晶<span class="cap">8mm · ¥3</span></div>
+   <div><svg data-one="amethyst"></svg>紫水晶<span class="cap">8mm · ¥4</span></div>
+   <div><svg data-one="strawberry"></svg>草莓晶<span class="cap">8mm · ¥6</span></div>
+   <div><svg data-one="citrine"></svg>黄水晶<span class="cap">8mm · ¥5</span></div>
+   <div><svg data-one="prehnite"></svg>葡萄石<span class="cap">8mm · ¥7</span></div>
+   <div><svg data-one="sandal"></svg>小叶紫檀<span class="cap">8mm · ¥3</span></div>
+   <div><svg data-one="obsidian"></svg>黑曜石<span class="cap">8mm · ¥3</span></div>
+  </div>
+ </div>
+ <div class="bar full"><div class="btn">串好了 · ¥128</div></div>
+</div>
+<p class="chk">点右上角的叠戴图标打开。颜色：白、黑、灰（3）｜按钮：主 1</p></figure>
+
+<figure><figcaption>08 编辑器<small>选中一颗</small></figcaption>
+<div class="phone" data-nav="海盐汽水" data-back="1">
+ <div class="body">
+  <div style="position:relative"><svg class="ring" data-b="sea" data-pick="9" data-tilt=".42" data-cx="187" data-cy="150" data-R="112" width="375" height="290" style="display:block"></svg></div>
+  <div class="fx sb p"><span class="t2">第 5 颗</span><span class="fx g2" style="white-space:nowrap"><span>前移</span><span>后移</span><span>删除</span><span class="b">好了</span></span></div>
+  <div style="height:1px;background:var(--line);margin:16px 0 18px"></div>
+  <div class="fx sb" style="padding-right:20px"><div class="tabs"><span class="on">水晶</span><span>玉石</span><span>木</span><span>菩提</span><span>配件</span></div><svg class="i s"><use href="#i-filter"/></svg></div>
+  <div class="beads" style="margin-top:16px">
+   <div><svg data-one="aqua"></svg>海蓝宝<span class="cap">8mm · ¥6</span></div>
+   <div><svg data-one="clear"></svg>白水晶<span class="cap">8mm · ¥2</span></div>
+   <div><svg data-one="moon"></svg>月光石<span class="cap">8mm · ¥8</span></div>
+   <div><svg data-one="rose"></svg>粉晶<span class="cap">8mm · ¥3</span></div>
+   <div><svg data-one="amethyst"></svg>紫水晶<span class="cap">8mm · ¥4</span></div>
+   <div><svg data-one="strawberry"></svg>草莓晶<span class="cap">8mm · ¥6</span></div>
+   <div><svg data-one="citrine"></svg>黄水晶<span class="cap">8mm · ¥5</span></div>
+   <div><svg data-one="prehnite"></svg>葡萄石<span class="cap">8mm · ¥7</span></div>
+   <div><svg data-one="sandal"></svg>小叶紫檀<span class="cap">8mm · ¥3</span></div>
+   <div><svg data-one="obsidian"></svg>黑曜石<span class="cap">8mm · ¥3</span></div>
+  </div>
+ </div>
+ <div class="bar full"><div class="btn">串好了 · ¥128</div></div>
+</div>
+<p class="chk">选中的那颗放大，其余变淡；尺寸那一行换成四个文字动作。颜色 3｜按钮：主 1</p></figure>
+
+<figure><figcaption>09 编辑器<small>珠子详情弹层（长按珠子）</small></figcaption>
+<div class="phone" data-nav="一点红" data-back="1">
+ <div class="body">
+  <svg class="ring" data-b="red" data-tilt=".42" data-cx="187" data-cy="150" data-R="112" width="375" height="290" style="display:block"></svg>
+  <div class="fx sb p"><span>18 颗 · 152mm</span><span>手围 15cm · 合适</span></div>
+ </div>
+ <div class="bar full"><div class="btn">串好了 · ¥59</div></div>
+ <div class="mask"></div>
+ <div class="sheet">
+  <div class="fx sb p"><span class="ttl">朱砂 8mm</span><svg class="i"><use href="#i-close"/></svg></div>
+  <div style="text-align:center;margin-top:8px"><svg data-one="cinnabar" data-s="150"></svg></div>
+  <div class="p"><div>红得很正，一两颗就够点题。</div><div class="cap">¥6 / 颗 · 压制朱砂</div></div>
+  <div class="notice danger mt2"><div class="fx g1 b">材料安全提示</div><div style="margin-top:4px">朱砂成分是硫化汞，不宜长期贴身佩戴，不可入口，粉末压制品尤其注意。</div></div>
+  <div class="fx p mt2"><div class="btn">加一颗</div></div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰、警示红（4）｜按钮：主 1（弹层打开时，页面上的主按钮在遮罩后面）</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>四、手串详情</h2>
+<p>所有手串共用这一页：热门款、AI 方案、我的作品、编辑器“串好了”都先到这里。</p>
+<div class="canvas">
+
+<figure><figcaption>10 手串详情</figcaption>
+<div class="phone" data-nav="" data-back="1">
+ <div class="body">
+  <div class="photo" style="height:205px">实拍：海盐汽水戴在手腕上（没有封面时显示珠子排出的圆环）</div>
+  <div class="p" style="padding-top:20px">
+   <div class="ttl">海盐汽水</div>
+   <div class="mt1">海蓝宝的蓝很淡，像没睡醒的海。隔几颗放一颗白水晶，透一口气。</div>
+   <div class="cap mt1">18 颗 · 总长 152mm · 手围 15cm，长度合适</div>
+   <div class="fx g2 mt2"><span>试戴</span><span>分享</span><span>改一改</span></div>
+  </div>
+  <div class="p mt3 cap">用了这些</div>
+  <div class="row"><div class="fx g1"><svg data-one="aqua" data-s="36"></svg>海蓝宝 8mm</div><span class="v num">× 12</span></div>
+  <div class="row"><div class="fx g1"><svg data-one="clear" data-s="36"></svg>白水晶 8mm</div><span class="v num">× 4</span></div>
+  <div class="row last"><div class="fx g1"><svg data-one="moon" data-s="36"></svg>月光石 8mm</div><span class="v num">× 2</span></div>
+ </div>
+ <div class="bar"><div><div class="ttl num">¥128</div><div class="cap">含手工</div></div><div class="btn">去下单</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1｜文字链接 3</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>五、AI 配</h2>
+<div class="canvas">
+
+<figure><figcaption>11 AI 配<small>输入</small></figcaption>
+<div class="phone" data-nav="AI 配" data-tab="2">
+ <div class="body">
+  <div class="p" style="padding-top:12px">
+   <div class="disp">说一句，<br>我来配</div>
+   <div class="t2 mt1">心情、送谁、预算，想到什么说什么。</div>
+   <div class="fx g1 mt2" style="flex-wrap:wrap"><span class="btn sec sm">想要清冷一点</span><span class="btn sec sm">送闺蜜，生日</span><span class="btn sec sm">考前定心，100 以内</span></div>
+  </div>
+  <div style="position:absolute;left:20px;right:20px;bottom:16px">
+   <div class="cap" style="margin-bottom:10px">先按常见的 15cm 手围配，点这里改</div>
+   <div class="ask"><span class="t2">说一句心愿</span><span class="go"><svg class="i s"><use href="#i-arrow-right"/></svg></span></div>
+  </div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1（发送键）、次小号 3</p></figure>
+
+<figure><figcaption>12 AI 配<small>结果</small></figcaption>
+<div class="phone" data-nav="AI 配" data-tab="2">
+ <div class="body">
+  <div class="p" style="padding-top:8px"><div class="bubble">想要清冷一点，上班也能戴</div>
+   <div class="mt2">配了三条，都是冷色、不抢眼的。</div></div>
+  <div class="grid mt2" style="margin-top:14px">
+   <div><svg class="ring" data-b="far" data-s="187" style="display:block"></svg><div class="n">见远山</div><div class="pr">¥118 · 葡萄石、白水晶</div></div>
+   <div><svg class="ring" data-b="moon" data-s="187" style="display:block"></svg><div class="n">白月光</div><div class="pr">¥98 · 月光石、白水晶</div></div>
+  </div>
+  <div class="p cap" style="margin-top:10px">还有 1 条，往左滑</div>
+  <div style="position:absolute;left:20px;right:20px;bottom:16px">
+   <div class="fx g1" style="margin-bottom:10px"><span class="btn sec sm">再便宜一点</span><span class="btn sec sm">换成粉色系</span></div>
+   <div class="ask"><span class="t2">接着说</span><span class="go"><svg class="i s"><use href="#i-arrow-right"/></svg></span></div>
+  </div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1、次小号 2。方案用款式格，点整格进手串详情</p></figure>
+
+<figure><figcaption>13 AI 配<small>错误：没配出来</small></figcaption>
+<div class="phone" data-nav="AI 配" data-tab="2">
+ <div class="body">
+  <div class="p" style="padding-top:8px"><div class="bubble">想要清冷一点，上班也能戴</div></div>
+  <div style="position:absolute;left:20px;right:20px;bottom:16px">
+   <div class="ask"><span>想要清冷一点，上班也能戴</span><span class="go"><svg class="i s"><use href="#i-arrow-right"/></svg></span></div>
+   <div class="cap red" style="margin-top:8px">这次没配出来。你的话还在，点发送再试一次。</div>
+  </div>
+ </div>
+</div>
+<p class="chk">错误态：红字只出现在出错的那一行，原话留在输入条里。颜色：白、黑、灰、警示红（4）｜按钮：主 1</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>六、拍照做同款、试戴、手围</h2>
+<div class="canvas">
+
+<figure><figcaption>14 拍照做同款<small>开始</small></figcaption>
+<div class="phone" data-nav="拍照做同款" data-back="1">
+ <div class="body">
+  <div class="p" style="padding-top:12px">
+   <div class="disp">拍一条，<br>做同款</div>
+   <div class="mt3">1　把整条手串拍清楚</div>
+   <div class="mt1">2　我们认出每种珠子</div>
+   <div class="mt1">3　你来核对，再放到托盘上改</div>
+   <div class="cap mt3">照片会发送到识别服务，只用于这一次识别。</div>
+  </div>
+ </div>
+ <div class="bar full"><div class="btn">拍照或从相册选</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1</p></figure>
+
+<figure><figcaption>15 拍照做同款<small>结果</small></figcaption>
+<div class="phone" data-nav="拍照做同款" data-back="1">
+ <div class="body">
+  <div class="photo" style="height:220px">你拍的照片</div>
+  <div class="p mt2"><div class="ttl">认出了 3 种珠子</div><div class="cap">不对的点一下换掉。</div></div>
+  <div class="mt1">
+   <div class="row"><div class="fx g1"><svg data-one="aqua" data-s="36"></svg><div>海蓝宝 8mm<div class="cap">主珠</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+   <div class="row"><div class="fx g1"><svg data-one="clear" data-s="36"></svg><div>白水晶 6mm<div class="cap">配珠</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+   <div class="row"><div class="fx g1"><svg data-one="silver" data-s="36"></svg><div>银色隔珠 4mm<div class="cap">每 3 颗隔一颗</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  </div>
+ </div>
+ <div class="bar"><div><div class="ttl num">¥118</div><div class="cap">估算，以托盘为准</div></div><div class="btn">放到托盘上改</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1</p></figure>
+
+<figure><figcaption>16 试戴</figcaption>
+<div class="phone" data-nav="试戴" data-back="1">
+ <div class="body">
+  <div class="tabs" style="padding-top:6px;padding-bottom:14px"><span class="on">照片</span><span>模型手</span><span>实时 AR（实验）</span></div>
+  <div class="photo" style="height:330px">你的手腕照片
+   <svg class="ring" data-b="sea" data-tilt=".3" data-cx="187" data-cy="170" data-R="86" width="375" height="330" style="position:absolute;inset:0"></svg></div>
+  <div class="row"><span>大小</span><div class="slider"><i style="left:55%"></i></div></div>
+  <div class="row"><span>旋转</span><div class="slider"><i style="left:30%"></i></div></div>
+  <div class="row last"><span>保存试戴照</span><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+ </div>
+ <div class="bar"><div><div class="ttl num">¥128</div><div class="cap">示意效果，以实物为准</div></div><div class="btn">去下单</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1。滑杆用原生 slider，颜色取主字色</p></figure>
+
+<figure><figcaption>17 手围</figcaption>
+<div class="phone" data-nav="手围" data-back="1">
+ <div class="body">
+  <div class="p" style="padding-top:28px;text-align:center">
+   <div class="fx" style="justify-content:center;gap:28px"><span class="btn sec sm" style="width:44px;height:44px;padding:0;border-radius:22px"><svg class="i s"><use href="#i-minus"/></svg></span><span class="disp num">15.0 <span style="font-size:14px">cm</span></span><span class="btn sec sm" style="width:44px;height:44px;padding:0;border-radius:22px"><svg class="i s"><use href="#i-plus"/></svg></span></div>
+   <div class="fx g1 mt2" style="justify-content:center"><span class="btn sec sm">14</span><span class="btn sec sm">15</span><span class="btn sec sm">16</span><span class="btn sec sm">17</span></div>
+  </div>
+  <div class="p mt3"><div class="ttl">怎么量</div>
+   <div class="mt1">1　拿一根软尺或细绳，绕手腕最细的地方一圈</div>
+   <div class="mt1">2　贴着皮肤，不勒也不松</div>
+   <div class="mt1">3　读出一圈的长度，就是手围</div>
+   <div class="cap mt2">串好的总长会比手围长一点，戴着不勒。</div></div>
+ </div>
+ <div class="bar full"><div class="btn">就按 15.0cm</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1、次小号 6</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>七、确认订单</h2>
+<p>表单就是列表行。安全提示是全页唯一的红色。支付没开通，如实写。</p>
+<div class="canvas">
+
+<figure><figcaption>18 确认订单<small>含安全提示勾选（整页）</small></figcaption>
+<div class="phone tall" data-nav="确认订单" data-back="1">
+ <div class="body">
+  <div class="row"><span>收货人</span><span class="v ph">名字</span></div>
+  <div class="row"><span>手机号</span><span class="v ph">11 位手机号</span></div>
+  <div class="row"><span>地址</span><span class="v ph">省市区、街道、门牌号</span></div>
+  <div class="row last"><span>用微信地址</span><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+
+  <div class="p mt3 cap">手串</div>
+  <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="red" data-s="72"></svg><div><div>一点红</div><div class="cap">18 颗 · 总长 152mm</div><div class="cap">手围 15cm，长度合适</div></div></div><span class="cap">改手围</span></div>
+  <div class="row"><div class="fx g1"><svg data-one="clear" data-s="36"></svg>白水晶 8mm</div><span class="v num">¥2.00 × 16</span></div>
+  <div class="row last"><div class="fx g1"><svg data-one="cinnabar" data-s="36"></svg>朱砂 8mm</div><span class="v num">¥6.00 × 2</span></div>
+
+  <div class="notice danger"><div class="fx g1 b">材料安全提示</div>
+   <div style="margin-top:4px">朱砂 8mm：朱砂成分是硫化汞，不宜长期贴身佩戴，不可入口，粉末压制品尤其注意。</div>
+   <div class="fx g1" style="margin-top:12px;color:var(--t)"><span class="box"><svg class="i s"><use href="#i-check"/></svg></span>我已阅读以上安全提示</div></div>
+
+  <div class="row" style="margin-top:12px"><span>穿绳</span><span class="fx g2"><span class="b">弹力线</span><span class="t2">编织绳 +¥5</span></span></div>
+  <div class="row last"><span>礼盒 +¥10</span><span class="sw" style="background:var(--line)"><i style="right:auto;left:3px"></i></span></div>
+
+  <div class="p mt3 cap">金额</div>
+  <div class="row"><span>珠子</span><span class="v num">¥44.00</span></div>
+  <div class="row"><span>手工串制</span><span class="v num">¥15.00</span></div>
+  <div class="row"><span>运费<span class="cap" style="margin-left:8px">满 ¥99 包邮</span></span><span class="v num">¥8.00</span></div>
+  <div class="row last"><span class="b">合计</span><span class="v ttl num">¥67.00</span></div>
+  <div class="p cap" style="padding-top:8px;padding-bottom:24px">在线支付还没开通。提交后订单会停在“待支付”，现在不用付款，也不会开始制作。</div>
+ </div>
+ <div class="bar"><div><div class="ttl num">¥67.00</div><div class="cap">合计，含运费</div></div><div class="btn">提交订单</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰、警示红（4）｜按钮：主 1｜文字链接 2（用微信地址、改手围）。勾选框和开关用主字色，不占颜色</p></figure>
+
+<figure><figcaption>19 确认订单<small>改价弹层</small></figcaption>
+<div class="phone" data-nav="确认订单" data-back="1">
+ <div class="body">
+  <div class="row"><span>收货人</span><span class="v ph">名字</span></div>
+  <div class="row"><span>手机号</span><span class="v ph">11 位手机号</span></div>
+  <div class="row last"><span>地址</span><span class="v ph">省市区、街道、门牌号</span></div>
+ </div>
+ <div class="bar"><div><div class="ttl num">¥67.00</div><div class="cap">合计，含运费</div></div><div class="btn off">先确认新价格</div></div>
+ <div class="mask"></div>
+ <div class="sheet">
+  <div class="p"><div class="ttl">价格有变化</div><div class="t2 mt1">你挑的时候到现在，有材料调了价。</div></div>
+  <div class="mt1">
+   <div class="row"><span>朱砂 8mm × 2</span><span class="v num"><span class="t2">¥6.00 →</span> ¥7.00</span></div>
+   <div class="row last"><span class="b">合计</span><span class="v num"><span class="t2">¥67.00 →</span> <span class="ttl">¥69.00</span></span></div>
+  </div>
+  <div class="p mt1"><div class="fx"><div class="btn">按新价格继续</div></div><div class="fx mt1"><div class="btn sec">先不下单</div></div></div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1、次 1。点遮罩不关闭，必须二选一</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>八、订单</h2>
+<p>一个主状态、一句说明、一行四步进度、一个主按钮。状态只用文字颜色：轮到用户处理的用灰蓝，其余用黑。</p>
+<div class="canvas">
+
+<figure><figcaption>20 订单详情<small>待支付</small></figcaption>
+<div class="phone" data-nav="订单详情" data-back="1">
+ <div class="body">
+  <div class="p" style="padding-top:12px"><div class="disp acc">待支付</div>
+   <div class="mt1">在线支付还没开通，订单已为你保留。开通后会第一时间通知你。</div></div>
+  <div class="prog mt2"><div class="now">下单<small>11-12 10:20</small></div><div>制作<small></small></div><div>运输<small></small></div><div>签收<small></small></div></div>
+  <div class="mt2">
+   <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="red" data-s="72"></svg><div><div>一点红</div><div class="cap">18 颗 · 手围 15cm</div></div></div><span class="v b num">¥67.00</span></div>
+   <div class="row"><span>收货</span><span class="v">小周　138****0000<div class="cap">杭州市西湖区示例路 1 号</div></span></div>
+   <div class="row"><span>订单号</span><span class="v fx g1 num">CGZ20261112001<span class="btn sec sm">复制</span></span></div>
+   <div class="row last"><span>更多</span><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  </div>
+ </div>
+ <div class="bar full"><div class="btn sec">取消订单</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰、灰蓝（4）｜按钮：次 1、次小号 1。没有“去支付”，没有对勾</p></figure>
+
+<figure><figcaption>21 订单详情<small>运输中</small></figcaption>
+<div class="phone" data-nav="订单详情" data-back="1">
+ <div class="body">
+  <div class="p" style="padding-top:12px"><div class="disp">运输中</div>
+   <div class="mt1">快件已到达杭州分拨中心</div></div>
+  <div class="prog mt2"><div class="done">下单<small>11-12</small></div><div class="done">制作<small>11-13</small></div><div class="now">运输<small>11-14</small></div><div>签收<small></small></div></div>
+  <div class="p mt3 cap">物流</div>
+  <div class="row"><span>顺丰　<span class="num">SF1234567890123</span></span><span class="btn sec sm">复制</span></div>
+  <div class="p" style="padding-top:14px">
+   <div class="b">快件已到达杭州分拨中心<div class="cap" style="font-weight:400">11-15 08:12</div></div>
+   <div class="mt1 t2">快件已从上海发出<div class="cap">11-14 21:40</div></div>
+   <div class="mt1 t2">顺丰已收件<div class="cap">11-14 16:05</div></div>
+   <div class="link mt2"><span>查看全部</span><svg class="i s"><use href="#i-chevron-right"/></svg></div>
+  </div>
+  <div class="mt2"><div class="row last"><div class="fx g1"><svg class="ring thumb" data-b="red" data-s="72"></svg><div><div>一点红</div><div class="cap">18 颗 · 手围 15cm</div></div></div><span class="v b num">¥67.00</span></div></div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰、灰蓝（进度当前步）（4）｜按钮：次小号 1。物流常驻，不用再点开</p></figure>
+
+<figure><figcaption>22 订单详情<small>已签收</small></figcaption>
+<div class="phone" data-nav="订单详情" data-back="1">
+ <div class="body">
+  <div class="p" style="padding-top:12px"><div class="disp acc">已签收</div>
+   <div class="mt1">快递显示已签收，确认没问题就点确认收货。</div></div>
+  <div class="prog mt2"><div class="done">下单<small>11-12</small></div><div class="done">制作<small>11-13</small></div><div class="done">运输<small>11-14</small></div><div class="now">签收<small>11-16</small></div></div>
+  <div class="p mt3 cap">物流</div>
+  <div class="row"><span>顺丰　<span class="num">SF1234567890123</span></span><span class="btn sec sm">复制</span></div>
+  <div class="p" style="padding-top:14px"><div class="b">已签收，签收人：本人<div class="cap" style="font-weight:400">11-16 14:30</div></div>
+   <div class="link mt2"><span>查看全部</span><svg class="i s"><use href="#i-chevron-right"/></svg></div></div>
+  <div class="mt2">
+   <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="red" data-s="72"></svg><div><div>一点红</div><div class="cap">18 颗 · 手围 15cm</div></div></div><span class="v b num">¥67.00</span></div>
+   <div class="row last"><span>更多<span class="cap" style="margin-left:8px">申请售后、联系客服</span></span><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  </div>
+ </div>
+ <div class="bar full"><div class="btn">确认收货</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰、灰蓝（4）｜按钮：主 1、次小号 1</p></figure>
+
+<figure><figcaption>23 订单详情<small>售后中</small></figcaption>
+<div class="phone" data-nav="订单详情" data-back="1">
+ <div class="body">
+  <div class="p" style="padding-top:12px"><div class="disp">售后处理中</div>
+   <div class="mt1">已收到你的申请，有进展会通知你。</div></div>
+  <div class="p mt3 cap">售后进度</div>
+  <div class="row"><span class="t2">已提交</span><span class="v cap">11-17 09:40</span></div>
+  <div class="row"><span class="b">审核中</span><span class="v cap">11-17 10:02</span></div>
+  <div class="row"><span class="t2">处理中</span><span class="v cap"></span></div>
+  <div class="row last"><span class="t2">已完成</span><span class="v cap"></span></div>
+  <div class="p mt3 cap">你的申请</div>
+  <div class="row"><span>原因</span><span class="v">珠子和图不一样</span></div>
+  <div class="row"><span>说明</span><span class="v">有两颗颜色偏深</span></div>
+  <div class="row last"><span>照片</span><span class="v">2 张</span></div>
+ </div>
+ <div class="bar full"><div class="btn sec">联系客服</div></div>
+</div>
+<p class="chk">售后时不显示四步进度。颜色：白、黑、灰（3）｜按钮：次 1</p></figure>
+
+<figure><figcaption>24 我的订单</figcaption>
+<div class="phone" data-nav="我的订单" data-back="1">
+ <div class="body">
+  <div class="tabs" style="padding-top:6px;padding-bottom:10px"><span class="on">全部</span><span>待支付</span><span>制作中</span><span>待收货</span><span>售后</span></div>
+  <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="red" data-s="72"></svg><div><div>一点红</div><div class="acc b">已签收</div><div class="cap num">¥67.00</div></div></div><span class="btn sec sm">确认收货</span></div>
+  <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="sea" data-s="72"></svg><div><div>海盐汽水</div><div>运输中</div><div class="cap num">¥128.00</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="moon" data-s="72"></svg><div><div>白月光</div><div class="acc b">待支付</div><div class="cap num">¥98.00</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  <div class="row"><div class="fx g1"><svg class="ring thumb" data-b="pink" data-s="72"></svg><div><div>初恋粉</div><div class="t2">已完成</div><div class="cap num">¥88.00</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  <div class="row last"><div class="fx g1"><svg class="ring thumb" data-b="mon" data-s="72"></svg><div><div>周一不慌</div><div class="t2">已取消</div><div class="cap num">¥76.00</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰、灰蓝（4）｜按钮：次小号 1。状态只有文字颜色，没有胶囊标签</p></figure>
+
+<figure><figcaption>25 我的订单<small>空</small></figcaption>
+<div class="phone" data-nav="我的订单" data-back="1">
+ <div class="body">
+  <div class="tabs" style="padding-top:6px;padding-bottom:10px"><span>全部</span><span>待支付</span><span>制作中</span><span class="on">待收货</span><span>售后</span></div>
+  <div class="state"><div class="disp">还没有订单</div><div class="t2 mt1">串好一条，下单后会出现在这里。</div><div class="btn sec">去串一条</div></div>
+ </div>
+</div>
+<p class="chk">空状态。颜色：白、黑、灰（3）｜按钮：次 1</p></figure>
+
+<figure><figcaption>26 申请售后</figcaption>
+<div class="phone" data-nav="申请售后" data-back="1">
+ <div class="body">
+  <div class="row last"><div class="fx g1"><svg class="ring thumb" data-b="red" data-s="72"></svg><div><div>一点红</div><div class="cap">11-16 签收</div></div></div><span class="v b num">¥67.00</span></div>
+  <div class="p mt2 cap">遇到了什么问题</div>
+  <div class="row"><span>收到有破损</span><span></span></div>
+  <div class="row"><span class="b">珠子和图不一样</span><svg class="i s"><use href="#i-check"/></svg></div>
+  <div class="row"><span>尺寸不合适</span><span></span></div>
+  <div class="row last"><span>其他</span><span></span></div>
+  <div class="p mt2 cap">补充说明（选填）</div>
+  <div class="row last"><span class="t2">说说具体情况，方便我们更快处理</span></div>
+  <div class="p mt1 cap">照片（选填，最多 3 张）</div>
+  <div class="fx g1 p mt1"><div class="photo" style="width:72px;height:72px;padding:0"></div><div class="sk fx" style="width:72px;height:72px;justify-content:center"><svg class="i"><use href="#i-plus"/></svg></div></div>
+ </div>
+ <div class="bar full"><div class="btn">提交申请</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1。原因用列表行单选，选中的一行加粗并打勾</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>九、我的、分享</h2>
+<div class="canvas">
+
+<figure><figcaption>27 我的</figcaption>
+<div class="phone" data-nav="我的" data-tab="3">
+ <div class="body">
+  <div class="fx g2 p" style="padding-top:12px;padding-bottom:20px"><div class="sk" style="width:64px;height:64px;border-radius:32px"></div><div><div class="ttl">给自己起个名字</div><div class="cap">头像和名字都可以不填</div></div></div>
+  <div class="row"><span>我的订单</span><span class="fx g1 t2">全部<svg class="i s"><use href="#i-chevron-right"/></svg></span></div>
+  <div class="row last"><div class="fx g1"><svg class="ring thumb" data-b="red" data-s="72"></svg><div><div>一点红</div><div>运输中</div><div class="cap">快件已到达杭州分拨中心</div></div></div><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  <div class="mt3">
+   <div class="row"><span>我的手围</span><span class="fx g1">15cm<svg class="i s t2"><use href="#i-chevron-right"/></svg></span></div>
+   <div class="row"><span>我的作品</span><span class="fx g1">3 条<svg class="i s t2"><use href="#i-chevron-right"/></svg></span></div>
+   <div class="row"><span>联系客服</span><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+   <div class="row last"><span>隐私与说明</span><svg class="i s t2"><use href="#i-chevron-right"/></svg></div>
+  </div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：无。全页没有“登录”二字</p></figure>
+
+<figure><figcaption>28 分享</figcaption>
+<div class="phone" data-nav="分享" data-back="1">
+ <div class="body">
+  <div class="photo" style="height:400px;margin:0 48px;flex-direction:column;align-items:flex-start;justify-content:flex-end">
+   <svg class="ring" data-b="sea" data-tilt=".42" data-cx="140" data-cy="150" data-R="92" width="279" height="300" style="position:absolute;left:0;top:10px"></svg>
+   <div class="ttl" style="color:var(--t);letter-spacing:0">海盐汽水</div><div>我串的 · 18 颗</div></div>
+  <div class="p cap" style="text-align:center;margin-top:12px">海报预览。正式版用上身图或珠子排出的圆环。</div>
+  <div class="p mt2"><div class="fx"><div class="btn">发给微信好友</div></div><div class="fx mt1"><div class="btn sec">保存图片</div></div>
+   <div class="link mt2"><span>看看朋友打开是什么样</span><svg class="i s"><use href="#i-chevron-right"/></svg></div></div>
+ </div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1、次 1｜文字链接 1</p></figure>
+
+<figure><figcaption>29 分享落地页<small>朋友点开看到的</small></figcaption>
+<div class="phone" data-nav="串个珠" data-back="1">
+ <div class="body">
+  <div class="photo" style="height:300px">实拍或圆环：朋友串的这一条</div>
+  <div class="p" style="padding-top:20px">
+   <div class="cap">朋友串的</div>
+   <div class="ttl">海盐汽水</div>
+   <div class="mt1">海蓝宝的蓝很淡，像没睡醒的海。</div>
+   <div class="cap mt1">已按 15cm 手围重新排好，共 18 颗 · 点这里改手围</div>
+  </div>
+  <div class="mt2">
+   <div class="row"><div class="fx g1"><svg data-one="aqua" data-s="36"></svg><div>海蓝宝<div class="cap">寓意清澈、宽广</div></div></div><span class="v num">× 12</span></div>
+   <div class="row last"><div class="fx g1"><svg data-one="clear" data-s="36"></svg><div>白水晶<div class="cap">寓意纯净、明澈</div></div></div><span class="v num">× 4</span></div>
+  </div>
+  <div class="link p mt1"><span>改成我的</span><svg class="i s"><use href="#i-chevron-right"/></svg></div>
+ </div>
+ <div class="bar"><div><div class="ttl num">¥128</div><div class="cap">含手工</div></div><div class="btn">买同款</div></div>
+</div>
+<p class="chk">颜色：白、黑、灰（3）｜按钮：主 1｜文字链接 1</p></figure>
+
+</div>
+</section>
+
+<section>
+<h2>十、通用状态</h2>
+<p>空状态见 05、25。加载用骨架块占位，不转圈；错误说清原因和下一步。</p>
+<div class="canvas">
+
+<figure><figcaption>30 加载中<small>以订单详情为例</small></figcaption>
+<div class="phone" data-nav="订单详情" data-back="1">
+ <div class="body">
+  <div class="p" style="padding-top:16px"><div class="sk" style="height:32px;width:120px"></div><div class="sk" style="height:14px;width:260px;margin-top:14px"></div></div>
+  <div class="fx sb p mt3"><div class="sk" style="height:14px;width:40px"></div><div class="sk" style="height:14px;width:40px"></div><div class="sk" style="height:14px;width:40px"></div><div class="sk" style="height:14px;width:40px"></div></div>
+  <div class="mt3">
+   <div class="row"><div class="fx g1"><div class="sk thumb"></div><div><div class="sk" style="height:14px;width:90px"></div><div class="sk" style="height:12px;width:130px;margin-top:10px"></div></div></div></div>
+   <div class="row"><div class="sk" style="height:14px;width:60px"></div><div class="sk" style="height:14px;width:150px"></div></div>
+   <div class="row last"><div class="sk" style="height:14px;width:60px"></div><div class="sk" style="height:14px;width:120px"></div></div>
+  </div>
+ </div>
+</div>
+<p class="chk">骨架块用卡面色，位置和真实内容一致，不闪。颜色：白、灰（2）</p></figure>
+
+<figure><figcaption>31 错误<small>没连上网</small></figcaption>
+<div class="phone" data-nav="订单详情" data-back="1">
+ <div class="body">
+  <div class="state"><div class="disp">没连上</div><div class="t2 mt1">订单没加载出来。检查一下网络，再试一次。</div><div class="btn sec">再试一次</div></div>
+ </div>
+</div>
+<p class="chk">整页错误不用红色大字；红色只给具体出错的那一行（见 13）。颜色：白、黑、灰（3）｜按钮：次 1</p></figure>
+
+</div>
+</section>
+
+<footer>
+<p>怎么看这份稿子：</p>
+<ul>
+<li>灰色块换成实拍图之前，首页和详情页会显得空，这是预期内的；没有实拍图，任何方向都不好看（00 第 4 节）。</li>
+<li>导航栏和 tabBar 是微信原生的，稿子里只是示意；胶囊按钮的位置留空了。</li>
+<li>稿子里的订单号、运单号、地址、时间都是示例。</li>
+<li>没有画的屏：实时 AR、筛选弹层、手串设置弹层、提交确认弹层、取消原因弹层，布局见 04 对应小节，都用同一个弹层组件。</li>
+</ul>
+</footer>
+
+<script>
+// 珠子示意（沿用 directions-v2.html 的画法）：基色、暗部、内部透光、边缘反光、高光。正式版用实拍抠图。
+var M={
+ aqua:['#eef9fc','#b7e1ec','#5c9db3',.6],clear:['#ffffff','#eef1f5','#aeb8c6',.8],
+ moon:['#fbfcfe','#e6eaf2','#9fabc0',.65],rose:['#fde7ea','#f1bcc6','#c47f8e',.55],
+ amethyst:['#ece0fa','#b293de','#5f3e96',.5],strawberry:['#fde2e4','#eda2ab','#ad5562',.5],
+ citrine:['#fff4d3','#f3cd75','#b4842b',.55],prehnite:['#f1f8e6','#cfe3b0','#86a86a',.55],
+ cinnabar:['#f08a72','#c8402c','#7a1c12',.12],obsidian:['#8a8a98','#33333d','#0b0b10',.15],
+ sandal:['#c97a5c','#8a3b28','#3d110b',0],silver:['#ffffff','#d5d8de','#8a8f98',.2]};
+// 示例手串
+function rep(a,n){var o=[];for(var i=0;i<n;i++)o.push(a[i%a.length]);return o}
+var B={
+ sea:rep(['aqua','aqua','clear','aqua','moon','aqua','aqua','clear','aqua'],18),
+ moon:rep(['moon','clear'],22),
+ pink:rep(['rose','rose','strawberry','rose'],24),
+ red:rep(['clear','clear','clear','clear','cinnabar','clear','clear','clear','clear'],18),
+ far:rep(['prehnite','prehnite','clear'],18),
+ mon:rep(['citrine','clear','clear'],18)};
+var uid=0,NS='http://www.w3.org/2000/svg';
+function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e}
+function bead(svg,cx,cy,r,k,o){
+ o=o||{};var m=M[k],id='g'+(uid++),d=el('defs',{});
+ d.innerHTML='<radialGradient id="'+id+'a" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="'+m[0]+'"/><stop offset=".5" stop-color="'+m[1]+'"/><stop offset="1" stop-color="'+m[2]+'"/></radialGradient>'+
+ '<radialGradient id="'+id+'b" cx="64%" cy="74%" r="42%"><stop offset="0" stop-color="#fff" stop-opacity="'+m[3]+'"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>'+
+ '<radialGradient id="'+id+'c" cx="50%" cy="50%" r="50%"><stop offset=".82" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".35"/></radialGradient>';
+ svg.appendChild(d);
+ var g=el('g',{opacity:o.fade||1});
+ g.innerHTML=(o.shadow===false?'':'<ellipse cx="'+cx+'" cy="'+(cy+r*.95)+'" rx="'+r*.75+'" ry="'+r*.2+'" fill="#000" opacity=".1"/>')+
+ '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'a)"/>'+
+ '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'b)"/>'+
+ '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#'+id+'c)"/>'+
+ '<ellipse cx="'+(cx-r*.34)+'" cy="'+(cy-r*.4)+'" rx="'+r*.26+'" ry="'+r*.14+'" fill="#fff" opacity=".92" transform="rotate(-32 '+(cx-r*.34)+' '+(cy-r*.4)+')"/>'+
+ '<circle cx="'+(cx-r*.12)+'" cy="'+(cy-r*.55)+'" r="'+r*.05+'" fill="#fff" opacity=".9"/>';
+ svg.appendChild(g);
+}
+// 手串：data-s 给边长时画成正圆的缩略图；否则按 data-cx/cy/R/tilt 画斜放的大图。后面的珠子小一点、淡一点。
+document.querySelectorAll('svg.ring').forEach(function(svg){
+ var ds=svg.dataset,s=+ds.s||0;
+ if(s){svg.setAttribute('width',s);svg.setAttribute('height',s)}
+ var w=+svg.getAttribute('width'),h=+svg.getAttribute('height');
+ var list=B[ds.b],n=list.length,cx=s?s/2:+ds.cx,cy=s?s/2:+ds.cy,R=s?s*.36:+ds.r,t=s?1:+ds.tilt,fade=+ds.fade||1,pick=ds.pick===undefined?-1:+ds.pick;
+ svg.setAttribute('viewBox','0 0 '+w+' '+h);
+ var br=R*Math.sin(Math.PI/n)*(ds.small?.95:1.02);
+ svg.appendChild(el('ellipse',{cx:cx,cy:cy,rx:R,ry:R*t,fill:'none',stroke:'rgba(60,60,70,.18)','stroke-width':s?.8:1.2,opacity:fade}));
+ var items=list.map(function(k,i){var a=i/n*Math.PI*2+Math.PI/2.3;return{k:k,i:i,x:cx+R*Math.cos(a),y:cy+R*t*Math.sin(a),z:s?0:Math.sin(a)}});
+ items.sort(function(a,b){return a.z-b.z}).forEach(function(p){
+  var sc=.86+.14*(p.z+1)/2,f=fade*(.82+.18*(p.z+1)/2);
+  if(pick>=0){if(p.i===pick){sc*=1.3;f=1}else f*=.4}
+  bead(svg,p.x,p.y,br*sc,p.k,{fade:f,shadow:false})});
+});
+// 单颗珠子：默认 54，data-s 可改
+document.querySelectorAll('svg[data-one]').forEach(function(svg){
+ var s=+svg.dataset.s||54;svg.setAttribute('width',s);svg.setAttribute('height',s);svg.setAttribute('viewBox','0 0 54 54');svg.style.flex='none';
+ bead(svg,27,25,21,svg.dataset.one,{})});
+// 导航栏和 tabBar（微信原生，示意）
+var TABS=[['t-home','首页'],['t-diy','自己串'],['t-ai','AI 配'],['t-mine','我的']];
+document.querySelectorAll('.phone').forEach(function(p){
+ var nav=document.createElement('div');nav.className='nav';
+ nav.innerHTML=(p.dataset.back?'<svg class="i back"><use href="#i-chevron-left"/></svg>':'')+p.dataset.nav+'<span class="capsule"></span>';
+ p.insertBefore(nav,p.firstChild);
+ if(p.dataset.tab!==undefined){var t=document.createElement('div');t.className='tab';
+  t.innerHTML=TABS.map(function(x,i){return '<div'+(i==p.dataset.tab?' class="on"':'')+'><svg class="i"><use href="#'+x[0]+'"/></svg>'+x[1]+'</div>'}).join('');
+  var m=p.querySelector('.mask');p.insertBefore(t,m||null)}
+});
+</script>
+</body>
+</html>

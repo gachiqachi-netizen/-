@@ -60,6 +60,18 @@
         "shared/shared",
         "order-detail/order-detail"
       ]
+    },
+    {
+      "root": "kit",
+      "pages": [
+        "icons/index",
+        "wordmark/index",
+        "bead/index",
+        "basic/index",
+        "bracelet/index",
+        "layer/index",
+        "composer/index"
+      ]
     }
   ]
 }

@@ -1,3 +1,8 @@
 {
-  "navigationBarTitleText": "我的作品"
+  "navigationBarTitleText": "我的作品",
+  "usingComponents": {
+    "c-design-row": "/components/design-row/index",
+    "c-sheet": "/components/sheet/index",
+    "c-toast": "/components/toast/index"
+  }
 }

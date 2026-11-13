@@ -85,6 +85,9 @@ class AdminRoleTests(unittest.TestCase):
         for name, perms, scope in [("", [], "all"), ("a" * 21, [], "all"), ("自定义", [], "all"),
                                    ("错权限", ["unknown"], "all"), ("错范围", [], "team")]:
             self.assertEqual(self.create(name, perms, scope)[0], 400)
+        role = next(r for r in app.db.list("admin_roles") if r["name"] == "自定义")
+        self.assertEqual(self.request("/api/admin/roles/" + role["id"], "PUT",
+                                      {"permissions": ["unknown"]}, self.owner_cookie)[0], 400)
 
     def test_role_in_use_cannot_be_deleted(self):
         role = self.create()[1]["role"]
@@ -96,6 +99,7 @@ class AdminRoleTests(unittest.TestCase):
         code, body, _ = self.request("/api/admin/me", cookie=self.owner_cookie)
         self.assertEqual(code, 200); self.assertEqual(body["permissions"], list(accounts.PERMISSIONS))
         self.assertEqual(body["roleName"], "负责人")
+        custom = self.create()[1]["role"]
         for role_id in ("operator", "maker"):
             name = "user-" + role_id
             code, created, _ = self.request("/api/admin/accounts", "POST",
@@ -108,6 +112,8 @@ class AdminRoleTests(unittest.TestCase):
             code, _, _ = self.request("/api/admin/roles", "POST",
                                       {"name": "不许", "permissions": [], "dataScope": "all"}, cookie)
             self.assertEqual(code, 403)
+            self.assertEqual(self.request("/api/admin/roles/" + custom["id"], "PUT", {"name": "不许"}, cookie)[0], 403)
+            self.assertEqual(self.request("/api/admin/roles/" + custom["id"], "DELETE", cookie=cookie)[0], 403)
             code, body, _ = self.request("/api/admin/me", cookie=cookie)
             self.assertEqual(code, 200); self.assertEqual(body["permissions"], list(accounts.ROLE_PERMISSIONS[role_id]))
             self.assertEqual(body["permissionNames"], [accounts.PERMISSIONS[p] for p in body["permissions"]])

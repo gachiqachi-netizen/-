@@ -1,0 +1,48 @@
+<view class="c-composer">
+  <!-- 快捷回复（稿 24 上方一排 chip，超出可横滑） -->
+  <scroll-view class="c-composer__chips" scroll-x enhanced show-scrollbar="{{false}}" wx:if="{{chips.length}}">
+    <view class="c-composer__chip c-chip" wx:for="{{chips}}" wx:key="index" data-text="{{item}}" bindtap="onChip">{{item}}</view>
+  </scroll-view>
+
+  <!-- 按住说话的面板（稿 22）：输入区整体换成波形 -->
+  <view class="c-composer__voice" wx:if="{{speaking}}">
+    <view class="c-composer__wave">
+      <view class="c-composer__bar" wx:for="{{[1, 2, 3, 4, 5, 6]}}" wx:key="*this" style="animation-delay: {{index * 90}}ms"></view>
+    </view>
+    <view class="c-composer__hint">{{willCancel ? '松开取消' : '松开发送，上滑取消'}}</view>
+    <view class="c-composer__send-big">
+      <image class="c-composer__send-big-icon" src="/assets/icons/mic.svg" />
+      <text>松开 发送</text>
+    </view>
+  </view>
+
+  <!-- 输入框大框：圆角 40rpx、浅灰底（稿 21/24） -->
+  <view class="c-composer__box" wx:else>
+    <textarea
+      class="c-composer__input"
+      value="{{draft}}"
+      placeholder="{{placeholder}}"
+      auto-height
+      maxlength="-1"
+      cursor-spacing="16"
+      hold-keyboard
+      bindinput="onInput"
+    />
+    <view class="c-composer__tools">
+      <view class="c-composer__left">
+        <view class="c-composer__round" wx:if="{{photo}}" hover-class="is-off" hover-stay-time="100" bindtap="onPlus">
+          <image class="c-composer__icon" src="/assets/icons/plus.svg" />
+        </view>
+        <view class="c-composer__tag" wx:if="{{tag}}" bindtap="onTag">{{tag}}</view>
+      </view>
+      <view class="c-composer__right">
+        <view class="c-composer__round c-composer__round--dark {{sending ? 'is-off' : ''}}" wx:if="{{hasText}}" hover-class="is-off" hover-stay-time="100" bindtap="onSend">
+          <image class="c-composer__icon" src="/assets/icons/up-on.svg" />
+        </view>
+        <view class="c-composer__round" wx:elif="{{voice}}" bindtouchstart="onVoiceStart" bindtouchmove="onVoiceMove" bindtouchend="onVoiceEnd" bindtouchcancel="onVoiceEnd">
+          <image class="c-composer__icon" src="/assets/icons/mic.svg" />
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,4 +1,19 @@
-<view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+<view class="edit-page">
+  <view wx:if="{{loading}}" class="form-card state">正在取回地址…</view>
+  <view wx:elif="{{error && !person && id}}" class="form-card state">{{error}}<text class="retry" data-id="{{id}}" bindtap="retryLoad">再试一次</text></view>
+  <view wx:else class="form-card">
+    <view id="row-person" class="form-row"><text class="label">收货人</text><input value="{{person}}" placeholder="名字" data-field="person" bindinput="input"/></view>
+    <view wx:if="{{errors.person}}" class="field-error">{{errors.person}}</view>
+    <view id="row-phone" class="form-row"><text class="label">手机号</text><input type="number" maxlength="11" value="{{phone}}" placeholder="11 位手机号" data-field="phone" bindinput="input"/></view>
+    <view wx:if="{{errors.phone}}" class="field-error">{{errors.phone}}</view>
+    <picker mode="region" value="{{region}}" bindchange="chooseRegion"><view id="row-region" class="form-row"><text class="label">所在地区</text><text class="region {{regionText?'':'placeholder'}}">{{regionText||'选择省市区'}}</text><text class="arrow">›</text></view></picker>
+    <view wx:if="{{errors.region}}" class="field-error">{{errors.region}}</view>
+    <view id="row-detail" class="form-row"><text class="label">详细地址</text><input value="{{detail}}" placeholder="街道、门牌号" data-field="detail" bindinput="input"/></view>
+    <view wx:if="{{errors.detail}}" class="field-error">{{errors.detail}}</view>
+  </view>
+  <view wx:if="{{!orderNo}}" class="form-card"><view class="form-row"><text>设为默认</text><switch checked="{{isDefault}}" bindchange="toggleDefault"/></view><view wx:if="{{id}}" class="form-row delete" bindtap="remove">删除这个地址</view></view>
+  <view wx:if="{{orderNo}}" class="form-card"><view class="form-row" bindtap="openAddressBook">从我的地址里选 <text class="arrow">›</text></view><view class="form-row" bindtap="importWechat">用微信地址 <text class="arrow">›</text></view><view class="hint">发货后不能在这里改，请联系客服。</view></view>
+  <view wx:if="{{error && (person || !id)}}" class="error">{{error}}</view>
+  <c-bar><button class="c-btn" disabled="{{saving||deleting||loading}}" bindtap="save">{{saving?'正在保存……':'保存'}}</button></c-bar>
+  <c-toast />
 </view>

@@ -1,13 +1,11 @@
-<view class="share-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
-  <view wx:if="{{loading}}" class="sub">正在生成分享卡片…</view>
-  <view wx:if="{{!preview && design}}">
-    <view class="snapshot-stage"><bracelet3d id="share3d" beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}" bind:rendered="snapshotReady" bind:unavailable="snapshotUnavailable"/></view><canvas canvas-id="shareCard" class="share-card" style="width:{{width}}px;height:{{height}}px"></canvas>
-    <view class="sub notice">图片是搭配示意，颜色和尺寸以实物为准。分享给好友后，对方可以查看并做同款。</view>
-    <button class="text-button" bindtap="preview">看看朋友打开是什么样 ›</button>
-    <view class="error" wx:if="{{shareError}}">{{shareError}}</view>
-    <button wx:if="{{!shareId}}" class="share-action" loading="{{shareBusy}}" bindtap="prepareShare">准备分享到微信</button><button wx:else class="share-action" open-type="share">分享给微信好友</button>
-    <view class="bottom"><view class="sum"><view class="price">¥{{price}}</view><view class="tiny">预计商品价 · 含手工费</view></view><button class="ghost" bindtap="saveCard" loading="{{saveBusy}}" disabled="{{!ready||saveBusy}}">保存图片</button><button class="primary" bindtap="order">去下单</button></view>
+<view class="share-page">
+  <view wx:if="{{loading}}" class="skeleton">正在生成分享海报…</view>
+  <view wx:if="{{design}}">
+    <view class="snapshot-stage"><bracelet3d id="share3d" beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}" bind:rendered="snapshotReady" bind:unavailable="snapshotUnavailable"/></view>
+    <canvas canvas-id="shareCard" class="share-card" style="width:{{width}}px;height:{{height}}px"></canvas>
+    <view wx:if="{{albumDenied}}" class="permission" bindtap="openAlbumSettings">没有相册权限，去设置打开 ›</view>
+    <view wx:if="{{shareError}}" class="error">{{shareError}}</view>
+    <view wx:if="{{error}}" class="error">{{error}}</view>
+    <view class="bottom"><button wx:if="{{!shareId}}" class="secondary" loading="{{shareBusy}}" bindtap="prepareShare">准备分享</button><button wx:else class="secondary" open-type="share">发给朋友</button><button class="primary" bindtap="saveCard" loading="{{saveBusy}}" disabled="{{!ready||saveBusy}}">保存图片</button></view>
   </view>
-  <view wx:if="{{preview && design}}" class="preview-page"><view class="preview-label">好友预览</view><view class="card"><view class="title">{{design.name}}</view><view class="sub">手围 {{design.wrist}}cm · {{design.beads.length}} 颗 · 示意预览</view><view class="preview-ring"><bracelet3d beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}"/></view><view class="sub">{{meaning}}</view><view class="error" wx:if="{{missing}}">部分材料当前不可用，使用同款后请检查材料。</view></view><button class="ghost block" bindtap="use">改成我的</button><button class="primary block" bindtap="buySame">买同款</button><button class="ghost block" bindtap="closePreview">返回分享</button></view>
-  <view class="error" wx:if="{{error}}">{{error}}</view>
 </view>

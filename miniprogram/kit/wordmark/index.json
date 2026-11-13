@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "预览 · 字标",
-  "usingComponents": {}
+  "usingComponents": {
+    "wordmark": "/components/wordmark/index"
+  }
 }

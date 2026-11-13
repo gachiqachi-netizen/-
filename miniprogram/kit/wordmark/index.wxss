@@ -1,1 +1,5 @@
 .kit{padding:32rpx}
+.row{margin-bottom:48rpx}
+.label{margin-bottom:16rpx;font-size:24rpx}
+.line{display:flex;flex-direction:column;gap:32rpx;padding:32rpx}
+.line.dark{background:var(--c-text)}

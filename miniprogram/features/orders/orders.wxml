@@ -1,4 +1,77 @@
-<view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+<view class="orders-page">
+  <scroll-view class="tabs" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="tab {{tab === item.key ? 'on' : ''}}" wx:for="{{tabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchTab">
+      {{item.label}}<text wx:if="{{counts[item.key]}}" class="tab-n">{{counts[item.key]}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 加载中：行骨架 -->
+  <view class="cards{{fade ? ' fade-on' : ''}}" wx:if="{{loading && !rows.length && !error}}">
+    <view class="card skeleton-card" wx:for="{{[1, 2, 3]}}" wx:key="*this">
+      <view class="sk sk-line w40"></view>
+      <view class="sk-row">
+        <view class="sk sk-thumb"></view>
+        <view class="sk-col">
+          <view class="sk sk-line w80"></view>
+          <view class="sk sk-line w50"></view>
+        </view>
+      </view>
+      <view class="sk sk-line w30 right"></view>
+    </view>
+  </view>
+
+  <!-- 加载失败 -->
+  <view class="card error-card" wx:elif="{{error && !rows.length}}">
+    <view class="error-text">{{error}}</view>
+    <view class="error-actions">
+      <button class="btn-secondary" bindtap="retry">重试</button>
+      <button class="btn-primary" wx:if="{{!loggedIn}}" bindtap="goLogin">去登录</button>
+    </view>
+  </view>
+
+  <!-- 空 -->
+  <view class="card empty-card" wx:elif="{{!rows.length}}">
+    <view class="empty-title">还没有订单</view>
+    <view class="empty-sub">串好一条，下单后会出现在这里</view>
+    <button class="btn-primary empty-btn" bindtap="goDiy">去串一条</button>
+  </view>
+  <view class="card empty-card" wx:elif="{{!visibleRows().length}}">
+    <view class="empty-sub">这里没有订单</view>
+  </view>
+
+  <!-- 订单卡片：编号+状态 → 商品行 → 实付 → 按钮靠右 -->
+  <view class="cards{{fade ? ' fade-on' : ''}}" wx:else>
+    <view class="card order-card" wx:for="{{visibleRows()}}" wx:key="no" data-no="{{item.no}}" bindtap="viewDetail">
+      <view class="oc-head">
+        <text class="oc-no">{{item.no}}</text>
+        <text class="oc-status st-{{item.tone}}">{{item.statusLabel}}</text>
+      </view>
+      <view class="oc-goods">
+        <view class="oc-thumb">
+          <bracelet-thumb beads="{{item.beads}}" catalog="{{catalog}}" />
+        </view>
+        <view class="oc-body">
+          <view class="oc-name">{{item.name}}</view>
+          <view class="oc-meaning" wx:if="{{item.keywords.length}}">{{item.keywords.join(' · ')}}</view>
+          <view class="oc-spec">{{item.count}} 颗 · 手围 {{item.wrist}}cm</view>
+        </view>
+      </view>
+      <view class="oc-amount">实付 <text class="oc-price">{{item.payableYuan}}</text></view>
+      <view class="oc-actions">
+        <button
+          wx:if="{{tab === 'after_sale' && item.afterSaleStatus === 'returning'}}"
+          class="btn-primary btn-sm"
+          data-no="{{item.no}}"
+          catchtap="fillReturn"
+        >填写单号</button>
+        <button
+          wx:if="{{item.action}}"
+          class="btn-primary btn-sm{{busyNo === item.no ? ' busy' : ''}}"
+          data-no="{{item.no}}"
+          data-code="{{item.action.code}}"
+          catchtap="runAction"
+        >{{busyNo === item.no ? '处理中…' : item.action.label}}</button>
+      </view>
+    </view>
+  </view>
 </view>

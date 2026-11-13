@@ -230,7 +230,7 @@ def design_response(result, beads, wrist):
         message = '为你配了三条，先看第一条。'
     else:
         message = model_message or '为你配了三条，先看第一条。'
-    return {'message': message, 'plans': output,
+    return {'message': message, 'plans': output, 'designs': recipes[:3], 'reply': message,
             'quickReplies': ['换一组珠子', '看看别的风格', '再调一下预算']}
 
 

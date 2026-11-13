@@ -28,6 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import ai  # noqa: E402
+import ai_logs  # noqa: E402
 import kb  # noqa: E402
 import plans  # noqa: E402
 import status  # noqa: E402
@@ -56,6 +57,7 @@ if os.environ.get("DATABASE_URL"):
 else:
     db = DB(os.environ.get("DATABASE_PATH") or os.path.join(DATA_DIR, "data.sqlite3"))
 pricing.attach(db)
+ai_logs.attach(db)
 user_api.cleanup_sessions(db)
 
 def session_cleanup_loop():

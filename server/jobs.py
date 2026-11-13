@@ -28,10 +28,19 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="串个珠定时任务")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("auto-complete", help="签收 7 天、没有售后的订单自动确认收货")
+    sub.add_parser("purge-ai-logs", help="按保留期限清理 AI 对话记录（AI_LOGS_RETENTION_DAYS，默认 30 天）")
+    sub.add_parser("stats-daily", help="汇总今天的珠子被串次数、搭配次数（按天幂等）")
     args = parser.parse_args(argv)
     if args.command == "auto-complete":
         done = commerce.auto_complete_delivered(open_db())
         print(f"自动完成 {len(done)} 单" + (f"：{', '.join(done)}" if done else ""))
+    elif args.command == "purge-ai-logs":
+        import ai_logs
+        print(f"清理 AI 对话记录 {ai_logs.purge(open_db())} 条")
+    elif args.command == "stats-daily":
+        import ai_logs
+        doc = ai_logs.stats_daily(open_db())
+        print(f"汇总 {doc['day']}：方案 {doc['plans']} 条，珠子 {len(doc['beads'])} 种，搭配 {len(doc['pairs'])} 对")
     return 0
 
 

@@ -26,7 +26,7 @@ Page({
     }
     const detail = event.detail || {}
     const denied = !detail.code || /deny/i.test(detail.errMsg || '')
-    const code = detail.code || (this.data.dev && !/deny/i.test(detail.errMsg || '') ? 'dev-' + Date.now() : '')
+    const code = detail.code || (this.data.dev && !/deny/i.test(detail.errMsg || '') ? 'dev-' + String(Date.now()).slice(-8) : '')
     if (denied && !code) {
       this.setData({ error: '没拿到手机号，可以再点一次，或先逛逛', sheet: false })
       return

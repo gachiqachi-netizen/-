@@ -94,7 +94,7 @@ test('develop environment can use a fake code when WeChat supplies none', async 
     instance.onLoad({})
     instance.setData({ agreed: true })
     await instance.onPhone({ detail: {} })
-    assert.match(usedCode, /^dev-/)
+    assert.match(usedCode, /^dev-\d{8}$/)
   } finally {
     Object.assign(auth, original)
     wx.getAccountInfoSync = () => ({ miniProgram: { envVersion: 'release' } })

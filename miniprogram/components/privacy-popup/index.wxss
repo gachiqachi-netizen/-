@@ -1,1 +1,73 @@
-.privacy-mask{position:fixed;z-index:10000;inset:0;background:rgba(20,18,17,.5);display:flex;align-items:flex-end;padding:32rpx;box-sizing:border-box}.privacy-card{width:100%;background:#fff;border-radius:32rpx;padding:40rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));box-sizing:border-box}.privacy-title{font-size:36rpx;font-weight:600;margin-bottom:20rpx}.privacy-copy{font-size:28rpx;line-height:44rpx;color:#5e5753}.privacy-actions{display:flex;gap:20rpx;margin-top:32rpx}.privacy-actions button{flex:1;margin:0;border-radius:999rpx;font-size:28rpx}.privacy-secondary{background:#f4f2ef;color:#3d3835}.privacy-primary{background:#1f1b1a;color:#fff}
+/* 隐私授权弹层（任务卡 C0g 改版，稿 86）：c-sheet 样式，第一次真正用到权限时由 utils/privacy 触发。 */
+.c-privacy {
+  position: fixed;
+  inset: 0;
+  z-index: 990;
+}
+
+.c-privacy__mask {
+  position: absolute;
+  inset: 0;
+  background: var(--c-mask);
+}
+
+.c-privacy__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 var(--sp-base) calc(var(--sp-tight) + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  background: var(--c-bg);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-float);
+}
+
+.c-privacy__grab {
+  width: 64rpx;
+  height: 8rpx;
+  margin: var(--sp-tight) auto;
+  border-radius: var(--r-pill);
+  background: var(--c-line);
+}
+
+.c-privacy__title {
+  padding: var(--sp-tight) 0;
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+
+.c-privacy__body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+
+.c-privacy__link {
+  margin-top: var(--sp-tight);
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+  text-decoration: underline;
+  text-underline-offset: 6rpx;
+}
+
+.c-privacy__actions {
+  display: flex;
+  gap: var(--sp-tight);
+  margin-top: var(--sp-base);
+}
+
+.c-privacy__actions .c-btn {
+  flex: 1;
+  height: var(--h-btn);
+}
+
+.c-privacy__actions button.c-btn {
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.c-privacy__actions button.c-btn::after {
+  border: 0;
+}

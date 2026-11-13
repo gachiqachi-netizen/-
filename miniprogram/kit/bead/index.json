@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "预览 · 珠子图",
-  "usingComponents": {}
+  "usingComponents": {
+    "bead": "../../components/bead/index"
+  }
 }

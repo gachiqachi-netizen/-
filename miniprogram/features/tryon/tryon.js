@@ -68,7 +68,7 @@ Page({
     const layer=this.selectComponent('#photo3d');if(!layer)return this.setData({saving:false,error:'3D 预览尚未准备好，请重试。'})
     layer.exportImage((err,path)=>{if(err)return this.setData({saving:false,error:err.message});const w=this.data.width,h=this.data.height,img=this.imageInfo,k=Math.min(w/img.width,h/img.height),iw=img.width*k,ih=img.height*k,ctx=wx.createCanvasContext('composeCanvas',this);ctx.setFillStyle('#f7f6f4');ctx.fillRect(0,0,w,h);ctx.drawImage(this.data.photo,(w-iw)/2,(h-ih)/2,iw,ih);ctx.drawImage(path,0,0,w,h);ctx.draw(false,()=>save('composeCanvas'))})
   },
-  openAR(){wx.navigateTo({url:'/pages/ar-tryon/ar-tryon'})},
+  openAR(){wx.navigateTo({url:'/ar-hand/index',fail:()=>this.setData({error:'AR 页面暂时无法打开，可以用照片试戴'})})},
   share(){wx.navigateTo({url:'/pages/share/share'})},
   order(){if(this.data.missing)return wx.showToast({title:'请先替换下架材料',icon:'none'});require('../../utils/nav').openOrder()},
   privacyRejected(){this.setData({error:'未授权照片或相机权限。你仍可使用 3D 模型手预览。',mode:'model'})}

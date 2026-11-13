@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Edit3, Save, X } from 'lucide-react';
 import { apiRequest, labelOf, fmtTime, fenToYuan, yuanToFen } from '../api';
 import { CONTRACT } from '../contract';
+import { Can } from '../permissions';
 import { StatusBadge, statusTone } from './OverviewAndProducts';
 
 export const AfterSalesView: React.FC<{
@@ -432,12 +433,12 @@ export const TermsAndScopeView: React.FC<{
             支持「全局生效 (`global`)」与「按订单场景 / 模板 / 商品珠材精准匹配 (`scoped`)」，用户下单时自动冻结命中条款快照
           </p>
         </div>
-        <button
+        <Can perm="publish_terms"><button
           onClick={() => openEditor()}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium cursor-pointer"
         >
           <Plus className="w-4 h-4" /> 新建条款与范围规则
-        </button>
+        </button></Can>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -487,12 +488,12 @@ export const TermsAndScopeView: React.FC<{
                 <span>
                   类型：{t.type} · {t.confirmed ? '✓ 法务/运营已确认' : '待确认'}
                 </span>
-                <button
+                <Can perm="publish_terms"><button
                   onClick={() => openEditor(t)}
                   className="inline-flex items-center gap-1 text-zinc-700 hover:text-zinc-900 font-medium"
                 >
                   <Edit3 className="w-3.5 h-3.5" /> 编辑规则与范围
-                </button>
+                </button></Can>
               </div>
             </div>
           );
@@ -691,12 +692,12 @@ export const TermsAndScopeView: React.FC<{
                 >
                   取消
                 </button>
-                <button
+                <Can perm="publish_terms"><button
                   type="submit"
                   className="px-4 py-2 rounded-lg bg-zinc-900 text-white text-xs font-medium"
                 >
                   保存服务条款
-                </button>
+                </button></Can>
               </div>
             </form>
           </div>

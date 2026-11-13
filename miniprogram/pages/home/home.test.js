@@ -97,3 +97,10 @@ test('home quick entrances keep their distinct destinations', () => {
     ])
   } finally { store.current = old }
 })
+
+test('home banner page target follows configured route', () => {
+  const { page, calls } = pageWith(sampleWithBanner)
+  page.data.banners = [{ target: { type: 'page', id: 'pages/ai/ai' } }]
+  page.bannerTap({ currentTarget: { dataset: { i: 0 } } })
+  assert.deepEqual(calls, [['tab', '/pages/ai/ai']])
+})

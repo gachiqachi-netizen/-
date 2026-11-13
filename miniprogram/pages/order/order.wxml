@@ -71,4 +71,10 @@
     <view wx:for="{{quoteChanges}}" wx:key="*this" class="sheet-row">{{item}}</view>
     <view class="sheet-actions"><button class="c-btn c-btn--sec" bindtap="declinePrice">先不下单</button><button class="c-btn" bindtap="acceptPrice">按新价格提交</button></view>
   </c-sheet>
+  <c-sheet show="{{sheet === 'payment'}}" title="模拟支付" bind:close="paymentClose">
+    <view class="payment-copy">体验版，不会真的扣款</view>
+    <view class="payment-name">{{design.name}}</view>
+    <view class="payment-amount">¥{{paymentAmount}}</view>
+    <view class="sheet-actions"><button class="c-btn c-btn--sec" data-result="fail" bindtap="finishPayment">支付失败</button><button class="c-btn" data-result="success" bindtap="finishPayment">支付成功</button></view>
+  </c-sheet>
 </view>

@@ -1,33 +1,26 @@
-<view class="wrap order-detail">
-  <view wx:if="{{loading}}" class="loading-note">正在读取订单…</view>
-  <view wx:if="{{error}}" class="error error-card">{{error}}<button bindtap="load">重新加载</button></view>
-  <block wx:if="{{order}}">
-    <view class="card state-card">
-      <view class="state-top"><view><view class="eyebrow">当前状态</view><view class="state-title">{{order.state.label}}</view></view><view class="status-badge status-{{order.state.tone}}">{{order.state.label}}</view></view>
-      <view class="state-description">{{order.state.desc}}</view>
+<view class="page">
+  <view wx:if="{{loading}}" class="card skeleton">正在读取订单…</view>
+  <c-state wx:elif="{{error && !order}}" title="没找到这笔订单" action="重新加载" bind:action="load" />
+  <block wx:elif="{{order}}">
+    <view wx:if="{{paidLanding}}" class="card success-card">
+      <view class="state-title">订单已提交</view><view class="sub">师傅会尽快开始串你的手串，做好后发货。</view>
+      <view class="sub">模拟付款，没有扣款</view>
+      <view class="success-actions"><button class="c-btn c-btn--sec" bindtap="browse">再逛逛</button><button class="c-btn" bindtap="viewOrder">查看订单</button></view>
     </view>
-
-    <view class="card product-card">
-      <view class="row"><view class="title product-name">{{order.name}}</view><view class="price">¥{{order.total}}</view></view>
-      <view class="sub">订单号 {{order.no}}</view>
-      <view class="spec-line">手围 {{order.wrist}}cm · {{order.beads.length}} 颗 · 珠串总长 {{order.length}}mm</view>
-    </view>
-
-    <view wx:if="{{logisticsOpen}}" class="card logistics-card">
-      <view class="title section-heading">物流信息</view>
-      <block wx:if="{{order.logistics && (order.logistics.carrierName || order.logistics.carrierCode || order.logistics.trackingNo)}}"><view>{{order.logistics.carrierName || order.logistics.carrierCode || '承运方待更新'}}</view><view class="sub">运单号 {{order.logistics.trackingNo || '待更新'}}</view></block>
-      <view wx:else class="sub">物流信息尚未生成，发货后会在这里更新。</view>
-    </view>
-
-    <view class="card">
-      <view class="title section-heading">材料明细</view>
-      <view wx:for="{{items}}" wx:key="id" class="material-row"><view class="row"><view>{{item.name}} {{item.mm}}mm × {{item.qty}}</view><view>¥{{item.subtotal}}</view></view><view wx:if="{{item.pointsText}}" class="caption">{{item.pointsText}}</view><view wx:if="{{item.explanation}}" class="material-explanation">{{item.explanation}}</view><view wx:if="{{item.safety}}" class="material-safety">安全提示：{{item.safety}}</view></view>
-    </view>
-    <view class="card amount-card"><view class="row"><view>材料</view><view>¥{{order.goods}}</view></view><view class="row"><view>运费</view><view>¥{{order.ship}}</view></view><view class="row amount-total"><view>订单总额</view><view>¥{{order.total}}</view></view><view class="sub">总额含制作费用，以提交订单时的价格为准。</view></view>
-    <view class="card address-card"><view class="title section-heading">收货信息</view><view>{{order.person}} · {{order.phone}}</view><view class="sub">{{order.addr}}</view></view>
-    <view class="payment-note" wx:if="{{!order.paymentAvailable && order.paymentStatus==='unpaid'}}">支付暂未开放，此订单尚不能在线付款。</view>
+    <block wx:else>
+      <view class="card state-card"><view class="state-title">{{order.state.label}}</view><view class="sub">{{order.state.desc}}</view></view>
+      <view wx:if="{{order.tracking && order.tracking.length}}" class="card" data-code="view_logistics" bindtap="runAction"><view>物流</view><view class="sub">{{order.tracking[0].text}}</view></view>
+      <view class="card"><view class="section-title">收货</view><view>{{order.person}} · {{order.phone}}</view><view class="sub">{{order.addr}}</view></view>
+      <view class="card product-card">
+        <view class="product" bindtap="viewProduct"><bracelet-thumb beads="{{order.beads}}" catalog="{{catalog}}" /><view><view class="product-name">{{order.name}}</view><view class="sub">{{order.meaning}}</view><view class="sub">{{order.beads.length}} 颗 · 手围 {{order.wrist}}cm</view></view></view>
+        <view class="amount-row"><text>珠子</text><text>{{order.goodsPrice}}</text></view><view class="amount-row"><text>运费</text><text>{{order.shippingPrice}}</text></view><view class="amount-row"><text>{{order.paymentStatus === 'unpaid' ? '应付' : '实付'}}</text><text>{{order.payable}}</text></view>
+      </view>
+      <view class="card"><view class="amount-row" bindtap="copyNo"><text>订单号</text><text>{{order.no}}　复制</text></view><view wx:if="{{order.createdAt}}" class="sub">下单时间 {{order.createdAt}}</view></view>
+      <view wx:if="{{order.state.primaryAction !== 'pay_order' && order.state.primaryAction !== 'confirm_receipt'}}" class="card"><view wx:for="{{order.state.actions}}" wx:key="code" class="reason" data-code="{{item.code}}" bindtap="runAction">{{item.label}} ›</view></view>
+      <view wx:if="{{error}}" class="error">{{error}}</view>
+    </block>
   </block>
-</view>
-<view wx:if="{{order && order.state.actions.length}}" class="action-bar">
-  <button wx:for="{{order.state.actions}}" wx:key="code" class="action-button action-{{item.style}}" data-code="{{item.code}}" bindtap="runAction" loading="{{actionBusy===item.code}}" disabled="{{actionBusy}}">{{item.label}}</button>
+  <view wx:if="{{order && !paidLanding && (order.state.primaryAction === 'pay_order' || order.state.primaryAction === 'confirm_receipt')}}" class="action-bar"><button wx:for="{{order.state.actions}}" wx:key="code" class="c-btn {{item.style === 'primary' ? '' : 'c-btn--sec'}}" data-code="{{item.code}}" bindtap="runAction">{{item.label}}</button></view>
+  <c-sheet show="{{sheet === 'payment'}}" title="模拟支付" bind:close="closePayment"><view class="center sub">体验版，不会真的扣款</view><view class="center payment-name">{{order.name}}</view><view class="center payment-amount">{{paymentAmount}}</view><view class="sheet-actions"><button class="c-btn c-btn--sec" data-result="fail" bindtap="finishPayment">支付失败</button><button class="c-btn" data-result="success" bindtap="finishPayment">支付成功</button></view></c-sheet>
+  <c-sheet show="{{sheet === 'cancel'}}" title="为什么取消" bind:close="closePayment"><view wx:for="{{cancelReasons}}" wx:key="*this" class="reason" data-reason="{{item}}" bindtap="cancel">{{item}}</view></c-sheet>
 </view>

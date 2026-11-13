@@ -1,1 +1,1 @@
-{"navigationBarTitleText":"订单详情"}
+{"navigationBarTitleText":"订单详情","enablePullDownRefresh":true,"usingComponents":{"c-sheet":"/components/sheet/index","c-state":"/components/state/index","bracelet-thumb":"/components/bracelet-thumb/index"}}

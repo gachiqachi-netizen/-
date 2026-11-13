@@ -39,7 +39,8 @@ async function run() {
   assert(!logic.includes('wx.showModal(')) // No second confirmation dialog.
   let requests = 0, next = catalog(3)
   api.catalog = async force => { assert.strictEqual(force, true); return next }
-  auth.authorized = async (_, body) => {
+  auth.authorized = async (path, body) => {
+    if (path.endsWith('/pay')) return { payment: { mock: true, paymentId: 'pay_test', amountFen: 5300 } }
     requests++
     assert.deepStrictEqual(body.confirmedQuote, { totalFen: 5300, items: [{ id: 'a', unitPriceFen: 500, mm: 8 }] })
     return { no: 'TEST', status: '待支付', total: 53, requestId: body.requestId }
@@ -71,7 +72,7 @@ async function run() {
   session = false; currentPage = p
   await p.submit(); assert.strictEqual(continued, 1); assert.strictEqual(requests, 1)
   session = true
-  auth.authorized = async () => { requests++; return { no: 'LOGIN', status: '待支付' } }
+  auth.authorized = async path => { if (path.endsWith('/pay')) return {}; requests++; return { no: 'LOGIN', status: '待支付' } }
   auth.continueAfterLogin({ type: 'submitOrder' })
   await new Promise(resolve => setTimeout(resolve, 0))
   assert.strictEqual(requests, 2); assert.strictEqual(p.data.order.no, 'LOGIN')
@@ -82,7 +83,7 @@ async function run() {
   let release
   const pending = new Promise(resolve => { release = resolve })
   let created = 0
-  auth.authorized = async () => { created++; await pending; return { no: 'ONCE', status: '待支付' } }
+  auth.authorized = async path => { if (path.endsWith('/pay')) return {}; created++; await pending; return { no: 'ONCE', status: '待支付' } }
   const first = p.submit(), second = p.submit()
   await new Promise(resolve => setTimeout(resolve, 0))
   assert.strictEqual(created, 1)

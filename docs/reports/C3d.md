@@ -25,16 +25,16 @@
 `git diff --stat origin/integration/2026-11...HEAD`：
 ```
  docs/reports/C3d.md                            | 76 ++++++++++++++++++++++++++
- miniprogram/components/bead-sheet/index.js     | 26 +++++++++++++++++++
+ miniprogram/components/bead-sheet/index.js     | 26 +++++++++
  miniprogram/components/bead-sheet/index.json   |  1 +
- miniprogram/components/bead-sheet/index.wxml   | 14 ++++++++++
- miniprogram/components/bead-sheet/index.wxss   |  2 ++
- miniprogram/components/bead-sheet/model.js     | 25 ++++++++++++++++++
- miniprogram/pages/diy/diy.js                   | 14 +++++-----
+ miniprogram/components/bead-sheet/index.wxml   | 14 +++++
+ miniprogram/components/bead-sheet/index.wxss   |  2 +
+ miniprogram/components/bead-sheet/model.js     | 25 +++++++++
+ miniprogram/pages/diy/diy.js                   | 14 +++--
  miniprogram/pages/diy/diy.json                 |  2 +-
  miniprogram/pages/diy/diy.wxml                 |  2 +-
- miniprogram/tests/bead-sheet-workbench.test.js | 42 ++++++++++++++++++++++++++
- miniprogram/tests/bead-sheet.test.js           | 48 ++++++++++++++++++++++++++
+ miniprogram/tests/bead-sheet-workbench.test.js | 42 ++++++++++++++
+ miniprogram/tests/bead-sheet.test.js           | 48 ++++++++++++++++
  11 files changed, 244 insertions(+), 8 deletions(-)
 ```
 
@@ -62,7 +62,7 @@ python3 kb/validate.py 2>&1 | tail -15
 - `bead-sheet.test.js::同款所有尺寸缺货时禁用主动作并给相似珠入口`：全部缺货状态。
 
 ## 5. 自查（贴命令和输出）
-- `git log --oneline origin/integration/2026-11..HEAD`：`906ed09 C3d: 交付报告和全量测试结果`、`520bde3 C3d: 覆盖全部尺寸缺货状态`、`179a03c C3d: 验证知识库安全原文展示`、`2f0b3d7 C3d: 工作台接入选规格和逐颗加入反馈`、`2e25107 C3d: 新增选规格弹层与尺寸提示测试`、`2121cf3 C3d: 开工`。
+- `git log --oneline origin/integration/2026-11..HEAD`：`5a8fd2d C3d: 校准交付报告差异清单`、`906ed09 C3d: 交付报告和全量测试结果`、`520bde3 C3d: 覆盖全部尺寸缺货状态`、`179a03c C3d: 验证知识库安全原文展示`、`2f0b3d7 C3d: 工作台接入选规格和逐颗加入反馈`、`2e25107 C3d: 新增选规格弹层与尺寸提示测试`、`2121cf3 C3d: 开工`。
 - `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\(" miniprogram/components/bead-sheet/index.wxss`：无输出。
 - `grep -rnE "new URL|URLSearchParams" miniprogram --include='*.js'`：无输出。
 - `git diff --check origin/integration/2026-11...HEAD`：无输出。

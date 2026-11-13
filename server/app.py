@@ -54,6 +54,7 @@ if os.environ.get("DATABASE_URL"):
     db = PostgresDB(os.environ["DATABASE_URL"])
 else:
     db = DB(os.environ.get("DATABASE_PATH") or os.path.join(DATA_DIR, "data.sqlite3"))
+pricing.attach(db)
 user_api.cleanup_sessions(db)
 
 def session_cleanup_loop():

@@ -63,6 +63,7 @@ Page({
   touchEnd(){this.touch=null;this.align()},
   align(){if(!this.data.photo||this.data.aligned)return;this.setData({aligned:true});if(wx.vibrateShort)wx.vibrateShort({type:'light'})},
   photoMove(e){const dx=Number(e.detail.dx)||0,dy=Number(e.detail.dy)||0;this.x=Math.max(0,Math.min(this.data.width,this.x+dx));this.y=Math.max(0,Math.min(this.data.height,this.y+dy));this.setData({xpos:this.x,ypos:this.y});this.align()},
+  photoScale(e){const ratio=Number(e.detail.ratio)||1;this.setData({size:Math.max(8,Math.min(95,this.data.size*ratio))});this.align()},
   photoUnavailable(){this.setData({photoFallback:true,photoReady:false},()=>this.draw())},
   photoLoaded(){if(!this.data.photoReady)this.setData({photoReady:true})},
   sizeChange(e){this.setData({size:Number(e.detail.value)});this.draw()},

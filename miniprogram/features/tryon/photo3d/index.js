@@ -26,9 +26,9 @@ Component({
    this.setData({error:'3D 叠加失败：'+detail.message});this.triggerEvent('unavailable',detail);
   },
   render(){if(!this.photoRenderer||this._failed||!this._alive)return;const map={};(this.properties.catalog||[]).forEach(x=>{map[x.id]=x});const list=(this.properties.beads||[]).map((id,i)=>map[id]?{...map[id],sourceIndex:i}:null).filter(Boolean);if(!list.length)return;try{this.photoRenderer.update(list,{size:this.properties.size,angle:this.properties.angle,tilt:this.properties.tilt,hideBack:this.properties.hideBack,x:Number.isFinite(this.properties.xpos)?this.properties.xpos:this.width/2,y:Number.isFinite(this.properties.ypos)?this.properties.ypos:this.height/2});this.triggerEvent('rendered')}catch(e){this.reportFailure(e,'render')}},
-  start(e){const t=e.touches&&e.touches[0];if(t)this.touch={x:t.x,y:t.y}},
-  move(e){const t=e.touches&&e.touches[0];if(!t||!this.touch)return;const dx=t.x-this.touch.x,dy=t.y-this.touch.y;this.touch={x:t.x,y:t.y};this.triggerEvent('move',{dx,dy})},
-  end(){this.touch=null},
+  start(e){const t=e.touches||[];if(t.length===2){this.pinch=Math.hypot(t[0].x-t[1].x,t[0].y-t[1].y);this.touch=null}else if(t[0])this.touch={x:t[0].x,y:t[0].y}},
+  move(e){const t=e.touches||[];if(t.length===2){const next=Math.hypot(t[0].x-t[1].x,t[0].y-t[1].y);if(this.pinch&&next)this.triggerEvent('scale',{ratio:next/this.pinch});this.pinch=next;this.touch=null;return}if(!t[0]||!this.touch)return;const dx=t[0].x-this.touch.x,dy=t[0].y-this.touch.y;this.touch={x:t[0].x,y:t[0].y};this.triggerEvent('move',{dx,dy})},
+  end(){this.touch=null;this.pinch=null},
   exportImage(callback){if(!this.canvas||!this.photoRenderer)return callback(new Error('3D 预览尚未准备好'));wx.canvasToTempFilePath({canvas:this.canvas,destWidth:this.canvas.width,destHeight:this.canvas.height,success:r=>callback(null,r.tempFilePath),fail:()=>callback(new Error('3D 图层导出失败'))},this)}
  }
 })

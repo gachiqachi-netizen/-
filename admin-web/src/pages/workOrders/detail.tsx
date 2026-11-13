@@ -68,7 +68,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
   const [savingStep, setSavingStep] = useState('');
   const [picked, setPicked] = useState<Record<string, boolean>>({});
   const [checks, setChecks] = useState<Record<string, boolean>>({});
-  const [inspector, setInspector] = useState('');
+  const [inspectorName, setInspectorName] = useState('');
   const [failNote, setFailNote] = useState('');
   const [qcError, setQcError] = useState('');
   const [qcBusy, setQcBusy] = useState('');
@@ -80,7 +80,6 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
         setWo(w);
         setAssignee(w.assignee || '');
         setPicked(readPicked(w.workOrderNo));
-        setInspector(localStorage.getItem('wo-inspector') || '');
         if (w.qualityGate && w.qualityGate.passed === false) {
           setFailNote(w.qualityGate.note || '');
         }
@@ -88,6 +87,12 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
       .catch((e) => setError(e.message));
   };
   useEffect(load, [orderNo]);
+  useEffect(() => {
+    localStorage.removeItem('wo-inspector');
+    apiRequest<{ name: string }>('/api/admin/me')
+      .then((current) => setInspectorName(current.name || ''))
+      .catch((e) => setQcError(e.message || '当前账号读取失败'));
+  }, []);
 
   const saveStep = (step: string) => {
     if (!wo || step === wo.step) return;
@@ -124,12 +129,11 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
       setQcError('质检不通过时必须填写原因说明。');
       return;
     }
-    if (!inspector.trim()) {
-      setQcError('请填写质检人。');
+    if (!inspectorName) {
+      setQcError('当前账号读取失败，请刷新后再试。');
       return;
     }
     setQcBusy(pass ? 'pass' : 'fail');
-    localStorage.setItem('wo-inspector', inspector.trim());
     apiRequest(`/api/admin/orders/${encodeURIComponent(orderNo)}/quality-gate`, {
       method: 'PUT',
       body: {
@@ -137,7 +141,6 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
         sizeOk: !!checks.sizeOk,
         materialOk: !!checks.materialOk,
         appearanceOk: !!checks.appearanceOk,
-        inspector: inspector.trim(),
         note: failNote.trim(),
       },
     })
@@ -280,12 +283,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
         <div className="wo-qc-fields">
           <label>
             质检人
-            <input
-              style={{ width: '100%' }}
-              value={inspector}
-              placeholder="当前账号（A8d 合并前手动填写，会自动记住）"
-              onChange={(e) => setInspector(e.target.value)}
-            />
+            <div>{inspectorName || '正在读取当前账号…'}</div>
           </label>
           <label>
             不通过原因

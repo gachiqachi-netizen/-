@@ -82,8 +82,8 @@ DESIGN_ITEM = {
 }
 DESIGNS_SCHEMA = {
     "type": "object",
-    "properties": {"reply": {"type": "string"}, "designs": {"type": "array", "items": DESIGN_ITEM}},
-    "required": ["reply", "designs"],
+    "properties": {"message": {"type": "string"}, "designs": {"type": "array", "items": DESIGN_ITEM}},
+    "required": ["message", "designs"],
     "additionalProperties": False,
 }
 # 拍照做同款：AI 只认珠子，不做设计（对看图模型要求低，认错了用户在页面上点一下就能换）
@@ -172,7 +172,7 @@ def design(beads, text, history, wrist):
               f"用户手围 {wrist}cm，价格由服务端计算。\n之前的对话：\n{hist}\n用户刚说：{text}\n\n"
               "给 3 条不同的手串，和之前给过的不要重复。每条至少 2 种不同名称的珠子，主珠直径一致。"
               "pattern 是循环花型（3-8 颗），special 是只出现一次的开头珠（0-2 颗）。用户提了预算时，按大约 20 颗估算，别超预算。\n"
-              "reply 是一句 20-40 字的口语回应；meaning 20-40 字。")
+              "message 是一句 20-40 字的口语回应，先讲寓意且不要写数字；meaning 20-40 字。")
     ids = {b["id"] for b in beads}
     names = {b["id"]: b["name"] for b in beads}
     out = p.json(prompt, DESIGNS_SCHEMA)
@@ -188,7 +188,7 @@ def design(beads, text, history, wrist):
         designs = _valid_designs(out.get("designs"), ids, 2, names)
         if not designs:
             raise RuntimeError("AI 给的珠子不在料包里")
-    return {"reply": clean(out.get("reply"), 60), "designs": designs, "by": p.name}
+    return {"message": clean(out.get("message") or out.get("reply"), 60), "designs": designs, "by": p.name}
 
 
 def _plan_tags(sequence, item):
@@ -225,7 +225,7 @@ def design_response(result, beads, wrist):
             'lengthMm': length_mm,
             'payableFen': pricing.quote(prices)['payableFen'],
         })
-    if re.search(r'\d', result.get('reply') or ''):
+    if re.search(r'\d', result.get('message') or ''):
         message = '为你配了三条，先看第一条。'
     else:
         first_tags = _plan_tags(output[0]['beads'], item)

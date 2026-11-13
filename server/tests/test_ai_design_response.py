@@ -29,7 +29,7 @@ class FakeProvider:
 
     def json(self, prompt, schema, image=None):
         pairs = [('zt8', 'jg10'), ('jg10', 'xy8'), ('zt8', 'xy8')]
-        return {'reply': self.reply, 'designs': [
+        return {'message': self.reply, 'designs': [
             {'name': '搭配' + str(i), 'meaning': '模型自称招财', 'special': [],
              'pattern': list(pair), 'count': 1, 'lengthMm': 1, 'payableFen': 1}
             for i, pair in enumerate(pairs[:self.count])]}

@@ -70,3 +70,30 @@ test('home template card opens bracelet detail with selected design', async () =
     assert.ok(calls.some(([kind, url]) => kind === 'navigate' && url === '/pages/finish/finish'))
   } finally { api.catalog = oldCatalog; store.selected = oldSelected }
 })
+
+test('home articles appear only when catalog supplies them and open content page', async () => {
+  const old = api.catalog
+  api.catalog = () => Promise.resolve({ ...sampleWithBanner, homeArticles: [{ id: 'a1', title: '月光石的光', body: ['光从层间反射而来'] }] })
+  try {
+    const { page, calls } = pageWith(sampleWithBanner)
+    page.load()
+    await new Promise(resolve => setImmediate(resolve))
+    assert.equal(page.data.homeArticles[0].summary, '光从层间反射而来')
+    page.articleTap({ currentTarget: { dataset: { i: 0 } } })
+    assert.ok(calls.some(([kind, url]) => kind === 'navigate' && url === '/features/article/article?id=a1'))
+  } finally { api.catalog = old }
+})
+
+test('home quick entrances keep their distinct destinations', () => {
+  const old = store.current
+  store.current = () => ({ beads: ['b1'] })
+  try {
+    const { page, calls } = pageWith(sampleWithBanner)
+    page.ai(); page.photo(); page.tryLast()
+    assert.deepEqual(calls, [
+      ['tab', '/pages/ai/ai'],
+      ['navigate', '/pages/photo/photo'],
+      ['navigate', '/features/tryon/tryon']
+    ])
+  } finally { store.current = old }
+})

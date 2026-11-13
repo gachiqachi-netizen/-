@@ -75,3 +75,6 @@
     </view>
   </view>
 </view>
+
+<c-toast />
+<c-sheet show="{{!!confirmNo}}" title="确认收货" maskClose="{{false}}"><view>请确认已经收到商品。确认后订单将完成。</view><view slot="footer"><button bindtap="closeConfirm">取消</button><button bindtap="confirmReceipt">确定</button></view></c-sheet>

@@ -78,3 +78,5 @@
     <view class="sheet-actions"><button class="c-btn c-btn--sec" data-result="fail" bindtap="finishPayment">支付失败</button><button class="c-btn" data-result="success" bindtap="finishPayment">支付成功</button></view>
   </c-sheet>
 </view>
+
+<c-toast />

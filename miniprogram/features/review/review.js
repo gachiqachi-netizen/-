@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const { request } = require('../../utils/api')
 const labels = ['', '很不满意', '不满意', '一般', '满意', '很满意']
 
@@ -77,7 +78,7 @@ Page({
     if (this.data.readOnly || this.data.submitting || !this.data.orderId) return
     if (this.data.content.trim().length > 300) {
       this.setData({ error: '评价文字不能超过 300 字' })
-      return wx.showToast({ title: '评价文字不能超过 300 字', icon: 'none' })
+      return toast.show({ text: '评价文字不能超过 300 字' })
     }
     if (this.data.photos.some(photo => photo.status === 'uploading')) return this.setData({ error: '照片还在上传' })
     if (this.data.photos.some(photo => photo.status === 'failed')) return this.setData({ error: '照片没传上，请重试' })
@@ -89,14 +90,14 @@ Page({
       if (result.status === 'machine_failed') {
         const message = result.rejectReason || '内容没有通过审核，改一下再发'
         this.setData({ error: message })
-        return wx.showToast({ title: message, icon: 'none' })
+        return toast.show({ text: message })
       }
-      wx.navigateBack({ success: () => wx.showToast({ title: '已发布，谢谢你', icon: 'none' }) })
+      wx.navigateBack({ success: () => toast.show({ text: '已发布，谢谢你' }) })
     })
       .catch(error => {
         const message = error.message || '发布失败，请再试一次'
         this.setData({ error: message })
-        wx.showToast({ title: message, icon: 'none' })
+        toast.show({ text: message })
       })
       .then(() => this.setData({ submitting: false }))
   }

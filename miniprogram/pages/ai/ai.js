@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const api = require('../../utils/api')
 const store = require('../../utils/design')
 const templates = require('../../utils/template')
@@ -137,7 +138,7 @@ Page({
   openDetail(e) { const t = this.designAt(e); if (!t) return; this.saveResult(t); wx.navigateTo({ url: '/pages/finish/finish' }) },
   use(e) {
     const t = this.designAt(e)
-    if (!t || (!(t.pattern && t.pattern.length) && !(t.fromPlan && t.beads && t.beads.length))) return wx.showToast({ title: '方案无法使用', icon: 'none' })
+    if (!t || (!(t.pattern && t.pattern.length) && !(t.fromPlan && t.beads && t.beads.length))) return toast.show({ text: '方案无法使用' })
     this.saveResult(t); nav.openEditor()
   },
   order(e) { const t = this.designAt(e); if (!t) return; this.saveResult(t); nav.openOrder() },

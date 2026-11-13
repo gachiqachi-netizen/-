@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 Page({
  data:{about:false},
  showAbout(){this.setData({about:true});wx.setNavigationBarTitle({title:'关于珠养养'})},
@@ -6,6 +7,6 @@ Page({
  clearCache(){
   const keys=(wx.getStorageInfoSync().keys||[]).filter(key=>/^cgz_(catalog|thumb|model)_/.test(key))
   keys.forEach(key=>wx.removeStorageSync(key))
-  wx.showToast({title:'已清除',icon:'none'})
+  toast.show({ text: '已清除' })
  }
 })

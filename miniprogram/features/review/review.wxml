@@ -8,3 +8,5 @@
   <view wx:if="{{error}}" class="error">{{error}}</view>
   <view wx:if="{{!readOnly}}" class="bottom"><button class="publish" loading="{{submitting}}" disabled="{{submitting}}" bindtap="publish">发布</button></view>
 </view>
+
+<c-toast />

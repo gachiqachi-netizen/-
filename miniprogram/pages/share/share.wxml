@@ -10,3 +10,6 @@
     <view class="bottom"><button wx:if="{{!shareId}}" class="secondary" loading="{{shareBusy}}" bindtap="prepareShare">准备分享</button><button wx:else class="secondary" open-type="share">发给朋友</button><button class="primary" bindtap="saveCard" loading="{{saveBusy}}" disabled="{{!ready||saveBusy}}">保存图片</button></view>
   </view>
 </view>
+
+<c-toast />
+<c-sheet show="{{moreOpen}}" title="更多" bindclose="closeMore"><view bindtap="viewFriend">看看朋友打开是什么样</view></c-sheet>

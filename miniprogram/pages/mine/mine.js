@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const store=require('../../utils/design')
 const auth=require('../../utils/auth')
 const orderState=require('../../utils/order-state')
@@ -27,12 +28,12 @@ Page({
  chooseAvatar(e){
   const url=e.detail&&e.detail.avatarUrl
   if(!url)return
-  wx.setStorageSync('cgz_avatar',url);this.setData({avatar:url});wx.showToast({title:'已保存',icon:'none'})
+  wx.setStorageSync('cgz_avatar',url);this.setData({avatar:url});toast.show({ text: '已保存' })
  },
  changeName(e){
   const name=String(e.detail.value||'').trim().slice(0,20)
   if(!name)return
-  wx.setStorageSync('cgz_display_name',name);this.setData({name});wx.showToast({title:'已保存',icon:'none'})
+  wx.setStorageSync('cgz_display_name',name);this.setData({name});toast.show({ text: '已保存' })
  },
  goLogin(){auth.goLogin()},
  goOrders(){if(!this.data.loggedIn)return auth.goLogin({type:'navigate',url:'/features/orders/orders'});wx.navigateTo({url:'/features/orders/orders'})},

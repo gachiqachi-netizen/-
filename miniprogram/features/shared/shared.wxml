@@ -11,3 +11,5 @@
     <view class="shared-bottom"><button class="secondary" bindtap="start">我也串一条</button><button class="primary" bindtap="use">照这条串一条</button></view>
   </view>
 </view>
+
+<c-toast />

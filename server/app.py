@@ -238,6 +238,25 @@ class Handler(BaseHTTPRequestHandler):
         accounts.CURRENT_ADMIN.set(user)
         return True
 
+    def admin_can(self, perm=None, data=None):
+        import accounts
+        if not self.admin_ok():
+            self.send(401, {"error": "需要后台口令"})
+            return False
+        path = urlparse(self.path).path
+        perm = perm or accounts.route_permission(self.command, path, data, db)
+        if path in ("/api/admin/accounts/bootstrap", "/api/admin/accounts/me/password"):
+            return True
+        if perm is None:
+            if not path.startswith("/api/admin/"):
+                return True
+            self.send(403, {"error": "你没有这个操作的权限", "need": "未配置权限点"})
+            return False
+        if not accounts.has_permission(db, self.admin_user, perm):
+            self.send(403, {"error": "你没有这个操作的权限", "need": accounts.PERMISSIONS[perm]})
+            return False
+        return True
+
     def admin_login(self, data):
         import accounts
         ip = self.client_address[0]
@@ -297,9 +316,8 @@ class Handler(BaseHTTPRequestHandler):
                     self.send(401, {"error": "请先登录"})
                     return True
                 user_id, is_admin = uid, False
-            elif auth == "admin":
-                if not self.admin_ok():
-                    self.send(401, {"error": "需要后台口令"})
+            elif auth == "admin" or auth in __import__("accounts").PERMISSIONS:
+                if not self.admin_can(None if auth == "admin" else auth, data):
                     return True
                 user_id, is_admin = None, True
                 if method != "GET":
@@ -403,8 +421,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, rows)
             m = re.match(r"^/api/admin/(beads|templates|banners|orders)$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 q = self.qs()
                 if m.group(1) == "orders":
                     rows = commerce.list_orders(db, q.get("q", [""])[0],
@@ -417,29 +435,29 @@ class Handler(BaseHTTPRequestHandler):
                     rows = db.list(m.group(1))
                 return self.send(200, rows)
             if path == "/api/admin/after-sales":
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 q = self.qs()
                 return self.send(200, commerce.list_after_sales(db, q.get("q", [""])[0], q.get("status", [""])[0]))
             if path == "/api/admin/terms":
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 q = self.qs()
                 return self.send(200, commerce.list_terms(db, q.get("q", [""])[0], q.get("status", [""])[0], q.get("scopeMode", [""])[0]))
             if path == "/api/admin/work-orders":
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 q = self.qs()
                 return self.send(200, commerce.list_work_orders(db, q.get("q", [""])[0], q.get("status", [""])[0], q.get("assignee", [""])[0]))
             if path == "/api/admin/audit":
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 q = self.qs()
                 return self.send(200, commerce.list_audit(db, q.get("q", [""])[0], q.get("target", [""])[0]))
             m = re.match(r"^/api/admin/templates/([\w-]+)/expand$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 tpl = db.get("templates", m.group(1))
                 if not tpl:
                     return self.send(404, {"error": "模板不存在"})
@@ -451,20 +469,20 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, commerce.expand_template_recipe(db, tpl, wrist=wrist))
             m = re.match(r"^/api/admin/orders/([\w-]+)/work-order$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 wo = commerce.get_work_order(db, m.group(1))
                 return self.send(200, wo) if wo else self.send(404, {"error": "订单不存在"})
             m = re.match(r"^/api/admin/orders/([\w-]+)$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 detail = commerce.order_detail(db, m.group(1))
                 return self.send(200, detail) if detail else self.send(404, {"error": "订单不存在"})
             m = re.match(r"^/api/admin/after-sales/([\w-]+)$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can():
+                    return
                 rec = commerce.after_sale_detail(db, m.group(1))
                 return self.send(200, rec) if rec else self.send(404, {"error": "售后记录不存在"})
             if self._route_dispatch("GET", path):
@@ -611,8 +629,8 @@ class Handler(BaseHTTPRequestHandler):
                 db.put("orders", no, order)
                 return self.send(200, order)
             if path == "/api/upload":
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 result = {"url": save_image(data.get("data"))}
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
@@ -621,8 +639,8 @@ class Handler(BaseHTTPRequestHandler):
             # ----- 后台：新建 -----
             m = re.match(r"^/api/admin/(beads|templates|banners)$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 if m.group(1) == "beads":
                     result = commerce.create_product(db, data)
                     self.audit_admin_mutation(path + "/" + result["id"])
@@ -639,8 +657,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.audit_admin_mutation(path + "/" + rid)
                 return self.send(200, result)
             if path == "/api/admin/templates/expand":
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 tpl_src = data
                 if data.get("templateId") and not data.get("pattern"):
                     tpl_src = db.get("templates", str(data.get("templateId")))
@@ -649,18 +667,18 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, commerce.expand_template_recipe(db, tpl_src, wrist=data.get("wrist", 15)))
             m = re.match(r"^/api/admin/(beads|templates)/([\w-]+)/copy$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 if m.group(1) == "beads":
                     return self.send(200, commerce.copy_product(db, m.group(2)))
                 return self.send(200, commerce.copy_template(db, m.group(2)))
             if path == "/api/admin/after-sales":
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 return self.send(200, commerce.create_after_sale(db, data))
             if path == "/api/admin/terms":
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 return self.send(200, commerce.create_term(db, data))
             if self._route_dispatch("POST", path, data):
                 return
@@ -699,8 +717,8 @@ class Handler(BaseHTTPRequestHandler):
             data = self.body()
             m = re.match(r"^/api/admin/orders/([\w-]+)/(status|logistics|work-order|quality-gate)$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 rid, action = m.groups()
                 if action == "status":
                     group, to = data.get("group"), data.get("to")
@@ -717,8 +735,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, result)
             m = re.match(r"^/api/admin/orders/([\w-]+)/(address|note)$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 rid, action = m.groups()
                 if action == "address":
                     commerce.change_order_address(db, rid, data, actor="admin")
@@ -728,15 +746,15 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, commerce.order_detail(db, rid))
             m = re.match(r"^/api/admin/after-sales/([\w-]+)/transition$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 result = commerce.transition_after_sale(db, m.group(1), data.get("action"), data.get("note") or "", data.get("returnLogistics"), data.get("result"))
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
             m = re.match(r"^/api/admin/(beads|templates|banners|terms|orders)/([\w-]+)$", path)
             if m:
-                if not self.admin_ok():
-                    return self.send(401, {"error": "需要后台口令"})
+                if not self.admin_can(data=data):
+                    return
                 table, rid = m.groups()
                 if table == "orders":
                     return self.send(400, {"error": "旧订单状态接口已停用，请使用分组状态接口"})
@@ -784,8 +802,8 @@ class Handler(BaseHTTPRequestHandler):
                 if self._route_dispatch("DELETE", path):
                     return
                 return self.send(404, {"error": "not_found"})
-            if not self.admin_ok():
-                return self.send(401, {"error": "需要后台口令"})
+            if not self.admin_can():
+                return
             table, rid = m.groups()
             if table == "beads":
                 commerce.delete_product(db, rid)

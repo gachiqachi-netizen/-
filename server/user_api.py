@@ -314,7 +314,7 @@ def read_share(db, token):
         return None
     d = db.get('shares', token)
     fields = ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId')
-    return {k: d[k] for k in fields if k in d} if d and not d.get('takenDownAt') else None
+    return {k: d[k] for k in fields if k in d} if d and not d.get('takenDownAt') and not d.get('deletedAt') else None
 
 
 def make_order(db, data, uid):

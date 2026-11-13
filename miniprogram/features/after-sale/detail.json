@@ -1,3 +1,1 @@
-{
-  "navigationBarTitleText": "售后详情"
-}
+{"navigationBarTitleText":"售后详情","enablePullDownRefresh":true,"usingComponents":{"c-state":"/components/state/index","c-sheet":"/components/sheet/index","c-toast":"/components/toast/index","c-design-row":"/components/design-row/index"}}

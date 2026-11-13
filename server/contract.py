@@ -58,6 +58,8 @@ ACTIONS = {
     "view_logistics": "查看物流",
     "reorder": "按这款再串一条",
     "request_after_sale": "申请售后",
+    "cancel_after_sale": "撤销申请",
+    "submit_return": "填写寄回单号",
     "write_review": "写评价",
 }
 REVIEW_STATUSES = {"machine_failed": "机审未通过", "pending": "待审核",

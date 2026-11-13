@@ -1,4 +1,9 @@
 <view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+  <c-state wx:if="{{error && !sale}}" title="售后记录暂时无法读取" desc="{{error}}"/>
+  <block wx:if="{{sale}}">
+    <view class="card address" wx:if="{{sale.returnAddress}}"><view>寄到：{{sale.returnAddress.person}}　{{sale.returnAddress.phone}}</view><view class="hint">{{sale.returnAddress.address}}</view><button bindtap="copyAddress">复制地址</button></view><view wx:else class="card hint">寄回地址稍后由客服告知</view>
+    <view class="card"><view class="row" bindtap="toggleCarriers"><text>快递公司</text><text>{{carrier || '请选择快递公司'}} ›</text></view><view wx:if="{{carrierOpen}}"><view class="row" wx:for="{{carriers}}" wx:key="*this" data-name="{{item}}" bindtap="chooseCarrier">{{item}}</view></view><view class="row"><text>快递单号</text><input placeholder="填写或扫一扫" value="{{trackingNo}}" bindinput="inputTracking"/><button bindtap="scan">扫码</button></view><view class="error" wx:if="{{error}}">{{error}}</view></view>
+    <view class="actions"><button class="primary" disabled="{{submitting || !trackingNo}}" bindtap="submit">{{trackingNo ? '提交' : '先填单号'}}</button></view>
+  </block>
 </view>
+<c-toast/>

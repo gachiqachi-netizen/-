@@ -26,14 +26,14 @@
 
 ## 3. 改了的文件
 
-`git diff --stat origin/integration/2026-11...HEAD`（提交报告前）：
+`git diff --stat origin/integration/2026-11...HEAD`：
 
 ```text
 admin-web/src/contract.ts                 |   6 +-
 admin-web/src/pages/afterSales/detail.tsx |  29 ++++++
 admin-web/src/pages/workOrders.tsx        |  19 ++--
 admin-web/src/pages/workOrders/detail.tsx |  79 ++++++++++++--
-docs/reports/A5c.md                       |  41 ++++++++
+docs/reports/A5c.md                       |  88 ++++++++++++++++
 miniprogram/utils/contract.js             |   6 +-
 server/commerce.py                        | 164 +++++++++++++++++++++++++++++-
 server/contract.py                        |   3 +
@@ -41,10 +41,10 @@ server/order_view.py                      |   2 +-
 server/routes/rework_orders.py            |  61 +++++++++++
 server/status.py                          |   7 +-
 server/tests/test_rework_orders.py        | 134 ++++++++++++++++++++++++
-12 files changed, 530 insertions(+), 21 deletions(-)
+12 files changed, 577 insertions(+), 21 deletions(-)
 ```
 
-报告本身修改后行数会变化。`server/migrations/m020_rework_orders.py` 未建：工单嵌在现有售后记录中。
+`server/migrations/m020_rework_orders.py` 未建：工单嵌在现有售后记录中。
 
 ## 4. 测试
 

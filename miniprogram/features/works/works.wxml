@@ -1,4 +1,20 @@
-<view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+<view class="works-page">
+  <view class="c-row" bindtap="newWork"><text>串一条新的</text><text class="works-muted">›</text></view>
+  <view wx:if="{{loading && !works.length}}" class="works-state">正在取回作品…</view>
+  <view wx:elif="{{!works.length}}" class="works-empty"><view class="works-empty-title">还没有作品</view><view>串好的手串会存在这里</view><view class="works-link" bindtap="newWork">去串一条 ›</view></view>
+  <view wx:for="{{works}}" wx:key="id" class="works-row">
+    <view class="works-open" data-id="{{item.id}}" bindtap="open">
+      <c-design-row design="{{item}}" catalog="{{catalog}}" sub="{{item.sub}}" />
+    </view>
+    <view wx:if="{{editing === item.id}}" class="works-rename"><input value="{{rename}}" focus bindinput="renameInput" bindconfirm="finishRename" confirm-type="done" /><text bindtap="finishRename">完成</text></view>
+    <view class="works-more" data-id="{{item.id}}" bindtap="more">···</view>
+  </view>
+  <view wx:if="{{failed}}" class="works-state">同步暂时失败，本机作品仍可使用 <text class="works-link" bindtap="sync">重试</text></view>
+  <c-sheet show="{{menu}}" title="更多" bind:close="closeMenu">
+    <view class="c-row" bindtap="copy">复制一条</view>
+    <view class="c-row" bindtap="startRename">重命名</view>
+    <button class="c-row works-share" open-type="share">分享</button>
+    <view class="c-row" bindtap="remove">删除</view>
+  </c-sheet>
+  <c-toast />
 </view>

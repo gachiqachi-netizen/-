@@ -26,6 +26,7 @@
 | A8c | agent/A8c-mask | backend-wave2.md | A8b | Codex | K3 |  |
 | A8d | agent/A8d-operator | backend-wave2.md | A8b | 任何 |  |  |
 | A8e | agent/A8e-data-scope | backend-wave2.md | A8c、A8d | Codex |  |  |
+| A8f | agent/A8f-admin-roles | backend-wave2.md | A8b | 任何 |  |  |
 | K1 | agent/K1-kb-store | backend-wave2.md | A11、A11m | Codex |  |  |
 | K2 | agent/K2-kb-rules | backend-wave2.md | K1 | 任何 |  |  |
 | K3 | agent/K3-kb-admin | backend-wave2.md | K2、A8b | 任何 | A8c |  |
@@ -77,7 +78,8 @@
 | C11b | agent/C11b-regression | miniprogram-wave2.md | C11a | 任何 |  |  |
 | D3a | agent/D3a-admin-login | admin-wave2.md | A8a、D2 | 任何 |  |  |
 | D3b | agent/D3b-admin-roles | admin-wave2.md | D3a、A8b | 任何 |  |  |
-| D3c | agent/D3c-admin-menu-perms | admin-wave2.md | D3b | 任何 |  |  |
+| D3c | agent/D3c-admin-menu-perms | admin-wave2.md | D3b、A8f | 任何 |  |  |
+| D3d | agent/D3d-admin-role-save | admin-wave2.md | A8f、D3b | 任何 |  |  |
 | D4 | agent/D4-work-orders | admin-wave2.md | D2 | 任何 |  |  |
 | D5a | agent/D5a-order-detail-ops | admin-wave2.md | D1b、A4c | 任何 |  |  |
 | D5b | agent/D5b-after-sale-admin | admin-wave2.md | A5b、D2 | 任何 |  |  |

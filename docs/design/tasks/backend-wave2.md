@@ -176,6 +176,27 @@
 
 角色的 `dataScope` 为 `own` 时，`list_work_orders` 只返回 `assignee` 等于当前账号名字的工单，`get_work_order` 访问别人的返回 404。测试两种范围。
 
+
+### A8f 角色的新建、修改，和“当前账号”接口（2026-11-13 补）
+
+- **依赖**：A8b　**大小**：S　**为什么**：D3b 的角色勾选表要能保存，D3c 要知道当前账号有哪些权限，后端都还没有接口。
+
+**只能改**：新建 `server/routes/admin_roles.py`、`server/tests/test_admin_roles.py`；`server/accounts.py` 只加函数，不改已有函数。不改 `app.py`、不加迁移（`admin_roles` 表 A8a 已经建好）。
+
+**步骤**
+1. 路由都写权限点 `manage_accounts`，“当前账号”那条除外：
+   - `POST /api/admin/roles`：`{name, permissions[], dataScope: "all"|"own"}`，新建自定义角色，返回角色。
+   - `PUT /api/admin/roles/{id}`：改名字、权限、数据范围。
+   - `DELETE /api/admin/roles/{id}`：只能删自定义角色。
+   - `GET /api/admin/me`（任何登录的后台账号都能调，auth 写一个四个内置角色都有的查看权限点，照 K3 的做法，并在注释里写明原因）：返回 `{name, roleId, roleName, permissions: [代码], permissionNames: [中文], dataScope, mustChangePassword}`，负责人返回全部权限点。
+2. 校验：`name` 非空、不超过 20 字、不和已有角色重名；`permissions` 里每一项都必须在 `accounts.PERMISSIONS` 里；`dataScope` 只能是 `all` 或 `own`。
+3. 保护：
+   - 内置的四个角色（负责人、运营、客服、做单师傅，`builtin` 为真）不能删、不能改名；负责人角色的权限不能改（永远是全部）。其他三个内置角色的权限可以改。
+   - 还有账号在用的角色不能删，原因写“有 N 个账号在用这个角色，先把他们换到别的角色”。
+   - 不合规的一律 `ValueError`（400）。
+4. 操作记录照旧由路由分发统一记，不用自己写。
+5. 测试：新建、修改、删除自定义角色；内置角色删不掉、改不了名；负责人权限改不了；权限点写错 400；有人在用的角色删不掉；没有 `manage_accounts` 的账号调这些接口 403；`/api/admin/me` 对负责人、运营、做单师傅各返回正确的权限列表。
+
 ---
 
 ## A9b 知识库补把握（数据任务，不写代码）

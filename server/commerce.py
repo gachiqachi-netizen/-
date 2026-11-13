@@ -956,11 +956,16 @@ def get_work_order(db, no):
     order = db.get("orders", no)
     if not order:
         return None
-    return accounts.mask_order(db, build_work_order(order, db=db))
+    wo = build_work_order(order, db=db)
+    own_name = accounts.own_scope_name(db)
+    if own_name and wo.get("assignee") != own_name:
+        return None
+    return accounts.mask_order(db, wo)
 
 
 def list_work_orders(db, q="", status_="", assignee=""):
     import accounts
+    own_name = accounts.own_scope_name(db)
     rows = db.list("orders")
     rows.sort(key=lambda o: o.get("createdAt", 0), reverse=True)
     q = (q or "").strip().lower()
@@ -969,6 +974,8 @@ def list_work_orders(db, q="", status_="", assignee=""):
     out = []
     for o in rows:
         wo = build_work_order(o, db=db)
+        if own_name and wo.get("assignee") != own_name:
+            continue
         if status_ and wo.get("status") != status_:
             continue
         if assignee and assignee not in str(wo.get("assignee") or "").lower():
@@ -986,6 +993,9 @@ def list_work_orders(db, q="", status_="", assignee=""):
 
 def update_work_order(db, no, data, actor=ACTOR):
     """更新生产工单的负责人、工序进度与作业备注；严禁替换用料或修改编号珠序列。"""
+    import accounts
+    if accounts.own_scope_name(db) and get_work_order(db, no) is None:
+        raise KeyError("订单不存在")
     d = dict(data or {})
     for forbidden in _FORBIDDEN_WORK_ORDER_MUTATIONS:
         if forbidden in d:
@@ -1033,6 +1043,9 @@ def update_work_order(db, no, data, actor=ACTOR):
 
 def record_quality_gate(db, no, data, actor=ACTOR):
     """记录发货前质检关口（珠序、尺寸、用料、外观四项必填布尔结果）；质检不通过时不得进入待发货。"""
+    import accounts
+    if accounts.own_scope_name(db) and get_work_order(db, no) is None:
+        raise KeyError("订单不存在")
     d = dict(data or {})
     checks = {}
     for field in QUALITY_GATE_FIELDS:

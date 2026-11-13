@@ -21,6 +21,7 @@ import pricing
 import user_api
 from db import DB
 from user_api import token_hash
+from admin_helpers import owner_headers
 
 
 class ProductionWorkbenchTest(unittest.TestCase):
@@ -281,6 +282,7 @@ class ProductionWorkbenchHandlerTest(unittest.TestCase):
         app.ADMIN_TOKEN = "wb-admin-secret"
         app.ADMIN_AUDIT_PATH = os.path.join(self.temp.name, "admin-audit.jsonl")
         app.db.put("sessions", token_hash("u" * 43), {"userId": "wb-user", "expiresAt": time.time() + 300})
+        self.admin_headers = owner_headers()
 
     def tearDown(self):
         app.db.conn.close()
@@ -291,7 +293,7 @@ class ProductionWorkbenchHandlerTest(unittest.TestCase):
         raw_body = json.dumps(data, ensure_ascii=False).encode("utf-8") if data is not None else b""
         headers = {}
         if admin:
-            headers["X-Admin-Token"] = "wb-admin-secret"
+            headers.update(self.admin_headers)
         if token:
             headers["Authorization"] = "Bearer " + token
         if data is not None:

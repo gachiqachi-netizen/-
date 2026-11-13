@@ -16,6 +16,7 @@ import app
 import commerce
 import user_api
 from db import DB
+from admin_helpers import owner_headers
 
 
 def order(no="ORDER-1", owner="u1", **changes):
@@ -128,6 +129,7 @@ class AdminHTTPTests(unittest.TestCase):
         cls.thread.start()
         cls.base = "http://127.0.0.1:" + str(cls.server.server_port)
         cls.opener = build_opener(ProxyHandler({}))  # 本机请求不走代理
+        cls.admin_headers = owner_headers(cls.base)
 
     @classmethod
     def tearDownClass(cls):
@@ -140,7 +142,7 @@ class AdminHTTPTests(unittest.TestCase):
     def request(self, path, method="PUT", data=None, admin="test-admin"):
         headers = {"Content-Type": "application/json"}
         if admin:
-            headers["X-Admin-Token"] = admin
+            headers.update(self.admin_headers)
         raw = json.dumps(data).encode() if data is not None else None
         try:
             resp = self.opener.open(Request(self.base + path, data=raw, headers=headers, method=method), timeout=3)

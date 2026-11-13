@@ -5,6 +5,9 @@
 import glob
 import json
 import os
+import warnings
+
+import kb_store
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kb", "data"))
 _cache = {"stamp": None}
@@ -25,6 +28,21 @@ def _files():
 
 
 def _load():
+    current_stamp = kb_store.stamp()
+    if current_stamp is not None:
+        if current_stamp == _cache['stamp']:
+            return _cache
+        data = kb_store.snapshot()
+        if data is not None:
+            beads, attrs = data['beads'], data['attrs']
+            banned = [x['word'] for x in attrs.get('banned', []) if x.get('word')] or FALLBACK_BANNED
+            _cache.update(stamp=current_stamp, beads=beads, attrs=attrs, errors=[],
+                          dims={d['key']: d for d in attrs.get('dims', []) if d.get('key')},
+                          banned=sorted(set(banned), key=len, reverse=True))
+            return _cache
+    if not _cache.get('warned_fallback'):
+        warnings.warn('知识库数据库无数据，退回读取 kb/data/*.json', RuntimeWarning)
+        _cache['warned_fallback'] = True
     files = [f for f in _files() if os.path.exists(f)]
     stamp = tuple((f, os.path.getmtime(f)) for f in files)
     if stamp == _cache["stamp"]:

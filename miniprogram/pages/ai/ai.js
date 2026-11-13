@@ -105,8 +105,7 @@ Page({
       let result, aiError, planError
       try {
         const design = await api.request('/ai/design', { text, wrist: wristSize, history: this.data.messages.slice(-6).map(m => (m.role === 'me' ? '用户：' : '你：') + m.text) }, 'POST', { timeout: 180000 })
-        if (Array.isArray(design.plans) && design.plans.length) result = { results: design.plans.map((p, i) => ({ ...(design.designs || [])[i], name: p.name, beads: p.beads, count: p.count, lengthMm: p.lengthMm, payableFen: p.payableFen, line: p.line, fromPlan: true })), reply: design.reply || design.message, by: 'ai', quickReplies: design.quickReplies }
-        else if (Array.isArray(design.designs) && design.designs.length) result = { results: design.designs, reply: design.reply || design.message, by: 'ai', quickReplies: design.quickReplies }
+        if (Array.isArray(design.plans) && design.plans.length) result = { results: design.plans.map(p => ({ ...p, fromPlan: true })), reply: design.message, by: 'ai', quickReplies: design.quickReplies }
       } catch (err) { aiError = err }
       if (!result) {
         try { result = await api.request('/plans/match', { text, wrist: wristSize, history }) } catch (err) { planError = err }

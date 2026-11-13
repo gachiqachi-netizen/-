@@ -438,6 +438,13 @@ class Handler(BaseHTTPRequestHandler):
                 if not uid:
                     return self.send(401, {"error": "请先登录"})
                 return self.send(201, user_api.create_share(db, data, uid))
+            address_change = re.fullmatch(r"/api/my/orders/([\w-]+)/address", path)
+            if address_change:
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                return self.send(200, user_api.change_my_order_address(
+                    db, address_change.group(1), uid, data))
             pay = re.fullmatch(r"/api/my/orders/([\w-]+)/pay", path)
             if pay:
                 uid = self.user()

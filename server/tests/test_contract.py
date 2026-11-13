@@ -53,6 +53,14 @@ class ContractExportTest(unittest.TestCase):
         self.assertEqual(set(contract.TERM_SCENARIOS), set(commerce.TERM_SCENARIOS))
         self.assertEqual(set(contract.QUALITY_GATE_ITEMS), set(commerce.QUALITY_GATE_FIELDS))
 
+    def test_banned_words_include_kb_terms(self):
+        words = contract.payload()["bannedWords"]
+        self.assertTrue(words)
+        with open(os.path.join(ROOT, "kb", "data", "attributes.json"), encoding="utf-8") as source:
+            terms = json.load(source)["banned"]
+        self.assertIn("招财", [term["word"] for term in terms])
+        self.assertIn("招财", words)
+
 
 class ContractHTTPTest(unittest.TestCase):
     @classmethod

@@ -345,13 +345,28 @@ def make_order(db, data, uid):
     if isinstance(wrist, bool) or not isinstance(wrist, (int, float)) or not 8 <= wrist <= 30:
         raise ValueError('请确认手围')
     cord = data.get('cord', 0)
-    if type(cord) is not int or cord not in (0, 1) or type(data.get('gift', False)) is not bool:
+    if type(cord) is not int or cord not in (0, 1):
+        raise ValueError('订单选项不正确')
+    raw_gift = data.get('gift', False)
+    if type(raw_gift) is bool:
+        gift = {'box': raw_gift, 'card': '', 'hidePrice': False}
+    elif isinstance(raw_gift, dict):
+        gift_box, gift_card, gift_hide = raw_gift.get('box'), raw_gift.get('card', ''), raw_gift.get('hidePrice', False)
+        if type(gift_box) is not bool or type(gift_hide) is not bool or not isinstance(gift_card, str):
+            raise ValueError('订单选项不正确')
+        gift_card = gift_card.strip()
+        if len(gift_card) > 50:
+            raise ValueError('贺卡内容不能超过 50 字')
+        if gift_card:
+            content_security.ensure_allowed(gift_card)
+        gift = {'box': gift_box, 'card': gift_card, 'hidePrice': gift_hide}
+    else:
         raise ValueError('订单选项不正确')
     try:
         unit_prices = [{'unitPriceFen': bead_price_fen(beads[i])} for i in ids]
     except (KeyError, ValueError):
         raise ValueError('商品价格不正确')
-    priced = pricing.quote(unit_prices, {'cord': cord, 'gift': data.get('gift', False)})
+    priced = pricing.quote(unit_prices, {'cord': cord, 'gift': gift['box']})
     goods_fen = money.parse_fen(priced['goodsFen'])
     subtotal_fen = money.parse_fen(priced['subtotalFen'])
     shipping_fen = money.parse_fen(priced['shippingFen'])
@@ -389,21 +404,21 @@ def make_order(db, data, uid):
         'beads': ids,
         'tplId': tpl_id,
         'source': source,
-        'gift': data.get('gift', False),
+        'gift': gift['box'],
         'cord': cord,
         'hasSafety': any(bool(s.get('safety')) for s in snapshot),
     }
     terms_snapshot = commerce.terms_snapshot(db, terms_ctx)
     design_snapshot = commerce.build_design_snapshot(
         db,
-        {'beads': ids, 'wrist': wrist, 'cord': cord, 'gift': data.get('gift', False),
+        {'beads': ids, 'wrist': wrist, 'cord': cord, 'gift': gift['box'],
          'customerNote': customer_note, 'tplId': tpl_id, 'source': source, 'createdAt': now_ms},
         frozen_items=snapshot,
     )
     groups = status.new_order_status()
     order = {'no': no, 'userId': uid, 'name': str(data.get('name') or '我的手串')[:60], 'beads': ids, 'items': snapshot,
              'wrist': wrist, 'length': sum(Decimal(str(beads[i].get('mm', 0))) for i in ids).__float__(),
-             'cord': cord, 'gift': data.get('gift', False), 'promo': 0,
+             'cord': cord, 'gift': gift, 'promo': 0,
              'customerNote': customer_note, 'tplId': tpl_id, 'source': source,
              'designSnapshot': design_snapshot,
              'promotion': promotion_status(),

@@ -911,6 +911,9 @@ def build_work_order(order, db=None):
     progress = existing.get("progress")
     if progress is None:
         progress = 100 if wo_status in ("qc_passed", "ready_to_ship", "shipped") else (50 if wo_status == "producing" else 0)
+    gift_opt = order.get("gift")
+    gift_card = str(gift_opt.get("card") or "") if isinstance(gift_opt, dict) else ""
+    hide_price = bool(gift_opt.get("hidePrice")) if isinstance(gift_opt, dict) else False
     step = existing.get("step") or (
         "已完工" if wo_status in ("qc_passed", "ready_to_ship", "shipped")
         else ("待质检" if wo_status == "qc_failed" else ("穿制打结" if wo_status == "producing" else "待领料"))
@@ -936,6 +939,8 @@ def build_work_order(order, db=None):
         "count": snap.get("count"),
         "cord": snap.get("cord"),
         "gift": snap.get("gift"),
+        "giftCard": gift_card,
+        "hidePrice": hide_price,
         "sequence": snap.get("sequence", []),
         "materials": snap.get("materials", []),
         "allowMaterialSubstitution": False,

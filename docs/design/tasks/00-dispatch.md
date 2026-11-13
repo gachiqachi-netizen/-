@@ -1,5 +1,6 @@
 # 派活总表（第一波，2026-11-13）
 
+> **派给 Codex 和 Kimi 时先看 [01-agents.md](01-agents.md)**：谁做哪张、每个会话复制什么提示词（比卡片里的旧提示词省 token，以它为准）、怎么审和合。
 > 配合 [15-dev-plan.md](../15-dev-plan.md) 用。这里是**能直接派的任务卡**：每张卡一个执行会话（一个 Codex 或 Kimi 会话只做一张卡），照卡做完就停。
 > 卡片在同目录：[backend-wave1.md](backend-wave1.md)（A 开头）、[miniprogram-wave1.md](miniprogram-wave1.md)（C 开头）、[admin-wave1.md](admin-wave1.md)（D 开头）。
 > 第二波以后的卡在 [backend-wave2.md](backend-wave2.md)、[miniprogram-wave2.md](miniprogram-wave2.md)、[admin-wave2.md](admin-wave2.md)。第二波的卡写到了“改哪些文件、容易做错的地方、接口、依据哪一节”；派之前我会对照当时的代码再核一遍文件名和函数名。
@@ -8,7 +9,7 @@
 
 1. **一张卡开一个新会话**，把卡片最后的“提示词”整段粘给执行 agent。
 2. **同一批里的卡可以同时派**（开几个会话同时跑）。它们改的文件互不重叠（第 3 节），不会互相覆盖。
-3. **下一批要等上一批里它依赖的卡合并以后才能派**。每张卡写了“开工前必须已合并”。
+3. **依赖的卡合并了就能开**，不用等整批合完（批次只用来看进度）。每张卡写了“开工前必须已合并”。
 4. 执行 agent 做完会开 PR 到 `integration/2026-11`；我来审，负责人合并。**执行 agent 不要自己合并，也不要开始下一张卡。**
 5. 卡片里有“停下来问”的情况，碰到就停，不要猜。
 
@@ -20,7 +21,7 @@
 | **第 1 批**（10 路并行） | A1 字段契约 · A4a 确认收货和自动完成 · C0a 变量和全局样式 · C0b 图标 · C0c 字标 · C0d 显示函数 · C0e 珠子图 · C0j 模板排珠改用工作台尺寸规则 · D0 后台工程 · A0 审核（我来做） | 第 0 步 | 1–2 天 |
 | **第 2 批**（5 路并行） | A2 订单展示状态 · A4b 用户订单：单个订单和改地址 · C0f 基础样式和小控件 · C0h 手串图 · D1 后台字段对齐（前半：换契约） | A2 等 A1；A4b 等 A4a；C0f 等 C0a；C0h 等 C0e；D1 等 A1、D0 | 2–3 天 |
 | **第 3 批**（5 路并行） | A4c 后台：改地址、内部备注、取消原因、去掉手动确认 · A5a 售后类型和用户申请 · C0g 弹层、底栏、浮动提示 · C0i AI 输入区 · D2 后台框架和样式 | A4c 等 A4b、A2；A5a 等 A4b；C0g、C0i 等 C0f；D2 等 D1 | 2–3 天 |
-| **第 4 批**（5 路并行） | A5b 模拟退款 · A11 路由拆分 · C0z 组件注册和临时页收口 · C2 订单状态改读后端 · D1b 后台订单详情改读后端 | A5b 等 A5a；A11 等第 3 批全部；C0z 等 C0a–C0j 全部；C2 等 A2、C0z；D1b 等 A2、D2 | 1–2 天 |
+| **第 4 批**（5 路并行） | A5b 模拟退款 · A11 路由拆分 + A11m 迁移自动登记（同一个会话） · C0z 组件注册和临时页收口 · C2 订单状态改读后端 · D1b 后台订单详情改读后端 | A5b 等 A5a；A11 等第 3 批全部；A11m 等 A5a；C0z 等 C0a–C0j 全部；C2 等 A2、C0z；D1b 等 A2、D2 | 1–2 天 |
 | **第 5 批**（第二波开始，最多 16 路） | 后端：K1 知识库存进数据库、A3 去手工费（等 E1）、A7 手机号登录、A8a 账号密码会话、B-1 上传和图片审核、B-3 分享管理、B-4 文章和条款类型、B-9 拍照置信度、B-11a 地址簿 · 小程序：**C1p 新页面空壳（先合并它，其他新页面卡才能开）**、C4a 首页、C6b 实时 AR、C6c 手围 · 后台：D4 做单、D6b 模板、D8 操作记录 | 第 4 批全部 | 3–4 天 |
 | **第 6 批** | 后端：K2 知识库校验模块、A8b 权限点、B-2 评价、B-5 首页配置、B-8 AI 返回结构、B-11b 送礼、B-11c 作品删除 · 小程序：C1a 登录页、C1b 跳转、C4c 手串详情、C4d 规则和内容页、C5c 拍照、C6a 试戴、C8a 地址 · 后台：D3a 登录、D5a 订单详情补齐 · 然后 **DB 打包** | B-2 等 A7、B-1；B-5 等 B-4；C1a 等 A7、C1p；C4d 等 B-4；C5c 等 B-1；C8a 等 B-11a；D3a 等 A8a | 3–4 天 |
 | **第 7 批** | 后端：K3 知识库后台接口、A8c 打码、A8d 操作人、B-6 用户查询、B-7 批量调价 · 小程序：C3a 工作台布局（工作台四张串行的第一张）、C4b 我的作品、C5a AI 配、C7a 确认订单、C8b 我的订单、C9a 售后申请、C9c 评价、C10a 我的和设置 · 后台：D3b 账号和角色、D5b 售后、D7a 评价审核、D7b 首页配置 · 然后 **DB 打包** | C3a 等 C1b；C4b 等 B-11c；C5a 等 B-8；C9c 等 B-2；D3b 等 A8b；D7b 等 B-5 | 3–4 天 |
@@ -53,6 +54,7 @@
 | A5a | `server/status.py`（`AFTER_SALE_TYPES`）、`server/commerce.py`（售后相关函数）、`server/user_api.py`、`server/app.py`（一个用户路由）、新建 `server/migrations/m007_after_sale_types.py`、新建 `server/tests/test_after_sale_customer.py`、`server/contract.py` 和两个导出文件 |
 | A4c | `server/commerce.py`（`allowed_order_transitions`、`transition_order_status`、新函数 `add_internal_note`、`customer_order_action` 的取消分支）、`server/user_api.py`（`INTERNAL_ORDER_FIELDS`）、`server/app.py`（后台路由）、新建 `server/tests/test_order_admin_ops.py`、`server/contract.py` 和两个导出文件 |
 | A11 | `server/app.py`（只加加载和分发）、新建 `server/routes/__init__.py`、`server/routes/_example.py`、`server/tests/test_routes_registry.py` |
+| A11m | `server/migrations/__init__.py`、`server/db.py`（只改 `TABLES` 的定义）、新建 `server/tests/test_migrations_registry.py` |
 | A5b | `server/payments.py`（`handle_refund`）、`server/commerce.py`（`_after_sale_target`、`transition_after_sale`）、新建 `server/tests/test_mock_refund.py` |
 | C0a | 新建 `miniprogram/styles/tokens.wxss`、`miniprogram/utils/theme.js`、`miniprogram/tests/theme-tokens.test.js`；改 `miniprogram/app.wxss`、`miniprogram/app.json`（只改 `window` 和 `tabBar` 的颜色，不加组件） |
 | C0b | 新建 `miniprogram/assets/icons/*`、`miniprogram/assets/tab/*`、`miniprogram/tests/icons.test.js`；填 `miniprogram/kit/icons/*`（临时页，空壳已建好） |

@@ -1,7 +1,7 @@
 # 后台前端任务卡 · 第二波及以后
 
 > 派活批次见 [00-dispatch.md](00-dispatch.md) 第 2 节（第 5–9 批）。第一波的“共同规矩”适用（见 [admin-wave1.md](admin-wave1.md) 开头），**但第 1 条改了**（见下面第 1 条）。
-> 提示词用 [backend-wave2.md](backend-wave2.md) 开头的统一模板（卡片所在文件写 `admin-wave2.md`）。
+> 提示词用 [01-agents.md](01-agents.md) 第 3 节的格式（省 token 的版本）。
 >
 > **第二波起的规矩，为的是能并行**：
 > 1. **页面卡不提交打包产物** `server/static/admin/shadcn-admin.*`。本地 `npm run build` 能过就行（PR 里贴输出）。每一批合并完，由一张很小的卡 **DB 打包** 统一打一次并提交。

@@ -1,6 +1,8 @@
 # 给执行 agent 的说明（Kimi / Codex 等）
 
-开工前按顺序读：
+**派给你的是一张任务卡时（提示词里有卡号）**：只读提示词里列的东西（本文件、卡片和卡里点名的章节），**不要通读下面 1–4**，省 token。设计稿只用 `python3 docs/design/tasks/screen.py <屏号>` 取一屏。同一台电脑上几个会话并行时，每个会话在自己的 git worktree 里做，不要在别人的目录里切分支。
+
+没有任务卡、要了解整个项目时，按顺序读：
 
 1. [docs/design/15-dev-plan.md](docs/design/15-dev-plan.md)：**改版开发总计划**（2026-11-13 起派活以它为准）：分支、字段契约、A–E 五条线的任务、里程碑、交付要求。
 2. [docs/design/README.md](docs/design/README.md)：设计文档的阅读顺序；做哪个任务就读它对应的那一节。

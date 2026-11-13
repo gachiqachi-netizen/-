@@ -1,7 +1,7 @@
 # 小程序任务卡 · 第二波及以后（页面）
 
 > 派活批次见 [00-dispatch.md](00-dispatch.md) 第 2 节（第 5–9 批）。第一波的“共同规矩”全部适用（见 [miniprogram-wave1.md](miniprogram-wave1.md) 开头）。
-> 提示词用 [backend-wave2.md](backend-wave2.md) 开头的统一模板（卡片所在文件写 `miniprogram-wave2.md`）。
+> 提示词用 [01-agents.md](01-agents.md) 第 3 节的格式（省 token 的版本）。
 >
 > **第二波起多四条规矩，为的是能并行**：
 > 1. **每张页面卡只改自己页面的文件夹**（加上卡片写明的测试文件）。新页面的空壳和 `app.json` 注册由 C1p 一次做完，页面卡不碰 `app.json`。

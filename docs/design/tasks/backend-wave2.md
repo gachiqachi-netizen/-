@@ -1,14 +1,29 @@
 # 后端任务卡 · 第二波及以后
 
 > 派活批次见 [00-dispatch.md](00-dispatch.md) 第 2 节（第 5–9 批）。第一波的共同规矩全部适用（见 [backend-wave1.md](backend-wave1.md) 开头）。
-> **第二波起多两条规矩，为的是能并行**：
+> **第二波起多三条规矩，为的是能并行**：
 > 1. **新接口不改 `server/app.py`**：写在 `server/routes/<领域>.py` 里（A11 建好的机制），`app.py` 会自动加载。
 > 2. **新功能的业务逻辑放新模块**（`server/reviews.py`、`articles.py`、`uploads.py`、`accounts.py`……），不往 `commerce.py`、`user_api.py` 里加大段代码；只有卡片明确写了的函数才能改这两个文件。
+> 3. **新表不改 `server/db.py` 和 `server/migrations/__init__.py`**（A11m 做完后）：在自己的迁移文件里写 `NEW_TABLES = ("表名",)`，`up()` 里用 `adapter.create_table(conn, "表名")` 建表，会被自动发现和登记。迁移编号按下面的表用，**不要自己挑号**：
 >
-> **提示词统一用这个模板**，把尖括号换掉：
-> ```
-> 你在仓库 串个珠 里做任务卡 <卡号>（<卡名>）。先确认 origin/integration/2026-11 里已经有 <依赖卡号> 的提交，缺了就停下来告诉我。先读 docs/design/tasks/00-dispatch.md 的第 1、3、4、5 节，再读 docs/design/tasks/<卡片所在文件> 开头的规矩和 <卡号> 这一节，严格按步骤做，只改卡里列出的文件。分支 agent/<卡号>-<英文简述>，从 origin/integration/2026-11 拉。每做完一步提交一次，提交说明以“<卡号>:”开头。碰到“停下来问”的情况就停下来问我。做完按 00-dispatch.md 第 5 节写 PR 描述，开 PR 到 integration/2026-11 后停下，不要开始别的卡。
-> ```
+> | 编号 | 文件 | 卡 |
+> |---|---|---|
+> | 007 | `m007_after_sale_types.py` | A5a（第一波，手动登记） |
+> | 008 | `m008_unit_prices.py` | A3 |
+> | 009 | `m009_admin_accounts.py`（`admin_users`、`admin_roles`、`admin_sessions`） | A8a |
+> | 010 | `m010_kb_tables.py`（`kb_items`、`kb_versions`） | K1 |
+> | 011 | `m011_kb_permission.py` | K3 |
+> | 012 | `m012_uploads.py`（`uploads`） | B-1 |
+> | 013 | `m013_reviews.py`（`reviews`） | B-2 |
+> | 014 | `m014_articles.py`（`articles`） | B-4 |
+> | 015 | `m015_share_reports.py`（`share_reports`） | B-3 |
+> | 016 | `m016_addresses.py`（`addresses`） | B-11a |
+> | 017 | `m017_notify_logs.py`（`notify_logs`、`subscriptions`） | B-10 |
+> | 018 | `m018_ai_logs.py`（`ai_logs`、`stats_daily`） | B-12 |
+>
+> 只是给已有的表加字段（比如 `shares.takenDownAt`、`designs.deletedAt`、`beads.costFen`）不需要迁移：文档里没有这个字段时按空处理。
+>
+> **提示词**：用 [01-agents.md](01-agents.md) 第 4 节的模板（省 token 的版本），不要再用旧的长模板。
 
 ---
 
@@ -38,6 +53,23 @@
 2. `app.py`：模块加载时 `import routes; ROUTE_TABLE = routes.load()`；在 `do_GET / do_POST / do_PUT / do_DELETE` 里**现有路由都匹配不上、返回 404 之前**，先查 `ROUTE_TABLE`：方法和正则都匹配就按 `auth` 检查登录（沿用 `self.user()`、`self.admin_ok()`），不通过返回 401；通过就调处理函数，`ValueError` 返回 400、`KeyError` 返回 404（和现有的处理一致）；后台写操作同样调 `self.audit_admin_mutation(path)`。
 3. `routes/_example.py`：一个示例（文件名以下划线开头，不会被加载），写清楚怎么加一个接口。
 4. 测试：临时写一个测试用的路由模块（在测试里动态插入 `ROUTE_TABLE`），验证 public / user / admin 三种登录要求、400 / 404 的转换、现有路由不受影响。
+
+---
+
+## A11m 迁移和新表自动登记（第一波第 4 批，和 A11 同一个会话做）
+
+- **依赖**：A5a（m007 已合并）　**大小**：S　**为什么**：第二波有 9 张卡要建新表。现在每建一张表都要改 `server/db.py` 的 `TABLES` 和 `server/migrations/__init__.py` 的两个列表，几张卡同时做一定冲突。
+
+**只能改**：`server/migrations/__init__.py`、`server/db.py`（只改 `TABLES` 的定义）、新建 `server/tests/test_migrations_registry.py`。
+
+**步骤**
+1. `migrations/__init__.py`：保留 `TABLES`（12 张基础表）；`MIGRATIONS` 改成自动发现：用 `pkgutil.iter_modules(__path__)` 找所有 `m\d{3}_*.py`，`importlib` 导入，按 `VERSION` 排序。两个模块 `VERSION` 相同时直接抛错（启动失败，写清楚是哪两个文件）。
+2. 同一个文件加 `ALL_TABLES = TABLES + 各迁移模块的 NEW_TABLES`（模块没有这个属性就当空），重复的表名抛错。
+3. `db.py`：`TABLES = migrations.ALL_TABLES`（从迁移包导入，`db.py` 其他地方一行不改）。
+4. 测试：现有 m001–m007 照常按顺序执行；临时目录里放一个假的 `m099_demo.py`（`NEW_TABLES=("demo",)`）后 `ALL_TABLES` 含 `demo`、`DB.put("demo", ...)` 能用；两个同号迁移启动报错。测试结束删掉假文件（用 `tempfile` + `sys.path`，不要在 `server/migrations/` 里留文件）。
+5. 跑全部后端测试，结果和改之前一样。
+
+**容易做错**：不要动 m001–m007 的内容；不要改 `migrate.py`。
 
 ---
 
@@ -195,7 +227,7 @@
 
 - **依赖**：A11　**大小**：M
 
-**只能改**：新建 `server/uploads.py`、`server/routes/uploads.py`、`server/tests/test_user_uploads.py`；改 `server/content_security.py`（加图片检查函数）。
+**只能改**：新建 `server/uploads.py`、`server/routes/uploads.py`、`server/migrations/m012_uploads.py`、`server/tests/test_user_uploads.py`；改 `server/content_security.py`（加图片检查函数）。
 
 **步骤**
 1. `POST /api/my/uploads`（`auth: "user"`）：收 `{"filename","contentType","data"(base64)}`；只收 png / jpg / webp；单张不超过 5MB；每个用户每天最多 50 张；保存到 `DATA_DIR/uploads/user/<日期>/<随机名>`；记一条 `uploads` 记录（`id, userId, path, checkStatus: pending/passed/rejected, createdAt`）；返回 `{"id","url"}`。
@@ -209,7 +241,7 @@
 
 - **依赖**：A7、B-1　**大小**：L　依据：13 第 3.1 节、04 第 20 节
 
-**只能改**：新建 `server/reviews.py`、`server/routes/reviews.py`、`server/tests/test_reviews.py`；改 `server/user_api.py`（`order_allowed_actions` 加 `write_review`）、`server/contract.py`（`ACTIONS` 加一行、加 `REVIEW_STATUSES`）和两个导出文件。
+**只能改**：新建 `server/reviews.py`、`server/routes/reviews.py`、`server/migrations/m013_reviews.py`、`server/tests/test_reviews.py`；改 `server/user_api.py`（`order_allowed_actions` 加 `write_review`）、`server/contract.py`（`ACTIONS` 加一行、加 `REVIEW_STATUSES`）和两个导出文件。
 
 **步骤**
 1. 评价记录：`id, orderNo, userId, templateId(可空), stars(1–5), text(≤300), photoIds[], anonymous, status, machine{textOk, textReason, photos:[{id, status}]}, rejectReason, createdAt, publishedAt`。状态：`machine_failed`（机审不过，用户能改了再发）、`pending`（等人审）、`published`、`rejected`（人审不过）、`taken_down`（下架）。
@@ -226,7 +258,7 @@
 
 - **依赖**：A11　**大小**：S
 
-`shares` 加 `takenDownAt`、`takeDownReason`；后台 `GET /api/admin/shares?q=`（按名字或链接里的编号查）、`POST /api/admin/shares/{id}/take-down`；用户举报 `POST /api/shares/{id}/report`（不登录也能，按 IP 每天限 20 次，存 `share_reports`）；`read_share` 遇到已下架返回 `None`（落地页显示“这条手串看不到了”）。新文件 `server/routes/shares_admin.py`、测试；只改 `user_api.read_share` 一处。
+`shares` 加 `takenDownAt`、`takeDownReason`；后台 `GET /api/admin/shares?q=`（按名字或链接里的编号查）、`POST /api/admin/shares/{id}/take-down`；用户举报 `POST /api/shares/{id}/report`（不登录也能，按 IP 每天限 20 次，存 `share_reports`）；`read_share` 遇到已下架返回 `None`（落地页显示“这条手串看不到了”）。**只能改**：新建 `server/routes/shares_admin.py`、`server/migrations/m015_share_reports.py`、`server/tests/test_shares_admin.py`；改 `server/user_api.py` 的 `read_share` 一处。
 
 ---
 
@@ -234,7 +266,7 @@
 
 - **依赖**：A11　**大小**：M
 
-**只能改**：新建 `server/articles.py`、`server/routes/articles.py`、`server/tests/test_articles.py`；改 `server/status.py`（`TERM_TYPES` 加两项）。
+**只能改**：新建 `server/articles.py`、`server/routes/articles.py`、`server/migrations/m014_articles.py`、`server/tests/test_articles.py`；改 `server/status.py`（`TERM_TYPES` 加两项）。
 
 文章：`id, title, cover(上传 id 或图片地址), body(段落数组), beadKbIds[], button{text, target}(可空), homeOrder(可空), status(draft/published), updatedAt`；保存前标题和正文过 `kb.banned_in`；后台增删改查和上下线；公开 `GET /api/articles/{id}`、`GET /api/articles?home=1`（上首页的，按 `homeOrder`）。首期三篇（04 第 25 节的“月光石的光是怎么来的”等）由运营在后台录入，不写死在代码里。
 
@@ -284,14 +316,14 @@
 
 - **依赖**：A11；**E4（公众平台申请好三个模板）**　**大小**：M
 
-`server/notify.py`：`send(user_id, template_key, data)`，三个模板 `shipped`（发货）、`delivered`（签收）、`refunded`（退款到账），模板 ID 从环境变量读；开发环境用假的发送函数（只记日志）；发送记录表 `notify_logs`（谁、哪个模板、成功没有、错误码）。在订单发货、物流签收、售后退款完成三处调用——这三处在 `commerce.py`，**只加一行调用**，失败不影响主流程。用户订阅授权的记录接口 `POST /api/my/subscriptions`。测试：三处都调用了；发送失败订单状态照常变。
+`server/notify.py`：`send(user_id, template_key, data)`，三个模板 `shipped`（发货）、`delivered`（签收）、`refunded`（退款到账），模板 ID 从环境变量读；开发环境用假的发送函数（只记日志）；发送记录表 `notify_logs`（谁、哪个模板、成功没有、错误码），订阅授权表 `subscriptions`，迁移 `server/migrations/m017_notify_logs.py`。在订单发货、物流签收、售后退款完成三处调用——这三处在 `commerce.py`，**只加一行调用**，失败不影响主流程。用户订阅授权的记录接口 `POST /api/my/subscriptions`。测试：三处都调用了；发送失败订单状态照常变。
 
 ---
 
 ## B-11 地址簿、送礼、作品删除（三张小卡，可以并行）
 
 ### B-11a 地址簿
-`addresses` 表：`id, userId, person, phone, region[], detail, isDefault`；`GET/POST/PUT/DELETE /api/my/addresses`；每人最多 20 条；设默认时把别的取消默认；手机号校验同下单。新文件 `server/addresses.py`、`server/routes/addresses.py`、测试。
+`addresses` 表：`id, userId, person, phone, region[], detail, isDefault`；`GET/POST/PUT/DELETE /api/my/addresses`；每人最多 20 条；设默认时把别的取消默认；手机号校验同下单。**只能改**：新建 `server/addresses.py`、`server/routes/addresses.py`、`server/migrations/m016_addresses.py`、`server/tests/test_addresses.py`。
 
 ### B-11b 送礼
 下单时 `gift: {"box": true, "card": "≤50字", "hidePrice": true}`；贺卡过 `content_security.ensure_allowed`；价格照 `pricing.quote` 现有的 `gift` 处理（礼盒费）；工单里显示贺卡和“包裹里不放带价格的单据”。只改 `user_api.make_order` 里读 `gift` 的那几行和 `commerce.build_work_order` 里多两个字段；测试。
@@ -305,7 +337,7 @@
 
 - **依赖**：A8b；**E5（隐私政策写明保留期限）**　**大小**：M
 
-`ai_logs`：每次 AI 配的输入（去掉手机号等）、输出、命中的方案、耗时、时间；按 E5 的期限定时清理（加到 `jobs.py` 的子命令 `purge-ai-logs`）。统计：`jobs.py stats-daily` 每天汇总“珠子被串次数、搭配次数”（只有数字，不带用户）。后台只读接口两个。新文件、测试。
+`ai_logs`：每次 AI 配的输入（去掉手机号等）、输出、命中的方案、耗时、时间；按 E5 的期限定时清理（加到 `jobs.py` 的子命令 `purge-ai-logs`）。统计：`jobs.py stats-daily` 每天汇总“珠子被串次数、搭配次数”（只有数字，不带用户）。后台只读接口两个。**只能改**：新建 `server/ai_logs.py`、`server/routes/ai_stats.py`、`server/migrations/m018_ai_logs.py`、`server/tests/test_ai_logs.py`；改 `server/jobs.py`（加两个子命令）和 `server/ai/__init__.py`（AI 配结束时调用一次记录，失败不影响返回）。
 
 ---
 

@@ -1,10 +1,10 @@
-<view class="wrap wrist-page">
-  <view class="intro">先量一下手围，后面每条手串都按它算颗数和长度。之后可以随时修改。</view>
-  <view class="card wristcard">
-    <view class="bigwrist"><button class="step" data-step="-0.5" bindtap="step" aria-label="减少">−</button><view class="measure"><input type="digit" value="{{input}}" bindinput="input" aria-label="手围厘米"/><text>cm</text></view><button class="step" data-step="0.5" bindtap="step" aria-label="增加">＋</button></view>
-    <view class="ruler"><view class="ruler-fill" style="width:{{fill}}%"></view></view>
-    <view class="presets"><view wx:for="{{presets}}" wx:key="*this" class="preset {{wrist===item?'on':''}}" data-value="{{item}}" bindtap="preset">{{item}}cm</view></view>
-  </view>
-  <view class="card guide"><view class="title">怎么量</view><view>1. 拿软尺或一张纸条，贴着手腕最细处绕一圈。</view><view>2. 纸条在重合处做记号，摊平用尺子量出长度。</view><view>3. 填量到的数字。余量会按珠子大小估算：6mm 珠加 1cm，8mm 加 1.5cm，10mm 加 2cm，12mm 加 2.5cm。</view><view class="sub">没有尺子？可以先填写估计值，下单前请实际测量并确认。</view></view>
-  <view class="bottom"><view><view class="sub">已选手围</view><view class="wrist-value">{{wrist}}cm</view></view><button class="primary" bindtap="confirm">确定</button></view>
+<view class="wrist-page">
+  <view wx:if="{{!measured}}" class="intro">还没量过，先按常见的 15cm</view><view wx:else class="intro-spacer"></view>
+  <view class="measure-row"><button class="step" disabled="{{min}}" data-step="-0.5" bindtap="step">−</button><view class="measure"><text class="measure-number">{{display}}</text><text class="measure-unit"> cm</text></view><button class="step" disabled="{{max}}" data-step="0.5" bindtap="step">＋</button></view>
+  <view class="ruler" bindtouchstart="rulerStart" bindtouchmove="rulerMove" bindtouchend="rulerEnd"><view class="ruler-mark" style="left:{{marker}}%"></view></view>
+  <view class="bead-count">按 {{mm}}mm 珠子，大约 {{count}} 颗</view>
+  <view class="tabs"><view class="tab {{noTape?'':'on'}}" data-tape="yes" bindtap="tape">有软尺</view><view class="tab {{noTape?'on':''}}" data-tape="no" bindtap="tape">没有软尺</view></view>
+  <view wx:if="{{!noTape}}" class="guide">软尺贴着手腕骨绕一圈，不松不紧，读数就是手围。<view class="guide-image">示意图：软尺绕手腕</view></view>
+  <view wx:else class="guide steps"><view>1　剪一条纸条，贴着手腕骨绕一圈，不松不紧</view><view>2　在纸条重合的地方做个记号</view><view>3　把纸条放平，用直尺量到记号，就是手围</view></view>
+  <view class="bottom"><button class="primary" bindtap="confirm">就按 {{wrist}}cm</button></view>
 </view>

@@ -1,8 +1,11 @@
 {
-  "navigationBarTitleText": "试戴",
+  "navigationBarTitleText": "戴上看看",
   "usingComponents": {
     "tryon-model": "./model3d/index",
     "photo-ring": "./photo3d/index",
-    "privacy-popup": "/components/privacy-popup/index"
+    "privacy-popup": "/components/privacy-popup/index",
+    "c-sheet": "/components/sheet/index",
+    "c-bar": "/components/bar/index",
+    "c-wordmark": "/components/wordmark/index"
   }
 }

@@ -1,23 +1,19 @@
-<view class="tryon-page"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
-  <button class="ghost" bindtap="openAR">实时 AR 试戴（测试）</button>
-  <view class="chips mode-chips"><button class="mode {{mode==='photo'?'on':''}}" data-mode="photo" bindtap="toggle">拍我的手</button><button class="mode {{mode==='model'?'on':''}}" data-mode="model" bindtap="toggle">3D 模型手</button></view>
-  <view wx:if="{{mode==='photo'}}">
-    <view class="empty" wx:if="{{!photo}}"><view>拍一张手腕的照片</view><view class="sub">手背朝上、手臂横放，光线亮一点效果最好</view></view>
+<view class="tryon-page">
+  <view class="stage" wx:if="{{mode==='photo'}}">
+    <view wx:if="{{!photo}}" class="empty-stage"><view>先拍一张手腕的照片</view><button bindtap="choose">拍一张</button><button bindtap="choose">从相册选</button></view>
     <canvas wx:if="{{photo && photoFallback}}" canvas-id="tryonCanvas" class="photo-stage" style="width:{{width}}px;height:{{height}}px" bindtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd"></canvas>
-    <view wx:if="{{photo && !photoFallback}}" class="photo-layer" style="width:{{width}}px;height:{{height}}px"><image class="photo-image" src="{{photo}}" mode="aspectFit"/><photo-ring id="photo3d" class="photo-ring" beads="{{beads}}" catalog="{{catalog}}" size="{{size}}" angle="{{angle}}" tilt="{{flatten}}" hide-back="{{hideBack}}" xpos="{{xpos}}" ypos="{{ypos}}" bind:move="photoMove" bind:rendered="photoLoaded" bind:unavailable="photoUnavailable"/></view>
+    <view wx:if="{{photo && !photoFallback}}" class="photo-layer" style="width:{{width}}px;height:{{height}}px"><image class="photo-image" src="{{photo}}" mode="aspectFit"/><photo-ring id="photo3d" class="photo-ring" beads="{{beads}}" catalog="{{catalog}}" size="{{size}}" angle="{{angle}}" tilt="{{flatten}}" hide-back="{{hideBack}}" xpos="{{xpos}}" ypos="{{ypos}}" bind:move="photoMove" bind:rendered="photoLoaded" bind:unavailable="photoUnavailable"/><view wx:if="{{!aligned}}" class="align-frame">把手腕放在这里</view><c-wordmark wx:else class="stage-mark" height="32rpx"/></view>
     <canvas wx:if="{{photo && !photoFallback}}" canvas-id="composeCanvas" class="compose-canvas" style="width:{{width}}px;height:{{height}}px"></canvas>
-    <view class="photo-actions"><button class="ghost" bindtap="choose">拍照 / 选照片</button><button class="ghost" bindtap="saveImage" loading="{{saving}}" disabled="{{!photo||!photoReady||saving}}">保存试戴照</button></view>
-    <view class="card controls" wx:if="{{photo}}"><view class="sub">拖动照片上的手串对准手腕，再调大小和角度。</view><view class="slider"><text>大小</text><slider min="8" max="95" value="{{size}}" bindchanging="sizeChange" bindchange="sizeChange" activeColor="#c8302e"/></view><view class="slider"><text>旋转</text><slider min="-90" max="90" value="{{angle}}" bindchanging="angleChange" bindchange="angleChange" activeColor="#c8302e"/></view><view class="slider"><text>倾斜</text><slider min="0" max="85" value="{{flatten}}" bindchanging="flattenChange" bindchange="flattenChange" activeColor="#c8302e"/></view><view class="switchrow"><text>隐藏后侧珠子（示意）</text><switch checked="{{hideBack}}" bindchange="hideChange" color="#c8302e"/></view></view>
-    <view class="sub">照片只在本机处理，不会自动上传。{{photoFallback?'当前设备使用平面叠加示意。':'手串为手动叠加示意。'}}</view>
+    <view wx:if="{{photo && photoFallback && !aligned}}" class="align-tip">把手腕放在虚线框里</view>
   </view>
-  <view wx:else>
-    <view class="model-stage"><tryon-model beads="{{beads}}" catalog="{{catalog}}" skin="{{skin}}" wrist="{{wrist}}" bind:unavailable="modelUnavailable"/></view>
-    <view class="error" wx:if="{{modelError}}">当前设备暂不支持 3D 模型，请使用照片试戴。</view>
-    <view class="card skin-card"><view>肤色</view><view class="skins"><view wx:for="{{skins}}" wx:key="*this" class="skin {{item===skin?'on':''}}" style="background:{{item}}" data-skin="{{item}}" bindtap="skinChange"></view></view></view>
-    <view class="sub">3D 模型手和珠子颜色为示意，不代表真实佩戴比例或实物纹理。</view>
-  </view>
-  <view class="card summary"><view>手围 {{wrist}}cm · 总长 {{length}}cm</view><view class="sub">{{fit}}</view><view class="sub">尺寸与颜色以实物及实际测量为准。</view></view>
-  <view class="error" wx:if="{{error}}">{{error}}</view>
-  <view class="bottom"><view class="sum"><view class="price">¥{{price}}</view><view class="tiny">预计商品价 · 含手工费</view></view><button class="ghost" bindtap="share">分享</button><button class="primary" bindtap="order">去下单</button></view>
+  <view wx:else class="model-stage"><tryon-model beads="{{beads}}" catalog="{{catalog}}" skin="{{skin}}" wrist="{{wrist}}" bind:unavailable="modelUnavailable"/><view wx:if="{{modelError}}">当前设备暂不支持模型手，请用照片试</view></view>
+  <view class="actions"><text bindtap="{{aligned?'saveImage':'choose'}}">{{aligned?'保存照片':'重拍'}}</text><text bindtap="openModes">换一种方式 ›</text></view>
+  <view wx:if="{{photo && !aligned}}" class="hint">拖动照片，让手腕落在虚线框里</view>
+  <view class="design-row"><text>戴的是 <text class="design-name">{{designName}}</text></text><text bindtap="openDesigns">换一条 ›</text></view>
+  <view class="hint">示意效果，以实物为准</view>
+  <view wx:if="{{error}}" class="error" bindtap="openSettings">{{error}}</view>
+  <c-bar wx:if="{{!fromOrder}}"><view slot="left" class="price">¥{{price}}</view><button bindtap="order">去下单</button></c-bar>
+  <c-sheet show="{{showDesigns}}" title="换一条" bind:close="closeDesigns"><view wx:for="{{designChoices}}" wx:key="index" class="sheet-row" data-index="{{item.index}}" bindtap="selectDesign"><text>{{item.name}}</text><text>{{item.group}}</text></view></c-sheet>
+  <c-sheet show="{{showModes}}" title="换一种方式" bind:close="closeModes"><view class="sheet-row" data-mode="photo" bindtap="selectMode">用照片</view><view class="sheet-row" data-mode="model" bindtap="selectMode">用模型手</view><view class="sheet-row" data-mode="ar" bindtap="selectMode">实时试戴</view></c-sheet>
 </view>
 <privacy-popup scene="拍照或选择手腕照片" bind:reject="privacyRejected"/>

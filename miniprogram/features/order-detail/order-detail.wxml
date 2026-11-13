@@ -3,11 +3,8 @@
   <view wx:if="{{error}}" class="error error-card">{{error}}<button bindtap="load">重新加载</button></view>
   <block wx:if="{{order}}">
     <view class="card state-card">
-      <view class="state-top"><view><view class="eyebrow">当前状态</view><view class="state-title">{{order.stateView.label}}</view></view><view class="status-badge status-{{order.stateView.tone}}">{{order.stateView.label}}</view></view>
-      <view class="state-description">{{order.stateView.description}}</view>
-      <view class="state-groups">
-        <view wx:for="{{order.stateView.states}}" wx:key="key" class="state-group"><view class="group-label">{{item.groupLabel}}</view><view class="group-value group-{{item.tone}}">{{item.label}}</view></view>
-      </view>
+      <view class="state-top"><view><view class="eyebrow">当前状态</view><view class="state-title">{{order.state.label}}</view></view><view class="status-badge status-{{order.state.tone}}">{{order.state.label}}</view></view>
+      <view class="state-description">{{order.state.desc}}</view>
     </view>
 
     <view class="card product-card">
@@ -31,6 +28,6 @@
     <view class="payment-note" wx:if="{{!order.paymentAvailable && order.paymentStatus==='unpaid'}}">支付暂未开放，此订单尚不能在线付款。</view>
   </block>
 </view>
-<view wx:if="{{order && order.actionViews.length}}" class="action-bar">
-  <button wx:for="{{order.actionViews}}" wx:key="code" class="action-button action-{{item.style}}" data-code="{{item.code}}" bindtap="runAction" loading="{{actionBusy===item.code}}" disabled="{{actionBusy}}">{{item.label}}</button>
+<view wx:if="{{order && order.state.actions.length}}" class="action-bar">
+  <button wx:for="{{order.state.actions}}" wx:key="code" class="action-button action-{{item.style}}" data-code="{{item.code}}" bindtap="runAction" loading="{{actionBusy===item.code}}" disabled="{{actionBusy}}">{{item.label}}</button>
 </view>

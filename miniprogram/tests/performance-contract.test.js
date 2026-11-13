@@ -11,7 +11,7 @@ test('AR 帧不再 slice 多份并复用单一输入缓冲', () => {
 })
 
 test('编辑器材料筛选只在筛选条件变化时重算', () => {
-  const source = fs.readFileSync(path.join(__dirname, '../pages/editor/editor.js'), 'utf8')
+  const source = fs.readFileSync(path.join(__dirname, '../pages/diy/diy.js'), 'utf8')
   assert.match(source, /if\(filterKey!==this\.filterKey\)/)
   assert.match(source, /this\.setData\(\{\.\.\.filterPatch,items/)
 })

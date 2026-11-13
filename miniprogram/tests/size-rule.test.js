@@ -1,6 +1,6 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
-const logic = require('../pages/editor/logic')
+const logic = require('../pages/diy/logic')
 
 test('13–19cm wrist and common bead sizes follow the documented fit interval', () => {
   const knownDiscreteExceptions = new Map([['13/14', -6], ['16/12', -5]])

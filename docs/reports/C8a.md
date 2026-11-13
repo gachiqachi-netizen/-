@@ -24,6 +24,7 @@
 ## 3. 改了的文件
 
 ```
+ docs/reports/C8a.md                                | 66 ++++++++++++++
  miniprogram/features/address-edit/address-edit.js  | 98 +++++++++++++++++++++-
  .../features/address-edit/address-edit.json        |  4 +-
  .../features/address-edit/address-edit.wxml        | 21 ++++-
@@ -35,7 +36,7 @@
  miniprogram/features/address/address.wxss          |  4 +-
  miniprogram/tests/address-pages.test.js            | 70 ++++++++++++++++
  miniprogram/tests/address-validation.test.js       | 24 ++++++
- 11 files changed, 303 insertions(+), 20 deletions(-)
+ 12 files changed, 369 insertions(+), 20 deletions(-)
 ```
 报告文件：`docs/reports/C8a.md`。测试文件依据 D29 的“和测试”要求新增。
 

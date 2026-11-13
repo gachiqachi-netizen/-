@@ -211,6 +211,19 @@ def delete_product(db, rid, actor=ACTOR):
     existing = db.get("beads", rid)
     if not existing:
         raise KeyError("商品不存在")
+    templates = sum(1 for template in db.list("templates")
+                    if any(rid == bead_id for field in ("special", "pattern", "tail")
+                           for bead_id in (template.get(field) or [])))
+    orders = 0
+    for order in db.list("orders"):
+        snapshot = order.get("designSnapshot") or {}
+        sequences = (order.get("beads") or [], order.get("items") or [],
+                     snapshot.get("sequence") or [], snapshot.get("items") or [])
+        if any(rid == (item.get("id") or item.get("beadId") if isinstance(item, dict) else item)
+               for sequence in sequences for item in sequence):
+            orders += 1
+    if templates or orders:
+        raise ValueError(f"这个商品被 {templates} 个模板、{orders} 个订单用过，不能删除，可以改成下架")
     db.delete("beads", rid)
     audit(db, actor, "delete", "product", rid, existing.get("name"))
 

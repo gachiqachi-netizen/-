@@ -1040,7 +1040,7 @@ def record_quality_gate(db, no, data, actor=ACTOR):
         if type(val) is not bool:
             raise ValueError("质检关口必须完整记录珠序、尺寸、用料和外观四项检查结果")
         checks[field] = val
-    inspector = str(d.get("inspector") or actor or ACTOR).strip()[:40]
+    inspector = str(actor or ACTOR).strip()[:40]
     if not inspector:
         raise ValueError("请填写质检人员")
     note = str(d.get("note") or "").strip()[:300]

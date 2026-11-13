@@ -633,6 +633,9 @@ def allowed_order_transitions(order):
             # 「发货」由履约状态联动推进，物流维度不单独提供发货按钮
             states = [s for s in states if s != "shipped"]
         out[group] = [t for t in states if _cross_constraint(order, group, t) is None]
+        if group == "orderStatus" and groups.get("paymentStatus") != "paid":
+            # 付款后由支付回调自动确认，后台不再手动确认未付款订单
+            out[group] = [t for t in out[group] if t != "confirmed"]
     out["paymentStatus"] = []
     out["afterSaleStatus"] = []
     return out
@@ -1128,6 +1131,8 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
         from_ = groups[group]
         meta["from"] = from_
         meta["to"] = to_
+        if group == "orderStatus" and to_ == "confirmed" and groups["paymentStatus"] != "paid":
+            raise ValueError("付款后会自动确认，不用手动确认")
         status.validate_transition(group, from_, to_)
         _check_order_constraints(order, group, to_)
         if from_ == to_:  # 幂等：重复转换直接返回当前状态，不重复写历史/审计
@@ -1183,7 +1188,7 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
     return saved
 
 
-def customer_order_action(db, no, user_id, action):
+def customer_order_action(db, no, user_id, action, reason=None):
     """Apply a customer-owned order action under the same database transaction.
 
     Payment is intentionally absent: only the payment callback boundary may
@@ -1208,12 +1213,18 @@ def customer_order_action(db, no, user_id, action):
             }
             if any(groups[k] != v for k, v in expected.items()):
                 raise ValueError("当前订单状态不能取消")
+            if reason:
+                import contract
+                if reason not in contract.CANCEL_REASONS:
+                    raise ValueError("取消原因不正确")
+                order["cancelReason"] = reason
             status.validate_transition("orderStatus", groups["orderStatus"], "cancelled")
             status.validate_transition("paymentStatus", groups["paymentStatus"], "closed")
             order["orderStatus"] = "cancelled"
             order["paymentStatus"] = "closed"
             order["status"] = "已取消"  # legacy client compatibility
-            append_history(order, "customer", "orderStatus", groups["orderStatus"], "cancelled", "用户取消未支付订单")
+            append_history(order, "customer", "orderStatus", groups["orderStatus"], "cancelled",
+                           "用户取消未支付订单" + ("：" + reason if reason else ""))
             append_history(order, "customer", "paymentStatus", groups["paymentStatus"], "closed", "订单取消，关闭支付")
         else:
             if not (groups["orderStatus"] == "confirmed"
@@ -1250,6 +1261,25 @@ def customer_order_action(db, no, user_id, action):
         audit_builder=lambda: _audit_record(
             "customer", action, "order", no,
             json.dumps(meta.get("before", {}), ensure_ascii=False, sort_keys=True)))
+
+
+INTERNAL_NOTE_MAX = 300
+
+
+def add_internal_note(db, no, text, actor=ACTOR):
+    """后台内部备注：只给后台看，用户接口不返回。最多保留 100 条。"""
+    text = text.strip() if isinstance(text, str) else ""
+    if not 1 <= len(text) <= INTERNAL_NOTE_MAX:
+        raise ValueError("内部备注要 1–300 字")
+
+    def apply(order):
+        notes = list(order.get("internalNotes") or [])
+        notes.append({"at": _now(), "actor": actor, "text": text})
+        order["internalNotes"] = notes[-100:]
+        order["updatedAt"] = _now()
+
+    return _atomic_order_transition(
+        db, no, apply, audit_builder=lambda: _audit_record(actor, "internal_note", "order", no, ""))
 
 
 AUTO_COMPLETE_DAYS = 7

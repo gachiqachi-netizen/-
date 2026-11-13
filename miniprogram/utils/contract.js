@@ -44,6 +44,12 @@ module.exports = {
     "改手围重串",
     "拒收后退款"
   ],
+  "cancelReasons": [
+    "不想要了",
+    "拍错了，想重新设计",
+    "地址填错了",
+    "其他"
+  ],
   "customerStatus": {
     "after_sale_done": {
       "label": "售后已完成",
@@ -285,7 +291,7 @@ module.exports = {
     "退货退款说明",
     "售后服务说明"
   ],
-  "version": "551b25ff1400",
+  "version": "593b51f383b4",
   "workOrderStatuses": {
     "pending": "待开始",
     "producing": "制作中",

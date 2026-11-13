@@ -155,6 +155,7 @@ class TransactionTest(unittest.TestCase):
 
     def test_idempotent_order_transition_does_not_duplicate_audit(self):
         no = self.make_order('txn-audit-000002')['no']
+        o = self.db.get('orders', no); self.db.put('orders', no, {**o, 'paymentStatus': 'paid', 'paidFen': o.get('payableFen') or o.get('totalFen') or 0})  # A4c：只有已付款订单能手动确认
         commerce.transition_order_status(self.db, no, 'orderStatus', 'confirmed')
         first = [a for a in self.db.list('audit_logs') if a.get('action') == 'transition']
         commerce.transition_order_status(self.db, no, 'orderStatus', 'confirmed')

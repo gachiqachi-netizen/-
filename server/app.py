@@ -479,7 +479,7 @@ class Handler(BaseHTTPRequestHandler):
                 action = suffix_action or data.get("action")
                 if not isinstance(action, str) or not re.fullmatch(r"[a-z_]+", action):
                     raise ValueError("订单操作格式不正确")
-                return self.send(200, user_api.perform_order_action(db, no, uid, action))
+                return self.send(200, user_api.perform_order_action(db, no, uid, action, data.get("reason")))
             if path in ("/api/designs", "/api/my/orders"):
                 uid = self.user()
                 if not uid:
@@ -655,6 +655,17 @@ class Handler(BaseHTTPRequestHandler):
                     result = commerce.record_quality_gate(db, rid, data)
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
+            m = re.match(r"^/api/admin/orders/([\w-]+)/(address|note)$", path)
+            if m:
+                if not self.admin_ok():
+                    return self.send(401, {"error": "需要后台口令"})
+                rid, action = m.groups()
+                if action == "address":
+                    commerce.change_order_address(db, rid, data, actor="admin")
+                else:
+                    commerce.add_internal_note(db, rid, data.get("text"), actor="admin")
+                self.audit_admin_mutation(path)
+                return self.send(200, commerce.order_detail(db, rid))
             m = re.match(r"^/api/admin/after-sales/([\w-]+)/transition$", path)
             if m:
                 if not self.admin_ok():

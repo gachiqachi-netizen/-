@@ -84,7 +84,7 @@ class AdminCommerceHTTPTest(unittest.TestCase):
         self.assertEqual(self.request('/api/admin/beads/' + created['id'], 'DELETE', admin='test-admin')[0], 200)
 
     def test_order_status_transition_and_illegal(self):
-        no = self._order()['no']
+        no = self._order(paid=True)['no']  # A4c：只有已付款订单能手动确认
         # 合法迁移：待确认 → 已确认
         status_code, saved = self.request(f'/api/admin/orders/{no}/status', 'PUT', {'group': 'orderStatus', 'to': 'confirmed'}, admin='test-admin')
         self.assertEqual(status_code, 200)

@@ -13,21 +13,18 @@
 ## 2. 验收
 | 卡上的验收项 | 结果 | 证据 |
 |---|---|---|
-| 物流详情和稿 63 并排；复制提示“单号已复制” | 功能测试通过，待视觉验收 | `logistics.test.js::without tracking provider only waybill is visible and copy gives feedback`；需要负责人在开发者工具看：`features/logistics/logistics?no=<订单号>`，对照稿 s63 |
-| B-13 没做：只有单号和“复制单号后可在快递官网查询” | 功能测试通过，待视觉验收 | `logistics.test.js::without tracking provider only waybill is visible and copy gives feedback`；需要负责人在开发者工具看：`features/logistics/logistics?no=<订单号>`，对照稿 s63 |
-| 制作中的订单改地址，保存后提示“地址已改” | 功能测试通过，待跨页验收 | `logistics.test.js::only edit_address permission allows pre-shipment address update`；需要负责人在开发者工具看：`features/logistics/logistics?no=<订单号>&mode=address`，对照稿 s64 |
-| 已发货订单没有“改 ›” | 功能测试通过，待视觉验收 | `logistics.test.js::shipped order never opens address editor`；需要负责人在开发者工具看：`features/logistics/logistics?no=<订单号>`，对照稿 s63 |
+| 物流详情和稿 63 并排；复制提示“单号已复制” | 功能测试通过，待视觉验收 | `logistics-page.test.js::without tracking provider only waybill is visible and copy gives feedback`；需要负责人在开发者工具看：`features/logistics/logistics?no=<订单号>`，对照稿 s63 |
+| B-13 没做：只有单号和“复制单号后可在快递官网查询” | 功能测试通过，待视觉验收 | `logistics-page.test.js::without tracking provider only waybill is visible and copy gives feedback`；需要负责人在开发者工具看：`features/logistics/logistics?no=<订单号>`，对照稿 s63 |
+| 制作中的订单改地址，保存后提示“地址已改” | 功能测试通过，待跨页验收 | `logistics-page.test.js::only edit_address permission allows pre-shipment address update`；需要负责人在开发者工具看：`features/logistics/logistics?no=<订单号>&mode=address`，对照稿 s64 |
+| 已发货订单没有“改 ›” | 功能测试通过，待视觉验收 | `logistics-page.test.js::shipped order never opens address editor`；需要负责人在开发者工具看：`features/logistics/logistics?no=<订单号>`，对照稿 s63 |
 | 09 清单 13、18、G1–G8 | 部分完成 | 单号可复制和发货前改地址有上述测试；跨页入口及设备表现需要负责人验收 |
 
 ## 3. 改了的文件
-`git diff --stat origin/integration/2026-11...HEAD`（提交本报告前）：
+`git diff --stat origin/integration/2026-11...HEAD`（更新本报告前）：
 ```
- miniprogram/features/logistics/logistics.js      | 94 +++++++++++++++++++++++-
- miniprogram/features/logistics/logistics.json    |  7 +-
- miniprogram/features/logistics/logistics.test.js | 64 ++++++++++++++++
- miniprogram/features/logistics/logistics.wxml    | 32 +++++++-
- miniprogram/features/logistics/logistics.wxss    | 24 +++++-
- 5 files changed, 214 insertions(+), 7 deletions(-)
+ docs/reports/C8c.md                                          | 12 +++++++-----
+ .../logistics.test.js => tests/logistics-page.test.js}       |  4 ++--
+ 2 files changed, 9 insertions(+), 7 deletions(-)
 ```
 
 ## 4. 测试

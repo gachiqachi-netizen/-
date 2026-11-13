@@ -66,6 +66,7 @@ AFTER_SALE_REASONS = {  # 2026-11-13 负责人定：按常见电商，场景从�
     "改手围重串": ["戴着太紧", "戴着太松"],
     "拒收后退款": ["不想要了", "物流太慢", "其他"],
 }
+CANCEL_REASONS = ["不想要了", "拍错了，想重新设计", "地址填错了", "其他"]  # 用词和售后原因保持一致
 PROGRESS_STEPS = [("ordered", "下单"), ("producing", "制作"), ("shipping", "运输"), ("delivered", "签收")]
 PRODUCT_TYPES = {"bead": "珠子", "spacer": "隔珠/隔片", "pendant": "吊坠", "cord": "线材", "packaging": "包装"}
 PRODUCT_STATUSES = {"draft": "草稿", "on_sale": "在售", "off_sale": "已下架", "archived": "已归档"}
@@ -88,6 +89,7 @@ def payload():
         "termTypes": list(status.TERM_TYPES), "termStatuses": TERM_STATUSES, "termScenarios": TERM_SCENARIOS,
         "workOrderSteps": list(commerce.WORK_ORDER_STEPS), "workOrderStatuses": WORK_ORDER_STATUSES,
         "qualityGateItems": QUALITY_GATE_ITEMS,
+        "cancelReasons": CANCEL_REASONS,
     }
     raw = json.dumps(data, ensure_ascii=False, sort_keys=True)
     return {"version": hashlib.sha256(raw.encode("utf-8")).hexdigest()[:12], **data}

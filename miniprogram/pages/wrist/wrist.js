@@ -2,7 +2,7 @@ const store = require('../../utils/design')
 const logic = require('../diy/logic')
 const api = require('../../utils/api')
 const MIN = 8, MAX = 30
-function count(wrist, mm) { return Math.round(logic.stats([], [{id:'sample', mm}], wrist).target / mm) }
+function count(wrist, mm) { return Math.round(logic.stats(['sample'], [{id:'sample', mm}], wrist).target / mm) }
 Page({
   data: {wrist:15, display:'15.0', mm:8, count:21, measured:false, noTape:false, min:false, max:false, marker:32},
   onLoad(options) {
@@ -12,8 +12,10 @@ Page({
     this.setData({measured:!!wx.getStorageSync('cgz_wrist_confirmed')}); this.setWrist(wrist)
     if (design && design.beads && design.beads.length) api.catalog().then(c => {
       const result = logic.stats(design.beads, c.beads || [], wrist)
-      const main = design.beads.map(id => result.map[id]).find(b => b && !b.spacer && b.mat !== 'metal' && Number(b.mm) >= 6)
-      if (main) { this.setData({mm:Number(main.mm)}); this.setWrist(this.data.wrist) }
+      const sizes = {}
+      design.beads.map(id => result.map[id]).filter(b => b && !b.spacer && b.mat !== 'metal' && Number(b.mm) >= 6).forEach(b => { sizes[b.mm] = (sizes[b.mm] || 0) + 1 })
+      const main = Object.keys(sizes).sort((a,b) => sizes[b] - sizes[a] || Number(a) - Number(b))[0]
+      if (main) { this.setData({mm:Number(main)}); this.setWrist(this.data.wrist) }
     }).catch(() => {})
   },
   setWrist(value) {

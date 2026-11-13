@@ -1190,6 +1190,57 @@ def customer_order_action(db, no, user_id, action):
             json.dumps(meta.get("before", {}), ensure_ascii=False, sort_keys=True)))
 
 
+AUTO_COMPLETE_DAYS = 7
+
+
+def _auto_complete_due(order, cutoff):
+    groups = status.derive_status(order)
+    signed_at = (order.get("logistics") or {}).get("signedAt")
+    return (groups["orderStatus"] == "confirmed"
+            and groups["logisticsStatus"] == "delivered"
+            and groups["afterSaleStatus"] == "none"
+            and isinstance(signed_at, (int, float)) and signed_at <= cutoff)
+
+
+def auto_complete_delivered(db, now_ms=None, days=AUTO_COMPLETE_DAYS):
+    """签收超过 days 天、用户没确认、也没有售后的订单，自动完成。返回处理的订单号列表。"""
+    now = _now() if now_ms is None else now_ms
+    cutoff = now - days * 24 * 3600 * 1000
+    done = []
+    for order in db.list("orders"):
+        no = order.get("no")
+        if not no or not _auto_complete_due(order, cutoff):
+            continue
+
+        def apply(o):
+            # 事务里再查一次：列表读出来以后状态可能已经变了。
+            if not _auto_complete_due(o, cutoff):
+                raise ValueError("订单状态已变化，跳过自动完成")
+            groups = status.derive_status(o)
+            note = "签收 7 天后自动确认收货"
+            if groups["fulfillmentStatus"] != "delivered":
+                status.validate_transition("fulfillmentStatus", groups["fulfillmentStatus"], "delivered")
+                _check_order_constraints(o, "fulfillmentStatus", "delivered")
+                o["fulfillmentStatus"] = "delivered"
+                append_history(o, "system", "fulfillmentStatus", groups["fulfillmentStatus"], "delivered", note)
+            status.validate_transition("orderStatus", groups["orderStatus"], "completed")
+            _check_order_constraints(o, "orderStatus", "completed")
+            o["orderStatus"] = "completed"
+            o["status"] = "已完成"  # legacy client compatibility
+            append_history(o, "system", "orderStatus", groups["orderStatus"], "completed", note)
+            o["updatedAt"] = now
+            return o
+
+        try:
+            _atomic_order_transition(
+                db, no, apply,
+                audit_builder=lambda no=no: _audit_record("system", "auto_complete", "order", no, ""))
+        except (ValueError, KeyError):
+            continue
+        done.append(no)
+    return done
+
+
 def start_payment(db, no, user_id):
     """用户发起付款：校验订单归属和状态，记一条付款记录，返回给前端的付款参数。"""
     out = {}

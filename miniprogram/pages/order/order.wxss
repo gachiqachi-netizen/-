@@ -1,7 +1,38 @@
-.order-page{padding:24rpx 32rpx 160rpx;color:#1f1b1a;font-size:30rpx}.order-content{display:flex;flex-direction:column;gap:24rpx}.order-card{background:#fff;border:1rpx solid #e9e8e6;border-radius:24rpx;padding:32rpx;display:flex;flex-direction:column;gap:24rpx}.design-summary{display:flex;align-items:center;gap:24rpx}.order-preview{position:relative;overflow:hidden;width:200rpx;height:200rpx;flex:none;background:#f8f8f7;border-radius:24rpx}.preview-bead{position:absolute;width:14rpx;height:14rpx;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 1rpx 2rpx rgba(0,0,0,.2)}.summary-info{min-width:0}.design-name{font-size:36rpx;font-weight:600;line-height:1.4}.section-title{font-size:32rpx;font-weight:600}.caption{font-size:26rpx;line-height:36rpx;color:#5e5753}.muted{color:#736b66}.material-list{display:flex;flex-direction:column;gap:24rpx}.material-line{display:flex;align-items:center;gap:24rpx}.material-thumb{width:80rpx;height:80rpx;flex:none;display:flex;align-items:center;justify-content:center;border-radius:12rpx;background:#f6f5f4;overflow:hidden}.material-image{width:100%;height:100%}.material-dot{width:55rpx;height:55rpx;border-radius:50%;box-shadow:0 4rpx 7rpx rgba(0,0,0,.14)}.material-info{flex:1;min-width:0}.amount{font-size:26rpx}.opt{display:flex;align-items:center;justify-content:space-between;gap:16rpx;min-height:50rpx}.value-link{font-size:28rpx}.fit-warning{display:flex;justify-content:space-between;color:#9a5800;font-size:26rpx}.cords{display:flex;gap:8rpx;flex-wrap:wrap;justify-content:flex-end}.cord{font-size:26rpx;line-height:58rpx;height:60rpx;padding:0 20rpx;border:1rpx solid #aaa3a0;border-radius:999rpx;background:#fff;margin:0}.cord.chosen{color:#a82522;border-color:#c8302e;background:#fbecea}.form-card{gap:24rpx}.form-input{box-sizing:border-box;width:100%;height:84rpx;padding:0 24rpx;border:1rpx solid #aaa3a0;border-radius:12rpx;background:#fff;font-size:30rpx}.error{color:#b42318;font-size:26rpx;line-height:38rpx}.order-bar{position:fixed;bottom:0;left:0;right:0;box-sizing:border-box;display:flex;align-items:center;gap:24rpx;padding:24rpx 32rpx calc(24rpx + env(safe-area-inset-bottom));background:#fff;box-shadow:0 -8rpx 32rpx rgba(31,27,26,.06);z-index:5}.order-total{flex:1;display:flex;flex-direction:column;gap:4rpx}.total-price{font-size:36rpx;font-weight:600;color:#c8302e}.submit{margin:0;border:0;border-radius:999rpx;background:#c8302e;color:#fff;height:88rpx;line-height:88rpx;padding:0 40rpx;font-size:30rpx;font-weight:600}.submit[disabled]{opacity:.45}.done{gap:24rpx}
-.opt>text:first-child{flex-shrink:0;white-space:nowrap}
-.cords{flex:1;min-width:0}
-.cords .cord{width:auto;min-width:0;flex:0 0 auto;box-sizing:border-box}
-.order-page{padding-bottom:calc(180rpx + env(safe-area-inset-bottom))}
-
-.material-safety{color:#c62828;white-space:pre-line;font-size:24rpx;line-height:1.5;overflow-wrap:break-word}.material-explanation{font-size:24rpx;line-height:1.5;color:#57534e}.material-row{padding:20rpx 0;border-bottom:1rpx solid #eee}.material-sheet{max-height:65vh;box-sizing:border-box}.material-summary{flex-shrink:0;padding:8rpx 24rpx;font-size:24rpx}.material-summary .material-safety{max-height:72rpx;overflow:auto}
+.page { min-height: 100vh; background: var(--c-bg); padding-bottom: 240rpx; color: var(--c-text); font-size: var(--fs-body); }
+.address-row, .row, .sheet-row { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
+.address-row { min-height: 136rpx; padding: 16rpx 32rpx; box-sizing: border-box; }
+.address-name, .name { font-weight: var(--fw-bold); }
+.address-detail { margin-top: 8rpx; font-size: var(--fs-caption); color: var(--c-text-2); }
+.address-actions { display: flex; align-items: center; gap: 16rpx; font-size: var(--fs-caption); }
+.small { height: 64rpx; padding: 0 18rpx; font-size: var(--fs-caption); flex: none; }
+.summary { display: flex; align-items: center; gap: 24rpx; padding: 28rpx 32rpx; border-top: 1rpx solid var(--c-line); }
+.bracelet { width: 144rpx; height: 144rpx; flex: none; background: var(--c-surface); display: flex; align-items: center; justify-content: center; }
+.summary-text { flex: 1; min-width: 0; }
+.name { font-size: var(--fs-title); }
+.meaning { margin-top: 8rpx; }
+.hint { margin-top: 8rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
+.rows { margin-top: 16rpx; border-top: 1rpx solid var(--c-line); }
+.row { min-height: 88rpx; padding: 0 32rpx; border-bottom: 1rpx solid var(--c-line); }
+.prices { margin-top: 28rpx; }
+.link { color: var(--c-text-2); }
+.payment-note { padding: 24rpx 32rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
+.error { padding: 12rpx 32rpx; color: var(--c-danger); font-size: var(--fs-caption); }
+.bar-top { padding-bottom: 16rpx; }
+.length-note { margin-bottom: 12rpx; font-size: var(--fs-caption); color: var(--c-text-2); }
+.agreement { display: flex; align-items: center; gap: 8rpx; white-space: nowrap; }
+.check { width: 32rpx; height: 32rpx; flex: none; border: 2rpx solid var(--c-text); border-radius: 50%; text-align: center; line-height: 32rpx; font-size: 24rpx; }
+.checked { background: var(--c-text); color: var(--c-bg); }
+.agreement-text { font-size: 22rpx; white-space: nowrap; }
+.under { text-decoration: underline; }
+.agreement-error { color: var(--c-danger); }
+.agreement-error .check { border-color: var(--c-danger); }
+.total { font-size: var(--fs-title); font-weight: var(--fw-bold); white-space: nowrap; }
+.safety-copy { white-space: pre-line; line-height: 1.6; }
+.sheet-row { min-height: 88rpx; padding: 16rpx 0; border-bottom: 1rpx solid var(--c-line); }
+.sheet-label { margin-top: 20rpx; font-size: var(--fs-caption); }
+.sheet-actions { display: flex; gap: 16rpx; margin-top: 32rpx; }
+.counter { text-align: right; font-size: var(--fs-caption); color: var(--c-text-2); }
+textarea { width: 100%; min-height: 120rpx; background: var(--c-surface); padding: 16rpx; box-sizing: border-box; }
+input { min-height: 88rpx; border-bottom: 1rpx solid var(--c-line); }
+.shake { animation: shake .25s ease-in-out; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6rpx); } 75% { transform: translateX(6rpx); } }

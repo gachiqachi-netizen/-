@@ -1,1 +1,9 @@
-{"navigationBarTitleText":"确认订单","usingComponents":{"bracelet-thumb":"/components/bracelet-thumb/index"}}
+{
+  "navigationBarTitleText": "确认订单",
+  "usingComponents": {
+    "c-bar": "/components/bar/index",
+    "c-bracelet": "/components/bracelet/index",
+    "c-sheet": "/components/sheet/index",
+    "c-state": "/components/state/index"
+  }
+}

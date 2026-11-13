@@ -1498,6 +1498,15 @@ def create_after_sale(db, data, actor=ACTOR):
 
 
 def _after_sale_target(action, current, atype):
+    if action == "refund":
+        if atype not in REFUND_TYPES:
+            raise ValueError("这种售后不退款")
+        if atype == "退货退款":
+            if current != "returning":
+                raise ValueError("退货退款要先记录退货物流，再退款")
+        elif current != "approved":
+            raise ValueError("同意后才能退款")
+        return "refunding"
     if action == "approve":
         if current == "requested":
             return "reviewing"
@@ -1554,6 +1563,9 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
         if target == current:  # 幂等：同一状态重复转换不重复写历史
             return rec
 
+        if target == "refunding":
+            return _refund_in_tx(w, order, rec, no, current, note, actor)
+
         rec["status"] = target
         rec["updatedAt"] = _now()
         if target in ("rejected", "closed"):
@@ -1576,6 +1588,48 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
         return rec
 
 
+def _refund_in_tx(w, order, rec, no, current, note, actor):
+    """在 transition_after_sale 的同一个事务里退款：售后 → refunding → completed，订单支付 paid → refunding → refunded。
+
+    真实通道（payments.handle_refund 抛 RuntimeError）时整个事务不提交，售后和订单都不变。
+    """
+    if not order:
+        raise KeyError("订单不存在")
+    refund_fen = int(rec.get("refundFen") or 0)
+    try:
+        payments.handle_refund(order, refund_fen)
+    except RuntimeError:
+        raise ValueError("真实退款服务尚未接入")
+    mock = order.get("paymentChannel") == "mock"
+    pay_note = "模拟退款" if mock else "退款"
+    pay_from = status.derive_status(order)["paymentStatus"]
+    status.validate_transition("paymentStatus", pay_from, "refunding")
+    status.validate_transition("paymentStatus", "refunding", "refunded")
+    status.validate_transition("afterSaleStatus", "refunding", "completed")
+    now = _now()
+
+    rec["status"] = "completed"
+    rec["refundedFen"] = refund_fen
+    rec["reservedFen"] = 0
+    rec["updatedAt"] = now
+    rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", current, "refunding", note))
+    rec["history"].append(status.history_entry(actor, "afterSaleStatus", "refunding", "completed", pay_note))
+    rec["history"] = rec["history"][-200:]
+    w.put_after_sale(no, rec)
+
+    order["paymentStatus"] = "refunded"
+    order["refundFen"] = int(order.get("refundFen") or 0) + refund_fen
+    order["afterSaleStatus"] = "completed"
+    order["updatedAt"] = now
+    append_history(order, actor, "afterSaleStatus", current, "refunding", note)
+    append_history(order, actor, "paymentStatus", pay_from, "refunding", pay_note)
+    append_history(order, actor, "paymentStatus", "refunding", "refunded", pay_note)
+    append_history(order, actor, "afterSaleStatus", "refunding", "completed", pay_note)
+    w.put_order(order["no"], order)
+    w.put_audit(_audit_record(actor, "refund", "after_sale", no, f"{rec['type']}: {pay_note} {refund_fen} 分"))
+    return rec
+
+
 def list_after_sales(db, q="", pstatus=""):
     rows = db.list("after_sales")
     rows.sort(key=lambda r: r.get("createdAt", 0), reverse=True)
@@ -1596,7 +1650,7 @@ def after_sale_allowed_states(rec):
 def after_sale_allowed_actions(rec):
     """售后记录当前可执行的操作（供前端渲染按钮），复用 _after_sale_target 作为唯一裁决源。"""
     actions = []
-    for action in ("approve", "reject", "returning", "receive", "complete", "close"):
+    for action in ("approve", "reject", "returning", "refund", "receive", "complete", "close"):
         try:
             _after_sale_target(action, rec.get("status"), rec.get("type"))
             actions.append(action)

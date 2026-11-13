@@ -186,6 +186,9 @@ def handle_refund(order, refund_fen):
       3. 记录退款单号与幂等键，写状态历史。
     """
     validate_refund_amount(order, refund_fen)
+    # 模拟支付付的钱，模拟退款直接成功；只改返回值，不改订单（订单在 commerce 的同一事务里改）。
+    if order.get("paymentChannel") == "mock" and provider() == "mock":
+        return "refunded"
     if PAYMENT_NOT_INTEGRATED:
         raise RuntimeError("未接真实退款，禁止标记已退款")
     raise NotImplementedError("真实退款尚未接入")

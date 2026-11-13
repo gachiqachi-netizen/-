@@ -118,7 +118,7 @@ export const Shell: React.FC<ShellProps> = ({
           ))}
         </nav>
         <div className="zy-side-foot">
-          <span>串个珠 · 后台</span>
+          <span>{me ? `${me.name}（${me.roleName}）` : '串个珠 · 后台'}</span>
           <button type="button" className="zy-side-logout" onClick={onLogout}>
             退出
           </button>

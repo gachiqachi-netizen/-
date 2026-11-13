@@ -27,10 +27,10 @@
 
 ## 3. 改了的文件
 
-`git diff --stat origin/integration/2026-11...HEAD`（报告提交前）：
+`git diff --stat origin/integration/2026-11...HEAD`（报告最后提交前）：
 
 ```text
- docs/reports/C3a.md                            | 33 +++++++++
+ docs/reports/C3a.md                            | 85 ++++++++++++++++++++++
  miniprogram/app.json                           |  1 -
  miniprogram/pages/diy/diy.js                   | 97 ++++++++++++++++++++++++--
  miniprogram/pages/diy/diy.json                 |  2 +-
@@ -40,18 +40,20 @@
  miniprogram/pages/diy/materials.js             | 19 +++++
  miniprogram/pages/editor/logic.js              | 40 +----------
  miniprogram/pages/editor/materials.js          | 20 +-----
+ miniprogram/pages/mine/mine.js                 |  4 +-
+ miniprogram/pages/share/share.js               |  2 +-
  miniprogram/tests/material-picker.test.js      |  2 +-
  miniprogram/tests/material-safety.test.js      |  2 +-
  miniprogram/tests/performance-contract.test.js |  2 +-
  miniprogram/tests/size-rule-shared.test.js     |  2 +-
  miniprogram/tests/size-rule.test.js            |  2 +-
- 15 files changed, 230 insertions(+), 76 deletions(-)
+ 17 files changed, 285 insertions(+), 79 deletions(-)
 ```
 
 ## 4. 测试
 
 ```text
-python3 -m unittest discover -s server/tests: Ran 553 tests in 82.526s; OK (skipped=7)
+python3 -m unittest discover -s server/tests: Ran 553 tests in 70.540s; OK (skipped=7)
 node --test miniprogram/tests/*.test.js: tests 162; pass 162; fail 0
 python3 kb/validate.py: 已填 200/200 种，有问题 0 条，缺 0 种
 ```
@@ -62,6 +64,8 @@ python3 kb/validate.py: 已填 200/200 种，有问题 0 条，缺 0 种
 
 ```text
 git log --oneline origin/integration/2026-11..HEAD
+a2ecadd C3a: 审核 1 接通我的和分享页工作台入口
+615d47b C3a: 更新交付报告和范围待确认项
 d4b030f C3a: 实现全屏选珠工作台布局
 d9ff85e C3a: 迁移工作台逻辑并更新测试引用
 fa907db C3a: 记录编辑器迁移评估
@@ -82,4 +86,4 @@ fa907db C3a: 记录编辑器迁移评估
 
 | 审核意见编号 | 怎么改的 | 提交 hash |
 |---|---|---|
-| 负责人批准 A | 仅将 mine 的两处和 share 的一处旧编辑器跳转换成 `nav.openWorkbench`，保留旧路径逻辑与材料转接文件 | 待提交 |
+| 负责人批准 A | 仅将 mine 的两处和 share 的一处旧编辑器跳转换成 `nav.openWorkbench`，保留旧路径逻辑与材料转接文件 | a2ecadd |

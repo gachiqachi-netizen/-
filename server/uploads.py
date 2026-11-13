@@ -39,7 +39,10 @@ def _today(now=None):
 
 
 def _decode_image(filename, content_type, data):
-    ext = CONTENT_TYPES.get(str(content_type or "").strip().lower())
+    content_type = str(content_type or "").strip().lower()
+    ext = CONTENT_TYPES.get(content_type)
+    if content_type and ext is None:
+        raise ValueError("只支持 png / jpg / webp 图片")
     if ext is None:
         ext = str(filename or "").rsplit(".", 1)[-1].lower() if "." in str(filename or "") else ""
         if ext == "jpeg":

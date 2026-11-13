@@ -1,6 +1,4 @@
 {
   "navigationBarTitleText": "预览 · AI 输入区",
-  "usingComponents": {
-    "c-composer": "/components/composer/index"
-  }
+  "usingComponents": {}
 }

@@ -1,13 +1,27 @@
 @import "tailwindcss";
 
+/* D2 新后台样式变量：组件里只用变量，不写死颜色（规则见 docs/design/12-admin.md 第 3 节） */
 @layer base {
   :root {
     --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Inter", sans-serif;
+
+    --page-bg: #f6f6f6;
+    --card-bg: #ffffff;
+    --text: #111111;
+    --text-aux: #888888;
+    --line: #ececec;
+    --face: #f4f4f4;
+    --danger: #c62828;
+
+    --font-title: 20px;
+    --font-body: 14px;
+    --font-aux: 12px;
+    --row-h: 52px;
   }
   body {
     font-family: var(--font-sans);
-    background-color: #f8fafc;
-    color: #09090b;
+    background-color: var(--page-bg);
+    color: var(--text);
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
@@ -28,4 +42,502 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* ---------------- D2 公共组件样式（src/ui、src/layout、src/pages 用类名） ---------------- */
+
+.zy-card {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.zy-card-title {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--text);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* 按钮：能点的是胶囊 */
+.zy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: 9999px;
+  padding: 7px 18px;
+  font-size: var(--font-body);
+  line-height: 1.4;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text);
+}
+.zy-btn-primary {
+  background: var(--text);
+  color: #ffffff;
+}
+.zy-btn-primary:hover {
+  opacity: 0.85;
+}
+.zy-btn-secondary {
+  background: var(--face);
+  color: var(--text);
+}
+.zy-btn-secondary:hover {
+  background: var(--line);
+}
+.zy-btn-danger {
+  color: var(--danger);
+}
+.zy-btn:disabled,
+.zy-btn-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.zy-btn-reason {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+  margin-top: 4px;
+}
+
+/* 状态分栏 */
+.zy-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  padding: 4px;
+  width: fit-content;
+}
+.zy-tab {
+  border: none;
+  background: transparent;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: var(--font-body);
+  color: var(--text-aux);
+  cursor: pointer;
+}
+.zy-tab:hover {
+  color: var(--text);
+}
+.zy-tab-on {
+  background: var(--text);
+  color: #ffffff;
+}
+.zy-tab-on:hover {
+  color: #ffffff;
+}
+.zy-tab-count {
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* 表格 */
+.zy-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);
+  font-size: var(--font-body);
+}
+.zy-table th {
+  font-size: var(--font-aux);
+  font-weight: normal;
+  color: var(--text-aux);
+  text-align: left;
+  padding: 0 12px;
+  height: var(--row-h);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.zy-table td {
+  padding: 0 12px;
+  height: var(--row-h);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.zy-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.zy-table-row {
+  cursor: pointer;
+}
+.zy-table-row:hover {
+  background: var(--face);
+}
+.zy-table-aux {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+}
+
+/* 文字状态 */
+.zy-danger-text {
+  color: var(--danger);
+}
+
+/* 右侧抽屉 */
+.zy-drawer-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 40;
+}
+.zy-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 560px;
+  max-width: 100vw;
+  background: var(--card-bg);
+  border-left: 1px solid var(--line);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+}
+.zy-drawer-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.zy-drawer-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.zy-drawer-sub {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+  margin-top: 2px;
+}
+.zy-drawer-close {
+  border: none;
+  background: transparent;
+  color: var(--text-aux);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+.zy-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+.zy-drawer-foot {
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.zy-drawer-foot-left {
+  margin-right: auto;
+}
+
+/* 表单字段：标签在上、框在下 */
+.zy-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.zy-field-label {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+}
+.zy-field-box {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: var(--font-body);
+  background: var(--card-bg);
+  color: var(--text);
+  width: 100%;
+}
+.zy-field-box:focus {
+  outline: none;
+  border-color: var(--text-aux);
+}
+.zy-field-hint {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+}
+.zy-field-error {
+  font-size: var(--font-aux);
+  color: var(--danger);
+}
+
+/* 空状态 / 失败状态 */
+.zy-empty {
+  padding: 48px 16px;
+  text-align: center;
+  font-size: var(--font-body);
+  color: var(--text-aux);
+}
+.zy-error-state {
+  padding: 48px 16px;
+  text-align: center;
+  font-size: var(--font-body);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 行骨架 */
+.zy-skeleton-row {
+  height: var(--row-h);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+}
+.zy-skeleton-bar {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--face);
+  animation: zy-pulse 1.4s ease-in-out infinite;
+}
+@keyframes zy-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ---------------- 外壳（src/layout） ---------------- */
+
+.zy-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--page-bg);
+}
+.zy-side {
+  width: 200px;
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+}
+.zy-side-brand {
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.zy-side-brand-sub {
+  font-size: var(--font-aux);
+  font-weight: normal;
+  letter-spacing: 0;
+  color: var(--text-aux);
+}
+.zy-side-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 8px;
+}
+.zy-side-group {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+  padding: 12px 10px 6px;
+}
+.zy-side-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: var(--font-body);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+.zy-side-item:hover {
+  background: var(--face);
+}
+.zy-side-item-on,
+.zy-side-item-on:hover {
+  background: var(--face);
+  font-weight: 600;
+}
+.zy-side-count {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+}
+.zy-side-foot {
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.zy-side-logout {
+  border: none;
+  background: transparent;
+  color: var(--text-aux);
+  font-size: var(--font-aux);
+  cursor: pointer;
+  padding: 0;
+}
+.zy-side-logout:hover {
+  color: var(--danger);
+}
+
+.zy-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.zy-top {
+  height: 60px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+.zy-top-title {
+  font-size: var(--font-title);
+  font-weight: 600;
+  color: var(--text);
+}
+.zy-top-sub {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+  margin-left: 12px;
+}
+.zy-top-search {
+  width: 280px;
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  padding: 7px 16px;
+  font-size: var(--font-body);
+  background: var(--face);
+  color: var(--text);
+}
+.zy-top-search::placeholder {
+  color: var(--text-aux);
+}
+.zy-top-search:focus {
+  outline: none;
+  border-color: var(--text-aux);
+  background: var(--card-bg);
+}
+.zy-content {
+  flex: 1;
+  padding: 20px 24px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* 今天页 */
+.zy-today-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .zy-today-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.zy-trow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.zy-trow:last-child {
+  border-bottom: none;
+}
+.zy-trow:hover {
+  background: var(--face);
+}
+.zy-trow-name {
+  font-size: var(--font-body);
+  color: var(--text);
+  width: 96px;
+  flex-shrink: 0;
+}
+.zy-trow-count {
+  font-size: var(--font-title);
+  font-weight: 600;
+  color: var(--text);
+  min-width: 48px;
+}
+.zy-trow-note {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+  flex: 1;
+  min-width: 0;
+}
+.zy-trow-go {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+  flex-shrink: 0;
+}
+.zy-rr {
+  display: flex;
+  gap: 12px;
+  padding: 10px 16px;
+  font-size: var(--font-body);
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
+}
+.zy-rr:last-child {
+  border-bottom: none;
+}
+.zy-rr-time {
+  font-size: var(--font-aux);
+  color: var(--text-aux);
+  flex-shrink: 0;
+}
+
+/* 顶栏提示条（toast） */
+.zy-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 60;
+  background: var(--text);
+  color: #ffffff;
+  font-size: var(--font-body);
+  padding: 10px 18px;
+  border-radius: 8px;
 }

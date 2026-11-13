@@ -72,7 +72,14 @@ Page({
     finally { this.setData({ actionBusy: '' }) }
   },
   copyNo() { wx.setClipboardData({ data: this.no, success: () => wx.showToast({ title: '订单号已复制', icon: 'none' }) }) },
-  viewProduct() { wx.navigateTo({ url: '/pages/finish/finish?no=' + encodeURIComponent(this.no) }) },
+  viewProduct() {
+    const o = this.data.order
+    if (!o || !Array.isArray(o.beads) || !o.beads.length) return
+    const d = store.create()
+    Object.assign(d, { name: o.name, meaning: o.meaning, wrist: o.wrist, beads: o.beads.slice() })
+    store.selected(d)
+    wx.navigateTo({ url: '/pages/finish/finish' })
+  },
   viewOrder() { this.setData({ paidLanding: false }) },
   browse() { wx.switchTab({ url: '/pages/home/home' }) },
   reorder() {

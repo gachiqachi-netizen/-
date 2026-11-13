@@ -54,11 +54,16 @@ TEST_ROUTES = [
     ("POST", r"^/api/test-routes/boom-value$", boom_value, "public"),
     ("POST", r"^/api/test-routes/boom-key$", boom_key, "public"),
     ("POST", r"^/api/test-routes/admin-write$", ok_admin, "admin"),
+    ("GET", r"/api/test-routes/prefix", echo_public, "public"),
+]
+# 绕过加载检查、直接塞进表里的未知登录要求（模拟以后写成权限点名字）
+RAW_ROUTES = [
+    ("GET", re.compile(r"/api/test-routes/perm-only"), echo_public, "edit_kb"),
 ]
 
 
 def compiled(entries):
-    return [(m, re.compile(p), f, a) for m, p, f, a in entries]
+    return routes.compile_routes(entries, source="test")
 
 
 class LoadTests(unittest.TestCase):
@@ -72,6 +77,16 @@ class LoadTests(unittest.TestCase):
         self.assertEqual(app.ROUTE_TABLE, [])
 
 
+class CompileRoutesTests(unittest.TestCase):
+    def test_unknown_auth_rejected_at_load(self):
+        with self.assertRaises(ValueError):
+            routes.compile_routes([("GET", r"/api/x", echo_public, "edit_kb")])
+
+    def test_unknown_method_rejected_at_load(self):
+        with self.assertRaises(ValueError):
+            routes.compile_routes([("PATCH", r"/api/x", echo_public, "public")])
+
+
 class DispatchHTTPTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -83,7 +98,7 @@ class DispatchHTTPTests(unittest.TestCase):
         app.db = DB(os.path.join(cls.temp.name, "http.db"))
         app.ADMIN_TOKEN = "test-admin"
         app.ADMIN_AUDIT_PATH = os.path.join(cls.temp.name, "audit.jsonl")
-        app.ROUTE_TABLE = cls.original_table + compiled(TEST_ROUTES)
+        app.ROUTE_TABLE = cls.original_table + compiled(TEST_ROUTES) + RAW_ROUTES
         cls.server = ThreadingHTTPServer(("127.0.0.1", 0), app.Handler)
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
@@ -168,6 +183,18 @@ class DispatchHTTPTests(unittest.TestCase):
         code, body = self.request("/api/meta/contract")
         self.assertEqual(code, 200)
         self.assertIn("version", body)
+
+    def test_unknown_auth_in_table_is_denied(self):
+        code, _ = self.request("/api/test-routes/perm-only")
+        self.assertEqual(code, 401)
+        code, _ = self.request("/api/test-routes/perm-only", admin="test-admin")
+        self.assertEqual(code, 401)
+
+    def test_pattern_matches_whole_path(self):
+        code, _ = self.request("/api/test-routes/prefix")
+        self.assertEqual(code, 200)
+        code, _ = self.request("/api/test-routes/prefix/extra")
+        self.assertEqual(code, 404)
 
     def test_unknown_path_still_404(self):
         code, _ = self.request("/api/test-routes/nope")

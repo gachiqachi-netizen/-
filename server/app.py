@@ -274,7 +274,7 @@ class Handler(BaseHTTPRequestHandler):
         for mth, pattern, fn, auth in ROUTE_TABLE:
             if mth != method:
                 continue
-            match = pattern.match(path)
+            match = pattern.fullmatch(path)
             if not match:
                 continue
             if auth == "user":
@@ -290,8 +290,12 @@ class Handler(BaseHTTPRequestHandler):
                 user_id, is_admin = None, True
                 if method != "GET":
                     self.audit_admin_mutation(path)
-            else:
+            elif auth == "public":
                 user_id, is_admin = self.user(), False
+            else:
+                # 不认识的登录要求一律拒绝，不当成公开接口
+                self.send(401, {"error": "需要登录"})
+                return True
             ctx = routes.Ctx(db=db, user_id=user_id, admin=is_admin, qs=self.qs())
             try:
                 status_code, body = fn(ctx, match, data)

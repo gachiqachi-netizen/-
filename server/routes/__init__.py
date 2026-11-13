@@ -1,6 +1,8 @@
 """新接口的注册处：每个领域一个文件，文件里定义 ROUTES = [(方法, 正则, 处理函数, 需要什么登录)]。
 
 需要什么登录："public" 不登录；"user" 用户登录；"admin" 后台登录（A8b 以后会变成权限点名字）。
+写了别的值，加载时直接报错；分发时也只有明确写 "public" 的才不检查登录。
+路径正则按整条路径匹配（fullmatch），不会只匹配开头。
 
 处理函数签名：fn(ctx, match, data) -> (状态码, 返回体)。
 ctx 里有 db、user_id（用户登录时）、admin（后台登录时为真）、qs（查询参数）。
@@ -21,12 +23,27 @@ class Ctx:
         self.qs = qs
 
 
+AUTH_KINDS = ("public", "user", "admin")
+METHODS = ("GET", "POST", "PUT", "DELETE")
+
+
+def compile_routes(entries, source="ROUTES"):
+    """检查并预编译路由。方法或登录要求写错直接报错，不会被当成“不登录”放行。"""
+    table = []
+    for method, pattern, fn, auth in entries:
+        if method not in METHODS:
+            raise ValueError(f"{source}: 不认识的方法 {method!r}（只能是 {', '.join(METHODS)}）")
+        if auth not in AUTH_KINDS:
+            raise ValueError(f"{source}: {pattern} 的登录要求 {auth!r} 不认识（只能是 {', '.join(AUTH_KINDS)}）")
+        table.append((method, re.compile(pattern), fn, auth))
+    return table
+
+
 def load():
     table = []
     for m in pkgutil.iter_modules(__path__):
         if m.name.startswith("_"):
             continue
         mod = importlib.import_module(f"routes.{m.name}")
-        for method, pattern, fn, auth in getattr(mod, "ROUTES", []):
-            table.append((method, re.compile(pattern), fn, auth))
+        table.extend(compile_routes(getattr(mod, "ROUTES", []), source=f"routes/{m.name}.py"))
     return table

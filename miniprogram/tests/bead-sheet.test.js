@@ -34,3 +34,15 @@ test('弹层切尺寸会改价并重算数量提示，缺货尺寸不可选',()=
   assert.equal(component.data.quantity,1)
   delete global.Component
 })
+test('同款所有尺寸缺货时禁用主动作并给相似珠入口',()=>{
+ let spec;global.Component=value=>{spec=value}
+ delete require.cache[require.resolve('../components/bead-sheet/index')]
+ require('../components/bead-sheet/index')
+ const allOut=[{...catalog[0]},{id:'quartz',name:'白水晶',mat:catalog[0].mat,mm:8,price:5}]
+ const component={data:{catalog:allOut,design:{beads:[],wrist:15}},setData(patch){Object.assign(this.data,patch)},triggerEvent(){}}
+ Object.assign(component,spec.methods)
+ spec.observers['bead,catalog,design,show'].call(component,allOut[0],allOut,component.data.design,true)
+ assert.equal(component.data.selected,null)
+ assert.equal(component.data.similar.id,'quartz')
+ delete global.Component
+})

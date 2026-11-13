@@ -20,7 +20,7 @@ export default function ProductsPage({ notify }: Props) {
   const [type, setType] = useState('bead'), [query, setQuery] = useState(''), [status, setStatus] = useState(''), [material, setMaterial] = useState('');
   const [expanded, setExpanded] = useState<Record<string, boolean>>({}), [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState(true), [error, setError] = useState('');
-  const [editing, setEditing] = useState<Product | null>(null), [priceText, setPriceText] = useState(''), [kbText, setKbText] = useState(''), [formError, setFormError] = useState(''), [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState<Product | null>(null), [priceText, setPriceText] = useState(''), [kbText, setKbText] = useState(''), [formError, setFormError] = useState(''), [deleteBlocked, setDeleteBlocked] = useState(false), [saving, setSaving] = useState(false);
   const [batch, setBatch] = useState(false), [addText, setAddText] = useState(''), [preview, setPreview] = useState<Change[] | null>(null), [batchError, setBatchError] = useState(''), [batchBusy, setBatchBusy] = useState(false);
   const load = useCallback(async () => {
     setLoading(true); setError('');
@@ -39,7 +39,7 @@ export default function ProductsPage({ notify }: Props) {
     try { const result = await apiRequest<{ data?: { meaning?: { text?: string } } }>(`/api/admin/kb/${encodeURIComponent(id)}`); setKbText(result.data?.meaning?.text || '知识库暂无寓意文字'); }
     catch { setKbText('知识库寓意暂不可用'); }
   };
-  const open = (item?: Product) => { const next = item ? { ...item } : blank(type); setEditing(next); setPriceText(fenToYuan(priceFen(next))); setFormError(''); void fetchKb(next.kb || ''); };
+  const open = (item?: Product) => { const next = item ? { ...item } : blank(type); setEditing(next); setPriceText(fenToYuan(priceFen(next))); setFormError(''); setDeleteBlocked(false); void fetchKb(next.kb || ''); };
   const patch = (part: Partial<Product>) => setEditing(old => old ? { ...old, ...part } : old);
   const save = async () => {
     if (!editing || saving) return;
@@ -51,6 +51,27 @@ export default function ProductsPage({ notify }: Props) {
       await apiRequest(editing.id ? `/api/admin/beads/${encodeURIComponent(editing.id)}` : '/api/admin/beads', { method: editing.id ? 'PUT' : 'POST', body });
       setEditing(null); notify('商品已保存'); await load();
     } catch (err: any) { setFormError(err.message || '保存失败'); }
+    finally { setSaving(false); }
+  };
+  const remove = async () => {
+    if (!editing?.id || saving || !window.confirm('确定删除这件商品？删除后不能恢复。')) return;
+    setSaving(true); setFormError(''); setDeleteBlocked(false);
+    try {
+      await apiRequest(`/api/admin/beads/${encodeURIComponent(editing.id)}`, { method: 'DELETE' });
+      setEditing(null); notify('商品已删除'); await load();
+    } catch (err: any) {
+      setFormError(err.message || '删除失败'); setDeleteBlocked(err.status === 400);
+    } finally { setSaving(false); }
+  };
+  const takeOffSale = async () => {
+    if (!editing || saving) return;
+    setSaving(true); setFormError('');
+    try {
+      await apiRequest(`/api/admin/beads/${encodeURIComponent(editing.id)}`, {
+        method: 'PUT', body: { ...editing, status: 'off_sale' },
+      });
+      setEditing(null); notify('已下架'); await load();
+    } catch (err: any) { setFormError(err.message || '下架失败'); }
     finally { setSaving(false); }
   };
   const copy = async (p: Product) => { try { await apiRequest(`/api/admin/beads/${encodeURIComponent(p.id)}/copy`, { method: 'POST' }); notify('已复制为草稿'); await load(); } catch (err: any) { notify(err.message || '复制失败', 'error'); } };
@@ -70,8 +91,8 @@ export default function ProductsPage({ notify }: Props) {
       <label className="zy-field"><span className="zy-field-label">尺寸（mm）</span><input className="zy-field-box" type="number" min="0.1" step="0.1" value={editing.mm ?? ''} onChange={e => patch({ mm: e.target.value ? Number(e.target.value) : undefined })} /></label><label className="zy-field"><span className="zy-field-label">材质</span><select className="zy-field-box" value={editing.mat || ''} onChange={e => patch({ mat: e.target.value })}>{Object.entries(materials).map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></label>
       <label className="zy-field"><span className="zy-field-label">单价（元）</span><input className="zy-field-box" inputMode="decimal" value={priceText} onChange={e => setPriceText(e.target.value)} /><span className="zy-field-hint">存成整数分：{/^\d+(\.\d{1,2})?$/.test(priceText) ? yuanToFen(priceText) : '—'}</span></label><label className="zy-field"><span className="zy-field-label">状态</span><select className="zy-field-box" value={editing.status || 'draft'} onChange={e => patch({ status: e.target.value })}>{statuses.map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></label>
       <label className="zy-field"><span className="zy-field-label">库存</span><select className="zy-field-box" value={editing.stock || 'in_stock'} onChange={e => patch({ stock: e.target.value })}>{Object.entries(stocks).map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></label><label className="zy-field"><span className="zy-field-label">关联知识库</span><select className="zy-field-box" value={editing.kb || ''} onChange={e => { patch({ kb: e.target.value }); void fetchKb(e.target.value); }}><option value="">不关联</option>{kbRows.map(k => <option key={k.id} value={k.id}>{k.name}</option>)}</select></label>
-      <div className="zy-field" style={{ gridColumn: '1 / -1' }}><span className="zy-field-label">寓意（来自知识库，只读）</span><div className="zy-field-box" style={{ minHeight: 48 }}>{currentKb?.meaningConfidence === 'low' ? '知识库里这条寓意的把握是‘低’，用户端暂不显示' : kbText || (currentKb?.meaningTags || []).join('、') || '关联知识库后显示寓意'}</div></div><label className="zy-field" style={{ gridColumn: '1 / -1' }}><span className="zy-field-label">合法来源证明（受保护材质需要）</span><input className="zy-field-box" value={editing.legal || ''} onChange={e => patch({ legal: e.target.value })} /></label>{formError && <div className="zy-field-error" style={{ gridColumn: '1 / -1' }}>{formError}</div>}
-    </div><div className="zy-drawer-foot"><div className="zy-drawer-foot-left">{editing.id && <button className="zy-btn zy-btn-danger" disabled title="待后端补齐使用中校验">删除</button>}</div><button className="zy-btn zy-btn-primary" disabled={saving} onClick={() => void save()}>{saving ? '正在保存…' : '保存'}</button></div></section></div>}
+      <div className="zy-field" style={{ gridColumn: '1 / -1' }}><span className="zy-field-label">寓意（来自知识库，只读）</span><div className="zy-field-box" style={{ minHeight: 48 }}>{currentKb?.meaningConfidence === 'low' ? '知识库里这条寓意的把握是‘低’，用户端暂不显示' : kbText || (currentKb?.meaningTags || []).join('、') || '关联知识库后显示寓意'}</div></div><label className="zy-field" style={{ gridColumn: '1 / -1' }}><span className="zy-field-label">合法来源证明（受保护材质需要）</span><input className="zy-field-box" value={editing.legal || ''} onChange={e => patch({ legal: e.target.value })} /></label>{formError && <div className="zy-field-error" style={{ gridColumn: '1 / -1' }}>{formError}{deleteBlocked && editing.status !== 'off_sale' && <button className="zy-btn zy-btn-secondary" style={{ marginLeft: 12 }} disabled={saving} onClick={() => void takeOffSale()}>改成下架</button>}</div>}
+    </div><div className="zy-drawer-foot"><div className="zy-drawer-foot-left">{editing.id && <button className="zy-btn zy-btn-danger" disabled={saving} onClick={() => void remove()}>删除</button>}</div><button className="zy-btn zy-btn-primary" disabled={saving} onClick={() => void save()}>{saving ? '正在保存…' : '保存'}</button></div></section></div>}
     {batch && <div className="zy-drawer-mask" onMouseDown={() => setBatch(false)}><section className="zy-drawer" onMouseDown={e => e.stopPropagation()} aria-label="批量调价"><div className="zy-drawer-head"><div className="zy-drawer-title">批量调价</div><button className="zy-drawer-close" onClick={() => setBatch(false)}>关闭</button></div><div className="zy-drawer-body"><p>已选择 {selected.length} 件商品</p><label className="zy-field"><span className="zy-field-label">每件加减金额（元，降价填写负数）</span><input className="zy-field-box" value={addText} onChange={e => { setAddText(e.target.value); setPreview(null); }} inputMode="decimal" /></label>{batchError && <div className="zy-field-error">{batchError}</div>}{preview && <table className="zy-table" style={{ width: '100%', marginTop: 16 }}><thead><tr><th>商品</th><th>改前</th><th>改后</th></tr></thead><tbody>{preview.map(c => <tr key={c.id}><td>{c.name}</td><td>¥{fenToYuan(c.oldFen)}</td><td>¥{fenToYuan(c.newFen)}</td></tr>)}</tbody></table>}</div><div className="zy-drawer-foot"><button className="zy-btn zy-btn-secondary" disabled={batchBusy} onClick={() => void batchPreview()}>预览改前改后</button><button className="zy-btn zy-btn-primary" disabled={batchBusy || !preview} onClick={() => void execute()}>确认并执行</button></div></section></div>}
   </div>;
 }

@@ -327,8 +327,10 @@ class Handler(BaseHTTPRequestHandler):
         """B-1 读用户上传的图片：没记录、没权限、文件不存在一律同一个 404。
 
         防目录穿越：URL 解码后取 realpath，必须落在 realpath(UPLOADS/user) 内。
+        带合法且没过期的 k（送审时给微信的临时取图签名）时不看 checkStatus；
+        k 不对或过期则照旧按权限判断。
         """
-        from urllib.parse import unquote
+        from urllib.parse import unquote, parse_qs, urlparse
         rel = unquote(path[len("/uploads/"):]).replace("\\", "/")
         root = os.path.realpath(os.path.join(UPLOADS, "user"))
         fp = os.path.realpath(os.path.join(UPLOADS, rel))
@@ -336,8 +338,12 @@ class Handler(BaseHTTPRequestHandler):
         if os.path.commonpath((root, fp)) != root:
             return self.send(404, not_found)
         record = uploads.get_by_url_path(db, rel)
-        if record is None or not uploads.viewer_can_see(record, self.user(), self.admin_ok()):
+        if record is None:
             return self.send(404, not_found)
+        qs = parse_qs(urlparse(self.path).query)
+        if not uploads.valid_link(rel, qs):
+            if not uploads.viewer_can_see(record, self.user(), self.admin_ok()):
+                return self.send(404, not_found)
         ext = fp.rsplit(".", 1)[-1].lower() if "." in fp else ""
         if ext == "jpeg":
             ext = "jpg"

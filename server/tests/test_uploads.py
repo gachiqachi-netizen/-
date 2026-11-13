@@ -30,18 +30,13 @@ class UserUploadTests(unittest.TestCase):
     def setUp(self):
         self.db = uploads_db()
         self.tmp = tempfile.TemporaryDirectory()
-        self.env = patch.dict(os.environ, {"UPLOADS_DIR": os.path.join(self.tmp.name, "uploads")},
+        self.env = patch.dict(os.environ, {"UPLOADS_DIR": os.path.join(self.tmp.name, "uploads"),
+                                           "PUBLIC_BASE_URL": "https://files.test"},
                               clear=False)
         self.env.start()
         for key in ("WECHAT_APP_ID", "WECHAT_APP_SECRET", "WECHAT_MSG_TOKEN", "WECHAT_TOKEN"):
             os.environ.pop(key, None)
         self.old_checker = content_security._image_checker
-
-    def tearDown(self):
-        content_security._image_checker = self.old_checker
-        self.env.stop()
-        self.tmp.cleanup()
-        self.db.conn.close()
 
     def ctx(self, uid="u1"):
         return SimpleNamespace(db=self.db, user_id=uid, admin=False, qs={})
@@ -184,6 +179,54 @@ class UserUploadTests(unittest.TestCase):
         code, _ = upload_routes.media_check(ctx, None, {"result": {"trace_id": "trace-7", "suggest": "pass"}})
         self.assertEqual(code, 200)
 
+    def test_callback_trace_id_does_not_fall_back_to_record_id(self):
+        upload_routes.create(self.ctx(), None, self.png_payload())   # dev fail-open，记录没有 traceId
+        rid = self.db.list("uploads")[0]["id"]
+        ctx = SimpleNamespace(db=self.db, user_id=None, admin=False, qs={})
+        with self.assertRaises(KeyError):
+            upload_routes.media_check(ctx, None, {"result": {"trace_id": rid, "suggest": "pass"}})
+
+    def test_wechat_87014_means_rejected(self):
+        """内容违规 87014 和文字检查一致：直接不通过（rejected），不当成放行。"""
+        content_security._image_checker = None
+        content_security._token, content_security._expires_at = None, 0
+        responses = iter([
+            json.dumps({"access_token": "tok", "expires_in": 7200}).encode(),
+            json.dumps({"errcode": 87014, "errmsg": "risky content"}).encode(),
+        ])
+
+        class Resp:
+            def __init__(self, body):
+                self.body = body
+            def read(self):
+                return self.body
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+
+        envs = {"WECHAT_APP_ID": "wx-test", "WECHAT_APP_SECRET": "sec",
+                "PUBLIC_BASE_URL": "https://files.example.com"}
+        with patch.dict(os.environ, envs, clear=False), \
+             patch.object(content_security.urllib.request, "urlopen",
+                          lambda req, timeout=8: Resp(next(responses))):
+            code, body = upload_routes.create(self.ctx(), None, self.png_payload())
+        self.assertEqual(code, 200)
+        self.assertEqual(self.db.get("uploads", body["id"])["checkStatus"], "rejected")
+
+    def test_no_public_base_url_non_dev_fails_closed(self):
+        with patch.object(content_security.env, "is_dev", return_value=False):
+            with self.assertRaises(content_security.ContentRejected):
+                upload_routes.create(self.ctx(), None, self.png_payload())
+        self.assertEqual(self.db.list("uploads"), [])   # 没写文件也没登记
+
+    def tearDown(self):
+        content_security._image_checker = self.old_checker
+        content_security._token, content_security._expires_at = None, 0
+        self.env.stop()
+        self.tmp.cleanup()
+        self.db.conn.close()
+
 
 def uploads_db():
     from db import DB
@@ -197,7 +240,8 @@ class UserUploadHttpTests(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
         cls.root = os.path.join(cls.temp.name, "uploads")
-        cls.env = patch.dict(os.environ, {"UPLOADS_DIR": cls.root}, clear=False)
+        cls.env = patch.dict(os.environ, {"UPLOADS_DIR": cls.root,
+                                          "PUBLIC_BASE_URL": "https://files.test"}, clear=False)
         cls.env.start()
         for key in ("WECHAT_APP_ID", "WECHAT_APP_SECRET", "WECHAT_MSG_TOKEN", "WECHAT_TOKEN"):
             os.environ.pop(key, None)
@@ -280,6 +324,33 @@ class UserUploadHttpTests(unittest.TestCase):
         status, headers, _ = self.get("/uploads/" + record["path"], token="s" * 43)
         self.assertEqual(status, 200)
         self.assertNotEqual(headers.get("Cache-Control"), "private, no-store")
+
+    def test_valid_k_reads_pending_image(self):
+        """送审时给微信的临时取图链接：合法且没过期的 k 不看 checkStatus。"""
+        record = self.make_upload()   # pending
+        rel = record["path"]
+        expires, k = uploads.link_params(rel)
+        status, _, _ = self.get(f"/uploads/{rel}?e={expires}&k={k}", token="s" * 43)
+        self.assertEqual(status, 200)
+
+    def test_bad_or_expired_k_falls_back_to_permissions(self):
+        record = self.make_upload()
+        rel = record["path"]
+        expires, _ = uploads.link_params(rel)
+        # k 被改过：陌生人照旧 404，本人按权限仍能看到
+        status, _, _ = self.get(f"/uploads/{rel}?e={expires}&k={'0' * 64}", token="s" * 43)
+        self.assertEqual(status, 404)
+        status, _, _ = self.get(f"/uploads/{rel}?e={expires}&k={'0' * 64}", token="o" * 43)
+        self.assertEqual(status, 200)
+        # k 对但已过期：陌生人 404
+        past = int(time.time()) - 10
+        past_k = uploads.sign_link(rel, past)
+        status, _, _ = self.get(f"/uploads/{rel}?e={past}&k={past_k}", token="s" * 43)
+        self.assertEqual(status, 404)
+        # 链接是给另一条路径签的：404
+        other_exp, other_k = uploads.link_params("user/2099-01-01/other.png")
+        status, _, _ = self.get(f"/uploads/{rel}?e={other_exp}&k={other_k}", token="s" * 43)
+        self.assertEqual(status, 404)
 
     def test_rejected_hidden_from_stranger(self):
         record = self.make_upload(status="rejected")

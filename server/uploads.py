@@ -1,11 +1,16 @@
-"""用户上传图片：保存、每日限量、机审状态和读图访问控制。
+"""用户上传图片：保存、每日限量、机审状态、送审取图链接和读图访问控制。
 
 记录字段（存 uploads 表）：id, userId, path（相对 uploads 根目录，如
 user/2026-11-13/xxxx.png）, checkStatus(pending/passed/rejected), createdAt（秒）。
+
+送微信异步图片审核时，media_url 用 PUBLIC_BASE_URL 拼完整地址，并带临时
+访问参数 e（过期时间）/ k（HMAC 签名，1 小时有效），微信凭 k 可以直接取
+待审图片；k 过期后图片回到“只有本人和后台可见”。
 """
 import base64
 import binascii
 import hashlib
+import hmac
 import os
 import secrets
 import time
@@ -14,6 +19,7 @@ import content_security
 
 MAX_BYTES = 5 * 1024 * 1024      # 单张不超过 5MB
 DAILY_LIMIT = 50                 # 每个用户每天最多 50 张
+LINK_TTL = 3600                  # 送审取图链接 1 小时有效
 CONTENT_TYPES = {
     "image/png": "png",
     "image/jpeg": "jpg",
@@ -66,6 +72,64 @@ def _user_count_today(db, user_id, now=None):
                if u.get("userId") == user_id and (u.get("createdAt") or 0) >= start)
 
 
+# ---- 送审取图链接（e=过期时间, k=HMAC） ----
+
+def _link_secret():
+    import env
+    secret = os.environ.get("MEDIA_LINK_SECRET")
+    if secret:
+        return secret
+    if env.is_dev():
+        return "dev-only-media-link-secret"
+    raise content_security.ContentRejected("未配置 MEDIA_LINK_SECRET，无法生成审核取图地址")
+
+
+def sign_link(rel_path, expires):
+    msg = ("%s|%d" % (rel_path, expires)).encode()
+    return hmac.new(_link_secret().encode(), msg, hashlib.sha256).hexdigest()
+
+
+def link_params(rel_path, now=None):
+    """生成 (expires, k)；有效期 1 小时。"""
+    expires = int(time.time() if now is None else now) + LINK_TTL
+    return expires, sign_link(rel_path, expires)
+
+
+def valid_link(rel_path, qs, now=None):
+    """k 参数合法且未过期返回 True；没带 k 或不对、过期返回 False（不抛异常）。"""
+    k = (qs.get("k") or [""])[0]
+    exp = (qs.get("e") or [""])[0]
+    if not k or not exp:
+        return False
+    try:
+        expires = int(exp)
+    except ValueError:
+        return False
+    if expires < (time.time() if now is None else now):
+        return False
+    try:
+        expected = sign_link(rel_path, expires)
+    except ValueError:
+        return False
+    return hmac.compare_digest(k, expected)
+
+
+def _media_check_url(rel_path):
+    """送审地址：PUBLIC_BASE_URL 拼完整地址并带临时取图参数。
+
+    没配 PUBLIC_BASE_URL：开发环境返回 None（走 fail-open 直接放行），
+    正式环境抛 ContentRejected。
+    """
+    import env
+    base = (os.environ.get("PUBLIC_BASE_URL") or "").rstrip("/")
+    if not base:
+        if env.is_dev():
+            return None
+        raise content_security.ContentRejected("未配置 PUBLIC_BASE_URL，无法送审图片")
+    expires, k = link_params(rel_path)
+    return "%s/uploads/%s?e=%d&k=%s" % (base, rel_path, expires, k)
+
+
 def create(db, user_id, data, now=None):
     """保存一张用户上传的图片并登记记录，返回 {"id", "url"}。"""
     if not isinstance(data, dict):
@@ -75,15 +139,17 @@ def create(db, user_id, data, now=None):
     if _user_count_today(db, user_id, now) >= DAILY_LIMIT:
         raise ValueError("今天上传的图片太多了，明天再传吧")
     rel_path = os.path.join("user", _today(now), secrets.token_hex(8) + "." + ext).replace("\\", "/")
+    media_url = _media_check_url(rel_path)
+    status, trace_id = (("passed", None) if media_url is None
+                        else content_security.check_image_async(media_url))
     abs_path = os.path.join(uploads_root(), rel_path)
     os.makedirs(os.path.dirname(abs_path), exist_ok=True)
     with open(abs_path, "wb") as f:
         f.write(raw)
-    status, trace_id = content_security.check_image_async("/" + rel_path)
     record = {
         "userId": user_id,
         "path": rel_path,
-        "checkStatus": "passed" if status == "passed" else "pending",
+        "checkStatus": status,
         "createdAt": int(now),
     }
     if trace_id:
@@ -124,7 +190,7 @@ def _check_signature(qs):
     timestamp = (qs.get("timestamp") or [""])[0]
     nonce = (qs.get("nonce") or [""])[0]
     expected = hashlib.sha1("".join(sorted([token, timestamp, nonce])).encode()).hexdigest()
-    if signature != expected:
+    if not hmac.compare_digest(signature, expected):
         raise ValueError("微信消息签名校验失败")
 
 
@@ -136,7 +202,7 @@ def apply_media_check(db, data, qs):
     record = None
     if trace_id:
         for u in db.list("uploads"):
-            if u.get("traceId") == trace_id or u["id"] == trace_id:
+            if u.get("traceId") == trace_id:
                 record = u
                 break
     if record is None:

@@ -91,7 +91,11 @@ def ensure_allowed(*texts):
 
 
 def _wechat_check_image_async(media_url):
-    """提交微信异步图片检查；返回 (是否已直接放行, trace_id)。"""
+    """提交微信异步图片检查；返回 (结果, trace_id)。
+
+    结果 "pending" 表示已受理、等回调；"rejected" 表示内容违规（87014，同文字检查
+    的 _wechat_check，微信已直接判定不通过，不必等回调）。
+    """
     request = urllib.request.Request(
         'https://api.weixin.qq.com/wxa/media_check_async?access_token=' + urllib.parse.quote(_access_token()),
         data=json.dumps({'media_url': media_url, 'media_type': 2}, ensure_ascii=False).encode(),
@@ -100,9 +104,9 @@ def _wechat_check_image_async(media_url):
         result = json.loads(response.read())
     code = int(result.get('errcode', 0))
     if code == 0:
-        return False, result.get('trace_id')
+        return 'pending', result.get('trace_id')
     if code in (87014,):
-        return True, None
+        return 'rejected', None
     raise RuntimeError('微信图片检查暂不可用')
 
 
@@ -110,6 +114,7 @@ def check_image_async(media_url):
     """提交图片安全检查，返回 (结果, trace_id)。
 
     结果 "passed" 表示已放行（开发环境无凭证 fail-open 时同步返回），
+    "rejected" 表示微信直接判定内容违规（87014），
     "pending" 表示已提交异步检查、等微信回调（回调凭 trace_id 找回记录）。
     未配置凭证时和文字检查同一条 fail-open 规则：只在 development 环境放行，
     trial/production 抛 ContentRejected。
@@ -121,8 +126,7 @@ def check_image_async(media_url):
             sys.stderr.write('image check skipped: WECHAT_APP_ID/WECHAT_APP_SECRET not configured\n')
             return 'passed', None
         raise ContentRejected('内容安全未配置，无法校验图片')
-    passed, trace_id = _wechat_check_image_async(media_url)
-    return ('passed', None) if passed else ('pending', trace_id)
+    return _wechat_check_image_async(media_url)
 
 
 def filter_ai_entries(entries):

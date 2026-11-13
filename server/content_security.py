@@ -107,8 +107,10 @@ def _wechat_check_image_async(media_url):
 
 
 def check_image_async(media_url):
-    """提交图片安全检查。返回 "passed"（已放行）或 "pending"（等微信回调）。
+    """提交图片安全检查，返回 (结果, trace_id)。
 
+    结果 "passed" 表示已放行（开发环境无凭证 fail-open 时同步返回），
+    "pending" 表示已提交异步检查、等微信回调（回调凭 trace_id 找回记录）。
     未配置凭证时和文字检查同一条 fail-open 规则：只在 development 环境放行，
     trial/production 抛 ContentRejected。
     """
@@ -117,10 +119,10 @@ def check_image_async(media_url):
     if not configured():
         if fail_open_allowed():
             sys.stderr.write('image check skipped: WECHAT_APP_ID/WECHAT_APP_SECRET not configured\n')
-            return 'passed'
+            return 'passed', None
         raise ContentRejected('内容安全未配置，无法校验图片')
-    passed, _trace_id = _wechat_check_image_async(media_url)
-    return 'passed' if passed else 'pending'
+    passed, trace_id = _wechat_check_image_async(media_url)
+    return ('passed', None) if passed else ('pending', trace_id)
 
 
 def filter_ai_entries(entries):

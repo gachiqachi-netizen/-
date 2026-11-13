@@ -19,6 +19,18 @@
     "navigationBarTextStyle": "black",
     "backgroundColor": "#ffffff"
   },
+  "usingComponents": {
+    "c-wordmark": "/components/wordmark/index",
+    "c-bead": "/components/bead/index",
+    "c-state": "/components/state/index",
+    "c-bracelet": "/components/bracelet/index",
+    "c-cell": "/components/cell/index",
+    "c-design-row": "/components/design-row/index",
+    "c-sheet": "/components/sheet/index",
+    "c-bar": "/components/bar/index",
+    "c-toast": "/components/toast/index",
+    "c-composer": "/components/composer/index"
+  },
   "tabBar": {
     "color": "#6e6e6e",
     "selectedColor": "#111111",
@@ -27,19 +39,27 @@
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "assets/tab/home.png",
+        "selectedIconPath": "assets/tab/home-on.png"
       },
       {
         "pagePath": "pages/diy/diy",
-        "text": "自己串"
+        "text": "自己串",
+        "iconPath": "assets/tab/bead.png",
+        "selectedIconPath": "assets/tab/bead-on.png"
       },
       {
         "pagePath": "pages/ai/ai",
-        "text": "AI 配"
+        "text": "AI 配",
+        "iconPath": "assets/tab/chat.png",
+        "selectedIconPath": "assets/tab/chat-on.png"
       },
       {
         "pagePath": "pages/mine/mine",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "assets/tab/me.png",
+        "selectedIconPath": "assets/tab/me-on.png"
       }
     ]
   },

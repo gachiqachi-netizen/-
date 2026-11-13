@@ -6,9 +6,9 @@ global.wx = {
   getStorageSync: key => saved[key], setStorageSync: (key, value) => { saved[key] = value },
   showToast: options => { toast = options.title }, navigateBack: options => options.success(), vibrateShort: () => {}
 }
-const store = require('../../utils/design')
+const store = require('../utils/design')
 store.current = () => null
-require('./wrist')
+require('../pages/wrist/wrist')
 function page() { return {...definition, data:{...definition.data}, setData(data) { Object.assign(this.data, data) }} }
 test('未量过默认 15cm，8mm 珠约 21 颗', () => {
   saved = {}; const p = page(); p.onLoad({}); assert.equal(p.data.measured, false); assert.equal(p.data.display, '15.0'); assert.equal(p.data.count, 21)

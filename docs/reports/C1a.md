@@ -1,6 +1,6 @@
 # C1a 交付报告
 
-分支：agent/C1a-login-page　最后一个代码提交：05791f0
+分支：agent/C1a-login-page　最后一个代码提交：935f833
 
 ## 1. 步骤
 
@@ -29,7 +29,7 @@
 `git diff --stat origin/integration/2026-11...HEAD`：
 
 ```
- docs/reports/C1a.md                  | 65 ++++++++++++++++++++++
+ docs/reports/C1a.md                  | 66 ++++++++++++++++++++++
  miniprogram/pages/login/login.js     |  53 ++++++++++++++----
  miniprogram/pages/login/login.json   |   8 ++-
  miniprogram/pages/login/login.wxml   |  39 +++++++++++---
@@ -37,22 +37,22 @@
  miniprogram/tests/auth.test.js       |  10 +++-
  miniprogram/tests/login-page.test.js | 102 +++++++++++++++++++++++++++++++++++
  miniprogram/utils/auth.js            |  30 ++++++++++-
- 8 files changed, 303 insertions(+), 25 deletions(-)
+ 8 files changed, 304 insertions(+), 25 deletions(-)
 ```
 
 ## 4. 测试
 
-- `python3 -m unittest discover -s server/tests 2>&1 | tail -15`：`Ran 531 tests in 81.317s`；`OK (skipped=7)`。
-- `node --test miniprogram/tests/*.test.js 2>&1 | tail -15`：`tests 153`；`pass 153`；`fail 0`。
+- `python3 -m unittest discover -s server/tests 2>&1 | tail -15`：`Ran 541 tests in 79.102s`；`OK (skipped=7)`。
+- `node --test miniprogram/tests/*.test.js 2>&1 | tail -15`：`tests 157`；`pass 157`；`fail 0`。
 - `python3 kb/validate.py 2>&1 | tail -15`：`已填 200/200 种，有问题 0 条，缺 0 种`。
-- 测试数：后端开工前 531 → 现在 531；小程序 146 → 153。
-- 新测试：`login-page.test.js` 7 个，覆盖两个微信按钮、协议弹层、拒绝提示、自动提交、自动跳转、成功绑定、develop 假 code；`auth.test.js` 追加 `goLogin(next)` 入页面参数及不安全目标拒绝断言。未改旧测试期望。
+- 测试数：后端开工前 531 → 现在 541（期间合入 B-2）；小程序 146 → 157（期间合入 C1b）。
+- 新测试：`login-page.test.js` 7 个，覆盖两个微信按钮、协议弹层、拒绝提示、自动提交、自动跳转、成功绑定、develop 假 code 严格匹配 `^dev-\d{8}$`；`auth.test.js` 追加 `goLogin(next)` 入页面参数及不安全目标拒绝断言。未改旧测试期望。
 
 ## 5. 自查（贴命令和输出）
 
 `git diff --check origin/integration/2026-11...HEAD`：无输出。`grep -nE '#[0-9a-fA-F]{3,8}\\b|rgba?\\(' miniprogram/pages/login/login.wxss`：无输出。`grep -rnE 'new URL|URLSearchParams' miniprogram --include='*.js'`：无输出。
 
-`git log --oneline origin/integration/2026-11..HEAD`：`05791f0 C1a: 审核 1 验证两种继续动作和拒绝提示`；`4fc2794 C1a: 手机号登录页与协议弹层`；`d68701f C1a: 手机号绑定与登录后续动作`；`7579daa C1a: 开工`。
+`git log --oneline origin/integration/2026-11..HEAD`：`935f833 C1a: 审核 2 修正开发凭证为八位数字`；`203412e C1a: 合入最新 integration`；`05791f0 C1a: 审核 1 验证两种继续动作和拒绝提示`；`4fc2794 C1a: 手机号登录页与协议弹层`；`d68701f C1a: 手机号绑定与登录后续动作`；`7579daa C1a: 开工`。
 
 ## 6. 没做 / 没验证 / 偏离卡片
 
@@ -63,3 +63,4 @@
 | 审核意见编号 | 怎么改的 | 提交 hash |
 |---|---|---|
 | 1 | 按 B 范围补 submitOrder、navigate、拒绝授权的 node 测试；明确 C7a 接入边界 | 05791f0 |
+| 2 | 将开发版假凭证改为 `dev-` 加 8 位数字，测试正则精确匹配；合入最新 integration | 935f833 |

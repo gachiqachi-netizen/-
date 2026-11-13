@@ -1,6 +1,6 @@
 # C4a 交付报告
 
-分支：`agent/C4a-home`　最后一个代码提交：`16ace70`（报告提交见分支 HEAD）
+分支：`agent/C4a-home`　最后一个代码提交：`3372ac7`（报告后续更新提交见分支 HEAD）
 
 ## 1. 步骤
 
@@ -28,7 +28,13 @@
 `git diff --stat origin/integration/2026-11...HEAD`（交付提交后包含报告）：
 
 ```text
-待填
+ docs/reports/C4a.md                 |  63 +++++++++++++++++++++
+ miniprogram/pages/home/home.js      |  76 ++++++++++++++++++++++----
+ miniprogram/pages/home/home.json    |   2 +-
+ miniprogram/pages/home/home.test.js | 106 ++++++++++++++++++++++++++++++++++++
+ miniprogram/pages/home/home.wxml    |  33 ++++++++---
+ miniprogram/pages/home/home.wxss    |  36 +++++++++++-
+ 6 files changed, 295 insertions(+), 21 deletions(-)
 ```
 
 ## 4. 测试
@@ -36,9 +42,9 @@
 - `python3 -m unittest discover -s server/tests 2>&1 | tail -15`：`Ran 553 tests in 86.025s`；`OK (skipped=7)`。
 - `node --test miniprogram/tests/*.test.js 2>&1 | tail -15`：`tests 162`；`pass 162`；`fail 0`。
 - `python3 kb/validate.py 2>&1 | tail -15`：`已填 200/200 种，有问题 0 条，缺 0 种`。
-- `node --test miniprogram/pages/home/home.test.js 2>&1 | tail -15`：`tests 5`；`pass 5`；`fail 0`。
-- 测试数：后端开工前 553 → 现在 553；小程序全量开工前 162 → 现在 162；本卡另增首页目录内 5 条测试。
-- 新测试：`home catalog failure keeps banner and entrances while replacing only templates` 验证失败仅替换热门款；`home reloads templates for changed wrist and shows the new size` 验证重排提示；`home template card opens bracelet detail with selected design` 验证款式详情路由；`home articles appear only when catalog supplies them and open content page` 验证小知识内容和入口；`home quick entrances keep their distinct destinations` 验证快捷入口。
+- `node --test miniprogram/pages/home/home.test.js 2>&1 | tail -15`：`tests 6`；`pass 6`；`fail 0`。
+- 测试数：后端开工前 553 → 现在 553；小程序全量开工前 162 → 现在 162；本卡另增首页目录内 6 条测试。
+- 新测试：`home catalog failure keeps banner and entrances while replacing only templates` 验证失败仅替换热门款；`home reloads templates for changed wrist and shows the new size` 验证重排提示；`home template card opens bracelet detail with selected design` 验证款式详情路由；`home articles appear only when catalog supplies them and open content page` 验证小知识内容和入口；`home quick entrances keep their distinct destinations` 验证快捷入口；`home banner page target follows configured route` 验证运营配置的轮播目标页。
 - 旧测试期望值未改。
 
 ## 5. 自查（贴命令和输出）

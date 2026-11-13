@@ -7,7 +7,8 @@ export const CONTRACT = {
     "pay_order": "去支付",
     "reorder": "按这款再串一条",
     "request_after_sale": "申请售后",
-    "view_logistics": "查看物流"
+    "view_logistics": "查看物流",
+    "write_review": "写评价"
   },
   "afterSaleReasons": {
     "仅退款": [
@@ -222,6 +223,13 @@ export const CONTRACT = {
     "sequenceOk": "珠子顺序和工单一致",
     "sizeOk": "长度合适"
   },
+  "reviewStatuses": {
+    "machine_failed": "机审未通过",
+    "pending": "待审核",
+    "published": "已发布",
+    "rejected": "审核未通过",
+    "taken_down": "已下架"
+  },
   "statusLabels": {
     "afterSaleStatus": {
       "approved": "已同意",
@@ -293,7 +301,7 @@ export const CONTRACT = {
     "用户协议",
     "隐私政策"
   ],
-  "version": "3fc15158c8f8",
+  "version": "717e0609e345",
   "workOrderStatuses": {
     "pending": "待开始",
     "producing": "制作中",

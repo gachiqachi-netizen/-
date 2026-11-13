@@ -7,6 +7,7 @@ import { StatusBadge, statusTone } from './OverviewAndProducts';
 import { Tabs } from '../ui/Tabs';
 import { Table } from '../ui/Table';
 import { StatusText } from '../ui/StatusText';
+import OrdersOpsPanel from '../pages/orders/orderOps';
 
 interface OrdersViewProps {
   orders: any[];
@@ -42,6 +43,13 @@ const ORDER_SOURCE_LABELS: Record<string, string> = {
 const yuan = (v?: number | string | null): string => `¥${Number(v || 0).toFixed(2)}`;
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
+
+// D5a：手机号默认打码（A8c 合并前没有“显示全号”按钮，打码后也不提供明文查看）
+const maskPhone = (phone: string): string => {
+  const digits = String(phone || '').replace(/\D/g, '');
+  if (digits.length < 7) return phone ? `${phone.slice(0, 1)}****` : '';
+  return `${digits.slice(0, 3)}****${digits.slice(-4)}`;
+};
 
 const fmtShort = (ts?: number | string | null): string => {
   if (!ts) return '-';
@@ -521,7 +529,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                     <div style={{ display: 'flex', gap: 12 }}>
                       <span className="zy-table-aux" style={{ width: 48 }}>手机号</span>
                       <span>
-                        {receiverPhone || '-'}{' '}
+                        {receiverPhone ? maskPhone(receiverPhone) : '-'}{' '}
                         {receiverPhone && (
                           <span
                             className="zy-table-aux"
@@ -566,6 +574,23 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                     {historyRows.length === 0 && <div className="zy-empty">还没有记录</div>}
                   </div>
                 </div>
+
+                {/* D5a：内部备注 / 发货前改地址 / 改运单号 */}
+                {detail && (
+                  <OrdersOpsPanel
+                    orderNo={detail.no}
+                    internalNotes={detail.internalNotes || []}
+                    shipped={['shipped', 'in_transit', 'delivered', 'exception', 'returned'].includes(
+                      String(detail.logisticsStatus || '')
+                    )}
+                    logistics={detail.logistics}
+                    onChanged={() => {
+                      loadOrderDetail(detail.no);
+                      onRefresh();
+                    }}
+                    notify={notify}
+                  />
+                )}
 
                 {/* 生产做单工单与发货前质检（D2 原有功能，未改动） */}
                 <div id="d1b-work-section" style={{ scrollMarginTop: 12 }}>

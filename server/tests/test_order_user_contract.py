@@ -104,7 +104,7 @@ class OrderUserContractTest(unittest.TestCase):
         )
         self.save(shipped)
         before = user_api.public_order(shipped)
-        self.assertEqual(before["allowedActions"], ["confirm_receipt", "view_logistics", "reorder"])
+        self.assertEqual(before["allowedActions"], ["confirm_receipt", "view_logistics", "reorder", "request_after_sale"])
 
         public = user_api.perform_order_action(self.db, "ORDER-1", "owner-a", "confirm_receipt")
         self.assertEqual(public["orderStatus"], "completed")

@@ -28,8 +28,9 @@
 `git diff --stat origin/integration/2026-11...HEAD`（交付提交后包含报告）：
 
 ```text
+ docs/reports/C4a.md                            | 26 +++++++++++---------------
  miniprogram/{pages/home => tests}/home.test.js | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ 2 files changed, 16 insertions(+), 20 deletions(-)
 ```
 
 ## 4. 测试

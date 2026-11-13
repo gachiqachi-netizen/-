@@ -727,6 +727,38 @@ def _atomic_order_transition(db, no, fn, audit_builder=None):
         return order
 
 
+def change_order_address(db, no, data, actor, owner_id=None):
+    """Update a pre-shipment address and retain a limited, masked audit history."""
+    for key in ('person', 'phone', 'addr'):
+        if not isinstance(data.get(key), str) or not data[key].strip():
+            raise ValueError('请填写收货人、手机号和地址')
+    if not re.fullmatch(r'1\d{10}', data['phone']):
+        raise ValueError('请输入有效的 11 位手机号')
+    person, phone, addr = data['person'].strip(), data['phone'], data['addr'].strip()
+    if len(person) > 40 or len(addr) > 200:
+        raise ValueError('收货人或地址过长')
+
+    def apply(order):
+        if owner_id is not None and order.get('userId') != owner_id:
+            raise KeyError('订单不存在')
+        groups = status.derive_status(order)
+        if (groups['orderStatus'] in ('cancelled', 'closed', 'completed')
+                or groups['logisticsStatus'] != 'not_shipped'
+                or groups['afterSaleStatus'] != 'none'):
+            raise ValueError('已经发货，改不了了')
+        history = list(order.get('addressHistory') or [])
+        old_phone = order.get('phone') or ''
+        masked = old_phone[:3] + '****' + old_phone[-4:] if len(old_phone) == 11 else ''
+        history.append({'at': _now(), 'actor': actor, 'person': order.get('person', ''),
+                        'phone': masked, 'addr': order.get('addr', '')})
+        order['addressHistory'] = history[-20:]
+        order.update(person=person, phone=phone, addr=addr, updatedAt=_now())
+
+    return _atomic_order_transition(
+        db, no, apply,
+        audit_builder=lambda: _audit_record(actor, 'change_address', 'order', no, ''))
+
+
 # ---------------------------------------------------------------- 设计快照、生产工单与质检关口
 
 WORK_ORDER_STEPS = ("待领料", "配珠排序", "穿制打结", "待质检", "已完工")

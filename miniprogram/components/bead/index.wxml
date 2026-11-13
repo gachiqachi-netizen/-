@@ -1,0 +1,3 @@
+<view class="bead bead-{{size}} state-{{state}}" style="{{photoPath ? '' : paintStyle}}">
+  <image wx:if="{{photoPath}}" class="img" src="{{photoPath}}" mode="aspectFit" binderror="onImgError" />
+</view>

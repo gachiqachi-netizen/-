@@ -163,6 +163,10 @@ def order_allowed_actions(order):
         actions.append('confirm_receipt')
     if groups['logisticsStatus'] != 'not_shipped' or order.get('logistics'):
         actions.append('view_logistics')
+    if (groups['orderStatus'] not in ('cancelled', 'closed', 'completed')
+            and groups['logisticsStatus'] == 'not_shipped'
+            and groups['afterSaleStatus'] == 'none'):
+        actions.append('edit_address')
     if isinstance(order.get('beads'), list) and order['beads']:
         actions.append('reorder')
     # 只有当前有可用的支付通道（开发/体验环境的模拟支付，或以后的微信支付）时才给 pay_order；
@@ -177,7 +181,7 @@ def order_allowed_actions(order):
 
 
 # 只给后台看的订单字段：生产工单（负责人、作业备注）和质检记录（质检员、原因）。用户接口一律不返回。
-INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate')
+INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate', 'addressHistory')
 # 状态和物流记录只给用户看“什么时候、从什么变成什么”，不带操作人和内部备注。
 _PUBLIC_STATUS_KEYS = ('at', 'group', 'from', 'to')
 _PUBLIC_LOGISTICS_KEYS = ('at', 'action', 'detail')
@@ -208,6 +212,12 @@ def get_my_order(db, no, uid):
     if not order or order.get('userId') != uid:
         raise KeyError('订单不存在')
     return public_order(order)
+
+
+def change_my_order_address(db, no, uid, data):
+    import commerce
+    return public_order(commerce.change_order_address(
+        db, no, data, actor='customer', owner_id=uid))
 
 
 def perform_order_action(db, no, uid, action):

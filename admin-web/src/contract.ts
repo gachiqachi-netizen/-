@@ -289,9 +289,11 @@ export const CONTRACT = {
     "定制商品说明",
     "发货与物流说明",
     "退货退款说明",
-    "售后服务说明"
+    "售后服务说明",
+    "用户协议",
+    "隐私政策"
   ],
-  "version": "593b51f383b4",
+  "version": "3fc15158c8f8",
   "workOrderStatuses": {
     "pending": "待开始",
     "producing": "制作中",

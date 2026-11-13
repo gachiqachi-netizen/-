@@ -73,6 +73,7 @@ Page({
       wx.navigateBack()
     } catch (error) {
       const sent = /发货|已寄/.test(error.message || '')
+      if (sent) queue.show({ text: '已经发货，改不了了，请联系客服' })
       this.setData({ error: sent ? '已经发货，改不了了，请联系客服' : (error.message || '保存失败，请再试一次') })
     } finally { this.setData({ saving: false }) }
   },

@@ -72,12 +72,11 @@ class AIDesignResponseTests(unittest.TestCase):
     def test_three_plans_use_server_sizing_price_and_kb_tags(self):
         status, body = self.design(FakeProvider())
         self.assertEqual(status, 200)
-        self.assertEqual(set(body), {'message', 'plans', 'quickReplies', 'designs', 'reply'})
+        self.assertEqual(set(body), {'message', 'plans', 'quickReplies'})
         self.assertEqual(len(body['plans']), 3)
         self.assertEqual(len(body['quickReplies']), 3)
-        self.assertEqual(len(body['designs']), 3)
-        self.assertEqual(body['reply'], body['message'])
-        self.assertEqual(body['designs'][0]['pattern'], ['zt8', 'jg10'])
+        self.assertNotIn('designs', body)
+        self.assertNotIn('reply', body)
         beads = {b['id']: b for b in app.on_sale_catalog()[0]}
         for plan in body['plans']:
             sequence = plan['beads']

@@ -195,6 +195,16 @@ class HTTPTest(unittest.TestCase):
             os.environ.pop('DEMO_ORDERS', None)
             self.assertEqual(self.request('/api/orders', 'POST', {})[0], 403)
 
+    def test_demo_order_omits_legacy_status(self):
+        bead_id = app.db.list('beads')[0]['id']
+        with patch.dict(os.environ, {'ENV': 'development', 'DEMO_ORDERS': '1'}):
+            status, order = self.request('/api/orders', 'POST', {
+                'beads': [bead_id] * 6, 'person': '测试', 'phone': '13800138000', 'addr': '测试地址'})
+        self.assertEqual(status, 200)
+        self.addCleanup(app.db.delete, 'orders', order['no'])
+        self.assertNotIn('status', order)
+        self.assertNotIn('paymentAvailable', order)
+
     def test_design_isolation_and_share_snapshot(self):
         a, b = 'a' * 43, 'b' * 43
         status, design = self.request('/api/designs', 'POST', {'name':'私有设计', 'beads':['zt8'], 'wrist':15}, token=a)

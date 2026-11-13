@@ -20,7 +20,7 @@ Page({
     api.catalog().then(c => {
       const cards = ui.catalogCards(c), byId = Object.fromEntries(cards.map(t => [t.id, t]))
       const banners = (c.banners || []).filter(b => !b.tpl || byId[b.tpl]).map(b => ({ ...b, keywords: Array.isArray(b.tags) ? b.tags.join(' · ') : (b.sub || ''), coverUrl: b.cover ? (/^https?:/.test(b.cover) ? b.cover : getApp().globalData.apiBase + b.cover) : '', card: byId[b.tpl] || cards[0] }))
-      const articles = Array.isArray(c.homeArticles) ? c.homeArticles.map(a => ({ ...a, image: a.cover ? (/^https?:/.test(a.cover) ? a.cover : getApp().globalData.apiBase + a.cover) : '', summary: a.summary || a.excerpt || '' })) : []
+      const articles = Array.isArray(c.homeArticles) ? c.homeArticles.map(a => ({ ...a, image: a.cover ? (/^https?:/.test(a.cover) ? a.cover : getApp().globalData.apiBase + a.cover) : '', summary: a.summary || a.excerpt || (Array.isArray(a.body) ? a.body[0] : '') })) : []
       this.setData({ offline: !!getApp().globalData.catalogOffline, templates: cards, catalog: c.beads || [], banners, homeArticles: articles, wrist: ui.wrist(), loading: false, error: '' })
     }).catch(() => {
       const fallback = getApp().globalData.catalog || require('../../utils/catalog-preview')

@@ -21,10 +21,11 @@ import app
 import routes
 import user_api
 from db import DB
+from admin_helpers import owner_headers
 
 
 def echo_public(ctx, match, data):
-    return 200, {"kind": "public", "userId": ctx.user_id, "qs": ctx.qs}
+    return 200, {"kind": "public", "userId": ctx.user_id, "qs": ctx.qs, "ip": ctx.ip}
 
 
 def echo_user(ctx, match, data):
@@ -106,6 +107,7 @@ class DispatchHTTPTests(unittest.TestCase):
         cls.thread.start()
         cls.base = "http://127.0.0.1:" + str(cls.server.server_port)
         cls.opener = build_opener(ProxyHandler({}))  # 本机请求不走代理
+        cls.admin_headers = owner_headers(cls.base)
 
     @classmethod
     def tearDownClass(cls):
@@ -122,7 +124,7 @@ class DispatchHTTPTests(unittest.TestCase):
         if token:
             headers["Authorization"] = "Bearer " + token
         if admin:
-            headers["X-Admin-Token"] = admin
+            headers.update(self.admin_headers)
         raw = json.dumps(data).encode() if data is not None else None
         try:
             resp = self.opener.open(Request(self.base + path, data=raw, headers=headers, method=method), timeout=3)
@@ -141,6 +143,11 @@ class DispatchHTTPTests(unittest.TestCase):
         self.assertEqual(code, 200)
         self.assertEqual(body["kind"], "public")
         self.assertIsNone(body["userId"])
+
+    def test_public_route_receives_client_ip(self):
+        code, body = self.request("/api/test-routes/ping")
+        self.assertEqual(code, 200)
+        self.assertEqual(body["ip"], "127.0.0.1")
 
     def test_public_route_sees_logged_in_user(self):
         token = self.login_user()

@@ -5,7 +5,7 @@
 路径正则按整条路径匹配（fullmatch），不会只匹配开头。
 
 处理函数签名：fn(ctx, match, data) -> (状态码, 返回体)。
-ctx 里有 db、user_id（用户登录时）、admin（后台登录时为真）、qs（查询参数）。
+ctx 里有 db、user_id（用户登录时）、admin（后台登录时为真）、qs（查询参数）。ctx.ip 是客户端 IP。
 data 是请求 JSON（GET 时为 None）。抛 ValueError 返回 400，抛 KeyError 返回 404。
 """
 import importlib
@@ -16,11 +16,12 @@ import re
 class Ctx:
     """一次路由处理的上下文，字段只读。"""
 
-    def __init__(self, db, user_id, admin, qs):
+    def __init__(self, db, user_id, admin, qs, ip=None):
         self.db = db
         self.user_id = user_id
         self.admin = admin
         self.qs = qs
+        self.ip = ip
 
 
 AUTH_KINDS = ("public", "user", "admin")

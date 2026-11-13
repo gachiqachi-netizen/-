@@ -83,7 +83,7 @@ const ReviewsPage: React.FC = () => {
     {notice && <div role="status">{notice}</div>}
     {error && !active && <div role="alert" style={danger}>{error}</div>}
     {loading ? <EmptyState text="正在加载评价…" /> : <Table<Review> rows={visible} rowKey={r => r.id} onRowClick={r => { setSelected(r.id); setReason(''); setError(''); }} empty="暂无符合条件的评价" columns={[
-      { title: '评价', width: 220, render: r => <div><strong>{r.templateId || '手串评价'}</strong><div>{r.orderNo} · {'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</div></div> },
+      { title: '评价', width: 220, render: r => <div><strong>手串评价</strong><div>{r.orderNo} · {'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</div></div> },
       { title: '内容', render: r => <span style={r.machine?.textOk === false ? danger : undefined}>{r.text || '只打了星'}</span> },
       { title: '晒图', width: 70, render: r => r.photoIds?.length ? `${r.photoIds.length} 张` : '—' },
       { title: '机审', width: 130, render: r => <span style={issue(r) && issue(r) !== '图片检查中' ? danger : undefined}>{issue(r) || '通过'}</span> },

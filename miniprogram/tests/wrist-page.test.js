@@ -1,10 +1,12 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const { queue } = require('../utils/toast')
 let definition, toast, saved = {}
+queue.subscribe(item => { toast = item ? item.text : undefined })
 global.Page = page => { definition = page }
 global.wx = {
   getStorageSync: key => saved[key], setStorageSync: (key, value) => { saved[key] = value },
-  showToast: options => { toast = options.title }, navigateBack: options => options.success(), vibrateShort: () => {}
+  navigateBack: options => options.success(), vibrateShort: () => {}
 }
 const store = require('../utils/design')
 store.current = () => null

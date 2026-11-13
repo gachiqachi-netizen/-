@@ -1,8 +1,10 @@
 // Run with: node miniprogram/tests/creation-flows.test.js
 const assert = require('assert'), api = require('../utils/api'), store = require('../utils/design')
+const { queue } = require('../utils/toast')
 let def, current=null, savedWrist=15, toast='', navigated='', opened=0
+queue.subscribe(item => { toast = item ? item.text : '' })
 global.Page = value => { def=value }
-global.wx = {getStorageSync:key=>key==='cgz_wrist'?savedWrist:undefined,showToast:o=>{toast=o.title},switchTab:o=>{navigated=o.url},navigateTo:o=>{navigated=o.url},chooseMedia:()=>{opened++}}
+global.wx = {getStorageSync:key=>key==='cgz_wrist'?savedWrist:undefined,switchTab:o=>{navigated=o.url},navigateTo:o=>{navigated=o.url},chooseMedia:()=>{opened++}}
 store.create=()=>({id:'test',name:'我的手串',wrist:15,beads:[]})
 store.current=()=>current;store.selected=d=>{current=d}
 function page() { const p={...def,data:JSON.parse(JSON.stringify(def.data))};p.setData=(v,cb)=>{Object.assign(p.data,v);if(cb)cb()};return p }

@@ -1,6 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 const path = require('node:path')
+const { queue } = require('../utils/toast')
 
 const pagePath = path.resolve(__dirname, '../features/review/review.js')
 const apiPath = path.resolve(__dirname, '../utils/api.js')
@@ -9,6 +10,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve))
 function makePage(reply = {}) {
   const calls = []
   const toasts = []
+  const unsubscribe = queue.subscribe(item => { if (item) toasts.push(item.text) })
   let backs = 0
   const originalApi = require.cache[apiPath]
   const originalPage = global.Page
@@ -25,7 +27,6 @@ function makePage(reply = {}) {
   } }
   global.Page = value => { definition = value }
   global.wx = {
-    showToast: options => toasts.push(options.title),
     navigateBack: options => { backs++; if (options && options.success) options.success() },
     getFileSystemManager: () => ({ readFile: options => options.success({ data: 'aW1hZ2U=' }) })
   }
@@ -34,6 +35,7 @@ function makePage(reply = {}) {
   const page = { ...definition, data: { ...definition.data }, setData(update) { Object.assign(this.data, update) } }
   page.onLoad({ orderId: 'ORDER-1' })
   const restore = () => {
+    unsubscribe()
     delete require.cache[pagePath]
     if (originalApi) require.cache[apiPath] = originalApi
     else delete require.cache[apiPath]

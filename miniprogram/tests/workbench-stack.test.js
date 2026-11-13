@@ -14,6 +14,20 @@ function page(beads = ['a','b']) {
   p.update()
   return p
 }
+test('清空确认层保留原文案，取消不清空，确认后才清空', () => {
+  const p = page(['a', 'b'])
+  const markup = require('node:fs').readFileSync(require('node:path').join(__dirname, '../pages/diy/diy.wxml'), 'utf8')
+  assert.match(markup, /title="清空手串？"/)
+  assert.match(markup, /清空后可以撤销恢复。/)
+  p.trash()
+  assert.equal(p.data.clearOpen, true)
+  assert.deepEqual(p.data.design.beads, ['a', 'b'])
+  p.closeClear()
+  assert.deepEqual(p.data.design.beads, ['a', 'b'])
+  p.trash()
+  p.confirmClear()
+  assert.deepEqual(p.data.design.beads, [])
+})
 test('叠戴最多选两条，预览只改托盘，当前手串和价格仍随加珠更新', () => {
   const originals=[{id:'one',name:'素月',beads:['b','b']},{id:'two',name:'初恋粉',beads:['a','a']},{id:'three',name:'第三条',beads:['a']}]
   const oldList=store.list

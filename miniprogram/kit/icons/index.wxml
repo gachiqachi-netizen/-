@@ -1,2 +1,17 @@
-<!-- 由任务卡 C0b 图标 填内容 -->
-<view class="kit">临时页：C0b 图标</view>
+<view class="kit">
+  <view class="sec">SVG 图标</view>
+  <view class="grid">
+    <view class="cell" wx:for="{{icons}}" wx:key="*this">
+      <image class="icon" src="/assets/icons/{{item}}.svg" />
+      <view class="name">{{item}}</view>
+    </view>
+  </view>
+  <view class="sec">tab 图标（未选中 #6e6e6e / 选中 #111111）</view>
+  <view class="grid">
+    <view class="cell" wx:for="{{tabs}}" wx:key="*this">
+      <image class="icon" src="/assets/tab/{{item}}.png" />
+      <view class="name">{{item}}</view>
+      <image class="icon" src="/assets/tab/{{item}}-on.png" />
+    </view>
+  </view>
+</view>

@@ -93,7 +93,7 @@ def payload():
         "workOrderSteps": list(commerce.WORK_ORDER_STEPS), "workOrderStatuses": WORK_ORDER_STATUSES,
         "qualityGateItems": QUALITY_GATE_ITEMS,
         "cancelReasons": CANCEL_REASONS,
-        "bannedWords": list(kb._load()["banned"]),
+        "bannedWords": sorted(kb._load()["banned"], key=lambda word: (-len(word), word)),
     }
     raw = json.dumps(data, ensure_ascii=False, sort_keys=True)
     return {"version": hashlib.sha256(raw.encode("utf-8")).hexdigest()[:12], **data}

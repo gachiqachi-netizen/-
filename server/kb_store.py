@@ -2,7 +2,7 @@
 import json
 import os
 import sqlite3
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from datetime import datetime, timezone
 
 DICT_KEYS = frozenset(('banned', 'meaning_tags', 'terms', 'dims', 'grade_families'))
@@ -17,8 +17,9 @@ def _connection():
             yield conn, '%s'
     else:
         path = os.environ.get('DATABASE_PATH') or os.path.join(os.path.dirname(__file__), 'data.sqlite3')
-        with sqlite3.connect(path, timeout=10) as conn:
-            yield conn, '?'
+        with closing(sqlite3.connect(path, timeout=10)) as conn:
+            with conn:
+                yield conn, '?'
 
 
 def _rows(conn):
@@ -49,10 +50,16 @@ def snapshot():
 def stamp():
     """A stable cache marker that changes after every save."""
     with _connection() as (conn, _):
-        rows = _rows(conn)
-    if not rows:
-        return None
-    return tuple(sorted((rid, (json.loads(raw) if isinstance(raw, str) else raw)['version']) for rid, raw in rows))
+        try:
+            if isinstance(conn, sqlite3.Connection):
+                count, latest = conn.execute("SELECT count(*), max(json_extract(doc, '$.updatedAt')) FROM kb_items").fetchone()
+            else:
+                count, latest = conn.execute("SELECT count(*), max(doc->>'updatedAt') FROM kb_items").fetchone()
+        except sqlite3.OperationalError as exc:
+            if 'no such table' in str(exc):
+                return None
+            raise
+    return (count, latest) if count else None
 
 
 def save(key, data, by, note):

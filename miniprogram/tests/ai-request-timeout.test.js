@@ -16,8 +16,8 @@ test('AI 设计和评价使用 180 秒超时，普通请求仍为 10 秒', async
   assert.deepEqual(seen.map(item => item.timeout), [10000, 180000, 180000])
 })
 
-test('AI 评价页明确传入 180 秒超时', () => {
+test('手串详情页不再调用 /ai/review（AI 功能统一在 AI 配）', () => {
   const fs = require('node:fs')
   const source = fs.readFileSync(require.resolve('../pages/finish/finish.js'), 'utf8')
-  assert.match(source, /['"]\/ai\/review['"][\s\S]{0,180}timeout\s*:\s*180000/)
+  assert.doesNotMatch(source, /\/ai\/review/)
 })

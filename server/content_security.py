@@ -13,6 +13,7 @@ _token = None
 _expires_at = 0
 _lock = threading.Lock()
 _checker = None
+_image_checker = None
 
 
 class ContentRejected(ValueError):
@@ -31,6 +32,11 @@ def fail_open_allowed():
 def set_checker(checker):
     global _checker
     _checker = checker
+
+
+def set_image_checker(checker):
+    global _image_checker
+    _image_checker = checker
 
 
 def _access_token():
@@ -82,6 +88,39 @@ def allowed(text):
 def ensure_allowed(*texts):
     if any(not allowed(text) for text in texts if text):
         raise ContentRejected('文字包含不适合发布的内容，请修改后重试')
+
+
+def _wechat_check_image_async(media_url):
+    """提交微信异步图片检查；返回 (是否已直接放行, trace_id)。"""
+    request = urllib.request.Request(
+        'https://api.weixin.qq.com/wxa/media_check_async?access_token=' + urllib.parse.quote(_access_token()),
+        data=json.dumps({'media_url': media_url, 'media_type': 2}, ensure_ascii=False).encode(),
+        headers={'Content-Type': 'application/json'}, method='POST')
+    with urllib.request.urlopen(request, timeout=8) as response:
+        result = json.loads(response.read())
+    code = int(result.get('errcode', 0))
+    if code == 0:
+        return False, result.get('trace_id')
+    if code in (87014,):
+        return True, None
+    raise RuntimeError('微信图片检查暂不可用')
+
+
+def check_image_async(media_url):
+    """提交图片安全检查。返回 "passed"（已放行）或 "pending"（等微信回调）。
+
+    未配置凭证时和文字检查同一条 fail-open 规则：只在 development 环境放行，
+    trial/production 抛 ContentRejected。
+    """
+    if _image_checker is not None:
+        return _image_checker(media_url)
+    if not configured():
+        if fail_open_allowed():
+            sys.stderr.write('image check skipped: WECHAT_APP_ID/WECHAT_APP_SECRET not configured\n')
+            return 'passed'
+        raise ContentRejected('内容安全未配置，无法校验图片')
+    passed, _trace_id = _wechat_check_image_async(media_url)
+    return 'passed' if passed else 'pending'
 
 
 def filter_ai_entries(entries):

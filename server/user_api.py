@@ -189,6 +189,7 @@ def _pick_list(rows, keys):
 
 def public_order(order):
     """Owner-safe order representation with normalized state and actions."""
+    import order_view
     out = {k: v for k, v in public_design(order).items() if k not in INTERNAL_ORDER_FIELDS}
     if 'statusHistory' in out:
         out['statusHistory'] = _pick_list(out['statusHistory'], _PUBLIC_STATUS_KEYS)
@@ -200,6 +201,8 @@ def public_order(order):
         for key, field in _ORDER_STATE_GROUPS
     }
     out['allowedActions'] = order_allowed_actions(order)
+    out['customerStatus'] = order_view.customer_status(order, out['allowedActions'])
+    out['progress'] = order_view.progress(order)
     return out
 
 

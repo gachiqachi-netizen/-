@@ -1023,11 +1023,13 @@ def record_quality_gate(db, no, data, actor=ACTOR):
 
 def order_detail(db, no):
     """订单详情：附五组状态、允许的下一状态、状态历史、物流、售后记录、设计快照、生产工单与质检关口。"""
+    import order_view
     o = db.get("orders", no)
     if not o:
         return None
     out = dict(o)
     out.update(status.derive_status(o))
+    out['opsStatus'] = order_view.ops_status(o)
     out["designSnapshot"] = build_design_snapshot(db, o)
     out["workOrder"] = build_work_order(o, db=db)
     out["qualityGate"] = o.get("qualityGate")
@@ -1320,6 +1322,7 @@ def json_dump_safe(obj):
 
 
 def list_orders(db, q="", filters=None):
+    import order_view
     rows = db.list("orders")
     rows.sort(key=lambda o: o.get("createdAt", 0), reverse=True)
     q = (q or "").strip().lower()
@@ -1334,6 +1337,7 @@ def list_orders(db, q="", filters=None):
             continue
         item = dict(o)
         item.update(groups)
+        item['opsStatus'] = order_view.ops_status(o)
         item["designSnapshot"] = build_design_snapshot(db, o)
         item["workOrder"] = build_work_order(o, db=db)
         item["qualityGate"] = o.get("qualityGate")

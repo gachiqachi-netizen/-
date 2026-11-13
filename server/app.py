@@ -135,8 +135,11 @@ def on_sale_catalog():
     tpls = [t for t in db.list("templates") if t.get("onSale", True)
             and all(x in ids for x in (t.get("special") or []) + (t.get("pattern") or []) + (t.get("tail") or []))
             and t.get("pattern")]
+    tpls.sort(key=lambda t: (t.get("homeOrder") is None,
+                             t.get("homeOrder") if t.get("homeOrder") is not None else 0, t["id"]))
     tpl_ids = {t["id"] for t in tpls}
     banners = [b for b in db.list("banners") if b.get("on", True) and (not b.get("tpl") or b["tpl"] in tpl_ids)]
+    banners.sort(key=lambda b: (b.get("order", 9999), b["id"]))
     return beads, tpls, banners
 
 
@@ -378,7 +381,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(200, f.read(), "application/json" if fp.endswith(".json") else "application/octet-stream")
             if path == "/api/catalog":
                 beads, tpls, banners = on_sale_catalog()
-                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config()})
+                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config(), "homeArticles": __import__("home").home_articles(db)})
             if path == "/api/meta/contract":
                 import contract
                 return self.send(200, contract.payload())

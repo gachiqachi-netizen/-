@@ -13,7 +13,6 @@ class PricingTest(unittest.TestCase):
         self.assertEqual(result, {
             'goodsFen': 1800,
             'handworkFen': 1500,
-            'handworkEnabled': True,
             'cordFen': 500,
             'giftFen': 1000,
             'subtotalFen': 4800,

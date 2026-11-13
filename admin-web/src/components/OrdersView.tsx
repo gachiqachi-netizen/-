@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Wrench, ShieldCheck, Lock, Clock, FileText, X } from 'lucide-react';
+import { Wrench, ShieldCheck } from 'lucide-react';
 import { apiRequest, labelOf, fmtTime } from '../api';
 import { CONTRACT } from '../contract';
 import { BraceletRingPreview } from './BraceletRingPreview';
@@ -18,6 +18,28 @@ interface OrdersViewProps {
 
 // 分栏和状态用同一套词，状态词只从契约取（docs/design/12-admin.md 第 4、5 节）
 const ORDER_TABS = ['all', 'unpaid', 'to_make', 'producing', 'ready_to_ship', 'shipped', 'completed', 'after_sale'];
+
+// “下一步能做的事”的按钮文字（D1b 对照表，见 docs/design/tasks/admin-wave1.md D1b）
+const TRANSITION_ACTION_LABELS: Record<string, string> = {
+  'orderStatus.cancelled': '取消订单',
+  'fulfillmentStatus.producing': '开始制作',
+  'fulfillmentStatus.ready_to_ship': '改成待发货',
+  'fulfillmentStatus.shipped': '发货',
+  'logisticsStatus.in_transit': '改成运输中',
+  'logisticsStatus.delivered': '标记已签收',
+  'logisticsStatus.exception': '标记物流异常',
+};
+
+const actionLabelFor = (group: string, to: string): string =>
+  TRANSITION_ACTION_LABELS[`${group}.${to}`] || `改成${labelOf(group, to)}`;
+
+const ORDER_SOURCE_LABELS: Record<string, string> = {
+  custom_diy: '自己串的',
+  template: '按模板下单',
+  ai: 'AI 配的',
+};
+
+const yuan = (v?: number | null): string => `¥${Number(v || 0).toFixed(2)}`;
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
@@ -55,6 +77,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
     note: '',
   });
   const [shipPrompt, setShipPrompt] = useState<{ carrierName: string; trackingNo: string } | null>(null);
+  const [transError, setTransError] = useState<{ group: string; to: string; msg: string } | null>(null);
 
   useEffect(() => {
     if (initialQuery !== undefined) setQ(initialQuery);
@@ -171,13 +194,44 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
         method: 'PUT',
         body,
       });
-      notify(`状态已更新为：${labelOf(group, to)}`);
+      setTransError(null);
       setShipPrompt(null);
+      notify(`已${actionLabelFor(group, to)}`);
       await loadOrderDetail(detail.no);
       await onRefresh();
     } catch (err: any) {
-      notify(err.message || '状态流转被拦截', 'error');
+      setTransError({ group, to, msg: err.message || '操作失败' });
     }
+  };
+
+  const cancelOrder = async () => {
+    if (!detail) return;
+    if (!window.confirm('确认取消这笔订单吗？取消后不能撤回。')) return;
+    try {
+      await apiRequest(`/api/admin/orders/${encodeURIComponent(detail.no)}/status`, {
+        method: 'PUT',
+        body: { group: 'orderStatus', to: 'cancelled' },
+      });
+      setTransError(null);
+      notify('订单已取消');
+      await loadOrderDetail(detail.no);
+      await onRefresh();
+    } catch (err: any) {
+      setTransError({ group: 'orderStatus', to: 'cancelled', msg: err.message || '取消失败' });
+    }
+  };
+
+  const copyText = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      notify('已复制');
+    } catch {
+      notify('复制失败', 'error');
+    }
+  };
+
+  const scrollToWork = () => {
+    document.getElementById('d1b-work-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const snap = detail?.designSnapshot || {};
@@ -262,369 +316,400 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
         ]}
       />
 
-      {detail && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/45 backdrop-blur-[1px]">
-          <div className="w-full max-w-4xl bg-white h-full shadow-2xl border-l border-zinc-200 flex flex-col overflow-hidden">
-            <div className="px-6 py-4 border-b border-zinc-200 flex items-center justify-between bg-zinc-50/60">
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <span className="font-mono text-base font-bold text-zinc-900">{detail.no}</span>
-                  <StatusBadge tone={statusTone(detail.orderStatus)}>
-                    {labelOf('orderStatus', detail.orderStatus)}
-                  </StatusBadge>
-                  <StatusBadge tone={statusTone(detail.fulfillmentStatus)}>
-                    {labelOf('fulfillmentStatus', detail.fulfillmentStatus)}
-                  </StatusBadge>
-                  <StatusBadge tone={statusTone(detail.qualityGate?.status || 'pending')}>
-                    质检: {detail.qualityGate?.status === 'passed' ? '通过' : detail.qualityGate?.status === 'failed' ? '不通过' : '待检'}
-                  </StatusBadge>
-                </div>
-                <p className="text-xs text-zinc-500 mt-1">
-                  下单时间：{fmtTime(detail.createdAt)} · 实付 ¥{Number(detail.total || detail.price || 0).toFixed(2)} · 收件信息：{detail.addr?.name || '-'} ({detail.addr?.phone || '-'}) {detail.addr?.detail || ''}
-                </p>
-              </div>
-              <button
-                onClick={() => setActiveOrderNo(null)}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              <div className="bg-zinc-50 rounded-xl p-4 border border-zinc-200 space-y-3">
-                <div className="text-xs font-semibold text-zinc-900 flex items-center justify-between">
-                  <span>状态流转（受后端严格状态机与质检关口保护）</span>
-                  <span className="text-[11px] font-normal text-zinc-500">
-                    注：进入「质检通过待发」前必须完成下方 4 项质检核验
-                  </span>
+      {detail && (() => {
+        const ops = detail.opsStatus || {};
+        const opsMeta = ops.code ? (CONTRACT.opsStatus as Record<string, { label: string; danger: boolean }>)[ops.code] : null;
+        const wo = detail.workOrder || {};
+        const snap = detail.designSnapshot || {};
+        const snapBeads = snap.beads || snap.sequence || [];
+        const snapMaterials = snap.materials || [];
+        const transitions = detail.allowedTransitions || {};
+        const allActions = (['orderStatus', 'fulfillmentStatus', 'logisticsStatus'] as const).flatMap((g) =>
+          (transitions[g] || []).map((to: string) => ({ g, to }))
+        );
+        const drawerActions = allActions.filter((a) => !(a.g === 'orderStatus' && a.to === 'cancelled'));
+        const canCancel = allActions.some((a) => a.g === 'orderStatus' && a.to === 'cancelled');
+        const historyRows = [
+          { at: detail.createdAt, text: '用户下单' },
+          ...(detail.statusHistory || []).map((h: any) => ({
+            at: h.at,
+            text: [h.actor, labelOf(h.group, h.to), h.note].filter(Boolean).join(' '),
+          })),
+        ].sort((a, b) => Number(b.at || 0) - Number(a.at || 0));
+        const sourceLabel = ORDER_SOURCE_LABELS[snap.source] || '';
+        const metaLine = [
+          `${snap.count ?? snapBeads.length} 颗`,
+          snap.lengthMm ? `${snap.lengthMm}mm` : '',
+          snap.wrist ? `手围 ${snap.wrist}cm` : '',
+          sourceLabel,
+        ].filter(Boolean).join(' · ');
+        const materialsLine = snapMaterials.map((m: any) => `${m.name} ×${m.count}`).join('、');
+        const receiverName = detail.addr?.name || detail.person || '-';
+        const receiverPhone = detail.addr?.phone || detail.phone || '';
+        const receiverAddr = detail.addr?.detail || detail.addr || '';
+        const workLine = [wo.step, wo.assignee ? `（${wo.assignee}）` : ''].filter(Boolean).join('');
+
+        return (
+          <>
+            <div className="zy-drawer-mask" onClick={() => setActiveOrderNo(null)} />
+            <div className="zy-drawer">
+              <div className="zy-drawer-head">
+                <div>
+                  <div className="zy-drawer-title" style={{ fontFamily: 'monospace' }}>{detail.no}</div>
+                  <div className="zy-drawer-sub">
+                    {fmtShort(detail.createdAt)} 下单 ·{' '}
+                    <span style={{ cursor: 'pointer' }} onClick={() => copyText(detail.no)}>
+                      订单号可复制
+                    </span>
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {(['orderStatus', 'fulfillmentStatus', 'logisticsStatus'] as const).map((grp) => {
-                    const allowed: string[] = detail.allowedTransitions?.[grp] || [];
-                    return (
-                      <div key={grp} className="bg-white rounded-lg p-3 border border-zinc-200/80">
-                        <div className="text-[11px] text-zinc-500 flex items-center justify-between">
-                          <span>
-                            {grp === 'orderStatus'
-                              ? '订单状态'
-                              : grp === 'fulfillmentStatus'
-                              ? '生产履约状态'
-                              : '物流状态'}
-                          </span>
-                          <strong className="text-zinc-900">{labelOf(grp, detail[grp])}</strong>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-1.5">
-                          {allowed.length > 0 ? (
-                            allowed.map((to) => (
-                              <button
-                                key={to}
-                                type="button"
-                                onClick={() => triggerTransition(grp, to)}
-                                className="px-2.5 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium cursor-pointer"
-                              >
-                                流转 → {labelOf(grp, to)}
-                              </button>
-                            ))
-                          ) : (
-                            <span className="text-[11px] text-zinc-400">当前无可执行流转</span>
-                          )}
-                        </div>
+                <button type="button" className="zy-drawer-close" onClick={() => setActiveOrderNo(null)} aria-label="关闭">
+                  ✕
+                </button>
+              </div>
+
+              <div className="zy-drawer-body">
+                {/* 状态 */}
+                <div className="zy-card" style={{ marginBottom: 16 }}>
+                  <div className="zy-card-title">状态</div>
+                  <div style={{ padding: '14px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+                      <span
+                        style={{
+                          fontSize: 24,
+                          fontWeight: 600,
+                          color: opsMeta?.danger ? 'var(--danger)' : 'var(--text)',
+                        }}
+                      >
+                        {opsMeta?.label || '—'}
+                      </span>
+                      <span className="zy-table-aux">
+                        {labelOf('paymentStatus', detail.paymentStatus)} ·{' '}
+                        {labelOf('logisticsStatus', detail.logisticsStatus)} ·{' '}
+                        {labelOf('afterSaleStatus', detail.afterSaleStatus || 'none')}
+                      </span>
+                    </div>
+                    {workLine && (
+                      <div className="zy-table-aux" style={{ marginTop: 6 }}>
+                        工序：{workLine}
+                        {typeof wo.progress === 'number' ? ` · ${wo.progress}%` : ''}
                       </div>
-                    );
-                  })}
-                </div>
-
-                {shipPrompt && (
-                  <div className="bg-white rounded-lg p-4 border-2 border-zinc-900 space-y-3">
-                    <div className="text-xs font-semibold text-zinc-900">填写发货物流单号（必填）</div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <input
-                        value={shipPrompt.carrierName}
-                        onChange={(e) => setShipPrompt({ ...shipPrompt, carrierName: e.target.value })}
-                        placeholder="承运快递（如：顺丰速运）"
-                        className="px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
-                      />
-                      <input
-                        value={shipPrompt.trackingNo}
-                        onChange={(e) => setShipPrompt({ ...shipPrompt, trackingNo: e.target.value })}
-                        placeholder="快递单号（如：SF123456789）"
-                        className="px-3 py-1.5 text-xs font-mono border border-zinc-200 rounded-lg"
-                      />
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setShipPrompt(null)}
-                        className="px-3 py-1 rounded border border-zinc-200 text-xs"
-                      >
-                        取消
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => triggerTransition('fulfillmentStatus', 'shipped', shipPrompt)}
-                        className="px-3 py-1 rounded bg-zinc-900 text-white text-xs font-medium"
-                      >
-                        确认发货
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-white rounded-xl border border-zinc-200 p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-[#c8302e]" />
-                    <h4 className="text-sm font-semibold text-zinc-900">
-                      下单冻结设计快照（严禁私自替换用料）
-                    </h4>
-                  </div>
-                  <span className="text-xs text-zinc-500">
-                    手围 <strong className="text-zinc-900">{snap.wrist || detail.wrist || 15} cm</strong> · 共{' '}
-                    <strong className="text-zinc-900">{snap.count ?? snapBeads.length} 颗</strong> · 弦长{' '}
-                    {snap.lengthMm ?? '-'} mm
-                  </span>
-                </div>
-
-                {snap.customerNote && (
-                  <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3.5 py-2 text-xs">
-                    <strong>买家定制备注：</strong> {snap.customerNote}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                  <div className="md:col-span-5 flex justify-center bg-zinc-50 rounded-xl p-3 border border-zinc-200/60">
-                    <BraceletRingPreview
-                      beads={snapBeads}
-                      wristCm={snap.wrist || detail.wrist || 15}
-                      size={185}
-                      subtitle="下单冻结快照"
-                    />
-                  </div>
-                  <div className="md:col-span-7 space-y-3">
-                    <div className="text-xs font-semibold text-zinc-800">生产领料清单：</div>
-                    <div className="border border-zinc-200 rounded-lg divide-y divide-zinc-100 text-xs max-h-36 overflow-y-auto">
-                      {snapMaterials.map((m: any) => (
-                        <div key={m.id} className="px-3 py-2 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="w-3 h-3 rounded-full inline-block border border-zinc-300"
-                              style={{ background: m.color || '#64748b' }}
-                            />
-                            <span className="font-medium text-zinc-900">{m.name}</span>
-                            <span className="font-mono text-zinc-400">
-                              ({m.id} · {m.sizeMm}mm)
-                            </span>
-                          </div>
-                          <span className="font-bold text-zinc-900">× {m.count} 颗</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="text-xs font-semibold text-zinc-800">逐颗穿珠顺序核对表 (#1 → #{snapBeads.length})：</div>
-                    <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2.5 bg-zinc-50 rounded-lg border border-zinc-200">
-                      {snapBeads.map((b: any, idx: number) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white border border-zinc-200 text-[11px]"
-                        >
-                          <strong className="font-mono text-zinc-400">#{b.index || idx + 1}</strong>
-                          <span
-                            className="w-2 h-2 rounded-full inline-block"
-                            style={{ background: b.color || '#64748b' }}
-                          />
-                          <span>{b.name}</span>
-                          <span className="text-zinc-400">({b.sizeMm || 8}mm)</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="bg-white rounded-xl border border-zinc-200 p-5 space-y-4">
-                  <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-                    <div className="flex items-center gap-2">
-                      <Wrench className="w-4 h-4 text-indigo-600" />
-                      <h4 className="text-sm font-semibold text-zinc-900">生产做单工单</h4>
-                    </div>
-                    <StatusBadge tone="crimson">用料锁定：禁止替换</StatusBadge>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-zinc-700 mb-1">制珠师 / 负责人</label>
-                      <input
-                        value={workForm.assignee}
-                        onChange={(e) => setWorkForm({ ...workForm, assignee: e.target.value })}
-                        placeholder="如：林师傅"
-                        className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-zinc-700 mb-1">当前工序阶段</label>
-                      <select
-                        value={workForm.step}
-                        onChange={(e) => setWorkForm({ ...workForm, step: e.target.value })}
-                        className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
-                      >
-                        {CONTRACT.workOrderSteps.map((s) => (
-                          <option key={s} value={s}>{s}</option>
+                    )}
+                    {drawerActions.length > 0 && (
+                      <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+                        {drawerActions.map(({ g, to }) => (
+                          <button
+                            key={`${g}.${to}`}
+                            type="button"
+                            className="zy-btn zy-btn-secondary"
+                            onClick={() => triggerTransition(g, to)}
+                          >
+                            {actionLabelFor(g, to)}
+                          </button>
                         ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-xs font-medium text-zinc-700 mb-1">
-                      <span>制作完成度</span>
-                      <span className="font-bold text-indigo-600">{workForm.progress}%</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      step={5}
-                      value={workForm.progress}
-                      onChange={(e) => setWorkForm({ ...workForm, progress: Number(e.target.value) })}
-                      className="w-full accent-zinc-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-700 mb-1">车间作业备注</label>
-                    <textarea
-                      rows={2}
-                      value={workForm.operatorNote}
-                      onChange={(e) => setWorkForm({ ...workForm, operatorNote: e.target.value })}
-                      placeholder="记录弹力线股数、打结隐藏位置或客户特殊交代..."
-                      className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={saveWorkOrder}
-                    className="w-full py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium cursor-pointer"
-                  >
-                    保存工单进度
-                  </button>
-                </div>
-
-                <div className="bg-white rounded-xl border border-zinc-200 p-5 space-y-4">
-                  <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-                    <div className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      <h4 className="text-sm font-semibold text-zinc-900">发货前质检关口</h4>
-                    </div>
-                    <StatusBadge tone={statusTone(detail.qualityGate?.status || 'pending')}>
-                      {detail.qualityGate?.passed ? '✓ 已放行' : '未放行'}
-                    </StatusBadge>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2.5 bg-zinc-50 p-3 rounded-lg border border-zinc-200/80 text-xs">
-                    {[
-                      { key: 'sequenceOk', label: '1. 穿珠顺序与快照一致' },
-                      { key: 'sizeOk', label: '2. 手围尺寸与公差达标' },
-                      { key: 'materialOk', label: '3. 珠材用料零私自替换' },
-                      { key: 'appearanceOk', label: '4. 珠体无裂纹/绳结牢固' },
-                    ].map((item) => (
-                      <label key={item.key} className="flex items-center gap-2 cursor-pointer font-medium text-zinc-800">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(qcForm[item.key])}
-                          onChange={(e) => setQcForm({ ...qcForm, [item.key]: e.target.checked })}
-                          className="w-4 h-4 rounded accent-emerald-600"
-                        />
-                        <span>{item.label}</span>
-                      </label>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-zinc-700 mb-1">质检员姓名</label>
-                      <input
-                        value={qcForm.inspector}
-                        onChange={(e) => setQcForm({ ...qcForm, inspector: e.target.value })}
-                        placeholder="如：陈质检"
-                        className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-zinc-700 mb-1">质检意见 / 拦截原因</label>
-                      <input
-                        value={qcForm.note}
-                        onChange={(e) => setQcForm({ ...qcForm, note: e.target.value })}
-                        placeholder="如：四项全检合格，准予包装"
-                        className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={saveQualityGate}
-                    className="w-full py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium cursor-pointer"
-                  >
-                    提交质检核验结果
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="bg-white rounded-xl border border-zinc-200 p-4 space-y-2">
-                  <h4 className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-zinc-500" />
-                    下单命中条款快照（共 {(detail.termsSnapshot || []).length} 份）
-                  </h4>
-                  <div className="divide-y divide-zinc-100 text-xs max-h-40 overflow-y-auto">
-                    {(detail.termsSnapshot || []).map((t: any) => (
-                      <div key={t.id} className="py-2">
-                        <div className="flex items-center justify-between font-medium text-zinc-800">
-                          <span>
-                            {t.title} <span className="text-zinc-400 font-mono">v{t.version}</span>
-                          </span>
-                          <StatusBadge tone={t.scope?.mode === 'scoped' ? 'indigo' : 'zinc'}>
-                            {t.scope?.mode === 'scoped' ? '指定范围生效' : '全局生效'}
-                          </StatusBadge>
-                        </div>
-                        <div className="text-zinc-500 mt-0.5 line-clamp-2">{t.body}</div>
                       </div>
-                    ))}
-                    {(detail.termsSnapshot || []).length === 0 && (
-                      <div className="py-4 text-center text-zinc-400">无关联条款快照</div>
+                    )}
+                    {shipPrompt && (
+                      <div style={{ marginTop: 12, padding: 12, border: '1px solid var(--line)', borderRadius: 8 }}>
+                        <div style={{ fontSize: 'var(--font-body)', marginBottom: 8 }}>填写发货物流单号</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+                          <input
+                            value={shipPrompt.carrierName}
+                            onChange={(e) => setShipPrompt({ ...shipPrompt, carrierName: e.target.value })}
+                            placeholder="承运快递（如：顺丰速运）"
+                            className="zy-field-box"
+                          />
+                          <input
+                            value={shipPrompt.trackingNo}
+                            onChange={(e) => setShipPrompt({ ...shipPrompt, trackingNo: e.target.value })}
+                            placeholder="快递单号（如：SF123456789）"
+                            className="zy-field-box"
+                          />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                          <button type="button" className="zy-btn zy-btn-secondary" onClick={() => setShipPrompt(null)}>
+                            取消
+                          </button>
+                          <button
+                            type="button"
+                            className="zy-btn zy-btn-primary"
+                            onClick={() => triggerTransition('fulfillmentStatus', 'shipped', shipPrompt)}
+                          >
+                            确认发货
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {transError && (
+                      <div className="zy-table-aux" style={{ marginTop: 8 }}>
+                        {transError.msg}
+                      </div>
                     )}
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-zinc-200 p-4 space-y-2">
-                  <h4 className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-zinc-500" />
-                    全链路状态时间轴
-                  </h4>
-                  <div className="divide-y divide-zinc-100 text-xs max-h-40 overflow-y-auto">
-                    {(detail.timeline || [])
-                      .slice()
-                      .reverse()
-                      .map((ev: any, idx: number) => (
-                        <div key={idx} className="py-1.5 flex items-center justify-between gap-2">
-                          <span className="text-zinc-800">
-                            <strong>{ev.label || ev.group}</strong>
-                            {ev.note ? ` · ${ev.note}` : ''}
+                {/* 手串 */}
+                <div className="zy-card" style={{ marginBottom: 16 }}>
+                  <div className="zy-card-title">手串</div>
+                  <div style={{ padding: '14px 16px' }}>
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                      <BraceletRingPreview beads={snapBeads} wristCm={snap.wrist || detail.wrist || 15} size={56} />
+                      <div>
+                        <div style={{ fontWeight: 600 }}>{detail.name || '定制手串'}</div>
+                        {metaLine && <div className="zy-table-aux">{metaLine}</div>}
+                        {materialsLine && <div className="zy-table-aux">{materialsLine}</div>}
+                      </div>
+                    </div>
+                    {snap.customerNote && (
+                      <div
+                        style={{
+                          marginTop: 10,
+                          padding: '8px 12px',
+                          background: 'var(--face)',
+                          borderRadius: 8,
+                          fontSize: 'var(--font-body)',
+                        }}
+                      >
+                        客户备注：{snap.customerNote}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 金额 */}
+                <div className="zy-card" style={{ marginBottom: 16 }}>
+                  <div className="zy-card-title">金额</div>
+                  <div style={{ padding: '14px 16px', display: 'grid', rowGap: 8 }}>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <span className="zy-table-aux" style={{ width: 48 }}>珠子</span>
+                      <span>{yuan(detail.goods)}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <span className="zy-table-aux" style={{ width: 48 }}>运费</span>
+                      <span>{Number(detail.ship) > 0 ? yuan(detail.ship) : '包邮'}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <span className="zy-table-aux" style={{ width: 48 }}>实付</span>
+                      <span>
+                        <strong>{yuan(detail.total || detail.price)}</strong>
+                        {detail.paymentChannel === 'mock' && (
+                          <span className="zy-danger-text" style={{ marginLeft: 8, fontSize: 'var(--font-aux)' }}>
+                            模拟付款
                           </span>
-                          <span className="text-[11px] text-zinc-400 shrink-0">{fmtTime(ev.at)}</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 收货 */}
+                <div className="zy-card" style={{ marginBottom: 16 }}>
+                  <div className="zy-card-title">收货</div>
+                  <div style={{ padding: '14px 16px', display: 'grid', rowGap: 8 }}>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <span className="zy-table-aux" style={{ width: 48 }}>收货人</span>
+                      <span>{receiverName}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <span className="zy-table-aux" style={{ width: 48 }}>手机号</span>
+                      <span>
+                        {receiverPhone || '-'}{' '}
+                        {receiverPhone && (
+                          <span
+                            className="zy-table-aux"
+                            style={{ cursor: 'pointer', marginLeft: 4 }}
+                            onClick={() => copyText(receiverPhone)}
+                          >
+                            复制
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <span className="zy-table-aux" style={{ width: 48 }}>地址</span>
+                      <span>
+                        {receiverAddr || '-'}{' '}
+                        {receiverAddr && (
+                          <span
+                            className="zy-table-aux"
+                            style={{ cursor: 'pointer', marginLeft: 4 }}
+                            onClick={() => copyText(receiverAddr)}
+                          >
+                            复制
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 记录（只给后台看） */}
+                <div className="zy-card" style={{ marginBottom: 16 }}>
+                  <div className="zy-card-title">
+                    记录<span style={{ fontWeight: 400, marginLeft: 8, color: 'var(--text-aux)', fontSize: 'var(--font-aux)' }}>只给后台看</span>
+                  </div>
+                  <div>
+                    {historyRows.map((row, i) => (
+                      <div key={i} className="zy-rr">
+                        <span className="zy-rr-time">{fmtShort(row.at)}</span>
+                        <span>{row.text}</span>
+                      </div>
+                    ))}
+                    {historyRows.length === 0 && <div className="zy-empty">还没有记录</div>}
+                  </div>
+                </div>
+
+                {/* 生产做单工单与发货前质检（D2 原有功能，未改动） */}
+                <div id="d1b-work-section" style={{ scrollMarginTop: 12 }}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="bg-white rounded-xl border border-zinc-200 p-5 space-y-4">
+                      <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Wrench className="w-4 h-4 text-indigo-600" />
+                          <h4 className="text-sm font-semibold text-zinc-900">生产做单工单</h4>
                         </div>
-                      ))}
+                        <StatusBadge tone="crimson">用料锁定：禁止替换</StatusBadge>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-700 mb-1">制珠师 / 负责人</label>
+                          <input
+                            value={workForm.assignee}
+                            onChange={(e) => setWorkForm({ ...workForm, assignee: e.target.value })}
+                            placeholder="如：林师傅"
+                            className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-700 mb-1">当前工序阶段</label>
+                          <select
+                            value={workForm.step}
+                            onChange={(e) => setWorkForm({ ...workForm, step: e.target.value })}
+                            className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
+                          >
+                            {CONTRACT.workOrderSteps.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-xs font-medium text-zinc-700 mb-1">
+                          <span>制作完成度</span>
+                          <span className="font-bold text-indigo-600">{workForm.progress}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          step={5}
+                          value={workForm.progress}
+                          onChange={(e) => setWorkForm({ ...workForm, progress: Number(e.target.value) })}
+                          className="w-full accent-zinc-900"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-zinc-700 mb-1">车间作业备注</label>
+                        <textarea
+                          rows={2}
+                          value={workForm.operatorNote}
+                          onChange={(e) => setWorkForm({ ...workForm, operatorNote: e.target.value })}
+                          placeholder="记录弹力线股数、打结隐藏位置或客户特殊交代..."
+                          className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={saveWorkOrder}
+                        className="w-full py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium cursor-pointer"
+                      >
+                        保存工单进度
+                      </button>
+                    </div>
+
+                    <div className="bg-white rounded-xl border border-zinc-200 p-5 space-y-4">
+                      <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                          <h4 className="text-sm font-semibold text-zinc-900">发货前质检关口</h4>
+                        </div>
+                        <StatusBadge tone={statusTone(detail.qualityGate?.status || 'pending')}>
+                          {detail.qualityGate?.passed ? '✓ 已放行' : '未放行'}
+                        </StatusBadge>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2.5 bg-zinc-50 p-3 rounded-lg border border-zinc-200/80 text-xs">
+                        {[
+                          { key: 'sequenceOk', label: '1. 穿珠顺序与快照一致' },
+                          { key: 'sizeOk', label: '2. 手围尺寸与公差达标' },
+                          { key: 'materialOk', label: '3. 珠材用料零私自替换' },
+                          { key: 'appearanceOk', label: '4. 珠体无裂纹/绳结牢固' },
+                        ].map((item) => (
+                          <label key={item.key} className="flex items-center gap-2 cursor-pointer font-medium text-zinc-800">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(qcForm[item.key])}
+                              onChange={(e) => setQcForm({ ...qcForm, [item.key]: e.target.checked })}
+                              className="w-4 h-4 rounded accent-emerald-600"
+                            />
+                            <span>{item.label}</span>
+                          </label>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-700 mb-1">质检员姓名</label>
+                          <input
+                            value={qcForm.inspector}
+                            onChange={(e) => setQcForm({ ...qcForm, inspector: e.target.value })}
+                            placeholder="如：陈质检"
+                            className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-700 mb-1">质检意见 / 拦截原因</label>
+                          <input
+                            value={qcForm.note}
+                            onChange={(e) => setQcForm({ ...qcForm, note: e.target.value })}
+                            placeholder="如：四项全检合格，准予包装"
+                            className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={saveQualityGate}
+                        className="w-full py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium cursor-pointer"
+                      >
+                        提交质检核验结果
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <div className="zy-drawer-foot">
+                {canCancel && (
+                  <button type="button" className="zy-btn zy-btn-danger zy-drawer-foot-left" onClick={cancelOrder}>
+                    取消订单
+                  </button>
+                )}
+                <span style={{ flex: 1 }} />
+                <button type="button" className="zy-btn zy-btn-primary" onClick={scrollToWork}>
+                  去工单
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        );
+      })()}
     </div>
   );
 };

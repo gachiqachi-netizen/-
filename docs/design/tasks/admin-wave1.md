@@ -17,7 +17,7 @@
    cd admin-web && npm run dev     # 打开 http://localhost:5173/admin/
    ```
 5. 要有测试订单时，在仓库根目录跑卡片末尾“造测试数据”那段脚本（只在本机跑，不提交）。
-6. 截图和 `mockups-admin.html` 对应的稿号并排放进 PR。
+6. 截图和 `mockups-admin.html` 对应的稿号并排放进 PR。（打不开开发者工具或浏览器时不要编截图，按 [00-dispatch.md](00-dispatch.md) 第 5.3 节写“需要负责人看”。）
 7. 三条测试都要跑（后端测试不应受影响）。
 
 ---

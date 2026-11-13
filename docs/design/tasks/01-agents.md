@@ -23,7 +23,7 @@
 
 - *“第二波现在就把每张卡的函数名写死？”* 不写。第一波的 A2、A4、A5、A11 会改动或新增这些函数，现在写死的名字到时候多半是错的，执行 agent 会照着错的做。第 4 批合并后对照真代码补一次（第 5 节），是一次会话的工作量。
 - *“Codex 一张卡一个会话太费？”* 后端状态和金额的卡上下文干净最重要，每张卡开新会话；省 token 靠第 2 点的少读。Kimi 便宜，相互独立的小卡放在一个会话里连着做，省掉重复读规矩。
-- *“审核会不会卡住？”* 会，所以分两档（第 4 节）：低风险的卡你看截图和改动文件列表就合，高风险的才等我审。
+- *“审核会不会卡住？”* 有可能，所以每张卡必须交一份固定格式的报告（`docs/reports/<卡号>.md`），我从分支直接读，几张一起审；样子的部分交给你在开发者工具里集中看（第 4 节）。
 
 **开工前要你定的（只有这一件挡着第一波）**
 
@@ -53,12 +53,12 @@
 
 | 会话 | 卡（顺序） | 什么时候开 | 审核 |
 |---|---|---|---|
-| CX-1 | A4a | 马上 | 我审 |
-| CX-2 | A2 | A1 合并后 | 我审 |
-| CX-3 | A4b | A4a 合并后 | 我审 |
-| CX-4 | A5a | A4b 合并后 | 我审 |
-| CX-5 | A4c | A4b、A2 合并后 | 我审 |
-| CX-6 | A5b | A5a 合并后 | 我审 |
+| CX-1 | A4a | 马上 | 我审代码 |
+| CX-2 | A2 | A1 合并后 | 我审代码 |
+| CX-3 | A4b | A4a 合并后 | 我审代码 |
+| CX-4 | A5a | A4b 合并后 | 我审代码 |
+| CX-5 | A4c | A4b、A2 合并后 | 我审代码 |
+| CX-6 | A5b | A5a 合并后 | 我审代码 |
 
 #### CX-1：A4a
 
@@ -76,15 +76,19 @@
 【开工】
 git fetch origin && git switch -c agent/A4a-receipt origin/integration/2026-11
 依赖：无。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“A4a:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/A4a.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -105,15 +109,19 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 【开工】
 git fetch origin && git switch -c agent/A2-order-view origin/integration/2026-11
 先确认依赖已合并：对 "A1:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“A2:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/A2.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -134,15 +142,19 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 【开工】
 git fetch origin && git switch -c agent/A4b-order-address origin/integration/2026-11
 先确认依赖已合并：对 "A4a:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“A4b:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/A4b.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -163,15 +175,19 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 【开工】
 git fetch origin && git switch -c agent/A5a-after-sale-customer origin/integration/2026-11
 先确认依赖已合并：对 "A4b:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“A5a:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/A5a.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -192,15 +208,19 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 【开工】
 git fetch origin && git switch -c agent/A4c-admin-order-ops origin/integration/2026-11
 先确认依赖已合并：对 "A4b:" "A2:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“A4c:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/A4c.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -221,15 +241,19 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 【开工】
 git fetch origin && git switch -c agent/A5b-mock-refund origin/integration/2026-11
 先确认依赖已合并：对 "A5a:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“A5b:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/A5b.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -238,14 +262,14 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 
 | 会话 | 卡（顺序） | 什么时候开 | 审核 |
 |---|---|---|---|
-| KM-1 | A1 | 马上 | 我审 |
-| KM-2 | C0a → C0f → C0g | 马上 | C0a 我审；C0f、C0g 你看截图 |
-| KM-3 | C0e → C0h → C0i | 马上 | 你看截图 |
-| KM-4 | C0b、C0c | 马上 | 你看截图 |
-| KM-5 | C0d、C0j | 马上 | 我审 |
-| KM-6 | D0 → D1 → D2 → D1b | 马上 | D0、D1、D1b 我审；D2 你看截图 |
-| KM-7 | A11、A11m | A4c、A5a 合并后 | 我审 |
-| KM-8 | C0z → C2 | C0a–C0j 全部合并后 | C0z 你在开发者工具看；C2 我审 |
+| KM-1 | A1 | 马上 | 我审代码 |
+| KM-2 | C0a → C0f → C0g | 马上 | 我审代码；C0f、C0g 你看样子 |
+| KM-3 | C0e → C0h → C0i | 马上 | 我审代码；你看样子 |
+| KM-4 | C0b、C0c | 马上 | 我审代码；你看样子 |
+| KM-5 | C0d、C0j | 马上 | 我审代码 |
+| KM-6 | D0 → D1 → D2 → D1b | 马上 | 我审代码；D2 你看样子 |
+| KM-7 | A11、A11m | A4c、A5a 合并后 | 我审代码 |
+| KM-8 | C0z → C2 | C0a–C0j 全部合并后 | 我审代码；C0z 合并后你在开发者工具看全部 kit 页 |
 
 #### KM-1：A1
 
@@ -263,15 +287,19 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 【开工】
 git fetch origin && git switch -c agent/A1-contract origin/integration/2026-11
 依赖：无。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“A1:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/A1.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -293,15 +321,19 @@ git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格�
 【开工】
 git fetch origin && git switch -c agent/C0a-tokens origin/integration/2026-11
 依赖：无。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“C0a:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/C0a.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -313,7 +345,7 @@ C0a 合并后接着粘（C0f 的依赖：C0a）：
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C0f-basic origin/integration/2026-11
 先确认依赖已合并：对 "C0a:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
-交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
+开工前记下测试数。交付和上一张一样：按 00-dispatch.md 第 5.2 节写 docs/reports/C0f.md 并提交，push，开 PR 或告诉我分支名，然后停下。
 ```
 
 C0f 合并后接着粘（C0g 的依赖：C0f）：
@@ -323,7 +355,7 @@ C0f 合并后接着粘（C0g 的依赖：C0f）：
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C0g-layer origin/integration/2026-11
 先确认依赖已合并：对 "C0f:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
-交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
+开工前记下测试数。交付和上一张一样：按 00-dispatch.md 第 5.2 节写 docs/reports/C0g.md 并提交，push，开 PR 或告诉我分支名，然后停下。
 ```
 
 #### KM-3：C0e、C0h、C0i
@@ -343,15 +375,19 @@ git fetch origin && git switch -c agent/C0g-layer origin/integration/2026-11
 【开工】
 git fetch origin && git switch -c agent/C0e-bead origin/integration/2026-11
 依赖：无。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“C0e:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/C0e.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -363,7 +399,7 @@ C0e 合并后接着粘（C0h 的依赖：C0e）：
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C0h-bracelet origin/integration/2026-11
 先确认依赖已合并：对 "C0e:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
-交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
+开工前记下测试数。交付和上一张一样：按 00-dispatch.md 第 5.2 节写 docs/reports/C0h.md 并提交，push，开 PR 或告诉我分支名，然后停下。
 ```
 
 C0h 合并后接着粘（C0i 的依赖：C0f）：
@@ -373,7 +409,7 @@ C0h 合并后接着粘（C0i 的依赖：C0f）：
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C0i-composer origin/integration/2026-11
 先确认依赖已合并：对 "C0f:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
-交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
+开工前记下测试数。交付和上一张一样：按 00-dispatch.md 第 5.2 节写 docs/reports/C0i.md 并提交，push，开 PR 或告诉我分支名，然后停下。
 ```
 
 #### KM-4：C0b、C0c
@@ -393,18 +429,22 @@ git fetch origin && git switch -c agent/C0i-composer origin/integration/2026-11
 【开工】
 git fetch origin && git switch -c agent/C0b-icons origin/integration/2026-11
 依赖：无。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“C0b:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/C0b.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 然后不用等合并，接着做 C0c（它和前面的卡互不依赖）：
-git fetch origin && git switch -c agent/C0c-wordmark origin/integration/2026-11，依赖：无。 同样的做法和交付，提交说明以“C0c:”开头。
+git fetch origin && git switch -c agent/C0c-wordmark origin/integration/2026-11，依赖：无。 同样的做法和交付（报告写 docs/reports/C0c.md），提交说明以“C0c:”开头。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -426,18 +466,22 @@ git fetch origin && git switch -c agent/C0c-wordmark origin/integration/2026-11�
 【开工】
 git fetch origin && git switch -c agent/C0d-format origin/integration/2026-11
 依赖：无。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“C0d:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/C0d.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 然后不用等合并，接着做 C0j（它和前面的卡互不依赖）：
-git fetch origin && git switch -c agent/C0j-size-rule origin/integration/2026-11，依赖：无。 同样的做法和交付，提交说明以“C0j:”开头。
+git fetch origin && git switch -c agent/C0j-size-rule origin/integration/2026-11，依赖：无。 同样的做法和交付（报告写 docs/reports/C0j.md），提交说明以“C0j:”开头。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -459,15 +503,19 @@ git fetch origin && git switch -c agent/C0j-size-rule origin/integration/2026-11
 【开工】
 git fetch origin && git switch -c agent/D0-admin-build origin/integration/2026-11
 依赖：无。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“D0:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/D0.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -479,7 +527,7 @@ D0 合并后接着粘（D1 的依赖：A1 D0）：
 卡在 docs/design/tasks/admin-wave1.md。
 git fetch origin && git switch -c agent/D1-admin-contract origin/integration/2026-11
 先确认依赖已合并：对 "A1:" "D0:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
-交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
+开工前记下测试数。交付和上一张一样：按 00-dispatch.md 第 5.2 节写 docs/reports/D1.md 并提交，push，开 PR 或告诉我分支名，然后停下。
 ```
 
 D1 合并后接着粘（D2 的依赖：D1）：
@@ -489,7 +537,7 @@ D1 合并后接着粘（D2 的依赖：D1）：
 卡在 docs/design/tasks/admin-wave1.md。
 git fetch origin && git switch -c agent/D2-admin-shell origin/integration/2026-11
 先确认依赖已合并：对 "D1:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
-交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
+开工前记下测试数。交付和上一张一样：按 00-dispatch.md 第 5.2 节写 docs/reports/D2.md 并提交，push，开 PR 或告诉我分支名，然后停下。
 ```
 
 D2 合并后接着粘（D1b 的依赖：A2 D2）：
@@ -499,7 +547,7 @@ D2 合并后接着粘（D1b 的依赖：A2 D2）：
 卡在 docs/design/tasks/admin-wave1.md。
 git fetch origin && git switch -c agent/D1b-admin-order-detail origin/integration/2026-11
 先确认依赖已合并：对 "A2:" "D2:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
-交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
+开工前记下测试数。交付和上一张一样：按 00-dispatch.md 第 5.2 节写 docs/reports/D1b.md 并提交，push，开 PR 或告诉我分支名，然后停下。
 ```
 
 #### KM-7：A11、A11m
@@ -518,18 +566,22 @@ git fetch origin && git switch -c agent/D1b-admin-order-detail origin/integratio
 【开工】
 git fetch origin && git switch -c agent/A11-routes origin/integration/2026-11
 先确认依赖已合并：对 "A4c:" "A5a:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“A11:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/A11.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 然后不用等合并，接着做 A11m（它和前面的卡互不依赖）：
-git fetch origin && git switch -c agent/A11m-migrations-registry origin/integration/2026-11，先确认依赖已合并：对 "A5a:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。 同样的做法和交付，提交说明以“A11m:”开头。
+git fetch origin && git switch -c agent/A11m-migrations-registry origin/integration/2026-11，先确认依赖已合并：对 "A5a:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。 同样的做法和交付（报告写 docs/reports/A11m.md），提交说明以“A11m:”开头。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -551,15 +603,19 @@ git fetch origin && git switch -c agent/A11m-migrations-registry origin/integrat
 【开工】
 git fetch origin && git switch -c agent/C0z-register origin/integration/2026-11
 先确认依赖已合并：对 "C0a:" "C0b:" "C0c:" "C0d:" "C0e:" "C0f:" "C0g:" "C0h:" "C0i:" "C0j:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
+开工前先跑一次后端和小程序测试，记下各有多少个测试（报告里要写）。
 
 【做法】
 - 严格按卡里的步骤做，只改卡里“只能改”列出的文件。
 - 开发中只跑和这张卡相关的测试文件；全部做完后跑一次 AGENTS.md 里的三条测试（先 unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy）。
 - 每做完一步提交一次，提交说明以“C0z:”开头。
-- 卡里写了“停下来问”的情况，或者产品意图拿不准：停下来问我，不要猜。
+- 不许做的事见 docs/design/tasks/00-dispatch.md 第 5.4 节（只读这一节），尤其：不改“只能改”以外的文件、不删不改弱已有测试、不加新依赖、不 force push、不合并。
+- 卡里写了“停下来问”的情况，或者产品意图拿不准：先提交并 push 已做的部分，再按 00-dispatch.md 第 5.5 节的格式停下来问我，不要猜。
 
 【交付】
-git push -u origin HEAD。按 docs/design/tasks/00-dispatch.md 第 5 节的格式写 PR 描述，最后附上 `git diff --stat origin/integration/2026-11...HEAD` 的输出。装了 gh 就用 gh pr create --base integration/2026-11 开 PR；没装就把 PR 描述完整贴给我。
+1. 读 docs/design/tasks/00-dispatch.md 第 5.1–5.3 节和第 6 节，按第 6 节自查一遍。
+2. 按 5.2 的格式写交付报告 docs/reports/C0z.md，逐项填（步骤、验收证据、diff --stat、测试数、自查命令输出、没做的），提交。
+3. git push -u origin HEAD。能开 PR 就开到 integration/2026-11，描述贴报告内容；开不了就告诉我分支名。
 
 全部交付后停下，不要开始卡片以外的工作。
 ```
@@ -571,17 +627,34 @@ C0z 合并后接着粘（C2 的依赖：A2 C0z）：
 卡在 docs/design/tasks/miniprogram-wave1.md。
 git fetch origin && git switch -c agent/C2-order-state origin/integration/2026-11
 先确认依赖已合并：对 "A2:" "C0z:" 每个都跑 `git log origin/integration/2026-11 --oneline | grep <它>`，有一个查不到就停下来告诉我“依赖的 X 还没合并”。
-交付和上一张一样：push、PR 描述（附 diff --stat）、开 PR 或贴给我，然后停下。
+开工前记下测试数。交付和上一张一样：按 00-dispatch.md 第 5.2 节写 docs/reports/C2.md 并提交，push，开 PR 或告诉我分支名，然后停下。
+```
+
+### 3.3 两个通用提示词（两边都用）
+
+**被打回时**，粘到做这张卡的那个会话（把审核意见原样贴在后面）：
+
+```
+<卡号> 审核没通过，意见如下（按编号逐条改）。在同一个分支 agent/<卡号>-<简述> 上追加提交，提交说明写“<卡号>: 审核 N ……”；不要开新分支，不要 force push。改完更新 docs/reports/<卡号>.md 第 7 节（编号、怎么改的、提交 hash），三条测试再跑一次更新第 4 节，push，然后停下。
+<审核意见>
+```
+
+**回答它的提问后**：
+
+```
+关于你问的：<答复>。按这个继续做 <卡号>，规矩不变，做完照常交付。
 ```
 
 ## 4. 审核和合并
 
-**分两档**
+**每张卡都由我审代码，样子由你看。**执行 agent 打不开微信开发者工具，截图靠不住，所以：
 
-| 档 | 哪些卡 | 谁合 | 合之前看什么 |
-|---|---|---|---|
-| 我审 | 全部后端卡；C0a、C0d、C0j、C2（逻辑和测试）；D0、D1、D1b | 我说“可以合”后你合 | 把 PR 链接或 PR 描述发给我，可以几张攒一起发 |
-| 你看截图就合 | C0b、C0c、C0e、C0f、C0h、C0g、C0i、D2；C0z 在开发者工具里打开 kit 页看一遍 | 你 | 三条测试都过；`diff --stat` 里的文件都在卡的“只能改”里；截图和稿子对得上（浏览器直接打开 mockups-final.html 或 mockups-admin.html 对照） |
+| 谁 | 看什么 | 怎么看 |
+|---|---|---|
+| 我（每张卡） | 按 [00-dispatch.md](00-dispatch.md) 第 6 节：范围、步骤、验收证据、测试、项目铁律、提交 | 你告诉我“X 交了”（卡号就行），我从分支读 `docs/reports/<卡号>.md` 和代码，给出“可以合 / 改完再看（编号意见）/ 退回重做” |
+| 你（只看样子的卡） | 报告第 2 节里写着“需要负责人看”的页面，和稿子并排比 | 小程序卡：C0z 合并后在开发者工具里把 kit 页一次看完；后台卡：本地 `npm run dev` 打开对应页面。差得多的告诉我，我写成审核意见打回 |
+
+几张卡可以攒在一起告诉我，我一次审完。
 
 **要改的时候**：把我的意见原样粘回**做这张卡的那个会话**，让它在同一个分支上改、再 push。不要开新会话。
 

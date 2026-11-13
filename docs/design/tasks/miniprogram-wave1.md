@@ -11,7 +11,7 @@
 4. 不用 `URL` 等浏览器对象；地址只走 `config.js`；金额只显示后端给的整数分换算出来的元。
 5. 组件写法：`Component({ options: { styleIsolation: 'apply-shared' }, properties, data, methods })`，组件目录 `components/<名字>/index.{js,json,wxml,wxss}`，`index.json` 里 `"component": true`。
 6. 测试：纯函数一定要有 `node:test` 测试（放 `miniprogram/tests/`，文件名 `<名字>.test.js`）。组件的样子用截图验收。
-7. 截图：开发者工具选 iPhone 12/13（390 宽）截一张，再切到 iPhone 5/SE（320 宽）截一张，和稿子对应那一屏并排放进 PR。没在开发者工具里看过的写“未验证”。
+7. 截图：开发者工具选 iPhone 12/13（390 宽）截一张，再切到 iPhone 5/SE（320 宽）截一张，和稿子对应那一屏并排放进 PR。没在开发者工具里看过的写“未验证”。（打不开开发者工具或浏览器时不要编截图，按 [00-dispatch.md](00-dispatch.md) 第 5.3 节写“需要负责人看”。）
 8. 三条测试都要跑：`python3 -m unittest discover -s server/tests`、`node --test miniprogram/tests/*.test.js`、`python3 kb/validate.py`。
 
 ---

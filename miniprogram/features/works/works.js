@@ -56,11 +56,6 @@ Page({
     d.name = name; d.updatedAt = Date.now(); store.save(d); this.refresh(); queue.show({ text: '已改名' })
     if (auth.hasSession()) store.sync(d).then(() => this.refresh()).catch(() => {})
   },
-  share() {
-    const d = this.data.active
-    this.closeMenu()
-    if (d) wx.showShareMenu({ menus: ['shareAppMessage'] })
-  },
   onShareAppMessage() { const d = this.data.active; return { title: d ? d.name : '我的作品', path: '/features/works/works' } },
   remove() {
     const d = this.data.active, all = store.list(), index = all.findIndex(item => item.id === d.id)

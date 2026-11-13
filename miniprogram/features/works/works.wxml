@@ -14,7 +14,7 @@
   <c-sheet show="{{menu}}" title="更多" bind:close="closeMenu">
     <view class="c-row" bindtap="copy">复制一条</view>
     <view class="c-row" bindtap="startRename">重命名</view>
-    <view class="c-row" bindtap="share">分享</view>
+    <button class="c-row works-share" open-type="share">分享</button>
     <view class="c-row" bindtap="remove">删除</view>
   </c-sheet>
   <c-toast />

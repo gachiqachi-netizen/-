@@ -114,7 +114,7 @@ export const App: React.FC = () => {
   };
 
   if (authed === false) {
-    return <LoginPage onAuthenticated={loadAllData} />;
+    return <LoginPage onAuthenticated={(roleId) => roleId === 'owner' ? loadAllData() : setAuthed(true)} />;
   }
 
   if (authed !== true) {

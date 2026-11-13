@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest, setSavedToken } from '../api';
 
 type SessionResult = { ok: boolean; mustChangePassword: boolean; bootstrap: boolean; user: { name: string; roleId: string } | null };
-type Props = { onAuthenticated: () => void | Promise<void> };
+type Props = { onAuthenticated: (roleId?: string) => void | Promise<void> };
 const field: React.CSSProperties = { width: '100%', boxSizing: 'border-box', height: 44 };
 const label: React.CSSProperties = { display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 600 };
 
@@ -10,6 +10,7 @@ export default function LoginPage({ onAuthenticated }: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [loginRoleId, setLoginRoleId] = useState<string>();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [changing, setChanging] = useState(false);
@@ -27,9 +28,10 @@ export default function LoginPage({ onAuthenticated }: Props) {
       const result = await apiRequest<SessionResult>('/api/admin/session', {
         method: 'POST', body: { username: username.trim(), password },
       });
+      setLoginRoleId(result.user?.roleId);
       if (result.bootstrap) setBootstrap(true);
       else if (result.mustChangePassword) setChanging(true);
-      else await onAuthenticated();
+      else await onAuthenticated(result.user?.roleId);
     } catch (err: any) {
       setError(err.status === 429 ? '连续输错 5 次，10 分钟内不能再试' : '账号或密码不对');
     } finally { setBusy(false); }
@@ -46,7 +48,7 @@ export default function LoginPage({ onAuthenticated }: Props) {
         method: 'PUT', body: { oldPassword: password, newPassword },
       });
       setPassword(''); setNewPassword(''); setConfirmPassword('');
-      await onAuthenticated();
+      await onAuthenticated(loginRoleId);
     } catch (err: any) {
       setError(err.message || '改密码没成功，请再试一次');
     } finally { setBusy(false); }

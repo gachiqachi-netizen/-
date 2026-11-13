@@ -1258,13 +1258,11 @@ def customer_order_action(db, no, user_id, action, reason=None):
         order["updatedAt"] = now
         return order
 
-    saved = _atomic_order_transition(
+    return _atomic_order_transition(
         db, no, apply,
         audit_builder=lambda: _audit_record(
             "customer", action, "order", no,
             json.dumps(meta.get("before", {}), ensure_ascii=False, sort_keys=True)))
-    notify.on_customer_action(db, saved, action)
-    return saved
 
 
 INTERNAL_NOTE_MAX = 300

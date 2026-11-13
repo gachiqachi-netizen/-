@@ -1,4 +1,4 @@
-"""B-10：订阅消息。三处订单事件（发货 / 签收 / 退款到账）都发消息；发送失败不影响订单状态。"""
+"""B-10：订阅消息。发货 / 物流签收 / 退款到账三处发消息；未订阅不发；同订单同模板只发一次；发送失败不影响订单状态。"""
 import os
 import sys
 import tempfile
@@ -44,6 +44,9 @@ class NotifyTest(unittest.TestCase):
         order['orderStatus'] = 'confirmed'
         self.db.put('orders', no, order)
 
+    def subscribe(self, *templates):
+        notify.subscribe(self.db, 'u1', {'templates': list(templates)})
+
     def logs(self, key=None):
         rows = self.db.list('notify_logs')
         return [r for r in rows if key is None or r.get('templateKey') == key]
@@ -64,6 +67,7 @@ class NotifyTest(unittest.TestCase):
     # ---- send 本体 ----
 
     def test_send_dev_fake_records_log(self):
+        self.subscribe('shipped')
         self.assertTrue(notify.send(self.db, 'u1', 'shipped', {'orderNo': 'CGZ1'}))
         (row,) = self.logs('shipped')
         self.assertEqual(row['userId'], 'u1')
@@ -72,6 +76,7 @@ class NotifyTest(unittest.TestCase):
         self.assertEqual(row['data']['orderNo'], 'CGZ1')
 
     def test_send_failure_recorded_and_no_raise(self):
+        self.subscribe('delivered')
         with mock.patch.object(notify, '_fake_send', side_effect=RuntimeError('网关炸了')):
             self.assertFalse(notify.send(self.db, 'u1', 'delivered', {}))
         (row,) = self.logs('delivered')
@@ -83,9 +88,53 @@ class NotifyTest(unittest.TestCase):
         (row,) = self.logs('bogus')
         self.assertFalse(row['ok'])
 
+    # ---- 未订阅不发 ----
+
+    def test_not_subscribed_skips_and_records(self):
+        no = self.make_order('notify-nosub-000001')['no']
+        self.set_paid(no)
+        self.ship_ready(no)
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped')
+        (row,) = self.logs('shipped')
+        self.assertFalse(row['ok'])
+        self.assertEqual(row['error'], '未订阅')
+        self.assertFalse(notify._already_sent(self.db, no, 'shipped'))  # 未订阅不算发成功，授权后还能发
+        self.subscribe('shipped')
+        self.assertTrue(notify.order_event(self.db, self.db.get('orders', no), 'shipped'))
+        self.assertTrue(any(r['ok'] for r in self.logs('shipped')))
+
+    def test_partial_subscription_only_sends_authorized(self):
+        self.subscribe('shipped')  # 没授权 delivered
+        self.assertTrue(notify.send(self.db, 'u1', 'shipped', {}))
+        self.assertFalse(notify.send(self.db, 'u1', 'delivered', {}))
+        self.assertEqual(self.logs('delivered')[-1]['error'], '未订阅')
+
+    # ---- 去重：同订单同模板只发一次 ----
+
+    def test_same_order_same_template_sent_once(self):
+        self.subscribe('shipped')
+        no = self.make_order('notify-dup-000001')['no']
+        self.set_paid(no)
+        self.ship_ready(no)
+        order = self.db.get('orders', no)
+        self.assertTrue(notify.order_event(self.db, order, 'shipped'))
+        self.assertFalse(notify.order_event(self.db, order, 'shipped'))
+        self.assertEqual(len(self.logs('shipped')), 1)
+
+    def test_delivered_sent_once_across_groups(self):
+        no = self.make_order('notify-dup-000002')['no']
+        self.set_paid(no)
+        self.subscribe('delivered')
+        self.ship_ready(no)
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped')
+        commerce.transition_order_status(self.db, no, 'logisticsStatus', 'delivered')
+        commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'delivered')
+        self.assertEqual(len(self.logs('delivered')), 1)
+
     # ---- 三处调用点 ----
 
     def test_ship_and_deliver_send_notify(self):
+        self.subscribe('shipped', 'delivered')
         no = self.make_order('notify-ship-000001')['no']
         self.set_paid(no)
         self.ship_ready(no)
@@ -99,6 +148,7 @@ class NotifyTest(unittest.TestCase):
         self.assertEqual(len(self.logs('delivered')), 1)
 
     def test_idempotent_repeat_sends_nothing(self):
+        self.subscribe('shipped')
         no = self.make_order('notify-idem-000001')['no']
         self.set_paid(no)
         self.ship_ready(no)
@@ -106,7 +156,9 @@ class NotifyTest(unittest.TestCase):
         commerce.transition_order_status(self.db, no, 'fulfillmentStatus', 'shipped')  # 幂等重复
         self.assertEqual(len(self.logs('shipped')), 1)
 
-    def test_confirm_receipt_sends_delivered(self):
+    def test_confirm_receipt_sends_nothing(self):
+        """用户自己点确认收货，不再发"已签收"（审核意见 1）。"""
+        self.subscribe('delivered')
         no = self.make_order('notify-sign-000001')['no']
         self.set_paid(no)
         order = self.db.get('orders', no)
@@ -115,9 +167,7 @@ class NotifyTest(unittest.TestCase):
         self.db.put('orders', no, order)
         commerce.customer_order_action(self.db, no, 'u1', 'confirm_receipt')
         self.assertEqual(self.db.get('orders', no)['orderStatus'], 'completed')
-        delivered = self.logs('delivered')
-        self.assertEqual(len(delivered), 1)
-        self.assertEqual(delivered[0]['data']['orderNo'], no)
+        self.assertEqual(self.logs('delivered'), [])
 
     def test_refund_completed_sends_refunded(self):
         bead_map = {b['id']: b for b in self.db.list('beads')}
@@ -127,6 +177,7 @@ class NotifyTest(unittest.TestCase):
         clean = {k: v for k, v in os.environ.items()
                  if k not in ('ENV', 'APP_ENV', 'DATABASE_URL', 'ALLOW_PUBLIC_BIND', 'PAYMENT_PROVIDER', 'MOCK_PAYMENT_IN_TRIAL')}
         with mock.patch.dict(os.environ, {**clean, 'PAYMENT_PROVIDER': 'mock'}, clear=True):
+            self.subscribe('refunded')
             order = user_api.make_order(self.db, {
                 'requestId': 'notify-refund-0001', 'name': '模拟退款单', 'beads': ['zt8'] * 20, 'wrist': 15,
                 'gift': False, 'cord': 0, 'person': '张三', 'phone': '13800138000', 'addr': '测试地址',
@@ -147,6 +198,7 @@ class NotifyTest(unittest.TestCase):
         self.assertEqual(refunded[0]['data']['orderNo'], no)
 
     def test_send_failure_order_still_transitions(self):
+        self.subscribe('shipped')
         no = self.make_order('notify-fail-000001')['no']
         self.set_paid(no)
         self.ship_ready(no)

@@ -1,0 +1,31 @@
+const contract = require('../../utils/contract')
+const labels = contract.statusLabels.afterSaleStatus
+const needsReturn = type => type === '退货退款' || type === '改手围重串'
+const yuan = fen => (Math.max(0, Number(fen) || 0) / 100).toFixed(2)
+function saleView(sale) {
+  if (!sale) return null
+  const status = sale.status
+  const label = labels[status] || ''
+  const returning = status === 'approved' && needsReturn(sale.type)
+  const refund = sale.type && /退款/.test(sale.type)
+  const descriptions = {
+    requested:'已收到你的申请。', reviewing:'已收到你的申请。', approved:returning?'审核通过了。寄出后填写单号，我们收到后处理。':'审核通过了。',
+    returning:'已寄出，收到后处理。', refunding:`¥${yuan(sale.refundFen)} 正在原路退回。`,
+    completed:refund?`¥${yuan(sale.refundedFen || sale.refundFen)} 已原路退回。`:'售后已处理完成。',
+    closed:'你撤销了这次申请。', rejected:sale.result || '请查看处理记录。'
+  }
+  const history=(sale.history||[]).slice().reverse().map(entry=>({
+    label:labels[entry.to] || '', at:entry.at || '', note:entry.note || '', actor:entry.actor || ''
+  }))
+  return {label, description:descriptions[status]||'', returning,
+    canCancel:status==='requested'||status==='reviewing'||returning,
+    canSubmitReturn:returning,
+    refund:yuan(sale.refundFen), history,
+    photos:Array.isArray(sale.photoIds)?sale.photoIds:[], contactPhone:sale.contactPhone||''}
+}
+function trackingError(value) {
+  const text=String(value||'').trim()
+  if (!text) return '先填单号'
+  return /^[A-Za-z0-9-]{6,40}$/.test(text)?'':'单号看起来不对，再核对一下'
+}
+module.exports={saleView,trackingError,needsReturn}

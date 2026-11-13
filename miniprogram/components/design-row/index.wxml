@@ -1,0 +1,13 @@
+<view class="c-drow" wx:if="{{design}}">
+  <view class="c-drow__th">
+    <bracelet-thumb beads="{{design.beads}}" catalog="{{catalog}}" />
+  </view>
+  <view class="c-drow__main">
+    <view class="c-drow__name">{{design.name}}</view>
+    <view class="c-drow__line">{{design.line}}</view>
+    <view class="c-drow__sub" wx:if="{{sub}}">{{sub}}</view>
+  </view>
+  <view class="c-drow__side">
+    <slot />
+  </view>
+</view>

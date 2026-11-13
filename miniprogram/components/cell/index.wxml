@@ -1,0 +1,10 @@
+<view class="c-cell" wx:if="{{design}}">
+  <view class="c-cell__img">
+    <bracelet beads="{{design.beads}}" size="320" />
+  </view>
+  <view class="c-cell__tx">
+    <view class="c-cell__name">{{design.name}}</view>
+    <view class="c-cell__line">{{design.line}}</view>
+    <view class="c-cell__price" wx:if="{{price}}">{{price}}</view>
+  </view>
+</view>

@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "bead": "../bead/index",
+    "wordmark": "../wordmark/index"
+  }
+}

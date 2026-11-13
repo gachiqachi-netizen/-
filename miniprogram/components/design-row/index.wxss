@@ -1,0 +1,50 @@
+/* 手串摘要行（稿 02、19、45）：名字/寓意字号位置写死，不开放属性改小 */
+.c-drow {
+  display: flex;
+  align-items: center;
+  gap: 28rpx;
+  padding: 24rpx var(--sp-base);
+}
+
+.c-drow__th {
+  width: 144rpx;
+  height: 144rpx;
+  background: var(--c-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  overflow: hidden;
+}
+
+.c-drow__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.c-drow__name {
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-drow__line {
+  margin-top: 4rpx;
+  font-size: var(--fs-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-drow__sub {
+  margin-top: 4rpx;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.c-drow__side {
+  flex: none;
+}

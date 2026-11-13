@@ -1,6 +1,7 @@
 const auth = require('../../utils/auth')
 const contract = require('../../utils/contract')
-const { saleView } = require('./detail-model')
+const store = require('../../utils/design')
+const { saleView, copyOrderDesign } = require('./detail-model')
 const { queue } = require('../../utils/toast')
 Page({
   data:{sale:null,view:null,order:null,error:'',loading:false,historyOpen:false,cancelOpen:false,
@@ -32,5 +33,6 @@ Page({
   },
   goReturn(){wx.navigateTo({url:'/features/after-sale/return?no='+encodeURIComponent(this.no)})},
   reapply(){const sale=this.data.sale;if(sale&&sale.orderNo)wx.navigateTo({url:'/features/after-sale/type?no='+encodeURIComponent(sale.orderNo)})},
+  copyAgain(){const order=this.data.order;if(!order||!Array.isArray(order.beads)||!order.beads.length)return queue.show({text:'这单没有可复制的手串'});const design=copyOrderDesign(order,store.create());store.selected(design);require('../../utils/nav').openWorkbench(design)},
   copyAddress(){const address=this.data.sale&&this.data.sale.returnAddress;if(!address)return;wx.setClipboardData({data:[address.person,address.phone,address.address].filter(Boolean).join(' '),success:()=>queue.show({text:'寄回地址已复制'})})}
 })

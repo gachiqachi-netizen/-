@@ -78,3 +78,27 @@ test('寄回地址只从接口记录复制，未配置时不复制',()=>{
  page.copyAddress();assert.equal(copied,'测试收件人 000-0000000 测试路 1 号')
  delete global.Page;delete global.wx
 })
+
+test('再串一条复制订单珠子手围和名字，但保留新设计编号',()=>{
+ const {copyOrderDesign}=require('../features/after-sale/detail-model')
+ const order={no:'O-1',id:'old',name:'一点红',wrist:16,beads:['a','b']}
+ const created={id:'fresh',name:'',wrist:15,beads:[]}
+ const copy=copyOrderDesign(order,created)
+ assert.equal(copy.id,'fresh');assert.notEqual(copy.id,order.id)
+ assert.deepEqual(copy.beads,['a','b']);assert.notEqual(copy.beads,order.beads)
+ assert.equal(copy.wrist,16);assert.ok(copy.name.endsWith('（再串一条）'))
+ assert.ok(copy.name.length<=8)
+ assert.equal(copyOrderDesign({...order,beads:[]},created),null)
+})
+
+test('订单没有珠子时不创建新设计也不跳转',()=>{
+ let definition;global.Page=value=>{definition=value}
+ delete require.cache[require.resolve('../features/after-sale/detail')]
+ require('../features/after-sale/detail')
+ const page={...definition,data:{...definition.data,order:{beads:[]}}}
+ const store=require('../utils/design'),old=store.create
+ const {queue}=require('../utils/toast'),shown=[]
+ const unsubscribe=queue.subscribe(value=>{if(value)shown.push(value.text)})
+ let created=false;store.create=()=>{created=true;return {id:'new'}}
+ try{page.copyAgain();assert.equal(created,false);assert.ok(shown.includes('这单没有可复制的手串'))}finally{unsubscribe();store.create=old;delete global.Page}
+})

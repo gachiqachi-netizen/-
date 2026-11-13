@@ -24,7 +24,7 @@ Page({
   },
   select(e) {
     const type = e.currentTarget.dataset.type
-    wx.navigateTo({ url: '/features/after-sale/apply?no=' + encodeURIComponent(this.no) + '&type=' + encodeURIComponent(type) })
+    wx.redirectTo({ url: '/features/after-sale/apply?no=' + encodeURIComponent(this.no) + '&type=' + encodeURIComponent(type) })
   },
   showPolicy() {
     wx.showModal({ title: '售后政策', content: '定制商品非质量问题不支持七天无理由退换。', showCancel: false })

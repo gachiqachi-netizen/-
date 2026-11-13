@@ -75,9 +75,11 @@ fa907db C3a: 记录编辑器迁移评估
 ## 6. 没做 / 没验证 / 偏离卡片
 
 - 未在微信开发者工具验证，未提供截图。
-- 卡片要求从 `app.json` 删除 `pages/editor/editor`，已删除；但 `pages/mine/mine.js:29,42`、`pages/share/share.js:28` 仍使用 `wx.navigateTo('/pages/editor/editor')`，现在会跳向未注册页面。两文件不在 C3a 的“只能改”范围，已停下来问负责人如何处理。
+- 经负责人同意，额外只改了 `pages/mine/mine.js` 两处、`pages/share/share.js` 一处旧编辑器跳转，改为 `nav.openWorkbench(设计)`；原 `store.save`、`store.selected` 调用保留。`grep -rn "pages/editor/editor" miniprogram --include=*.js --include=*.wxml --include=*.json` 无输出。
 - 叠戴预览、起名弹层是 C3c 的范围；本卡仅提供入口，不把后续功能算作已验收。
 
 ## 7. 审核修改（打回后才有）
 
-无。
+| 审核意见编号 | 怎么改的 | 提交 hash |
+|---|---|---|
+| 负责人批准 A | 仅将 mine 的两处和 share 的一处旧编辑器跳转换成 `nav.openWorkbench`，保留旧路径逻辑与材料转接文件 | 待提交 |

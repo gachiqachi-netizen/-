@@ -25,7 +25,7 @@ Page({
  onShareAppMessage(){if(!this.data.shareId||keyOf(store.current())!==this.shareKey)return {title:'串个珠',path:'/pages/home/home'};return {title:'看看我设计的手串',path:'/features/shared/shared?id='+encodeURIComponent(this.data.shareId)}},
  preview(){this.setData({preview:true})},
  closePreview(){this.setData({preview:false},()=>this.renderCard())},
- use(){const d=this.data.design;if(!d)return;store.save(d);const next=store.create();next.name=d.name;next.wrist=d.wrist;next.beads=d.beads.slice();store.selected(next);wx.navigateTo({url:'/pages/editor/editor'})},
+ use(){const d=this.data.design;if(!d)return;store.save(d);const next=store.create();next.name=d.name;next.wrist=d.wrist;next.beads=d.beads.slice();store.selected(next);require('../../utils/nav').openWorkbench(next)},
  buySame(){if(this.data.missing)return wx.showToast({title:'请先替换下架材料',icon:'none'});const original=this.data.design;const next={...store.create(),name:original.name,wrist:original.wrist,beads:original.beads.slice(),meaning:original.meaning,source:'shared'};store.selected(next);wx.navigateTo({url:'/pages/order/order'})},
  order(){if(this.data.missing)return wx.showToast({title:'请先替换下架材料',icon:'none'});wx.navigateTo({url:'/pages/order/order'})}
 })

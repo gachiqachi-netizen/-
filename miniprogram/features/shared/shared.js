@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const api = require('../../utils/api')
 const store = require('../../utils/design')
 const nav = require('../../utils/nav')
@@ -71,7 +72,7 @@ Page({
   home() { wx.switchTab({ url: '/pages/home/home' }) },
   retry() { this.setData({ loading: true, error: '', deleted: false }); this.onLoad(this.shareOptions || {}) },
   start() { const design = store.create(); store.selected(design); nav.openWorkbench(design) },
-  use() { if (!this.data.design) return; const design = this.data.design; store.selected(design); nav.openWorkbench(design); wx.showToast({ title: this.data.measured ? `已按你的 ${design.wrist}cm 手围排成 ${design.beads.length} 颗` : '先按常见的 15cm 排好', icon: 'none' }) }
+  use() { if (!this.data.design) return; const design = this.data.design; store.selected(design); nav.openWorkbench(design); toast.show({ text: this.data.measured ? `已按你的 ${design.wrist}cm 手围排成 ${design.beads.length} 颗` : '先按常见的 15cm 排好' }) }
 })
 
 module.exports = { viewerWrist, reflow, meaningFor, dateLabel, shortCodeFromScene }

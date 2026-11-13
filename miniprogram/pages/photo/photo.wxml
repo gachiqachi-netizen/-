@@ -21,3 +21,5 @@
   </block>
 </view>
 <privacy-popup scene="拍照或选择手串照片" bind:reject="privacyRejected"/>
+
+<c-toast />

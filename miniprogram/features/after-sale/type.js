@@ -1,7 +1,7 @@
 const auth = require('../../utils/auth')
 
 Page({
-  data: { order: null, types: [], loading: true, error: '' },
+  data: { order: null, types: [], loading: true, error: '', policyOpen: false },
   onLoad(query) { this.no = query.no; return this.load() },
   async load() {
     this.setData({ loading: true, error: '' })
@@ -27,6 +27,7 @@ Page({
     wx.redirectTo({ url: '/features/after-sale/apply?no=' + encodeURIComponent(this.no) + '&type=' + encodeURIComponent(type) })
   },
   showPolicy() {
-    wx.showModal({ title: '售后政策', content: '定制商品非质量问题不支持七天无理由退换。', showCancel: false })
-  }
+    this.setData({ policyOpen: true })
+  },
+  closePolicy() { this.setData({ policyOpen: false }) }
 })

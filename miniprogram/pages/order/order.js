@@ -1,8 +1,9 @@
-const materials = require('../editor/materials')
+const { queue: toast } = require('../../utils/toast')
+const materials = require('../diy/materials')
 const auth = require('../../utils/auth')
 const store = require('../../utils/design')
 const api = require('../../utils/api')
-const sizing = require('../editor/logic')
+const sizing = require('../diy/logic')
 const nav = require('../../utils/nav')
 
 const KEY = 'cgz_pending_order_request'
@@ -152,7 +153,7 @@ Page({
     if (this.data.quotePending) return this.setData({ sheet: 'price', error: '请先确认新价格' })
     if (!person.trim() || !phone.trim() || !addr.trim()) {
       this.setData({ addressShake: true, error: '先填收货地址' })
-      wx.showToast({ title: '先填收货地址', icon: 'none' })
+      toast.show({ text: '先填收货地址' })
       return
     }
     if (!/^1\d{10}$/.test(phone.trim())) return this.setData({ error: '请输入有效的 11 位手机号' })

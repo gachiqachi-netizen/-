@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const store = require('../../utils/design')
 const logic = require('../diy/logic')
 const api = require('../../utils/api')
@@ -24,7 +25,7 @@ Page({
   },
   step(e) {
     const next = this.data.wrist + Number(e.currentTarget.dataset.step)
-    if (next < MIN || next > MAX) return wx.showToast({title:'这个数不太像手围，再量一次看看',icon:'none'})
+    if (next < MIN || next > MAX) return toast.show({ text: '这个数不太像手围，再量一次看看' })
     this.setWrist(next); if (wx.vibrateShort) wx.vibrateShort({type:'light'})
   },
   rulerStart(e) { this.startX=e.touches[0].clientX; this.startWrist=this.data.wrist },
@@ -39,6 +40,6 @@ Page({
     const wrist=this.data.wrist
     wx.setStorageSync('cgz_wrist',wrist); wx.setStorageSync('cgz_wrist_confirmed',true)
     const design=store.current(); if (design) { design.wrist=wrist; store.selected(design) }
-    wx.navigateBack({success:() => wx.showToast({title:`已按 ${wrist}cm 重新判断`,icon:'none'})})
+    wx.navigateBack({success:() => toast.show({ text: `已按 ${wrist}cm 重新判断` })})
   }
 })

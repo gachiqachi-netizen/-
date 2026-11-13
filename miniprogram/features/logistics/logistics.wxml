@@ -30,3 +30,5 @@
     <view wx:if="{{!addresses.length}}" class="hint">还没有保存的地址</view>
   </c-sheet>
 </view>
+
+<c-toast />

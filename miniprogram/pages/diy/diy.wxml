@@ -44,4 +44,5 @@
   <c-sheet show="{{safetyOpen}}" title="加之前请了解" bindclose="cancelSafety" maskClose="{{false}}"><view class="safety-head"><c-bead bead="{{safetyBead}}" size="s" /><view><view>{{safetyBead.name}} {{safetyBead.mm}}mm</view><view class="safety-meaning">{{safetyBead.meaning || safetyBead.summary}}</view></view></view><view class="safety-body"><view class="safety-note">{{safetyNote}}</view><view>{{safetyCare}}</view></view><view class="safety-hint">之后再加这颗不再弹出；珠子详情和下单时都能看到这段说明。</view><view slot="footer" class="safety-actions"><button bindtap="cancelSafety">不加了</button><button class="safety-confirm" bindtap="confirmSafety">知道了，继续加</button></view></c-sheet>
   <bead-sheet show="{{detailOpen}}" bead="{{detailBead}}" catalog="{{catalog}}" design="{{design}}" safetyNote="{{detailSafetyNote}}" safetyCare="{{detailSafetyCare}}" bindclose="closeInspect" bindadd="addInspected" bindsimilar="focusSheetSimilar" />
   <c-toast />
+  <c-sheet show="{{clearOpen}}" title="清空手串？" bindclose="closeClear"><view>清空后可以撤销恢复。</view><view slot="footer"><button bindtap="closeClear">取消</button><button bindtap="confirmClear">确定</button></view></c-sheet>
 </view>

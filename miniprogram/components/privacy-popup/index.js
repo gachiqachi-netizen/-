@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const privacy = require('../../utils/privacy')
 
 Component({
@@ -18,7 +19,7 @@ Component({
     reject() {
       privacy.finish(false)
       this.triggerEvent('reject')
-      wx.showToast({title: '已取消授权，其他功能仍可使用', icon: 'none'})
+      toast.show({ text: '已取消授权，其他功能仍可使用' })
     }
   }
 })

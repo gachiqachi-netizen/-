@@ -2,6 +2,7 @@ const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const api = require('../utils/api')
 const store = require('../utils/design')
+const { queue } = require('../utils/toast')
 
 function pageWith(catalog) {
   let page
@@ -10,7 +11,6 @@ function pageWith(catalog) {
   global.Page = definition => { page = { ...definition, data: { ...definition.data }, setData(next) { Object.assign(this.data, next) } } }
   global.wx = {
     getStorageSync: key => storage[key],
-    showToast: args => calls.push(['toast', args.title]),
     navigateTo: args => calls.push(['navigate', args.url]),
     switchTab: args => calls.push(['tab', args.url]),
     showTabBarRedDot: args => calls.push(['dot', args.index]),
@@ -19,6 +19,8 @@ function pageWith(catalog) {
   global.getApp = () => ({ globalData: { catalog, apiBase: 'https://example.invalid' } })
   delete require.cache[require.resolve('../pages/home/home')]
   require('../pages/home/home')
+  let initialToast = true
+  queue.subscribe(item => { if (initialToast) { initialToast = false; return } if (item) calls.push(['toast', item.text]) })
   return { page, storage, calls }
 }
 

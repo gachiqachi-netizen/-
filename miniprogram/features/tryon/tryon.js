@@ -1,6 +1,7 @@
+const { queue: toast } = require('../../utils/toast')
 const api = require('../../utils/api')
 const store = require('../../utils/design')
-const logic = require('../../pages/editor/logic')
+const logic = require('../../pages/diy/logic')
 const { pickTryonDesign } = require('./selection')
 const SKINS = ['#e9c2a6','#d7ad91','#b98462','#80543d']
 Page({
@@ -42,7 +43,7 @@ Page({
   toggle(e){const mode=e.currentTarget.dataset.mode;if(mode===this.data.mode)return;this.setData({mode},()=>{if(mode==='photo'&&this.data.photo)this.draw()})},
   saveOrChoose(){if(this.data.aligned)this.saveImage();else this.choose()},
   choose(e) {
-    if(!this.design)return wx.showToast({title:'请先设计手串',icon:'none'})
+    if(!this.design)return toast.show({ text: '请先设计手串' })
     wx.chooseMedia({count:1,mediaType:['image'],sourceType:e&&e.currentTarget&&e.currentTarget.dataset.source?[e.currentTarget.dataset.source]:['camera','album'],success:r=>{
       const f=r.tempFiles&&r.tempFiles[0];if(!f)return
       wx.getImageInfo({src:f.tempFilePath,success:info=>{
@@ -94,13 +95,13 @@ Page({
   watermark(ctx,w,h){ctx.setFillStyle('#111111');ctx.setTextAlign('right');ctx.setFontSize(13);ctx.fillText('珠养养',w-14,h-25);ctx.setFontSize(7);ctx.fillText('ZHU YANG YANG',w-14,h-12)},
   saveImage(){
     if(this.data.saving||!this.data.photo||this.data.mode!=='photo'||!this.data.photoReady)return
-    this.setData({saving:true,error:''});const save=id=>wx.canvasToTempFilePath({canvasId:id,destWidth:Math.round(this.data.width*Math.min(2,(wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync()).pixelRatio||1)),destHeight:Math.round(this.data.height*Math.min(2,(wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync()).pixelRatio||1)),success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>wx.showToast({title:'已保存到相册'}),fail:()=>this.setData({error:'没有相册权限，请去设置后重试'}),complete:()=>this.setData({saving:false})}),fail:()=>this.setData({saving:false,error:'图片生成失败，请重试。'})},this)
+    this.setData({saving:true,error:''});const save=id=>wx.canvasToTempFilePath({canvasId:id,destWidth:Math.round(this.data.width*Math.min(2,(wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync()).pixelRatio||1)),destHeight:Math.round(this.data.height*Math.min(2,(wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync()).pixelRatio||1)),success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>toast.show({ text: '已保存到相册' }),fail:()=>this.setData({error:'没有相册权限，请去设置后重试'}),complete:()=>this.setData({saving:false})}),fail:()=>this.setData({saving:false,error:'图片生成失败，请重试。'})},this)
     if(this.data.photoFallback)return this.draw(()=>{const w=this.data.width,h=this.data.height,ctx=wx.createCanvasContext('tryonCanvas',this);this.watermark(ctx,w,h);ctx.draw(true,()=>save('tryonCanvas'))})
     const layer=this.selectComponent('#photo3d');if(!layer)return this.setData({saving:false,error:'3D 预览尚未准备好，请重试。'})
     layer.exportImage((err,path)=>{if(err)return this.setData({saving:false,error:err.message});const w=this.data.width,h=this.data.height,img=this.imageInfo,k=Math.min(w/img.width,h/img.height),iw=img.width*k,ih=img.height*k,ctx=wx.createCanvasContext('composeCanvas',this);ctx.setFillStyle('#f7f6f4');ctx.fillRect(0,0,w,h);ctx.drawImage(this.data.photo,(w-iw)/2,(h-ih)/2,iw,ih);ctx.drawImage(path,0,0,w,h);this.watermark(ctx,w,h);ctx.draw(false,()=>save('composeCanvas'))})
   },
   openAR(){wx.navigateTo({url:'/ar-hand/index',fail:()=>this.setData({error:'AR 页面暂时无法打开，可以用照片试戴'})})},
   openSettings(){wx.openSetting&&wx.openSetting({})},
-  order(){if(this.data.missing)return wx.showToast({title:'请先替换下架材料',icon:'none'});require('../../utils/nav').openOrder()},
+  order(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });require('../../utils/nav').openOrder()},
   privacyRejected(){this.setData({error:'未授权照片或相机权限。你仍可使用 3D 模型手预览。',mode:'model'})}
 })

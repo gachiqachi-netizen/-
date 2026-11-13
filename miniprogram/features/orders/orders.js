@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const auth = require('../../utils/auth')
 const api = require('../../utils/api')
 const money = require('../../utils/money')
@@ -42,6 +43,7 @@ Page({
     busyNo: '',
     fade: true,
     loadedOnce: false,
+    confirmNo: '',
   },
 
   onLoad(query) {
@@ -112,24 +114,23 @@ Page({
     if (code !== 'confirm_receipt') {
       return wx.navigateTo({ url: '/features/order-detail/order-detail?no=' + encodeURIComponent(no) })
     }
-    wx.showModal({
-      title: '确认收货',
-      content: '请确认已经收到商品。确认后订单将完成。',
-      confirmColor: '#c8302e',
-      success: r => {
-        if (!r.confirm) return
-        this.setData({ busyNo: no })
-        auth.authorized('/my/orders/' + no + '/actions/confirm_receipt', {}, 'POST')
+    this.setData({ confirmNo: no })
+  },
+  closeConfirm() { this.setData({ confirmNo: '' }) },
+  confirmReceipt() {
+    const no = this.data.confirmNo
+    if (!no) return
+    this.closeConfirm()
+    this.setData({ busyNo: no })
+    auth.authorized('/my/orders/' + no + '/actions/confirm_receipt', {}, 'POST')
           .then(updated => {
             const fresh = buildRow(updated)
             const rows = this.data.rows.map(item => (item.no === no ? fresh : item))
             this.setData({ rows, counts: group.countsOf(rows) })
-            wx.showToast({ title: '已确认收货', icon: 'success' })
+            toast.show({ text: '已确认收货' })
           })
-          .catch(err => wx.showToast({ title: err.message || '操作失败', icon: 'none' }))
+          .catch(err => toast.show({ text: err.message || '操作失败' }))
           .finally(() => this.setData({ busyNo: '' }))
-      },
-    })
   },
 
   // 售后分栏：退货中需要寄回的行尾“填写单号”

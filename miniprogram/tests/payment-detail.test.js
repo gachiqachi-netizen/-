@@ -6,7 +6,7 @@ let definition, route = ''
 global.Page = value => { definition = value }
 global.getApp = () => ({ globalData: { apiBase: 'https://example.test' } })
 global.wx = { reLaunch: o => { route = o.url }, navigateTo: o => { route = o.url },
-  showToast: () => {}, stopPullDownRefresh: () => {}, setClipboardData: o => o.success(),
+  stopPullDownRefresh: () => {}, setClipboardData: o => o.success(),
   getStorageSync: () => ({}), setStorageSync: () => {} }
 function page(value) { const p = { ...value, data: JSON.parse(JSON.stringify(value.data)) }; p.setData = (d, cb) => { Object.assign(p.data, d); if (cb) cb() }; return p }
 

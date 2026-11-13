@@ -7,7 +7,7 @@ const auth = require('../utils/auth')
 let pageDefinition
 global.Page = definition => { pageDefinition = definition }
 global.wx = { getAccountInfoSync: () => ({ miniProgram: { envVersion: 'release' } }),
-  showToast: () => {}, navigateBack: () => {}, navigateTo: () => {} }
+  navigateBack: () => {}, navigateTo: () => {} }
 require('../pages/login/login')
 
 function page() {
@@ -33,16 +33,15 @@ test('unchecked phone action opens agreement sheet', async () => {
 
 test('denial stays on page and shows retry text', async () => {
   const instance = page()
-  wx.showModal = () => { throw new Error('denial must not open a modal') }
   instance.setData({ agreed: true })
   await instance.onPhone({ detail: { errMsg: 'getPhoneNumber:fail deny' } })
   assert.equal(instance.data.error, '没拿到手机号，可以再点一次，或先逛逛')
   assert.equal(instance.data.busy, false)
+  assert.equal(instance.data.sheet, false)
   const wxml = fs.readFileSync(path.join(__dirname, '../pages/login/login.wxml'), 'utf8')
   const wxss = fs.readFileSync(path.join(__dirname, '../pages/login/login.wxss'), 'utf8')
   assert.ok(wxml.indexOf('class="login-note"') > wxml.indexOf('class="c-btn login-button"'))
   assert.match(wxss, /\.login-note\s*\{[^}]*color:\s*var\(--c-text-2\)/)
-  delete wx.showModal
 })
 
 test('submitOrder next runs the previous page submit after returning', () => {

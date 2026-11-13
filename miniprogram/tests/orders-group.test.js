@@ -2,6 +2,33 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 const group = require('../features/orders/group')
+const auth = require('../utils/auth')
+
+test('确认收货弹层保留提示，取消不请求，点确定才提交', async () => {
+  const markup = require('node:fs').readFileSync(require('node:path').join(__dirname, '../features/orders/orders.wxml'), 'utf8')
+  assert.match(markup, /title="确认收货"/)
+  assert.match(markup, /请确认已经收到商品。确认后订单将完成。/)
+  let definition
+  const previousPage = global.Page
+  const previousAuth = auth.authorized
+  global.Page = value => { definition = value }
+  const calls = []
+  auth.authorized = async (...args) => { calls.push(args); return { no: 'ORDER', customerStatus: { code: 'completed' } } }
+  try {
+    require('../features/orders/orders')
+    const page = { ...definition, data: { ...definition.data, rows: [{ no: 'ORDER', action: { code: 'confirm_receipt' } }] }, setData(update) { Object.assign(this.data, update) } }
+    const event = { currentTarget: { dataset: { no: 'ORDER', code: 'confirm_receipt' } } }
+    page.runAction(event)
+    assert.equal(page.data.confirmNo, 'ORDER')
+    assert.equal(calls.length, 0)
+    page.closeConfirm()
+    assert.equal(calls.length, 0)
+    page.runAction(event)
+    page.confirmReceipt()
+    await new Promise(resolve => setImmediate(resolve))
+    assert.deepEqual(calls[0].slice(0, 3), ['/my/orders/ORDER/actions/confirm_receipt', {}, 'POST'])
+  } finally { auth.authorized = previousAuth; global.Page = previousPage }
+})
 
 test('待收货 = 运输中 + 已签收（含物流问题）', () => {
   assert.equal(group.tabOf('in_transit'), 'shipping')

@@ -9,3 +9,5 @@
  <view class="row" bindtap="showAbout">关于珠养养<text>›</text></view>
 </view>
 <view wx:else class="about"><view class="about-name">珠养养</view><view>一颗一颗，串成自己的心意。</view><view class="about-back" bindtap="backSettings">返回设置 ›</view></view>
+
+<c-toast />

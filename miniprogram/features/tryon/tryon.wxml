@@ -17,3 +17,5 @@
   <c-sheet show="{{showModes}}" title="换一种方式" bind:close="closeModes"><view class="sheet-row" data-mode="photo" bindtap="selectMode">用照片</view><view class="sheet-row" data-mode="model" bindtap="selectMode">用模型手</view><view class="sheet-row" data-mode="ar" bindtap="selectMode">实时试戴</view></c-sheet>
 </view>
 <privacy-popup scene="拍照或选择手腕照片" bind:reject="privacyRejected"/>
+
+<c-toast />

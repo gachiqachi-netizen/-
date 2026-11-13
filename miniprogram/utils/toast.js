@@ -1,7 +1,7 @@
 // 浮动提示队列（任务卡 C0g，稿 85 / 04 第 28.1 节）。
 // 纯函数部分 createQueue({ now, setTimer, clearTimer })：定时器全部注入，node:test 可测。
 // 规则：纯提示默认 1000ms，带操作或失败 3000ms（可用 duration 覆盖）；新的顶掉旧的；点操作立即消失并调 onAction。
-// 页面暂不替换 wx.showToast，由各页面卡自己换。
+// 页面通过 c-toast 订阅此队列显示提示。
 function createQueue({ now, setTimer, clearTimer }) {
   let timer = null
   let current = null

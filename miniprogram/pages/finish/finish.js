@@ -1,6 +1,6 @@
 const api = require('../../utils/api')
 const store = require('../../utils/design')
-const logic = require('../editor/logic')
+const logic = require('../diy/logic')
 const meaning = require('../../utils/meaning')
 const money = require('../../utils/money')
 const nav = require('../../utils/nav')

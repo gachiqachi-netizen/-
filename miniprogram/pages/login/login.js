@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const auth = require('../../utils/auth')
 
 Page({
@@ -34,9 +35,9 @@ Page({
     this.setData({ busy: true, error: '', sheet: false })
     try {
       await auth.bindPhone(code)
-      wx.showToast({ title: '已登录', icon: 'none' })
+      toast.show({ text: '已登录' })
       try {
-        if (await auth.syncLocalWorks()) wx.showToast({ title: '作品已同步', icon: 'none' })
+        if (await auth.syncLocalWorks()) toast.show({ text: '作品已同步' })
       } catch (_) { /* 本机作品保留，稍后可重试同步 */ }
       auth.continueAfterLogin(this.next)
     } catch (_) {

@@ -24,3 +24,5 @@
   <c-sheet show="{{sheet === 'payment'}}" title="模拟支付" bind:close="closePayment"><view class="center sub">体验版，不会真的扣款</view><view class="center payment-name">{{order.name}}</view><view class="center payment-amount">{{paymentAmount}}</view><view class="sheet-actions"><button class="c-btn c-btn--sec" data-result="fail" bindtap="finishPayment">支付失败</button><button class="c-btn" data-result="success" bindtap="finishPayment">支付成功</button></view></c-sheet>
   <c-sheet show="{{sheet === 'cancel'}}" title="为什么取消" bind:close="closePayment"><view wx:for="{{cancelReasons}}" wx:key="*this" class="reason" data-reason="{{item}}" bindtap="cancel">{{item}}</view></c-sheet>
 </view>
+
+<c-toast />

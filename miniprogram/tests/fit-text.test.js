@@ -1,6 +1,6 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
-const logic = require('../pages/editor/logic')
+const logic = require('../pages/diy/logic')
 const { fitText, meterPos } = require('../utils/fit-text')
 
 // 手围 15cm、全 8mm 珠子：target = 150 + max(8, 2.5*8-5) = 165mm

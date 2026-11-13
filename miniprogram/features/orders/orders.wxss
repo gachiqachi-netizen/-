@@ -1,6 +1,6 @@
 /* C8b 我的订单。版式按 04 第 0.2 节：浅灰底 + 白色卡片 */
 page {
-  background: #f4f4f4;
+  background: var(--c-surface);
 }
 
 .orders-page {
@@ -14,7 +14,7 @@ page {
   top: 0;
   z-index: 3;
   white-space: nowrap;
-  background: #f4f4f4;
+  background: var(--c-surface);
   padding: 20rpx 24rpx 12rpx;
   box-sizing: border-box;
 }
@@ -24,17 +24,17 @@ page {
   margin-right: 12rpx;
   padding: 12rpx 28rpx;
   border-radius: 999rpx;
-  background: #fff;
-  border: 1rpx solid #e4e4e4;
-  color: #6e6e6e;
+  background: var(--c-bg);
+  border: 1rpx solid var(--c-line);
+  color: var(--c-text-2);
   font-size: 26rpx;
   line-height: 36rpx;
 }
 
 .tab.on {
-  background: #111;
-  border-color: #111;
-  color: #fff;
+  background: var(--c-text);
+  border-color: var(--c-text);
+  color: var(--c-bg);
   font-weight: 600;
 }
 
@@ -62,8 +62,8 @@ page {
 }
 
 .card {
-  background: #fff;
-  border: 1rpx solid #e9e8e6;
+  background: var(--c-bg);
+  border: 1rpx solid var(--c-line);
   border-radius: 24rpx;
   padding: 28rpx;
 }
@@ -83,7 +83,7 @@ page {
 
 .oc-no {
   font-size: 24rpx;
-  color: #8a817b;
+  color: var(--c-text-2);
   font-variant-numeric: tabular-nums;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -94,11 +94,11 @@ page {
   flex: none;
   font-size: 26rpx;
   font-weight: 600;
-  color: #111;
+  color: var(--c-text);
 }
 
-.oc-status.st-attention { color: #c8302e; }
-.oc-status.st-danger { color: #b42318; }
+.oc-status.st-attention { color: var(--c-danger); }
+.oc-status.st-danger { color: var(--c-danger); }
 
 /* 商品行：缩略图、名字、一句寓意、规格 */
 .oc-goods {
@@ -112,7 +112,7 @@ page {
   height: 128rpx;
   flex: none;
   border-radius: 18rpx;
-  background: radial-gradient(circle at 50% 42%, #f5f4f2, #eae7e3);
+  background: radial-gradient(circle at 50% 42%, var(--c-surface), var(--c-line));
   overflow: hidden;
 }
 
@@ -124,7 +124,7 @@ page {
 .oc-name {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1f1b1a;
+  color: var(--c-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -134,7 +134,7 @@ page {
   margin-top: 6rpx;
   font-size: 24rpx;
   line-height: 34rpx;
-  color: #39745f;
+  color: var(--c-text-2);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -144,19 +144,19 @@ page {
   margin-top: 6rpx;
   font-size: 24rpx;
   line-height: 34rpx;
-  color: #736b66;
+  color: var(--c-text-2);
 }
 
 .oc-amount {
   text-align: right;
   font-size: 24rpx;
-  color: #736b66;
+  color: var(--c-text-2);
 }
 
 .oc-price {
   font-size: 32rpx;
   font-weight: 600;
-  color: #111;
+  color: var(--c-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -178,9 +178,9 @@ page {
 }
 
 .btn-primary {
-  background: #c8302e;
+  background: var(--c-danger);
   border: 0;
-  color: #fff;
+  color: var(--c-bg);
 }
 
 .btn-primary.busy {
@@ -188,9 +188,9 @@ page {
 }
 
 .btn-secondary {
-  background: #fff;
-  border: 1rpx solid #aaa3a0;
-  color: #1f1b1a;
+  background: var(--c-bg);
+  border: 1rpx solid var(--c-line);
+  color: var(--c-text);
 }
 
 .btn-sm {
@@ -213,12 +213,12 @@ page {
 .empty-title {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1f1b1a;
+  color: var(--c-text);
 }
 
 .empty-sub {
   font-size: 26rpx;
-  color: #736b66;
+  color: var(--c-text-2);
 }
 
 .empty-btn {
@@ -230,13 +230,13 @@ page {
   display: flex;
   flex-direction: column;
   gap: 20rpx;
-  border-color: #f0c6c3;
-  background: #fff6f5;
+  border-color: var(--c-line);
+  background: var(--c-surface);
 }
 
 .error-text {
   font-size: 26rpx;
-  color: #b42318;
+  color: var(--c-danger);
   line-height: 40rpx;
 }
 
@@ -254,7 +254,7 @@ page {
 
 .sk {
   border-radius: 12rpx;
-  background: linear-gradient(90deg, #f2efec 25%, #f8f6f4 50%, #f2efec 75%);
+  background: linear-gradient(90deg, var(--c-surface) 25%, var(--c-surface) 50%, var(--c-surface) 75%);
   background-size: 200% 100%;
   animation: sk-sweep 1.2s infinite;
 }

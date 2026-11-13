@@ -1,13 +1,18 @@
+const { queue: toast } = require('../../utils/toast')
 const api = require('../../utils/api')
 const store = require('../../utils/design')
 const ui = require('./data')
 const nav = require('../../utils/nav')
 
 Page({
-  data: { offline: false, templates: [], catalog: [], banners: [], homeArticles: [], wrist: 15, wristConfirmed: false, error: '', loading: true, hasDraft: false },
+  data: { offline: false, templates: [], catalog: [], banners: [], homeArticles: [], wrist: 15, wristConfirmed: false, error: '', loading: true, hasDraft: false, configError: '' },
   onShow() {
+    if (!this.configErrorShown) {
+      this.configErrorShown = true
+      this.setData({ configError: getApp().globalData.configError || '' })
+    }
     const wrist = ui.wrist(), confirmed = !!wx.getStorageSync('cgz_wrist_confirmed')
-    if (this.lastWrist !== undefined && this.lastWrist !== wrist) wx.showToast({ title: `已按 ${wrist}cm 重新排好`, icon: 'none' })
+    if (this.lastWrist !== undefined && this.lastWrist !== wrist) toast.show({ text: `已按 ${wrist}cm 重新排好` })
     this.lastWrist = wrist
     const draft = store.current(), hasDraft = !!(draft && draft.beads && draft.beads.length)
     this.setData({ wrist, wristConfirmed: confirmed, hasDraft })
@@ -15,6 +20,7 @@ Page({
     else if (wx.removeTabBarRedDot) wx.removeTabBarRedDot({ index: 1 })
     this.load()
   },
+  closeConfigError() { this.setData({ configError: '' }) },
   load() {
     this.setData({ loading: true, error: '' })
     api.catalog().then(c => {
@@ -36,7 +42,7 @@ Page({
   tryLast() {
     const d = store.current()
     if (d && d.beads && d.beads.length) return wx.navigateTo({ url: '/features/tryon/tryon' })
-    wx.showToast({ title: '先挑一条手串试戴', icon: 'none' })
+    toast.show({ text: '先挑一条手串试戴' })
   },
   use(e) {
     const t = this.data.templates[e.currentTarget.dataset.i]

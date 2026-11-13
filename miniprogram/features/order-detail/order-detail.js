@@ -1,9 +1,10 @@
+const { queue: toast } = require('../../utils/toast')
 const auth = require('../../utils/auth')
 const api = require('../../utils/api')
 const store = require('../../utils/design')
 const orderState = require('../../utils/order-state')
 const money = require('../../utils/money')
-const materials = require('../../pages/editor/materials')
+const materials = require('../../pages/diy/materials')
 
 Page({
   data: { order: null, items: [], catalog: [], loading: true, error: '', actionBusy: '', payment: null,
@@ -45,7 +46,7 @@ Page({
       this.setData({ payment: null, sheet: '' })
       this.paidIntent = true
       await this.load()
-      if (this.data.paidLanding) wx.showToast({ title: '付款成功', icon: 'none' })
+      if (this.data.paidLanding) toast.show({ text: '付款成功' })
     } catch (error) { this.setData({ error: error.message || '付款结果未确认，请刷新订单' }) }
     finally { this.setData({ actionBusy: '' }) }
   },
@@ -66,12 +67,12 @@ Page({
     try {
       await auth.authorized('/my/orders/' + encodeURIComponent(this.no) + '/actions', { action: code, reason }, 'POST')
       await this.load()
-      wx.showToast({ title: code === 'cancel_order' ? '已取消' : '已确认收货', icon: 'none' })
+      toast.show({ text: code === 'cancel_order' ? '已取消' : '已确认收货' })
       if (code === 'confirm_receipt' && wx.vibrateShort) wx.vibrateShort({ type: 'medium' })
     } catch (e) { this.setData({ error: e.message || '操作失败，请再试一次' }) }
     finally { this.setData({ actionBusy: '' }) }
   },
-  copyNo() { wx.setClipboardData({ data: this.no, success: () => wx.showToast({ title: '订单号已复制', icon: 'none' }) }) },
+  copyNo() { wx.setClipboardData({ data: this.no, success: () => toast.show({ text: '订单号已复制' }) }) },
   viewProduct() {
     const o = this.data.order
     if (!o || !Array.isArray(o.beads) || !o.beads.length) return

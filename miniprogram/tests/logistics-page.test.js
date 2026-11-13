@@ -1,13 +1,14 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 const auth = require('../utils/auth')
+const { queue } = require('../utils/toast')
 let definition
 const notices = []
+queue.subscribe(item => { if (item) notices.push(item.text) })
 let copied = ''
 global.Page = value => { definition = value }
 global.wx = {
   setClipboardData: options => { copied = options.data; options.success() },
-  showToast: options => notices.push(options.title),
   pageScrollTo: () => {}, stopPullDownRefresh: () => {},
 }
 require('../features/logistics/logistics')

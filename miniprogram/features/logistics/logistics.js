@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const auth = require('../../utils/auth')
 
 Page({
@@ -36,7 +37,7 @@ Page({
   copyNo() {
     if (!this.data.trackingNo) return
     wx.setClipboardData({ data: this.data.trackingNo,
-      success: () => wx.showToast({ title: '单号已复制', icon: 'none' }) })
+      success: () => toast.show({ text: '单号已复制' }) })
   },
   editAddress() {
     if (!this.data.canEdit) return
@@ -57,7 +58,7 @@ Page({
     try {
       const result = await auth.authorized('/my/addresses')
       this.setData({ addresses: result.addresses || [], addressOpen: true })
-    } catch (error) { wx.showToast({ title: error.message || '地址暂时打不开', icon: 'none' }) }
+    } catch (error) { toast.show({ text: error.message || '地址暂时打不开' }) }
   },
   closeAddressBook() { this.setData({ addressOpen: false }) },
   selectAddress(event) {
@@ -85,10 +86,10 @@ Page({
       await auth.authorized('/my/orders/' + encodeURIComponent(this.no) + '/address',
         { person: person.trim(), phone: phone.trim(), addr: region.length ? [...region, detail.trim()].join(' ') : detail.trim() }, 'POST')
       this.setData({ editOpen: false })
-      wx.showToast({ title: '地址已改', icon: 'none' })
+      toast.show({ text: '地址已改' })
       await this.load()
     } catch (error) {
-      wx.showToast({ title: /发货/.test(error.message || '') ? '已经发货，改不了了' : '保存失败，请重试', icon: 'none' })
+      toast.show({ text: /发货/.test(error.message || '') ? '已经发货，改不了了' : '保存失败，请重试' })
       await this.load()
     } finally { this.setData({ saving: false }) }
   },

@@ -1,3 +1,4 @@
+const { queue: toast } = require('../utils/toast')
 const {createTracker}=require('./runtime');
 const {placement,smooth}=require('./geometry');
 const {resolveModelConfig}=require('./model-cache');
@@ -78,9 +79,9 @@ Page({
  savePhoto(){
   if(!this.data.frozen||!this._output)return;
   const ring=this.selectComponent('#ring');
-  if(!ring||!ring.exportImage)return wx.showToast({title:'图片还没准备好',icon:'none'});
+  if(!ring||!ring.exportImage)return toast.show({ text: '图片还没准备好' });
   ring.exportImage((error,path)=>{
-   if(error)return wx.showToast({title:'图片还没准备好',icon:'none'});
+   if(error)return toast.show({ text: '图片还没准备好' });
    const canvas=wx.createOffscreenCanvas({type:'2d',width:this.data.width,height:this.data.height});
    const context=canvas.getContext('2d'),overlay=canvas.createImage();
    overlay.onload=()=>{
@@ -88,9 +89,9 @@ Page({
     context.drawImage(overlay,0,0,this.data.width,this.data.height);
     context.fillStyle='#ffffff';context.textAlign='right';context.font='20px serif';context.fillText('珠养养',this.data.width-16,this.data.height-32);
     context.font='8px serif';context.fillText('ZHU YANG YANG',this.data.width-16,this.data.height-18);
-    wx.canvasToTempFilePath({canvas,success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>wx.showToast({title:'已保存到相册'}),fail:()=>wx.showToast({title:'保存失败，请检查相册权限',icon:'none'})}),fail:()=>wx.showToast({title:'图片生成失败',icon:'none'})});
+    wx.canvasToTempFilePath({canvas,success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>toast.show({ text: '已保存到相册' }),fail:()=>toast.show({ text: '保存失败，请检查相册权限' })}),fail:()=>toast.show({ text: '图片生成失败' })});
    };
-   overlay.onerror=()=>wx.showToast({title:'图片生成失败',icon:'none'});
+   overlay.onerror=()=>toast.show({ text: '图片生成失败' });
    overlay.src=path;
   });
  },

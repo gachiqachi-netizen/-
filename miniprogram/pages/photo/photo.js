@@ -1,3 +1,4 @@
+const { queue: toast } = require('../../utils/toast')
 const api = require('../../utils/api')
 const store = require('../../utils/design')
 const templates = require('../../utils/template')
@@ -173,13 +174,13 @@ Page({
   edit(orderOnly) {
     const { options, catalog, mainIndex, accentIndex, metalIndex, every } = this.data
     const main = options[mainIndex], accent = options[accentIndex], metal = options[metalIndex]
-    if (!main || !main.id) return wx.showToast({ title: '请选择主珠', icon: 'none' })
-    const bead = catalog.find(b => b.id === main.id); if (!bead || !bead.mm) return wx.showToast({ title: '珠子资料不可用', icon: 'none' })
+    if (!main || !main.id) return toast.show({ text: '请选择主珠' })
+    const bead = catalog.find(b => b.id === main.id); if (!bead || !bead.mm) return toast.show({ text: '珠子资料不可用' })
     const d = store.create(); d.wrist = wrist()
     const interval = Math.max(2, Math.min(6, Number(every) || 4))
     const pattern = Array(interval-1).fill(main.id); pattern.push(accent && accent.id || main.id); if (metal && metal.id) pattern.push(metal.id)
     const beads = templates.build({pattern}, catalog, d.wrist)
-    if (!beads || beads.length < 6) return wx.showToast({title:'材料无法生成合适的手串，请调整后重试',icon:'none'})
+    if (!beads || beads.length < 6) return toast.show({ text: '材料无法生成合适的手串，请调整后重试' })
     d.name = this.data.name || '照片同款'; d.beads = beads; store.selected(d)
     if (orderOnly !== true) require('../../utils/nav').openEditor()
     return true

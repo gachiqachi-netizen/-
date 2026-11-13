@@ -93,18 +93,6 @@
         "review/review",
         "settings/settings"
       ]
-    },
-    {
-      "root": "kit",
-      "pages": [
-        "icons/index",
-        "wordmark/index",
-        "bead/index",
-        "basic/index",
-        "bracelet/index",
-        "layer/index",
-        "composer/index"
-      ]
     }
   ]
 }

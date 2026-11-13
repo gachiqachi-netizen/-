@@ -28,3 +28,5 @@
  <canvas class="compute" type="webgl" id="compute"/>
 </view>
 <privacy-popup scene="打开摄像头进行实时试戴" bind:reject="privacyRejected"/>
+
+<c-toast />

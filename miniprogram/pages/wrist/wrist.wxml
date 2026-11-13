@@ -8,3 +8,5 @@
   <view wx:else class="guide steps"><view>1　剪一条纸条，贴着手腕骨绕一圈，不松不紧</view><view>2　在纸条重合的地方做个记号</view><view>3　把纸条放平，用直尺量到记号，就是手围</view></view>
   <view class="bottom"><button class="primary" bindtap="confirm">就按 {{wrist}}cm</button></view>
 </view>
+
+<c-toast />

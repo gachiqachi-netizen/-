@@ -10,3 +10,4 @@
     <view class="policy">定制商品非质量问题不支持七天无理由退换。<text bindtap="showPolicy">查看售后政策</text></view>
   </block>
 </view>
+<c-sheet show="{{policyOpen}}" title="售后政策" maskClose="{{false}}"><view>定制商品非质量问题不支持七天无理由退换。</view><button slot="footer" bindtap="closePolicy">确定</button></c-sheet>

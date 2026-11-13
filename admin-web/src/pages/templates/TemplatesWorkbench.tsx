@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Copy, Trash2, GripVertical } from 'lucide-react';
 import { apiRequest, fenToYuan } from '../../api';
 import { Button } from '../../ui/Button';
+import { Can } from '../../permissions';
 import { Skeleton } from '../../ui/Skeleton';
 import { ErrorState } from '../../ui/ErrorState';
 import { EmptyState } from '../../ui/EmptyState';
@@ -384,9 +385,9 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
       <aside className="tpl-side zy-card">
         <div className="tpl-side-head">
           <h2 className="tpl-title">模板</h2>
-          <Button variant="primary" onClick={handleCreateNew}>
+          <Can perm="edit_templates"><Button variant="primary" onClick={handleCreateNew}>
             <Plus size={14} /> 新建模板
-          </Button>
+          </Button></Can>
         </div>
         {templates.length === 0 && <EmptyState text="还没有模板，点右上角新建" />}
         <ul className="tpl-list">
@@ -428,17 +429,17 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
                 <div className="tpl-sec-actions">
                   {!form._isNew && (
                     <>
-                      <Button variant="secondary" onClick={handleCopy}>
+                      <Can perm="edit_templates"><Button variant="secondary" onClick={handleCopy}>
                         <Copy size={13} /> 复制副本
-                      </Button>
-                      <Button variant="danger" onClick={handleDelete}>
+                      </Button></Can>
+                      <Can perm="edit_templates"><Button variant="danger" onClick={handleDelete}>
                         <Trash2 size={13} /> 删除
-                      </Button>
+                      </Button></Can>
                     </>
                   )}
-                  <Button variant="primary" disabled={saving} onClick={handleSave}>
+                  <Can perm="edit_templates"><Button variant="primary" disabled={saving} onClick={handleSave}>
                     {saving ? '保存中…' : '保存'}
-                  </Button>
+                  </Button></Can>
                 </div>
               </div>
               <div className="tpl-grid">

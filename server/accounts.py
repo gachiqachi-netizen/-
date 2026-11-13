@@ -38,8 +38,6 @@ PBKDF2_ITERATIONS = 600000
 # Method, complete path, permission. More specific paths precede collection paths.
 ROUTE_PERMISSIONS = (
     ("GET", r"/api/admin/audit", "manage_accounts"),
-    ("GET", r"/api/admin/ai-logs", "view_orders"),
-    ("GET", r"/api/admin/ai-stats", "view_orders"),
     ("GET", r"/api/admin/work-orders", "view_work_orders"),
     ("GET", r"/api/admin/orders/[\w-]+/work-order", "view_work_orders"),
     ("GET", r"/api/admin/orders(?:/[\w-]+)?", "view_orders"),
@@ -144,6 +142,15 @@ def mask_order(db, value):
         return result
 
     return masked(value)
+
+
+def own_scope_name(db):
+    """当前后台账号只可看自己工单时返回其名字；内部调用不限制。"""
+    user = CURRENT_ADMIN.get()
+    if not user:
+        return None
+    role = db.get("admin_roles", user.get("roleId"))
+    return user.get("name") if role and role.get("dataScope") == "own" else None
 
 
 def hash_password(password):

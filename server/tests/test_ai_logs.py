@@ -73,6 +73,15 @@ class AILogsTest(unittest.TestCase):
         self.assertTrue(row['ok'])
         self.assertGreater(row['at'], 0)
 
+    def test_attach_used_when_no_db(self):
+        """attach 主连接后，record 不再自建连接（审核意见 1）。"""
+        ai_logs.attach(self.db)
+        try:
+            ai_logs.record(None, '想要一条粉水晶', '好的', [], 10, 'fake')
+        finally:
+            ai_logs.attach(None)
+        self.assertEqual(len(self.db.list('ai_logs')), 1)
+
     # ---- 清理 ----
 
     def test_purge_removes_expired(self):
@@ -113,7 +122,7 @@ class AILogsTest(unittest.TestCase):
         with mock.patch.object(ai_logs, 'record') as rec:
             out = design_with({'reply': '好的', 'designs': [{'name': '心愿', 'meaning': '平安',
                                                              'pattern': ['a', 'b'], 'special': []}]})
-        self.assertEqual(out['reply'], '好的')
+        self.assertEqual(out['message'], '好的')
         rec.assert_called_once()
         kw = rec.call_args
         self.assertEqual(kw.args[1], '想要一条粉水晶')  # input 原文传入，由 record 去手机号
@@ -132,7 +141,7 @@ class AILogsTest(unittest.TestCase):
         with mock.patch.object(ai_logs, 'record', side_effect=RuntimeError('日志表不可用')):
             out = design_with({'reply': '好的', 'designs': [{'name': '心愿', 'meaning': '平安',
                                                              'pattern': ['a', 'b'], 'special': []}]})
-        self.assertEqual(out['reply'], '好的')  # 记录失败不影响返回
+        self.assertEqual(out['message'], '好的')  # 记录失败不影响返回
 
     # ---- jobs 子命令 ----
 
@@ -163,8 +172,8 @@ class AILogsTest(unittest.TestCase):
     def test_routes_registered(self):
         table = routes.load()
         paths = {(m, p.pattern, a) for m, p, f, a in table}
-        self.assertIn(('GET', r'/api/admin/ai-logs', 'admin'), paths)
-        self.assertIn(('GET', r'/api/admin/ai-stats', 'admin'), paths)
+        self.assertIn(('GET', r'/api/admin/ai-logs', 'view_orders'), paths)
+        self.assertIn(('GET', r'/api/admin/ai-stats', 'view_orders'), paths)
 
 
 if __name__ == '__main__':

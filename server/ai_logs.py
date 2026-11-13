@@ -17,13 +17,20 @@ _PHONE = re.compile(r'1\d{10}')
 _db = None
 
 
+def attach(db):
+    """照 pricing.attach 的做法：服务器启动时把主连接挂进来，record 就用它，不再自建连接
+    （自建连接会和主连接各自加锁，SQLite 同时写会 database is locked）。"""
+    global _db
+    _db = db
+
+
 def sanitize(text):
     """去掉手机号等敏感信息：11 位手机号打码，超长文本截断。"""
     return _PHONE.sub('***', str(text or ''))[:500]
 
 
 def _open_db():
-    """和 jobs.py 一样的开库方式；AI 配在请求线程里记日志，没有现成连接时自建并缓存。"""
+    """和 jobs.py 一样的开库方式；只在没 attach 时（比如单独跑测试）自建并缓存。"""
     global _db
     if _db is None:
         if os.environ.get('DATABASE_URL'):
@@ -37,8 +44,8 @@ def _open_db():
 
 
 def record(db, input_text, output, plans, elapsed_ms, by, ok=True, error=''):
-    """记一次 AI 配；plans 是命中的方案（designs 列表）。"""
-    (db or _open_db()).put('ai_logs', uuid.uuid4().hex, {
+    """记一次 AI 配；plans 是命中的方案（designs 列表）。优先用 attach 进来的主连接。"""
+    (db or _db or _open_db()).put('ai_logs', uuid.uuid4().hex, {
         'input': sanitize(input_text), 'output': sanitize(output),
         'plans': plans or [], 'elapsedMs': int(elapsed_ms or 0), 'by': str(by or ''),
         'ok': bool(ok), 'error': str(error or '')[:200], 'at': int(time.time() * 1000)})

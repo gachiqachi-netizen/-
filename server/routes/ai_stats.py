@@ -25,6 +25,6 @@ def list_stats(ctx, match, data):
 
 
 ROUTES = [
-    ('GET', r'/api/admin/ai-logs', list_logs, 'admin'),
-    ('GET', r'/api/admin/ai-stats', list_stats, 'admin'),
+    ('GET', r'/api/admin/ai-logs', list_logs, 'view_orders'),
+    ('GET', r'/api/admin/ai-stats', list_stats, 'view_orders'),
 ]

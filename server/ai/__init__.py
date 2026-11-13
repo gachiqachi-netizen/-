@@ -5,9 +5,14 @@
 """
 import json
 import os
+import re
 import time
 
 import ai_logs
+import kb
+import money
+import plans
+import pricing
 
 _provider = None
 _provider_err = None
@@ -176,32 +181,66 @@ def design(beads, text, history, wrist):
     hist = "\n".join(history[-6:]) or "（无）"
     prompt = (f"你是手串设计师，在和用户聊天帮她配手串。只用下面目录里的珠子，每颗单独卖、可以自由组合。{RULES}\n"
               f"目录（id|名称尺寸|材质|类型|单价|寓意）：\n{catalog_text(beads)}\n\n"
-              f"用户手围 {wrist}cm，手工费 ¥15。\n之前的对话：\n{hist}\n用户刚说：{text}\n\n"
+              f"用户手围 {wrist}cm，价格由服务端计算。\n之前的对话：\n{hist}\n用户刚说：{text}\n\n"
               "给 3 条不同的手串，和之前给过的不要重复。每条至少 2 种不同名称的珠子，主珠直径一致。"
               "pattern 是循环花型（3-8 颗），special 是只出现一次的开头珠（0-2 颗）。用户提了预算时，按大约 20 颗估算，别超预算。\n"
-              "reply 是一句 20-40 字的口语回应；meaning 20-40 字。")
+              "reply 是一句 20-40 字的口语回应，先讲寓意且不要写数字；meaning 20-40 字。")
     ids = {b["id"] for b in beads}
     names = {b["id"]: b["name"] for b in beads}
     try:
         out = p.json(prompt, DESIGNS_SCHEMA)
         designs = _valid_designs(out.get("designs"), ids, 2, names)
         if not designs:
-            # JSON-only mode guarantees syntax, not that a model copies opaque SKU ids
-            # exactly. Retry once with a compact allow-list; never accept invented ids.
-            allowed = ", ".join(f'{b["id"]}={b["name"]}' for b in beads)
-            retry_prompt = (prompt + "\n\n上一次结果未通过商品目录校验，请重新输出。"
-                            "special 和 pattern 的每个值必须是下列完整 id 之一，不能写珠子名称、颜色、对象或新 id：\n"
-                            + allowed)
-            out = p.json(retry_prompt, DESIGNS_SCHEMA)
-            designs = _valid_designs(out.get("designs"), ids, 2, names)
-            if not designs:
-                raise RuntimeError("AI 给的珠子不在料包里")
-        result = {"reply": clean(out.get("reply"), 60), "designs": designs, "by": p.name}
+            raise RuntimeError("AI 给的珠子不在料包里")
+        result = {"message": str(out.get("message") or out.get("reply") or ""), "designs": designs, "by": p.name}
     except Exception as exc:
         _log_design(text, "", [], started, p, ok=False, error=exc)
         raise
-    _log_design(text, result["reply"], result["designs"], started, p)
+    _log_design(text, result.get("message") or result.get("reply") or "", result["designs"], started, p)
     return result
+
+
+def _plan_tags(sequence, item):
+    """Only meaning tags from knowledge-base records for selected beads."""
+    tags = []
+    for bid in sequence:
+        bead = item[bid]
+        record = kb.get(bead.get('kb')) if bead.get('kb') else None
+        for tag in ((record or {}).get('meaning') or {}).get('tags') or []:
+            if tag not in tags:
+                tags.append(tag)
+    return tags
+
+
+def design_response(result, beads, wrist):
+    """Turn model recipes into three priced, sized plans without trusting model numbers."""
+    recipes = result.get('designs') or []
+    if len(recipes) < 3:
+        raise RuntimeError('AI 没有给出三条可用方案')
+    item = {b['id']: b for b in beads}
+    output = []
+    for recipe in recipes[:3]:
+        sequence = plans._fill(recipe['special'], recipe['pattern'], [], item, wrist)
+        _, length_mm = plans.target_mm(sequence, item, wrist)
+        tags = _plan_tags(sequence, item)
+        prices = [{'unitPriceFen': (money.parse_fen(item[bid]['priceFen'])
+                   if item[bid].get('priceFen') is not None else money.yuan_to_fen(item[bid]['price']))}
+                  for bid in sequence]
+        output.append({
+            'name': recipe['name'],
+            'line': '、'.join(tags[:2]) if tags else '为这条搭配留一份心意',
+            'beads': sequence,
+            'count': len(sequence),
+            'lengthMm': length_mm,
+            'payableFen': pricing.quote(prices)['payableFen'],
+        })
+    model_message = result.get('message') or ''
+    if re.search(r'\d', model_message) or kb.banned_in(model_message):
+        message = '为你配了三条，先看第一条。'
+    else:
+        message = model_message or '为你配了三条，先看第一条。'
+    return {'message': message, 'plans': output, 'designs': recipes[:3], 'reply': message,
+            'quickReplies': ['换一组珠子', '看看别的风格', '再调一下预算']}
 
 
 def _confidence(v):

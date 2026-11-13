@@ -28,11 +28,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import ai  # noqa: E402
+import ai_logs  # noqa: E402
 import kb  # noqa: E402
 import plans  # noqa: E402
 import status  # noqa: E402
 import commerce  # noqa: E402
 import routes  # noqa: E402
+import uploads  # noqa: E402
 from db import DB  # noqa: E402
 
 ROUTE_TABLE = routes.load()
@@ -55,6 +57,7 @@ if os.environ.get("DATABASE_URL"):
 else:
     db = DB(os.environ.get("DATABASE_PATH") or os.path.join(DATA_DIR, "data.sqlite3"))
 pricing.attach(db)
+ai_logs.attach(db)
 user_api.cleanup_sessions(db)
 
 def session_cleanup_loop():
@@ -344,6 +347,39 @@ class Handler(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _serve_user_upload(self, path):
+        """B-1 读用户上传的图片：没记录、没权限、文件不存在一律同一个 404。
+
+        防目录穿越：URL 解码后取 realpath，必须落在 realpath(UPLOADS/user) 内。
+        带合法且没过期的 k（送审时给微信的临时取图签名）时不看 checkStatus；
+        k 不对或过期则照旧按权限判断。
+        """
+        from urllib.parse import unquote, parse_qs, urlparse
+        rel = unquote(path[len("/uploads/"):]).replace("\\", "/")
+        root = os.path.realpath(os.path.join(UPLOADS, "user"))
+        fp = os.path.realpath(os.path.join(UPLOADS, rel))
+        not_found = {"error": "not_found"}
+        if os.path.commonpath((root, fp)) != root:
+            return self.send(404, not_found)
+        record = uploads.get_by_url_path(db, rel)
+        if record is None:
+            return self.send(404, not_found)
+        qs = parse_qs(urlparse(self.path).query)
+        if not uploads.valid_link(rel, qs):
+            if not uploads.viewer_can_see(record, self.user(), self.admin_ok()):
+                return self.send(404, not_found)
+        ext = fp.rsplit(".", 1)[-1].lower() if "." in fp else ""
+        if ext == "jpeg":
+            ext = "jpg"
+        ctype = {"jpg": "image/jpeg", "png": "image/png", "webp": "image/webp"}.get(ext)
+        if ctype is None or not os.path.isfile(fp):
+            return self.send(404, not_found)
+        headers = {}
+        if record.get("checkStatus") != "passed":
+            headers["Cache-Control"] = "private, no-store"
+        with open(fp, "rb") as f:
+            return self.send(200, f.read(), ctype, headers=headers)
+
     def user(self):
         return user_api.owner(db, self.headers.get("Authorization"))
 
@@ -366,6 +402,8 @@ class Handler(BaseHTTPRequestHandler):
                 ctype = {"js": "application/javascript; charset=utf-8", "css": "text/css; charset=utf-8"}.get(ext, "application/octet-stream")
                 return self.send(200, open(fp, "rb").read(), ctype)
             if path.startswith("/uploads/"):
+                if path.startswith("/uploads/user/"):   # B-1 用户上传：按记录做访问控制
+                    return self._serve_user_upload(path)
                 name = os.path.basename(path)
                 fp = os.path.join(UPLOADS, name)
                 if not os.path.isfile(fp):
@@ -420,7 +458,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(401, {"error": "请先登录"})
                 table = "designs" if path == "/api/designs" else "orders"
                 presenter = user_api.public_design if path == "/api/designs" else user_api.public_order
-                rows = [presenter(row) for row in db.list_by_owner(table, uid)]
+                rows = [presenter(row) for row in db.list_by_owner(table, uid)
+                        if not row.get("deletedAt")]   # B-11c 软删除的作品不出现在列表（订单无此字段，不受影响）
                 rows.sort(key=lambda row: row.get("updatedAt", row.get("createdAt", 0)), reverse=True)
                 return self.send(200, rows)
             m = re.match(r"^/api/admin/(beads|templates|banners|orders)$", path)
@@ -433,6 +472,10 @@ class Handler(BaseHTTPRequestHandler):
                                                 {k: q.get(k, [""])[0] for k in status.GROUP_FIELDS})
                 elif m.group(1) == "beads":
                     rows = commerce.list_products(db, q.get("q", [""])[0], q.get("type", [""])[0], q.get("status", [""])[0])
+                    import accounts, pricing_admin
+                    if q.get("group", [""])[0] == "1":
+                        rows = pricing_admin.group_beads(rows)
+                    rows = accounts.mask_order(db, rows)
                 elif m.group(1) == "templates":
                     rows = commerce.list_templates(db, q.get("q", [""])[0], q.get("status", [""])[0])
                 else:
@@ -791,16 +834,6 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/admin/session":
             return self.admin_logout()
         try:
-            design_match = re.fullmatch(r"/api/designs/([a-f0-9]{32})", path)
-            if design_match:
-                uid = self.user()
-                if not uid:
-                    return self.send(401, {"error": "请先登录"})
-                old = db.get("designs", design_match.group(1))
-                if not old or old.get("userId") != uid:
-                    return self.send(404, {"error": "设计不存在"})
-                db.delete("designs", design_match.group(1))
-                return self.send(200, {"ok": True})
             m = re.match(r"^/api/admin/(beads|templates|banners|terms)/([\w-]+)$", path)
             if not m:
                 if self._route_dispatch("DELETE", path):
@@ -847,7 +880,12 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(429, {"error": "请求较多，请稍后重试"})
         try:
             if path == "/api/ai/design":
-                out = ai.design(beads, str(data.get("text") or "")[:200], history, wrist)
+                raw = ai.design(beads, str(data.get("text") or "")[:200], history, wrist)
+                if raw is not None:
+                    raw["designs"] = content_security.filter_ai_entries(raw["designs"])
+                    out = ai.design_response(raw, beads, wrist)
+                else:
+                    out = None
             elif path == "/api/ai/photo":
                 out = ai.photo(beads, image)
             elif path == "/api/ai/review":

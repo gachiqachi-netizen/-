@@ -327,6 +327,12 @@ class Handler(BaseHTTPRequestHandler):
             if m:
                 shared = user_api.read_share(db, m.group(1))
                 return self.send(200, shared) if shared else self.send(404, {"error": "分享不存在"})
+            order_detail = re.fullmatch(r"/api/my/orders/([\w-]+)", path)
+            if order_detail:
+                uid = self.user()
+                if not uid:
+                    return self.send(401, {"error": "请先登录"})
+                return self.send(200, user_api.get_my_order(db, order_detail.group(1), uid))
             if path in ("/api/designs", "/api/my/orders"):
                 uid = self.user()
                 if not uid:

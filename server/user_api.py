@@ -203,6 +203,13 @@ def public_order(order):
     return out
 
 
+def get_my_order(db, no, uid):
+    order = db.get('orders', no)
+    if not order or order.get('userId') != uid:
+        raise KeyError('订单不存在')
+    return public_order(order)
+
+
 def perform_order_action(db, no, uid, action):
     import commerce
     return public_order(commerce.customer_order_action(db, no, uid, action))

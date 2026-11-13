@@ -18,20 +18,20 @@ function page(pricing = {}) {
   return p
 }
 
-function stub(response) {
+function stub(response, fallback) {
   api.request = async path => {
     if (path === '/ai/design') return response
+    if (path === '/plans/match' && fallback) return fallback
     throw new Error('不该调用方案库')
   }
 }
 
 const recipe = { name: '旧名字', pattern: ['b'], meaning: '旧寓意' }
 
-test('有 plans 时卡片字段只取 plans，兼容 designs 被删除', async () => {
+test('有 plans 时卡片字段只取 plans', async () => {
   stub({
-    designs: [{ ...recipe, name: '不能用的名字', beads: ['wrong'], count: 99, lengthMm: 999, payableFen: 99999 }],
     plans: [{ name: '白月光', beads: ['b', 'b'], count: 18, lengthMm: 162, payableFen: 10400, line: '温柔、纯净' }],
-    reply: '先看看这条。',
+    message: '先看看这条。',
   })
   const p = page(); p.data.text = '清冷一点'; await p.submit()
   const result = p.data.messages[1].results[0]
@@ -41,25 +41,25 @@ test('有 plans 时卡片字段只取 plans，兼容 designs 被删除', async (
   assert.equal(result.lengthMm, 162)
   assert.equal(result.lengthCm, '16.2')
   assert.equal(result.priceText, '¥104')
-  stub({ plans: [{ name: '只有 plans', beads: ['b'], count: 1, lengthMm: 100, payableFen: 900 }], reply: '可以试试。' })
+  stub({ plans: [{ name: '只有 plans', beads: ['b'], count: 1, lengthMm: 100, payableFen: 900 }], message: '可以试试。' })
   const q = page(); q.data.text = '试试'; await q.submit()
   assert.equal(q.data.messages[1].results[0].name, '只有 plans')
 })
 
 test('小数毫米长度四舍五入显示一位厘米', async () => {
-  stub({ plans: [{ name: '海风', beads: ['b'], count: 1, lengthMm: 162.5, payableFen: 300 }], reply: '可以试试。' })
+  stub({ plans: [{ name: '海风', beads: ['b'], count: 1, lengthMm: 162.5, payableFen: 300 }], message: '可以试试。' })
   const p = page(); p.data.text = '海边'; await p.submit()
   assert.equal(p.data.messages[1].results[0].lengthCm, '16.3')
 })
 
 test('模型回复里有数字时换成固定句', async () => {
-  stub({ plans: [{ name: '海风', beads: ['b'], count: 1, lengthMm: 100, payableFen: 300 }], reply: '18 颗，¥100' })
+  stub({ plans: [{ name: '海风', beads: ['b'], count: 1, lengthMm: 100, payableFen: 300 }], message: '18 颗，¥100' })
   const p = page(); p.data.text = '海边'; await p.submit()
   assert.equal(p.data.messages[1].text, '为你配了三条，先看看第一条的寓意。')
 })
 
 test('没有 plans 时按 catalog pricing 算手工费和运费', async () => {
-  stub({ designs: [{ ...recipe, beads: ['b', 'b'] }], reply: '为你配好了。' })
+  stub({ plans: [], message: '为你配好了。' }, { results: [{ ...recipe, beads: ['b', 'b'] }], reply: '为你配好了。' })
   const withHand = page({ handworkFen: 1500, shippingFen: 800, freeShippingThresholdFen: 9900 })
   withHand.data.text = '送朋友'; await withHand.submit()
   assert.equal(withHand.data.messages[1].results[0].priceText, '¥29')
@@ -69,7 +69,7 @@ test('没有 plans 时按 catalog pricing 算手工费和运费', async () => {
 })
 
 test('时间行仅在隔五分钟或跨天出现', async () => {
-  stub({ designs: [recipe], reply: '为你配好了。' })
+  stub({ plans: [{ name: '时间测试', beads: ['b'], count: 1, lengthMm: 100, payableFen: 300 }], message: '为你配好了。' })
   const realNow = Date.now
   const p = page()
   try {

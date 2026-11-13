@@ -1,5 +1,5 @@
-// 尺寸规则以工作台 pages/editor/logic.js 的 stats 为准（2026-11-13 负责人定）。
-const logic = require('../pages/editor/logic')
+// 尺寸规则以工作台 pages/diy/logic.js 的 stats 为准（2026-11-13 负责人定）。
+const logic = require('../pages/diy/logic')
 
 function build(template, catalog, wrist) {
   const byId = Object.fromEntries((catalog || []).map(b => [b.id, b]))

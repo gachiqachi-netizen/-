@@ -1,6 +1,6 @@
 const api = require('../../utils/api')
 const store = require('../../utils/design')
-const logic = require('../../pages/editor/logic')
+const logic = require('../../pages/diy/logic')
 const { pickTryonDesign } = require('./selection')
 const SKINS = ['#e9c2a6','#d7ad91','#b98462','#80543d']
 Page({

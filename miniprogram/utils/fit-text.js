@@ -1,5 +1,5 @@
 // 长度显示函数（C0d）
-// 只看 stats.length - stats.target 和颗数；stats 由 pages/editor/logic.js 的 stats() 算出。
+// 只看 stats.length - stats.target 和颗数；stats 由 pages/diy/logic.js 的 stats() 算出。
 
 // 差值合适区间 -4..+6mm；多圈串只看颗数（>= 54）。
 function fitText(stats, count) {

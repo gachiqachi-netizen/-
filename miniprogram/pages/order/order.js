@@ -1,8 +1,8 @@
-const materials = require('../editor/materials')
+const materials = require('../diy/materials')
 const auth = require('../../utils/auth')
 const store = require('../../utils/design')
 const api = require('../../utils/api')
-const sizing = require('../editor/logic')
+const sizing = require('../diy/logic')
 const nav = require('../../utils/nav')
 
 const KEY = 'cgz_pending_order_request'

@@ -3,7 +3,7 @@ const api = require('../../utils/api')
 const store = require('../../utils/design')
 const orderState = require('../../utils/order-state')
 const money = require('../../utils/money')
-const materials = require('../../pages/editor/materials')
+const materials = require('../../pages/diy/materials')
 
 Page({
   data: { order: null, items: [], catalog: [], loading: true, error: '', actionBusy: '', payment: null,

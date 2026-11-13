@@ -361,7 +361,7 @@ export const TermsAndScopeView: React.FC<{
         _isNew: true,
         id: '',
         title: '天然晶石矿缺与手工定制须知',
-        type: '定制须知',
+        type: '售前说明',
         version: '1.1.0',
         status: 'published',
         confirmed: true,
@@ -536,11 +536,15 @@ export const TermsAndScopeView: React.FC<{
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-zinc-700 mb-1">分类</label>
-                  <input
+                  <select
                     value={editing.type}
                     onChange={(e) => setEditing({ ...editing, type: e.target.value })}
                     className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg"
-                  />
+                  >
+                    {CONTRACT.termTypes.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-700 mb-1">发布状态</label>

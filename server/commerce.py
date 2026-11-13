@@ -10,6 +10,7 @@ import uuid
 
 import kb
 import money
+import notify
 import payments
 import plans
 import pricing
@@ -1206,6 +1207,7 @@ def transition_order_status(db, no, group, to_, note="", logistics=None, actor=A
             _audit_record(actor, "transition", "order", no,
                           f"{group}: {meta['from']} → {meta['to']}")
         ))
+    notify.on_order_transition(db, saved, group, to_, meta.get("idempotent"))
     return saved
 
 
@@ -1571,6 +1573,7 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
     if not pre:
         raise KeyError("售后记录不存在")
     order_no = pre["orderNo"]
+    refunded_order = None
 
     with _AtomicWriter(db) as w:
         order = w.lock_order(order_no)
@@ -1586,28 +1589,32 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
             return rec
 
         if target == "refunding":
-            return _refund_in_tx(w, order, rec, no, current, note, actor)
+            rec = _refund_in_tx(w, order, rec, no, current, note, actor)
+            refunded_order = order
+        else:
+            rec["status"] = target
+            rec["updatedAt"] = _now()
+            if target in ("rejected", "closed"):
+                rec["reservedFen"] = 0
+            if result is not None:
+                rec["result"] = str(result)[:500]
+            if return_logistics:
+                rl = {k: str(v or "").strip()[:100] for k, v in (return_logistics or {}).items()
+                      if k in ("carrierCode", "carrierName", "trackingNo")}
+                rec["returnLogistics"] = {**rec.get("returnLogistics", {}), **rl}
+            rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", current, target, note))
+            rec["history"] = rec["history"][-200:]
+            w.put_after_sale(no, rec)
 
-        rec["status"] = target
-        rec["updatedAt"] = _now()
-        if target in ("rejected", "closed"):
-            rec["reservedFen"] = 0
-        if result is not None:
-            rec["result"] = str(result)[:500]
-        if return_logistics:
-            rl = {k: str(v or "").strip()[:100] for k, v in (return_logistics or {}).items()
-                  if k in ("carrierCode", "carrierName", "trackingNo")}
-            rec["returnLogistics"] = {**rec.get("returnLogistics", {}), **rl}
-        rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", current, target, note))
-        rec["history"] = rec["history"][-200:]
-        w.put_after_sale(no, rec)
+            if order:
+                order["afterSaleStatus"] = target
+                append_history(order, actor, "afterSaleStatus", current, target, note)
+                w.put_order(order_no, order)
+            w.put_audit(_audit_record(actor, action, "after_sale", no, f"{rec['type']}: {current} → {target}"))
 
-        if order:
-            order["afterSaleStatus"] = target
-            append_history(order, actor, "afterSaleStatus", current, target, note)
-            w.put_order(order_no, order)
-        w.put_audit(_audit_record(actor, action, "after_sale", no, f"{rec['type']}: {current} → {target}"))
-        return rec
+    if refunded_order is not None:
+        notify.order_event(db, refunded_order, "refunded")
+    return rec
 
 
 def _refund_in_tx(w, order, rec, no, current, note, actor):

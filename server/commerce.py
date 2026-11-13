@@ -483,13 +483,15 @@ def _paid_fen(order):
 
 
 _ACTIVE_AFTER_SALE_STATUSES = ("requested", "reviewing", "approved", "returning", "refunding")
+REFUND_TYPES = ("仅退款", "退货退款", "拒收后退款")
+AFTER_SALE_DAYS = 7
 
 
 def _reserved_fen(after_sales, order_no):
     """退款类售后尚未释放的预占金额。"""
     total = 0
     for rec in after_sales:
-        if rec.get("orderNo") != order_no or rec.get("type") not in ("仅退款", "退货退款"):
+        if rec.get("orderNo") != order_no or rec.get("type") not in REFUND_TYPES:
             continue
         if rec.get("status") in _ACTIVE_AFTER_SALE_STATUSES:
             total += int(rec.get("reservedFen") or rec.get("requestedFen") or rec.get("refundFen") or 0)
@@ -502,7 +504,7 @@ def _refunded_fen(after_sales, order_no):
     for a in after_sales:
         if a.get("orderNo") != order_no:
             continue
-        if a.get("type") not in ("仅退款", "退货退款"):
+        if a.get("type") not in REFUND_TYPES:
             continue
         total += int(a.get("refundedFen") or 0)
     return total
@@ -1412,7 +1414,7 @@ def create_after_sale(db, data, actor=ACTOR):
                 return out
         if status.derive_status(order)["afterSaleStatus"] != "none":
             raise ValueError("该订单已有进行中的售后")
-        if atype in ("仅退款", "退货退款"):
+        if atype in REFUND_TYPES:
             sales = w.list_after_sales()
             _check_refund_constraints_in(
                 order, refund_fen, _reserved_fen(sales, order_no), _refunded_fen(sales, order_no))
@@ -1421,7 +1423,7 @@ def create_after_sale(db, data, actor=ACTOR):
         rec = {"no": no, "orderNo": order_no, "type": atype, "reason": reason,
                "userNote": str(data.get("userNote") or "")[:500],
                "refundFen": refund_fen, "requestedFen": refund_fen,
-               "reservedFen": refund_fen if atype in ("仅退款", "退货退款") else 0,
+               "reservedFen": refund_fen if atype in REFUND_TYPES else 0,
                "refundedFen": 0, "returnLogistics": {},
                "result": "", "status": "requested",
                "createdAt": _now(), "updatedAt": _now(),

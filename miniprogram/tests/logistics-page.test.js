@@ -1,6 +1,6 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
-const auth = require('../../utils/auth')
+const auth = require('../utils/auth')
 let definition
 const notices = []
 let copied = ''
@@ -10,7 +10,7 @@ global.wx = {
   showToast: options => notices.push(options.title),
   pageScrollTo: () => {}, stopPullDownRefresh: () => {},
 }
-require('./logistics')
+require('../features/logistics/logistics')
 function page() {
   const p = { ...definition, data: JSON.parse(JSON.stringify(definition.data)), no: 'ORDER' }
   p.setData = value => Object.assign(p.data, value)

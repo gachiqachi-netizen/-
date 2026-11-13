@@ -1,4 +1,11 @@
-<view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+<view class="page" wx:if="{{!about}}">
+ <view class="row" data-type="售后服务说明" bindtap="open">售后政策<text>›</text></view>
+ <view class="row" data-type="定制商品说明" bindtap="open">定制商品退换说明<text>›</text></view>
+ <view class="row" data-type="天然材料差异说明" bindtap="open">材料安全说明<text>›</text></view>
+ <view class="row" data-type="用户协议" bindtap="open">用户协议<text>›</text></view>
+ <view class="row" data-type="隐私政策" bindtap="open">隐私政策<text>›</text></view>
+ <view class="gap"></view>
+ <view class="row" bindtap="clearCache">清除缓存<text>›</text></view>
+ <view class="row" bindtap="showAbout">关于珠养养<text>›</text></view>
 </view>
+<view wx:else class="about"><view class="about-name">珠养养</view><view>一颗一颗，串成自己的心意。</view><view class="about-back" bindtap="backSettings">返回设置 ›</view></view>

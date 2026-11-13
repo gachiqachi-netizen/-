@@ -1,4 +1,5 @@
 <view class="share-page">
+  <view class="top-more" bindtap="more">更多</view>
   <view wx:if="{{loading}}" class="skeleton">正在生成分享海报…</view>
   <view wx:if="{{design}}">
     <view class="snapshot-stage"><bracelet3d id="share3d" beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}" bind:rendered="snapshotReady" bind:unavailable="snapshotUnavailable"/></view>

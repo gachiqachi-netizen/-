@@ -78,7 +78,11 @@ Page({
       rating: this.data.rating, content: this.data.content.trim(),
       photos: this.data.photos.map(photo => photo.url), anonymous: this.data.anonymous
     }, 'POST').then(() => wx.navigateBack({ success: () => wx.showToast({ title: '已发布，谢谢你', icon: 'none' }) }))
-      .catch(error => this.setData({ error: error.message || '发布失败，请再试一次' }))
+      .catch(error => {
+        const message = error.message || '发布失败，请再试一次'
+        this.setData({ error: message })
+        wx.showToast({ title: message, icon: 'none' })
+      })
       .then(() => this.setData({ submitting: false }))
   }
 })

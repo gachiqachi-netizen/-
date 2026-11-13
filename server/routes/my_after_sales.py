@@ -1,5 +1,6 @@
 """Authenticated customer after-sale views and actions."""
 import commerce
+from routes.return_address import public_address
 
 
 def _owned_sale(ctx, no):
@@ -27,7 +28,8 @@ def _public(sale):
         'refundFen': sale.get('refundFen', 0),
         'photoIds': list(sale.get('photoIds') or []),
         'contactPhone': sale.get('contactPhone', ''),
-        'returnLogistics': dict(sale.get('returnLogistics') or {}),
+        'returnLogistics': {key: value for key, value in (sale.get('returnLogistics') or {}).items()
+                            if key in ('carrierCode', 'carrierName', 'trackingNo')},
         'result': sale.get('result', ''),
         'createdAt': sale.get('createdAt'),
         'history': [
@@ -49,7 +51,11 @@ def list_order(ctx, match, data):
 
 
 def detail(ctx, match, data):
-    return 200, {'afterSale': _public(_owned_sale(ctx, match.group(1)))}
+    sale = _owned_sale(ctx, match.group(1))
+    public = _public(sale)
+    if 'submit_return' in public['customerActions']:
+        public['returnAddress'] = public_address(ctx.db)
+    return 200, {'afterSale': public}
 
 
 def cancel(ctx, match, data):

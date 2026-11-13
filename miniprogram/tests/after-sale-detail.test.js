@@ -22,3 +22,15 @@ test('寄回单号为空或格式不对时不能提交',()=>{
  assert.equal(trackingError('!!!'),'单号看起来不对，再核对一下')
  assert.equal(trackingError('SF1234567890'),'')
 })
+
+test('详情页接受售后记录并展示契约状态、照片数量和联系电话',()=>{
+ let definition;global.Page=value=>{definition=value}
+ delete require.cache[require.resolve('../features/after-sale/detail')]
+ require('../features/after-sale/detail')
+ const page={...definition,data:{...definition.data},setData(patch){Object.assign(this.data,patch)}}
+ page.showRecord({...sale,contactPhone:'TEST-PHONE'})
+ assert.equal(page.data.view.label,labels.requested)
+ assert.equal(page.data.view.photos.length,1)
+ assert.equal(page.data.view.contactPhone,'TEST-PHONE')
+ delete global.Page
+})

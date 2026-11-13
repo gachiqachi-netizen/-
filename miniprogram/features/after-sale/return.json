@@ -1,3 +1,1 @@
-{
-  "navigationBarTitleText": "退货"
-}
+{"navigationBarTitleText":"填写寄回单号","usingComponents":{"c-state":"/components/state/index","c-toast":"/components/toast/index"}}

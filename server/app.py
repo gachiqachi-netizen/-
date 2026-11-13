@@ -221,17 +221,25 @@ class Handler(BaseHTTPRequestHandler):
         return ""
 
     def admin_ok(self):
-        supplied = self.headers.get("X-Admin-Token") or ""
-        if bool(ADMIN_TOKEN) and secrets.compare_digest(supplied.encode('utf-8'), ADMIN_TOKEN.encode('utf-8')):
-            return True
+        import accounts
+        self.admin_user = None
         sid = self.admin_cookie()
         if not sid:
             return False
-        _prune_admin_state()
-        with _admin_lock:
-            return (_admin_sessions.get(sid) or 0) > time.time()
+        user = accounts.session_user(db, sid)
+        if not user:
+            return False
+        path = urlparse(self.path).path
+        if user.get("bootstrap") and path != "/api/admin/accounts/bootstrap":
+            return False
+        if user.get("mustChangePassword") and path != "/api/admin/accounts/me/password":
+            return False
+        self.admin_user = user
+        accounts.CURRENT_ADMIN.set(user)
+        return True
 
     def admin_login(self, data):
+        import accounts
         ip = self.client_address[0]
         now = time.time()
         _prune_admin_state(now)
@@ -240,13 +248,19 @@ class Handler(BaseHTTPRequestHandler):
         if len(attempts) >= ADMIN_LOGIN_LIMIT:
             return self.send(429, {"error": "尝试次数过多，请十分钟后再试"}, headers={"Retry-After": str(ADMIN_LOGIN_WINDOW)})
         supplied = str(data.get("password") or "")
-        if not ADMIN_TOKEN or not secrets.compare_digest(supplied.encode("utf-8"), ADMIN_TOKEN.encode("utf-8")):
+        username = str(data.get("username") or "")
+        if db.list("admin_users"):
+            user = accounts.login_user(db, username, supplied)
+            uid = user["id"] if user else None
+        else:
+            uid = "__bootstrap__" if (ADMIN_TOKEN and
+                  secrets.compare_digest(supplied.encode("utf-8"), ADMIN_TOKEN.encode("utf-8"))) else None
+        if not uid:
             with _admin_lock:
                 _admin_login_failures.setdefault(ip, []).append(now)
-            return self.send(401, {"error": "后台口令不正确"})
-        sid = secrets.token_urlsafe(32)
+            return self.send(401, {"error": "账号或密码不正确"})
+        sid = accounts.create_session(db, uid, ADMIN_SESSION_TTL)
         with _admin_lock:
-            _admin_sessions[sid] = now + ADMIN_SESSION_TTL
             _admin_login_failures.pop(ip, None)
         secure = "; Secure" if self.headers.get("X-Forwarded-Proto") == "https" else ""
         cookie = f"beadloop_admin={sid}; Path=/; Max-Age={ADMIN_SESSION_TTL}; HttpOnly; SameSite=Strict{secure}"
@@ -255,8 +269,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def admin_logout(self):
         sid = self.admin_cookie()
-        with _admin_lock:
-            _admin_sessions.pop(sid, None)
+        if sid:
+            db.delete("admin_sessions", sid)
         secure = "; Secure" if self.headers.get("X-Forwarded-Proto") == "https" else ""
         cookie = f"beadloop_admin=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict{secure}"
         _audit_admin("LOGOUT", "/api/admin/session", self.client_address[0])

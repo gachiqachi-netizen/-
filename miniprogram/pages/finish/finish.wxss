@@ -9,7 +9,7 @@
 .stage {
   position: relative;
   height: 600rpx;
-  background: #fafafa;
+  background: var(--c-surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,7 +43,7 @@
   right: 24rpx;
   bottom: 20rpx;
   font-size: 22rpx;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--c-text);
   color: var(--c-bg);
   border-radius: 20rpx;
   padding: 4rpx 16rpx;

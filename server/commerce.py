@@ -1719,6 +1719,9 @@ def after_sale_detail(db, no):
 
 def create_rework_order(db, sale_no, actor=ACTOR):
     """收到改手围寄回件后，从原订单的冻结珠序建立独立重串工单。"""
+    preview = db.get("after_sales", sale_no)
+    preview_order = db.get("orders", preview["orderNo"]) if preview else None
+    original = build_design_snapshot(db, preview_order) if preview_order else None
     with _AtomicWriter(db) as w:
         rec = w.lock_after_sale(sale_no)
         if not rec:
@@ -1733,7 +1736,8 @@ def create_rework_order(db, sale_no, actor=ACTOR):
         wrist = rec.get("newWrist")
         if type(wrist) not in (int, float) or not 13 <= wrist <= 20:
             raise ValueError("新手围须在 13–20 cm 之间")
-        original = build_design_snapshot(db, order)
+        if not original:
+            raise KeyError("原订单不存在")
         sequence = original["sequence"]
         snapshot = build_design_snapshot(
             db, {"beads": [item["id"] for item in sequence], "wrist": wrist,
@@ -1760,6 +1764,16 @@ def create_rework_order(db, sale_no, actor=ACTOR):
 def update_rework_order(db, sale_no, data, actor=ACTOR):
     """仅更新重串工单；珠序改动须记线下沟通备注，质检通过才能寄出。"""
     d = dict(data or {})
+    original = None
+    available = {}
+    if "sequence" in d:
+        preview = db.get("after_sales", sale_no)
+        preview_order = db.get("orders", preview["orderNo"]) if preview else None
+        if preview_order:
+            original = build_design_snapshot(db, preview_order)
+        for bid in d["sequence"] if isinstance(d["sequence"], list) else []:
+            if isinstance(bid, str) and bid not in available:
+                available[bid] = db.get("beads", bid)
     with _AtomicWriter(db) as w:
         rec = w.lock_after_sale(sale_no)
         if not rec or rec.get("type") != "改手围重串" or not rec.get("reworkOrder"):
@@ -1780,13 +1794,15 @@ def update_rework_order(db, sale_no, data, actor=ACTOR):
             order = w.lock_order(rec["orderNo"])
             if not order:
                 raise KeyError("原订单不存在")
-            frozen = build_design_snapshot(db, order)["sequence"]
+            if not original:
+                raise KeyError("原订单不存在")
+            frozen = original["sequence"]
             original = {item["id"]: item for item in frozen}
             items = []
             for bid in ids:
                 item = original.get(bid)
                 if item is None:
-                    item = db.get("beads", bid)
+                    item = available.get(bid)
                     if not item or not status.product_on_sale(item):
                         raise ValueError("重串珠序包含未知或已下架的新珠子")
                 items.append(item)

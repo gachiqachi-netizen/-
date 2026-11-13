@@ -1,6 +1,6 @@
 # C5a 交付报告
 
-分支：agent/C5a-ai-chat　最后一个实现提交：237be11
+分支：agent/C5a-ai-chat　最后一个审核提交：065295c
 
 ## 1. 步骤
 | 卡上的步骤（照抄编号和第一句） | 做了 / 没做 | 在哪（文件:行，或提交 hash） |
@@ -25,25 +25,28 @@
 
 ## 3. 改了的文件
 ```
- miniprogram/pages/ai/ai.js   | 137 ++++++++++++++++++++++++++++++++++---------
- miniprogram/pages/ai/ai.json |  10 +++-
- miniprogram/pages/ai/ai.wxml |  60 ++++++++++++++-----
- miniprogram/pages/ai/ai.wxss |  46 ++++++++++++---
- 4 files changed, 201 insertions(+), 52 deletions(-)
+ docs/reports/C5a.md                      |  63 +++++++++++++
+ miniprogram/pages/ai/ai.js               | 146 +++++++++++++++++++++++++------
+ miniprogram/pages/ai/ai.json             |  10 ++-
+ miniprogram/pages/ai/ai.wxml             |  61 +++++++++----
+ miniprogram/pages/ai/ai.wxss             |  47 ++++++++--
+ miniprogram/tests/ai-page.test.js        |  86 ++++++++++++++++++
+ miniprogram/tests/creation-flows.test.js |   2 +-
+ 7 files changed, 361 insertions(+), 54 deletions(-)
 ```
 
 ## 4. 测试
-测试数：后端开工前 555 个 → 完成后 555 个；小程序开工前 168 个 → 完成后 168 个。
-本卡没有新增测试文件，因为“只能改”限于 `miniprogram/pages/ai/*`。相关测试 `creation-flows.test.js`、`ai-request-timeout.test.js` 共 3 个通过。
+测试数：原交付后端 555 个 → 合并 integration 后 558 个 → 审核后 558 个；小程序原交付 168 个 → 合并 integration 后 200 个 → 审核后 204 个。
+审核新增 `miniprogram/tests/ai-page.test.js`：plans 优先、数字回复替换、按 pricing 计价（含零手工费）、时间行规则，共 4 个测试。相关旧流程测试 `creation-flows.test.js` 的价格期望从 69 元改为 54 元：测试目录没有 pricing 配置时，新的统一计价按 18 颗 × 3 元，手工费和运费默认 0 分，不再写死加 15 元。
 三条全量测试（先执行 `unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy`）：
 ```
 python3 -m unittest discover -s server/tests 2>&1 | tail -15
-Ran 555 tests in 124.478s
+Ran 558 tests in 119.556s
 OK (skipped=7)
 
 node --test miniprogram/tests/*.test.js 2>&1 | tail -15
-ℹ tests 168
-ℹ pass 168
+ℹ tests 204
+ℹ pass 204
 ℹ fail 0
 
 python3 kb/validate.py 2>&1 | tail -15
@@ -51,7 +54,7 @@ python3 kb/validate.py 2>&1 | tail -15
 ```
 
 ## 5. 自查（贴命令和输出）
-`git log --oneline origin/integration/2026-11..HEAD`：4 条提交均以 `C5a:` 开头。
+`git log --oneline origin/integration/2026-11..HEAD`：审核前 4 条 `C5a:` 提交；审核新增 2 条 `C5a: 审核` 提交。另有按审核要求合入 integration 的 merge 提交。
 `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\(" miniprogram/pages/ai/ai.wxss`：无输出。
 `grep -rnE "new URL|URLSearchParams" miniprogram --include=*.js`：无输出。
 `git diff --check`：无输出。
@@ -60,4 +63,9 @@ python3 kb/validate.py 2>&1 | tail -15
 未在微信开发者工具验证，无并排截图；需负责人对照 s21、s23、s24、s26 检查。
 
 ## 7. 审核修改（打回后才有）
-无。
+| 审核意见编号 | 怎么改的 | 提交 hash |
+|---|---|---|
+| 1 | 先读取 plans；designs 仅提供寓意和旧兼容字段；plans 独立存在仍可展示、编辑和下单。 | 167b048 |
+| 2 | 卡片用 plans.count 与 plans.lengthMm 显示“颗数 · 厘米长度”。 | 167b048 |
+| 3 | 兜底价按 catalog.pricing 调用共用 totalHand，金额计算用整数分，最后调用 money.yuan。 | 167b048 |
+| 4 | 新增 ai-page.test.js 四项测试；旧流程测试的价格期望由 69 改 54。 | 065295c |

@@ -36,8 +36,8 @@
 ```
 
 ## 4. 测试
-测试数：原交付后端 555 个 → 合并 integration 后 558 个 → 审核后 558 个；小程序原交付 168 个 → 合并 integration 后 200 个 → 审核后 204 个。
-审核新增 `miniprogram/tests/ai-page.test.js`：plans 优先、数字回复替换、按 pricing 计价（含零手工费）、时间行规则，共 4 个测试。相关旧流程测试 `creation-flows.test.js` 的价格期望从 69 元改为 54 元：测试目录没有 pricing 配置时，新的统一计价按 18 颗 × 3 元，手工费和运费默认 0 分，不再写死加 15 元。
+测试数：原交付后端 555 个 → 合并 integration 后 558 个 → 审核后 558 个；小程序原交付 168 个 → 合并 integration 后 200 个 → 审核 1–4 后 204 个 → 本次 205 个。
+审核新增 `miniprogram/tests/ai-page.test.js`：plans 优先、数字回复替换、按 pricing 计价（含零手工费）、时间行规则，原有 4 个测试；本次新增小数长度四舍五入测试，共 5 个。相关旧流程测试 `creation-flows.test.js` 的价格期望从 69 元改为 54 元：测试目录没有 pricing 配置时，新的统一计价按 18 颗 × 3 元，手工费和运费默认 0 分，不再写死加 15 元。
 三条全量测试（先执行 `unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy`）：
 ```
 python3 -m unittest discover -s server/tests 2>&1 | tail -15
@@ -52,9 +52,10 @@ node --test miniprogram/tests/*.test.js 2>&1 | tail -15
 python3 kb/validate.py 2>&1 | tail -15
 已填 200/200 种，有问题 0 条，缺 0 种
 ```
+本次按要求只重跑小程序全量：`node --test miniprogram/tests/*.test.js 2>&1 | tail -15` → `tests 205`、`pass 205`、`fail 0`。
 
 ## 5. 自查（贴命令和输出）
-`git log --oneline origin/integration/2026-11..HEAD`：审核前 4 条 `C5a:` 提交；审核新增 2 条 `C5a: 审核` 提交。另有按审核要求合入 integration 的 merge 提交。
+`git log --oneline origin/integration/2026-11..HEAD`：审核前 4 条 `C5a:` 提交；此前审核新增 2 条 `C5a: 审核` 提交；本次再新增 1 条 `C5a: 审核 5` 提交。另有按审核要求合入 integration 的 merge 提交。
 `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\(" miniprogram/pages/ai/ai.wxss`：无输出。
 `grep -rnE "new URL|URLSearchParams" miniprogram --include=*.js`：无输出。
 `git diff --check`：无输出。
@@ -69,3 +70,4 @@ python3 kb/validate.py 2>&1 | tail -15
 | 2 | 卡片用 plans.count 与 plans.lengthMm 显示“颗数 · 厘米长度”。 | 167b048 |
 | 3 | 兜底价按 catalog.pricing 调用共用 totalHand，金额计算用整数分，最后调用 money.yuan。 | 167b048 |
 | 4 | 新增 ai-page.test.js 四项测试；旧流程测试的价格期望由 69 改 54。 | 065295c |
+| 5 | 长度允许正的有限小数毫米；新增 162.5mm → 16.3cm 测试，小程序全量 205/205。 | ed80bf1 |

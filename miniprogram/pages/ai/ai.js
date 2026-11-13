@@ -63,7 +63,7 @@ Page({
     const goodsFen = materials.length && materials.every(Boolean) ? materials.reduce((sum, b) => sum + (Number.isInteger(b.priceFen) ? b.priceFen : Math.round(Number(b.price || 0) * 100)), 0) : null
     const payableFen = Number.isInteger(t.payableFen) ? t.payableFen : (goodsFen == null ? null : totalHand(goodsFen, this.pricing).payableFen)
     const price = payableFen == null ? '' : payableFen / 100
-    const lengthCm = Number.isInteger(t.lengthMm) ? (t.lengthMm / 10).toFixed(1) : ''
+    const lengthCm = Number.isFinite(t.lengthMm) && t.lengthMm > 0 ? (t.lengthMm / 10).toFixed(1) : ''
     return { ...t, fixed, price, priceText: payableFen == null ? '' : money.yuan(payableFen), beads: ids, beadObjects: materials.filter(Boolean), line: t.line || t.meaning || t.summary || '', tags: t.tags || (t.line ? t.line.split(/[、·]/).filter(Boolean) : []), count: Number.isInteger(t.count) ? t.count : ids.length, lengthCm }
 
   },

@@ -87,6 +87,8 @@ export async function apiRequest<T = any>(
     const err: any = new Error(data.message || data.error || `请求失败 (${res.status})`);
     err.status = res.status;
     err.data = data;
+    err.need = data.need;
+    if (res.status === 403 && data.need) err.message = `需要“${data.need}”，找负责人开通。`;
     throw err;
   }
   return data as T;

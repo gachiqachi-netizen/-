@@ -1,3 +1,5 @@
+import React, { useSyncExternalStore } from 'react';
+
 /** 后台页面入口对应的后端权限点。今天和知识库浏览对所有账号开放。 */
 export const PAGE_PERMISSIONS: Record<string, { key: string; name: string } | null> = {
   today: null,
@@ -20,6 +22,22 @@ export interface AdminMe {
   roleName: string;
   permissions: string[];
   permissionNames: string[];
+}
+
+let granted = new Set<string>();
+let version = 0;
+const listeners = new Set<() => void>();
+export function setPermissions(permissions: string[]): void {
+  granted = new Set(permissions);
+  version += 1;
+  listeners.forEach(listener => listener());
+}
+export function can(perm: string): boolean { return granted.has(perm); }
+function subscribe(listener: () => void): () => void { listeners.add(listener); return () => listeners.delete(listener); }
+function snapshot(): number { return version; }
+export function Can({ perm, children }: { perm: string; children: React.ReactNode }): React.ReactNode {
+  useSyncExternalStore(subscribe, snapshot);
+  return can(perm) ? children : null;
 }
 
 export function canPage(page: string, me: AdminMe): boolean {

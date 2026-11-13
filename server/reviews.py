@@ -1,7 +1,6 @@
 """Customer reviews: machine checks, human moderation, and public template lists."""
 import time
 import uuid
-import re
 
 import accounts
 import commerce
@@ -79,7 +78,7 @@ def submit(db, no, user_id, data):
     except content_security.ContentRejected:
         text_reason = '内容没有通过审核，改一下再发'
     banned = kb.banned_in(review_text)
-    if banned or re.search(r'治(?:好)?失眠', review_text):
+    if banned:
         text_reason = '内容没有通过审核，改一下再发'
     photos = _photo_checks(db, user_id, photo_ids)
     if any(photo['status'] == 'rejected' for photo in photos):
@@ -178,7 +177,13 @@ def public_reviews(db, template_id, review_filter='all', wrist=None):
     for review in db.list('reviews'):
         if review.get('status') != 'published' or not review.get('templateId') or review['templateId'] != template_id:
             continue
-        if review_filter == 'photos' and not review.get('photoIds'):
+        photos = []
+        for photo_id in review.get('photoIds', []):
+            upload = db.get('uploads', photo_id)
+            if (upload and upload.get('userId') == review['userId'] and
+                    upload.get('checkStatus') == 'passed' and upload.get('path')):
+                photos.append({'id': photo_id, 'url': '/uploads/' + upload['path']})
+        if review_filter == 'photos' and not photos:
             continue
         order = db.get('orders', review['orderNo'])
         order_wrist = order.get('wrist') if order else None
@@ -186,7 +191,8 @@ def public_reviews(db, template_id, review_filter='all', wrist=None):
             continue
         user = db.get('users', review['userId']) or {}
         nickname = 'X*' if review['anonymous'] else (user.get('nickname') or user.get('name') or '用户')
-        rows.append({k: review[k] for k in ('id', 'stars', 'text', 'photoIds', 'anonymous', 'createdAt', 'publishedAt')})
+        rows.append({k: review[k] for k in ('id', 'stars', 'text', 'anonymous', 'createdAt', 'publishedAt')})
+        rows[-1]['photos'] = photos
         rows[-1]['nickname'] = nickname
         rows[-1]['wrist'] = order_wrist
     return sorted(rows, key=lambda row: row['publishedAt'], reverse=True)

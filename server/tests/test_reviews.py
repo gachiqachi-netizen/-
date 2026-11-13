@@ -68,7 +68,7 @@ class ReviewsTests(unittest.TestCase):
             self.submit()
 
     def test_machine_rejection_can_be_edited_but_only_one_review(self):
-        first = self.submit(text='治失眠')
+        first = self.submit(text='治疗')
         self.assertEqual(first['status'], 'machine_failed')
         self.assertFalse(first['machine']['textOk'])
         self.assertIn('write_review', user_api.order_allowed_actions(self.db.get('orders', 'R1')))
@@ -91,6 +91,18 @@ class ReviewsTests(unittest.TestCase):
             reviews.moderate(self.db, review['id'], 'approve')
         self.db.put('uploads', 'p1', {'userId': 'u1', 'checkStatus': 'passed'})
         self.assertEqual(reviews.moderate(self.db, review['id'], 'approve')['status'], 'published')
+
+    def test_public_photos_use_passed_upload_urls_only(self):
+        self.db.put('uploads', 'p1', {'userId': 'u1', 'checkStatus': 'passed', 'path': 'user/test/p1.png'})
+        review = self.submit(photoIds=['p1'])
+        reviews.moderate(self.db, review['id'], 'approve')
+        public = reviews.public_reviews(self.db, 't1')
+        self.assertEqual(public[0]['photos'], [{'id': 'p1', 'url': '/uploads/user/test/p1.png'}])
+        self.assertNotIn('photoIds', public[0])
+        self.assertEqual(len(reviews.public_reviews(self.db, 't1', 'photos')), 1)
+        self.db.put('uploads', 'p1', {'userId': 'u1', 'checkStatus': 'rejected', 'path': 'user/test/p1.png'})
+        self.assertEqual(reviews.public_reviews(self.db, 't1')[0]['photos'], [])
+        self.assertEqual(reviews.public_reviews(self.db, 't1', 'photos'), [])
 
     def test_rejected_photo_machine_fails_and_foreign_photo_rejected(self):
         self.db.put('uploads', 'bad', {'userId': 'u1', 'checkStatus': 'rejected'})

@@ -47,7 +47,7 @@ def _replay_init(extra_dirs):
 class MigrationsRegistryTest(unittest.TestCase):
     def test_existing_migrations_run_in_order(self):
         versions = [m.VERSION for m in migrations.MIGRATIONS]
-        self.assertEqual(versions, ["001", "002", "003", "004", "005", "006", "007", "010", "015"])
+        self.assertEqual(versions, ["001", "002", "003", "004", "005", "006", "007", "010", "015", "017"])
 
     def test_all_tables_keeps_base_tables_without_duplicates(self):
         self.assertEqual(migrations.ALL_TABLES[:len(migrations.TABLES)], migrations.TABLES)

@@ -27,22 +27,11 @@ class PricingAdminTests(unittest.TestCase):
     def tearDown(self):
         self.db.conn.close()
 
-    def test_group_by_name_and_size_hides_cost_without_permission(self):
-        token = accounts.CURRENT_ADMIN.set({"roleId": "operator"})
-        try:
-            groups = pricing_admin.group_beads(self.db, [self.db.get("beads", "test-10"),
-                                                         self.db.get("beads", "test-8")])
-        finally:
-            accounts.CURRENT_ADMIN.reset(token)
+    def test_group_by_name_and_size(self):
+        groups = pricing_admin.group_beads([self.db.get("beads", "test-10"),
+                                            self.db.get("beads", "test-8")])
         self.assertEqual(groups[0]["name"], "测试珠")
         self.assertEqual([b["mm"] for b in groups[0]["sizes"]], [8, 10])
-        self.assertNotIn("costFen", groups[0]["sizes"][0])
-        token = accounts.CURRENT_ADMIN.set({"roleId": "owner"})
-        try:
-            owner_groups = pricing_admin.group_beads(self.db, [self.db.get("beads", "test-8")])
-        finally:
-            accounts.CURRENT_ADMIN.reset(token)
-        self.assertEqual(owner_groups[0]["sizes"][0]["costFen"], 400)
 
     def test_add_preview_matches_execution(self):
         request = {"mode": "add", "addFen": 200, "ids": ["test-8", "test-10"], "preview": True}
@@ -74,6 +63,10 @@ class RepriceHTTPTests(unittest.TestCase):
         app.db = DB(os.path.join(self.temp.name, "admin.db"))
         app.ADMIN_AUDIT_PATH = os.path.join(self.temp.name, "audit.jsonl")
         app.db.put("beads", "test-8", {"name": "测试珠", "mm": 8, "priceFen": 1000})
+        app.db.put("beads", "test-10", {"name": "测试珠", "mm": 10, "priceFen": 1500, "costFen": 600})
+        bead = app.db.get("beads", "test-8")
+        bead["costFen"] = 400
+        app.db.put("beads", "test-8", bead)
         self.iterations = patch.object(accounts, "PBKDF2_ITERATIONS", 1000)
         self.iterations.start()
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), app.Handler)
@@ -113,6 +106,28 @@ class RepriceHTTPTests(unittest.TestCase):
             response = error
         with response:
             return response.status, json.loads(response.read())
+
+    def get_beads(self, cookie, grouped=False):
+        url = self.base + "/api/admin/beads" + ("?group=1" if grouped else "")
+        request = Request(url, headers={"Cookie": cookie}, method="GET")
+        with self.opener.open(request, timeout=3) as response:
+            return response.status, json.loads(response.read())
+
+    def test_grouped_and_ungrouped_cost_visibility(self):
+        operator = self.cookie_for("operator")
+        owner = self.cookie_for("owner")
+        for grouped in (False, True):
+            code, rows = self.get_beads(operator, grouped)
+            self.assertEqual(code, 200)
+            beads = next(g["sizes"] for g in rows if g["name"] == "测试珠") if grouped else [
+                b for b in rows if b["name"] == "测试珠"]
+            self.assertEqual(len(beads), 2)
+            self.assertTrue(all("costFen" not in b for b in beads))
+            code, rows = self.get_beads(owner, grouped)
+            self.assertEqual(code, 200)
+            beads = next(g["sizes"] for g in rows if g["name"] == "测试珠") if grouped else [
+                b for b in rows if b["name"] == "测试珠"]
+            self.assertEqual({b["costFen"] for b in beads}, {400, 600})
 
     def test_edit_prices_permission_and_one_batch_audit(self):
         self.assertEqual(self.post()[0], 401)

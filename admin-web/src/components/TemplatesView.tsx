@@ -236,7 +236,7 @@ export const TemplatesWorkbenchView: React.FC<TemplatesWorkbenchProps> = ({
                     ¥{t.expandedPreview ? fenToYuan(t.expandedPreview.totalFen) : t.price || 0}
                   </div>
                   <div className={`text-[11px] ${active ? 'text-zinc-300' : 'text-zinc-400'}`}>
-                    {t.wrist || 15}cm · {(t.beads || []).length}颗
+                    {t.wrist || 15}cm · {t.expandedPreview?.count ?? (t.beads || []).length}颗
                   </div>
                 </div>
               </button>

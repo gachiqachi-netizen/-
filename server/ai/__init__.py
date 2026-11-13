@@ -82,8 +82,8 @@ DESIGN_ITEM = {
 }
 DESIGNS_SCHEMA = {
     "type": "object",
-    "properties": {"message": {"type": "string"}, "designs": {"type": "array", "items": DESIGN_ITEM}},
-    "required": ["message", "designs"],
+    "properties": {"reply": {"type": "string"}, "designs": {"type": "array", "items": DESIGN_ITEM}},
+    "required": ["reply", "designs"],
     "additionalProperties": False,
 }
 # 拍照做同款：AI 只认珠子，不做设计（对看图模型要求低，认错了用户在页面上点一下就能换）
@@ -172,7 +172,7 @@ def design(beads, text, history, wrist):
               f"用户手围 {wrist}cm，价格由服务端计算。\n之前的对话：\n{hist}\n用户刚说：{text}\n\n"
               "给 3 条不同的手串，和之前给过的不要重复。每条至少 2 种不同名称的珠子，主珠直径一致。"
               "pattern 是循环花型（3-8 颗），special 是只出现一次的开头珠（0-2 颗）。用户提了预算时，按大约 20 颗估算，别超预算。\n"
-              "message 是一句 20-40 字的口语回应，先讲寓意且不要写数字；meaning 20-40 字。")
+              "reply 是一句 20-40 字的口语回应，先讲寓意且不要写数字；meaning 20-40 字。")
     ids = {b["id"] for b in beads}
     names = {b["id"]: b["name"] for b in beads}
     out = p.json(prompt, DESIGNS_SCHEMA)

@@ -21,7 +21,15 @@ def main():
     hits = []
     for ext in EXTS:
         for path in sorted((ROOT / 'miniprogram').rglob(ext)):
+            if 'tests' in path.relative_to(ROOT / 'miniprogram').parts:
+                continue
             text = path.read_text(encoding='utf-8', errors='replace')
+            if path == ROOT / 'miniprogram' / 'utils' / 'contract.js':
+                contract = json.loads(text.split('module.exports = ', 1)[1])
+                assert isinstance(contract['bannedWords'], list)
+                section = re.search(r'(?m)^  "bannedWords": \[\n(?:    ".*?",?\n)*  \],?\n', text)
+                assert section, 'cannot locate generated bannedWords section'
+                text = text[:section.start()] + re.sub(r'[^\n]', ' ', section.group()) + text[section.end():]
             for lineno, line in enumerate(text.splitlines(), 1):
                 scrubbed = line
                 for word in ALLOW:

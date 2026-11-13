@@ -1,3 +1,8 @@
 {
-  "navigationBarTitleText": "物流详情"
+  "navigationBarTitleText": "物流详情",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "c-state": "/components/state/index",
+    "c-sheet": "/components/sheet/index"
+  }
 }

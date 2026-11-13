@@ -1,4 +1,32 @@
 <view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+  <c-state wx:if="{{loading}}" title="物流正在加载" />
+  <c-state wx:elif="{{error}}" title="暂时看不到物流" desc="{{error}}" action="再试一次" bind:action="load" />
+  <block wx:else>
+    <view class="card">
+      <view class="row"><text>{{carrier || '承运方待更新'}}</text><text class="tracking">{{trackingNo || '运单号待更新'}}</text><button wx:if="{{trackingNo}}" class="c-btn c-btn--sec small" bindtap="copyNo">复制</button></view>
+      <view class="row"><text>送到</text><text class="destination">{{order.person}} · {{order.addr}}</text></view>
+      <view wx:if="{{canEdit}}" class="row" bindtap="editAddress"><text>修改收货地址</text><text>改 ›</text></view>
+    </view>
+    <view wx:if="{{tracks.length}}" class="card timeline">
+      <view wx:for="{{tracks}}" wx:key="index" class="track {{item.newest ? 'newest' : ''}}">
+        <view class="dot"></view><view><view class="track-detail">{{item.detail}}</view><view class="track-time">{{item.at}}</view></view>
+      </view>
+    </view>
+    <view wx:elif="{{trackingNo}}" class="card empty-track">复制单号后可在快递官网查询。</view>
+    <view wx:else class="card empty-track">承运方和单号更新后会显示在这里。</view>
+  </block>
+  <c-sheet show="{{editOpen}}" title="修改收货地址" bind:close="closeAddress">
+    <view id="field-person" class="field"><text>收货人</text><input placeholder="名字" value="{{person}}" data-key="person" bindinput="input" /><view wx:if="{{fieldsError.person}}" class="field-error">{{fieldsError.person}}</view></view>
+    <view id="field-phone" class="field"><text>手机号</text><input type="number" maxlength="11" placeholder="11 位手机号" value="{{phone}}" data-key="phone" bindinput="input" /><view wx:if="{{fieldsError.phone}}" class="field-error">{{fieldsError.phone}}</view></view>
+    <view id="field-region" class="field"><text>所在地区</text><picker mode="region" bindchange="chooseRegion"><view>{{regionText || '选择省市区'}}</view></picker><view wx:if="{{fieldsError.region}}" class="field-error">{{fieldsError.region}}</view></view>
+    <view id="field-detail" class="field"><text>详细地址</text><input placeholder="街道、门牌号" value="{{detail}}" data-key="detail" bindinput="input" /><view wx:if="{{fieldsError.detail}}" class="field-error">{{fieldsError.detail}}</view></view>
+    <view class="option" bindtap="openAddressBook">从我的地址里选 ›</view>
+    <view class="option" bindtap="chooseWechatAddress">用微信地址 ›</view>
+    <view class="hint">发货后不能在这里改，请联系客服。</view>
+    <button class="c-btn" loading="{{saving}}" bindtap="saveAddress">{{saving ? '正在保存……' : '保存'}}</button>
+  </c-sheet>
+  <c-sheet show="{{addressOpen}}" title="我的地址" bind:close="closeAddressBook">
+    <view wx:for="{{addresses}}" wx:key="id" class="option" data-index="{{index}}" bindtap="selectAddress">{{item.person}} · {{item.detail}} ›</view>
+    <view wx:if="{{!addresses.length}}" class="hint">还没有保存的地址</view>
+  </c-sheet>
 </view>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TemplatesWorkbenchView } from '../components/TemplatesView';
+import { TemplatesWorkbench } from './templates/TemplatesWorkbench';
 
 interface TemplatesPageProps {
   templates: any[];
@@ -8,8 +8,6 @@ interface TemplatesPageProps {
   notify: (msg: string, type?: 'success' | 'error') => void;
 }
 
-const TemplatesPage: React.FC<TemplatesPageProps> = ({ templates, beads, onRefresh, notify }) => (
-  <TemplatesWorkbenchView templates={templates} beads={beads} onRefresh={onRefresh} notify={notify} />
-);
+const TemplatesPage: React.FC<TemplatesPageProps> = (props) => <TemplatesWorkbench {...props} />;
 
 export default TemplatesPage;

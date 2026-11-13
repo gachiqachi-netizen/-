@@ -7,7 +7,7 @@ def customer_status(order, allowed_actions):
     g = status.derive_status(order)
     after = g['afterSaleStatus']
     action = None
-    if after in ('requested', 'reviewing', 'approved', 'returning', 'refunding'):
+    if after in ('requested', 'reviewing', 'approved', 'returning', 'refunding', 'received'):
         code, desc = 'after_sale_open', '售后正在处理，有进展会通知你。'
     elif after == 'completed':
         code, desc = 'after_sale_done', '售后已经处理完了。'

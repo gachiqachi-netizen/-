@@ -15,6 +15,7 @@ import HomePage from './pages/home';
 import ArticlesPage from './pages/articles';
 import AccountsPage from './pages/accounts';
 import LoginPage from './pages/login';
+import { AdminMe, can, setPermissions } from './permissions';
 
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -35,6 +36,7 @@ export const App: React.FC = () => {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [kbMaterials, setKbMaterials] = useState<any[]>([]);
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
+  const [deniedBlocks, setDeniedBlocks] = useState<Record<string, string>>({});
 
   const notify = useCallback((msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type });
@@ -45,16 +47,29 @@ export const App: React.FC = () => {
 
   const loadAllData = useCallback(async () => {
     try {
+      const current = await apiRequest<AdminMe>('/api/admin/me');
+      setPermissions(current.permissions);
+      const denied: Record<string, string> = {};
+      const section = async <T,>(key: string, perm: string | null, path: string, empty: T): Promise<T> => {
+        if (perm && !can(perm)) return empty;
+        try { return await apiRequest<T>(path); }
+        catch (err: any) {
+          if (err.status === 401) throw err;
+          if (err.status === 403) { denied[key] = err.need || '没有权限'; return empty; }
+          throw err;
+        }
+      };
       const [bRes, tRes, oRes, aRes, tmRes, bnRes, auRes, kbRes] = await Promise.all([
-        apiRequest<any[]>('/api/admin/beads'),
-        apiRequest<any[]>('/api/admin/templates'),
-        apiRequest<any[]>('/api/admin/orders'),
-        apiRequest<any[]>('/api/admin/after-sales').catch(() => []),
-        apiRequest<any[]>('/api/admin/terms').catch(() => []),
-        apiRequest<any[]>('/api/admin/banners').catch(() => []),
-        apiRequest<any[]>('/api/admin/audit').catch(() => []),
-        apiRequest<any>('/api/kb/materials').catch(() => ({ items: [] })),
+        section<any[]>('products', 'edit_products', '/api/admin/beads', []),
+        section<any[]>('templates', 'edit_templates', '/api/admin/templates', []),
+        section<any[]>('orders', 'view_orders', '/api/admin/orders', []),
+        section<any[]>('afterSales', 'process_after_sales', '/api/admin/after-sales', []),
+        section<any[]>('terms', 'publish_terms', '/api/admin/terms', []),
+        section<any[]>('home', 'edit_content', '/api/admin/banners', []),
+        section<any[]>('audit', 'manage_accounts', '/api/admin/audit', []),
+        section<any>('knowledge', null, '/api/kb/materials', { items: [] }),
       ]);
+      setDeniedBlocks(denied);
       setBeads(Array.isArray(bRes) ? bRes : []);
       setTemplates(Array.isArray(tRes) ? tRes : []);
       setOrders(Array.isArray(oRes) ? oRes : []);
@@ -65,8 +80,11 @@ export const App: React.FC = () => {
       setKbMaterials(Array.isArray(kbRes) ? kbRes : kbRes?.items || kbRes?.materials || []);
       setAuthed(true);
     } catch (err: any) {
-      if (err.status === 401 || err.status === 403) {
+      if (err.status === 401) {
         setAuthed(false);
+      } else if (err.status === 403) {
+        setDeniedBlocks({ current: err.need || '没有权限' });
+        setAuthed(true);
       } else {
         notify(err.message || '数据加载异常', 'error');
       }
@@ -99,6 +117,7 @@ export const App: React.FC = () => {
       // ignore
     }
     setSavedToken('');
+    setPermissions([]);
     setAuthed(false);
   };
 
@@ -114,7 +133,7 @@ export const App: React.FC = () => {
   };
 
   if (authed === false) {
-    return <LoginPage onAuthenticated={(roleId) => roleId === 'owner' ? loadAllData() : setAuthed(true)} />;
+    return <LoginPage onAuthenticated={() => loadAllData()} />;
   }
 
   if (authed !== true) {
@@ -138,6 +157,7 @@ export const App: React.FC = () => {
       onSearch={handleSearch}
       onLogout={handleLogout}
     >
+      {deniedBlocks[page] && <div role="alert">没有权限：需要“{deniedBlocks[page]}”，找负责人开通。</div>}
       {page === 'today' && (
         <TodayPage
           orders={orders}

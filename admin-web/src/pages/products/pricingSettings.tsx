@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest, fenToYuan, yuanToFen } from '../../api';
 import { Drawer } from '../../ui/Drawer';
+import { Can } from '../../permissions';
 
 type Section = { enabled: boolean; fen: number };
 type Settings = { handwork: Section; shipping: Section & { freeThresholdFen: number | null }; updatedBy?: string; updatedAt?: string };
@@ -60,7 +61,7 @@ export default function PricingSettingsDrawer({ onClose, notify }: Props) {
   };
   return <Drawer title="手工费和运费" subtitle="只影响之后的下单，已经下的订单不变" onClose={onClose} footer={<>
     <button className="zy-btn zy-btn-secondary" disabled={busy} onClick={onClose}>关闭</button>
-    {preview ? <button className="zy-btn zy-btn-primary" disabled={busy} onClick={() => void save()}>{busy ? '正在保存…' : '确认并保存'}</button> : <button className="zy-btn zy-btn-primary" disabled={!form || busy} onClick={prepare}>核对改前改后</button>}
+    <Can perm="edit_prices">{preview ? <button className="zy-btn zy-btn-primary" disabled={busy} onClick={() => void save()}>{busy ? '正在保存…' : '确认并保存'}</button> : <button className="zy-btn zy-btn-primary" disabled={!form || busy} onClick={prepare}>核对改前改后</button>}</Can>
   </>}>
     {!form ? <div className="zy-empty">{error || '正在读取设置…'}</div> : <div style={{ display: 'grid', gap: 24 }}>
       <section className="zy-card" style={{ padding: 16 }}><h3 style={{ marginTop: 0 }}>手工费</h3>

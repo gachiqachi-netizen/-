@@ -3,6 +3,7 @@ import { Drawer } from '../../ui/Drawer';
 import { Button } from '../../ui/Button';
 import { apiRequest, fenToYuan, fmtTime } from '../../api';
 import { CONTRACT } from '../../contract';
+import { Can } from '../../permissions';
 
 const STATUS_LABELS: Record<string, string> = { ...(CONTRACT.statusLabels.afterSaleStatus || {}) };
 
@@ -142,7 +143,7 @@ const AfterSaleDrawer: React.FC<{
         rec && actions.length > 0 && !logisticsPrompt ? (
           <>
             {actions.map((action) => (
-              <span key={action} style={{ marginLeft: 8 }}>
+              <Can key={action} perm={action === 'refund' ? 'refund' : 'process_after_sales'}><span style={{ marginLeft: 8 }}>
                 <Button
                   variant={action === 'reject' ? 'danger' : 'primary'}
                   disabled={busy !== ''}
@@ -150,7 +151,7 @@ const AfterSaleDrawer: React.FC<{
                 >
                   {busy === action ? '提交中…' : (ACTION_LABELS[action] || action)}
                 </Button>
-              </span>
+              </span></Can>
             ))}
           </>
         ) : undefined
@@ -219,9 +220,9 @@ const AfterSaleDrawer: React.FC<{
                     onChange={(e) => setLogisticsPrompt({ ...logisticsPrompt, trackingNo: e.target.value })}
                   />
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <Button variant="primary" disabled={busy !== ''} onClick={submitLogistics}>
+                    <Can perm="process_after_sales"><Button variant="primary" disabled={busy !== ''} onClick={submitLogistics}>
                       {busy === logisticsPrompt.action ? '提交中…' : '保存并继续'}
-                    </Button>
+                    </Button></Can>
                     <Button variant="secondary" onClick={() => setLogisticsPrompt(null)}>取消</Button>
                   </div>
                 </div>

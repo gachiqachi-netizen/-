@@ -4,6 +4,7 @@ import { Button } from '../../ui/Button';
 import { ErrorState } from '../../ui/ErrorState';
 import { Skeleton } from '../../ui/Skeleton';
 import { CONTRACT } from '../../contract';
+import { Can } from '../../permissions';
 
 const STEPS: string[] = [...CONTRACT.workOrderSteps];
 const QC_ITEMS: Array<{ key: string; label: string }> = Object.entries(CONTRACT.qualityGateItems).map(
@@ -189,7 +190,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
         <div className="wo-stat"><div className="n">{wo.wrist ?? '—'}</div><div className="l">手围 cm</div></div>
         <div className="wo-stat"><div className="n">{wo.count ?? '—'}</div><div className="l">颗数</div></div>
         <div className="wo-stat"><div className="n">{wo.lengthMm ?? '—'}</div><div className="l">总长 mm</div></div>
-        <div className="wo-assignee">
+        <Can perm="work_orders"><div className="wo-assignee">
           负责人
           <input
             className="wo-input"
@@ -199,10 +200,10 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
             onChange={(e) => setAssignee(e.target.value)}
             onBlur={saveAssignee}
           />
-        </div>
+        </div></Can>
       </div>
 
-      <div className="wo-steps no-print" role="tablist" aria-label="工序">
+      <Can perm="work_orders"><div className="wo-steps no-print" role="tablist" aria-label="工序">
         {STEPS.map((s) => (
           <button
             key={s}
@@ -214,7 +215,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
             {s}
           </button>
         ))}
-      </div>
+      </div></Can>
 
       {wo.customerNote ? <div className="wo-note">客户备注：{wo.customerNote}</div> : null}
       {wo.operatorNote ? <div className="wo-note">作业备注：{wo.operatorNote}</div> : null}
@@ -241,12 +242,12 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
           {(wo.materials || []).map((m) => (
             <tr key={m.id}>
               <td>
-                <input
+                <Can perm="work_orders"><input
                   type="checkbox"
                   aria-label={`已领 ${m.name}`}
                   checked={!!picked[m.id]}
                   onChange={() => togglePicked(m.id)}
-                />
+                /></Can>
               </td>
               <td>{m.name}</td>
               <td>{m.mm ? `${m.mm}mm` : '—'}</td>
@@ -259,7 +260,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
         </tbody>
       </table>
 
-      <div className="wo-qc no-print">
+      <Can perm="quality_gate"><div className="wo-qc no-print">
         <div className="wo-section-title" style={{ marginTop: 0 }}>质检</div>
         {QC_ITEMS.map((item) => (
           <label key={item.key} className="wo-qc-row">
@@ -313,7 +314,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; nextNo: string; onBack: () =>
           </Button>
         </div>
         {qcError ? <div className="wo-qc-error">{qcError}</div> : null}
-      </div>
+      </div></Can>
 
       {/* 打印视图：只留珠序和领料清单 */}
       <div className="print-only">

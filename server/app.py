@@ -398,7 +398,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(401, {"error": "请先登录"})
                 table = "designs" if path == "/api/designs" else "orders"
                 presenter = user_api.public_design if path == "/api/designs" else user_api.public_order
-                rows = [presenter(row) for row in db.list_by_owner(table, uid)]
+                rows = [presenter(row) for row in db.list_by_owner(table, uid)
+                        if not row.get("deletedAt")]   # B-11c 软删除的作品不出现在列表（订单无此字段，不受影响）
                 rows.sort(key=lambda row: row.get("updatedAt", row.get("createdAt", 0)), reverse=True)
                 return self.send(200, rows)
             m = re.match(r"^/api/admin/(beads|templates|banners|orders)$", path)
@@ -769,16 +770,6 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/admin/session":
             return self.admin_logout()
         try:
-            design_match = re.fullmatch(r"/api/designs/([a-f0-9]{32})", path)
-            if design_match:
-                uid = self.user()
-                if not uid:
-                    return self.send(401, {"error": "请先登录"})
-                old = db.get("designs", design_match.group(1))
-                if not old or old.get("userId") != uid:
-                    return self.send(404, {"error": "设计不存在"})
-                db.delete("designs", design_match.group(1))
-                return self.send(200, {"ok": True})
             m = re.match(r"^/api/admin/(beads|templates|banners|terms)/([\w-]+)$", path)
             if not m:
                 if self._route_dispatch("DELETE", path):

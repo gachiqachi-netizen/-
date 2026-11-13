@@ -303,9 +303,16 @@ def create_share(db, data, owner_id):
     design = design_data(data, owner_id)
     if not design['beads']:
         raise ValueError('请先添加珠子')
+    design_id = str(data.get('id') or '')[:64]
+    if design_id:
+        original = db.get('designs', design_id)
+        if not original or original.get('userId') != owner_id or original.get('deletedAt'):
+            raise KeyError('设计不存在')
     token = secrets.token_urlsafe(32)
-    fields = ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId')
-    db.put('shares', token, {k: design[k] for k in fields if k in design})
+    share = {k: design[k] for k in ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId') if k in design}
+    if design_id:
+        share['designId'] = design_id
+    db.put('shares', token, share)
     return {'shareId': token}
 
 
@@ -313,8 +320,15 @@ def read_share(db, token):
     if not re.fullmatch(r'[A-Za-z0-9_-]{43}', token or ''):
         return None
     d = db.get('shares', token)
+    if not d or d.get('takenDownAt'):
+        return None
+    design_id = d.get('designId')
+    if design_id:   # B-11c：作品删了（或没了），分享落地页显示“看不到了”；旧分享没有 designId 不隐藏
+        design = db.get('designs', design_id)
+        if not design or design.get('deletedAt'):
+            return None
     fields = ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId')
-    return {k: d[k] for k in fields if k in d} if d and not d.get('takenDownAt') and not d.get('deletedAt') else None
+    return {k: d[k] for k in fields if k in d}
 
 
 def make_order(db, data, uid):

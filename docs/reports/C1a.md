@@ -29,7 +29,7 @@
 `git diff --stat origin/integration/2026-11...HEAD`：
 
 ```
- docs/reports/C1a.md                  | 65 +++++++++++++++++++++
+ docs/reports/C1a.md                  | 65 ++++++++++++++++++++++
  miniprogram/pages/login/login.js     |  53 ++++++++++++++----
  miniprogram/pages/login/login.json   |   8 ++-
  miniprogram/pages/login/login.wxml   |  39 +++++++++++---

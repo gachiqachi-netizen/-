@@ -1,8 +1,8 @@
 <view class="photo-page">
   <block wx:if="{{!photo && !permissionDenied}}">
-    <view class="camera-stage" bindtap="choose" data-source="camera"><view class="camera-frame"></view><text>取景画面</text></view>
+    <view class="camera-stage"><camera class="camera-preview" device-position="back" flash="auto" binderror="cameraError"/><view class="camera-frame"></view></view>
     <view class="hint">把整条手串放进圈里，光线亮一点，认得更准</view>
-    <view class="camera-actions"><text bindtap="choose" data-source="album">相册</text><button class="shutter" bindtap="choose" data-source="camera" aria-label="拍照"></button><text></text></view>
+    <view class="camera-actions"><text bindtap="choose" data-source="album">相册</text><button class="shutter" bindtap="shoot" aria-label="拍照"></button><text></text></view>
   </block>
   <block wx:elif="{{permissionDenied}}">
     <view class="empty-title">用不了相机</view><view class="hint">没有相机权限。可以去设置里打开，或者直接从相册选一张</view>
@@ -10,11 +10,11 @@
   </block>
   <block wx:elif="{{busy}}"><view class="processing"><image src="{{photo}}" mode="aspectFill"/><view>正在一颗一颗地认……</view></view><view class="bottom"><button disabled>正在识别……</button><text>识别完成后可以核对珠子</text></view></block>
   <block wx:elif="{{usageOpen}}"><image class="picked-photo" src="{{photo}}" mode="aspectFill"/><view class="shade"></view><view class="usage-sheet"><view class="sheet-title">想怎么用这张照片</view><button class="primary" bindtap="useExact">照着做一条一样的</button><view class="hint">尽量还原照片里的每一颗珠子</view><button bindtap="useFeeling">照着这个感觉配一条</button><view class="hint">按颜色和气质配一条新的</view></view></block>
-  <block wx:elif="{{error && !result}}"><image class="picked-photo" src="{{photo}}" mode="aspectFill"/><view class="empty-title">这张没认出来</view><view class="hint">{{error}}</view><button class="primary" bindtap="retake">重拍一张</button><view class="text-action" bindtap="useFeeling">不重拍，照这个感觉配一条 ›</view></block>
+  <block wx:elif="{{error && !result}}"><image class="picked-photo" src="{{photo}}" mode="aspectFill"/><view class="empty-title">{{retryable ? '识别暂时没完成' : '这张没认出来'}}</view><view class="hint">{{error}}</view><button wx:if="{{retryable}}" class="primary" bindtap="recognize">再试一次</button><button wx:else class="primary" bindtap="retake">重拍一张</button><view class="text-action" bindtap="useFeeling">不重拍，照这个感觉配一条 ›</view></block>
   <block wx:elif="{{result}}">
     <view class="compare"><view><image src="{{photo}}" mode="aspectFill"/><text>你的照片</text></view><view><view class="recreated"><bracelet-thumb beads="{{previewIds}}" catalog="{{catalog}}"/></view><text>我们复原的</text></view></view>
     <view class="result-content"><view class="name-row"><input value="{{name}}" bindinput="rename"/><text>改名</text></view><view class="meaning">{{result.meaning || '清澈又开阔，像一阵海风'}}</view><view class="hint">{{beadCount}} 颗 · {{length}}mm · 手围 {{wrist}}cm 合适</view><view class="section-title">认出来的珠子</view>
-    <view class="bead-row" wx:for="{{roles}}" wx:key="key" wx:for-item="role"><view class="bead-info"><text>{{role.title}} · {{role.options[0].name || '不使用'}}</text><text class="hint">{{role.hint}}</text><view wx:if="{{role.lowConfidence}}" class="hint">可能不准 <button class="small" data-role="{{role.key}}" bindtap="showAlternatives">换一颗</button></view></view><text>×{{role.count || 1}}</text></view>
+    <view class="bead-row" wx:for="{{roles}}" wx:key="key" wx:for-item="role"><view class="bead-info"><text>{{role.name}}</text><text class="hint">{{role.meaning}}</text><view wx:if="{{role.lowConfidence}}" class="hint">可能不准 <button class="small" data-role="{{role.key}}" bindtap="showAlternatives">换一颗</button></view></view><text>×{{role.count}}</text></view>
     <view wx:if="{{picking}}" class="alternatives"><view class="section-title">换一颗</view><view wx:for="{{alternativeOptions}}" wx:key="id" class="alternative" data-role="{{picking}}" data-id="{{item.id}}" bindtap="chooseRole">{{item.name}} · {{item.mm}}mm</view></view>
     <view class="text-action" bindtap="retake">不太像？重拍一张 ›</view></view>
     <view class="bottom result-bottom"><view class="price">¥{{price}}</view><button bindtap="edit">放到工作台改</button><button class="primary" bindtap="order">就要这条</button></view>

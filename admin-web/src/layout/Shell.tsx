@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { apiRequest } from '../api';
+import { AdminMe, canPage, pageNeed } from '../permissions';
 
 export interface NavItem {
   key: string;
@@ -76,6 +78,17 @@ export const Shell: React.FC<ShellProps> = ({
   onLogout,
   children,
 }) => {
+  const [me, setMe] = useState<AdminMe | null>(null);
+  const [loadError, setLoadError] = useState('');
+  useEffect(() => {
+    let alive = true;
+    apiRequest<AdminMe>('/api/admin/me')
+      .then((result) => { if (alive) setMe(result); })
+      .catch((error) => { if (alive) setLoadError(error.status === 403 && error.data?.need
+        ? `需要“${error.data.need}”，找负责人开通。` : error.message || '权限读取失败'); });
+    return () => { alive = false; };
+  }, []);
+  const denied = me !== null && !canPage(active, me);
   return (
     <div className="zy-shell">
       <aside className="zy-side">
@@ -84,7 +97,7 @@ export const Shell: React.FC<ShellProps> = ({
           <span className="zy-side-brand-sub">后台</span>
         </div>
         <nav className="zy-side-nav">
-          {MENU.map((g) => (
+          {MENU.map((g) => ({ ...g, items: me ? g.items.filter((item) => canPage(item.key, me)) : [] })).filter((g) => g.items.length).map((g) => (
             <div key={g.group || 'top'}>
               {g.group && <div className="zy-side-group">{g.group}</div>}
               {g.items.map((item) => {
@@ -128,7 +141,11 @@ export const Shell: React.FC<ShellProps> = ({
             }}
           />
         </header>
-        <main className="zy-content">{children}</main>
+        <main className="zy-content">
+          {loadError ? <div role="alert">{loadError}</div> :
+            !me ? <div>正在读取权限…</div> :
+            denied ? <div role="alert"><h2>你没有这个页面的权限</h2><p>需要“{pageNeed(active)}”，找负责人开通。</p></div> : children}
+        </main>
       </div>
     </div>
   );

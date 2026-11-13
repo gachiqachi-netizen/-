@@ -4,8 +4,8 @@
 
 ROUTES 每项是 (方法, 路径正则, 处理函数, 需要什么登录)：
 - 方法："GET" / "POST" / "PUT" / "DELETE"
-- 路径正则：会整体匹配请求路径，捕获组通过 match 传给处理函数
-- 需要什么登录："public" 不登录 / "user" 用户登录 / "admin" 后台登录
+- 路径正则：按整条路径匹配（fullmatch），写不写 ^ $ 都一样，捕获组通过 match 传给处理函数
+- 需要什么登录："public" 不登录 / "user" 用户登录 / "admin" 后台登录；写别的值加载时直接报错
 
 处理函数 fn(ctx, match, data) 返回 (状态码, 返回体)：
 - ctx.db 数据库；ctx.user_id 登录用户 id（未登录为 None）；ctx.admin 是否后台登录；

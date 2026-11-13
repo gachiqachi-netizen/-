@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Wrench, ShieldCheck, Lock, Clock, FileText, X } from 'lucide-react';
 import { apiRequest, labelOf, fmtTime } from '../api';
+import { CONTRACT } from '../contract';
 import { BraceletRingPreview } from './BraceletRingPreview';
 import { StatusBadge, statusTone } from './OverviewAndProducts';
 
@@ -24,7 +25,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
   const [detail, setDetail] = useState<any | null>(null);
   const [workForm, setWorkForm] = useState<any>({
     assignee: '',
-    step: 'pending',
+    step: CONTRACT.workOrderSteps[0],
     progress: 0,
     operatorNote: '',
   });
@@ -49,7 +50,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
       const wo = d.workOrder || {};
       setWorkForm({
         assignee: wo.assignee || '',
-        step: wo.step || 'pending',
+        step: wo.step || CONTRACT.workOrderSteps[0],
         progress: Number(wo.progress ?? 0),
         operatorNote: wo.operatorNote || '',
       });
@@ -179,11 +180,9 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
             className="text-sm bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-1.5 text-zinc-700"
           >
             <option value="">全部生产履约状态</option>
-            <option value="unfulfilled">待排产</option>
-            <option value="in_production">手工制作中</option>
-            <option value="ready_to_ship">质检通过待发</option>
-            <option value="shipped">已发货</option>
-            <option value="completed">已签收完成</option>
+            {Object.entries(CONTRACT.statusLabels.fulfillmentStatus).map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
           </select>
         </div>
         <div className="text-xs text-zinc-500">
@@ -241,7 +240,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                           {labelOf('fulfillmentStatus', o.fulfillmentStatus)}
                         </StatusBadge>
                         <span className="text-xs text-zinc-600">
-                          {labelOf('workStep', wo.step || 'pending')} ({wo.progress ?? 0}%)
+                          {wo.step || '-'} ({wo.progress ?? 0}%)
                         </span>
                       </div>
                       {wo.assignee && (
@@ -325,7 +324,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {(['orderStatus', 'fulfillmentStatus', 'shippingStatus'] as const).map((grp) => {
+                  {(['orderStatus', 'fulfillmentStatus', 'logisticsStatus'] as const).map((grp) => {
                     const allowed: string[] = detail.allowedTransitions?.[grp] || [];
                     return (
                       <div key={grp} className="bg-white rounded-lg p-3 border border-zinc-200/80">
@@ -407,8 +406,8 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                   </div>
                   <span className="text-xs text-zinc-500">
                     手围 <strong className="text-zinc-900">{snap.wrist || detail.wrist || 15} cm</strong> · 共{' '}
-                    <strong className="text-zinc-900">{snap.beadCount || snapBeads.length} 颗</strong> · 弦长{' '}
-                    {snap.totalLengthMm || '-'} mm
+                    <strong className="text-zinc-900">{snap.count ?? snapBeads.length} 颗</strong> · 弦长{' '}
+                    {snap.lengthMm ?? '-'} mm
                   </span>
                 </div>
 
@@ -495,12 +494,9 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                         onChange={(e) => setWorkForm({ ...workForm, step: e.target.value })}
                         className="w-full px-3 py-1.5 text-xs border border-zinc-200 rounded-lg"
                       >
-                        <option value="pending">待领料排产</option>
-                        <option value="picking">按BOM配珠中</option>
-                        <option value="stringing">手工穿制中</option>
-                        <option value="rechecking">尺寸复核中</option>
-                        <option value="qc">待终检放行</option>
-                        <option value="packed">已包装待发</option>
+                        {CONTRACT.workOrderSteps.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
                       </select>
                     </div>
                   </div>

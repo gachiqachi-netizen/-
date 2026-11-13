@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Edit3, Save, X } from 'lucide-react';
-import { apiRequest, labelOf, fmtTime, fenToYuan, yuanToFen, LABELS } from '../api';
+import { apiRequest, labelOf, fmtTime, fenToYuan, yuanToFen } from '../api';
+import { CONTRACT } from '../contract';
 import { StatusBadge, statusTone } from './OverviewAndProducts';
 
 export const AfterSalesView: React.FC<{
@@ -299,8 +300,8 @@ export const LogisticsView: React.FC<{
                       <StatusBadge tone={statusTone(o.fulfillmentStatus)}>
                         {labelOf('fulfillmentStatus', o.fulfillmentStatus)}
                       </StatusBadge>
-                      <StatusBadge tone={statusTone(o.shippingStatus)}>
-                        {labelOf('shippingStatus', o.shippingStatus)}
+                      <StatusBadge tone={statusTone(o.logisticsStatus)}>
+                        {labelOf('logisticsStatus', o.logisticsStatus)}
                       </StatusBadge>
                     </div>
                   </td>
@@ -366,7 +367,7 @@ export const TermsAndScopeView: React.FC<{
         confirmed: true,
         body: '天然矿石存在冰裂、棉絮或色带属自然生长印记；一人一串手工排制启动后不支持无理由退换。',
         scopeMode: 'scoped',
-        scenarios: ['custom_bracelet', 'natural_mineral'],
+        scenarios: [],
         templateIds: [],
         productIds: [],
       });
@@ -467,7 +468,7 @@ export const TermsAndScopeView: React.FC<{
                   <div className="mt-3 p-2.5 rounded-lg bg-indigo-50/60 border border-indigo-100 text-[11px] text-indigo-900 space-y-1">
                     <div>
                       <strong>适用场景：</strong>
-                      {(sc.scenarios || []).map((s: string) => labelOf('scenarios', s)).join('、') || '不限'}
+                      {(sc.scenarios || []).map((s: string) => labelOf('termScenarios', s)).join('、') || '不限'}
                     </div>
                     {(sc.templateIds || []).length > 0 && (
                       <div>
@@ -606,7 +607,7 @@ export const TermsAndScopeView: React.FC<{
                     <div>
                       <div className="font-medium text-zinc-700 mb-1.5">1. 适用订单场景 (`scenarios`)：</div>
                       <div className="flex flex-wrap gap-2">
-                        {Object.entries(LABELS.scenarios).map(([key, label]) => (
+                        {Object.entries(CONTRACT.termScenarios).map(([key, label]) => (
                           <label
                             key={key}
                             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-zinc-200 cursor-pointer"

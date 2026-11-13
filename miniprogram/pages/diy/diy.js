@@ -56,7 +56,7 @@ Page({
   retryCatalog(){this.onShow()},
   say(type,state,extra){const value=message(type,state);if(value)queue.show({text:value,...extra})},
   vibrate(type='light'){if(wx.vibrateShort)wx.vibrateShort({type,fail(){}})},
-  focusKbBead(){const id=this.pendingBeadKbId;if(!id)return;const bead=this.data.catalog.find(b=>b.kbId===id||b.kb===id||b.id===id);if(!bead)return;this.pendingBeadKbId='';this.setData({cat:'all',size:'all',materialTab:bead.mat==='metal'||bead.spacer?'accessories':'beads',focusedBeadId:bead.id,scrollBeadId:'bead-'+bead.id});this.filterKey='';this.update()},
+  focusKbBead(){const id=this.pendingBeadKbId;if(!id)return;this.pendingBeadKbId='';const bead=this.data.catalog.find(b=>b.kbId===id||b.kb===id||b.id===id);if(!bead||bead.onSale===false||bead.stock==='out_of_stock')return;this.setData({cat:'all',size:'all',materialTab:bead.mat==='metal'||bead.spacer?'accessories':'beads',focusedBeadId:bead.id,scrollBeadId:'bead-'+bead.id});this.filterKey='';this.update()},
   clearFocus(){this.setData({focusedBeadId:'',scrollBeadId:''})},
   selectTray(e){if(!this.data.items.length||!this.createSelectorQuery)return;this.createSelectorQuery().select('#workbench-bracelet').boundingClientRect(rect=>{if(!rect)return;const x=(e.detail.x-rect.left)/rect.width*470,y=(e.detail.y-rect.top)/rect.height*470;const positions=layout(this.data.items,470);let best=-1,distance=Infinity;positions.forEach((p,i)=>{const dx=x-(p.x+p.box/2),dy=y-(p.y+p.box/2),d=dx*dx+dy*dy;if(d<distance){distance=d;best=i}});if(best>=0)this.select({currentTarget:{dataset:{i:best}}})}).exec()},
   stack(){const others=store.list().filter(d=>d.id!==this.data.design.id&&d.beads&&d.beads.length);if(!others.length)return this.say('stackEmpty');queue.show({text:'叠戴预览即将开放'})},

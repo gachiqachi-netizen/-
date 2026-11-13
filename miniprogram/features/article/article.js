@@ -39,8 +39,9 @@ Page({
     if (!button || !button.target) return
     const target = '/' + button.target.replace(/^\/+/, '')
     const beadId = article.beadKbIds && article.beadKbIds[0]
-    const url = target + (beadId ? (target.includes('?') ? '&' : '?') + 'beadKbId=' + encodeURIComponent(beadId) : '')
-    if (target === '/pages/diy/diy') wx.switchTab({ url: target })
-    else wx.navigateTo({ url })
+    if (target === '/pages/diy/diy') {
+      getApp().globalData.pendingWorkbenchBeadKbId = beadId
+      wx.switchTab({ url: target })
+    } else wx.navigateTo({ url: target + (beadId ? (target.includes('?') ? '&' : '?') + 'beadKbId=' + encodeURIComponent(beadId) : '') })
   },
 })

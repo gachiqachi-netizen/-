@@ -1,23 +1,120 @@
-<view class="wrap" wx:if="{{design}}"><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
-  <view class="card">
-    <view class="title">设计完成</view>
-    <view class="preview"><bracelet3d height="320" wx:if="{{catalog.length && !renderFallback}}" beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}" bind:unavailable="renderUnavailable"/><view wx:if="{{renderFallback}}" wx:for="{{items}}" wx:key="id" class="bead" style="left:{{item.x}}%;top:{{item.y}}%;background:{{item.color}}"></view></view>
-    <view class="row"><view>{{design.name}}</view><view>¥{{price}}</view></view>
-    <view class="sub">手围 {{design.wrist}}cm · {{design.beads.length}} 颗 · 估算串长 {{length}}cm</view>
-    <view class="sub">预计商品价含手工费，运费和优惠将在订单中确认。</view>
-    <view class="error" wx:if="{{previewWarning}}">{{previewWarning}}</view>
+<view class="page" wx:if="{{!loading && !error && !down}}">
+  <!-- 图片轮播 -->
+  <view class="stage">
+    <swiper class="swiper" current="{{current}}" bindchange="onSwiperChange">
+      <swiper-item wx:for="{{slides}}" wx:key="index">
+        <view class="stage-ring">
+          <c-bracelet beads="{{items}}" size="520" wordmark="{{true}}" />
+        </view>
+      </swiper-item>
+    </swiper>
+    <view class="tryon-chip" bindtap="tryon">
+      <text class="tryon-hand">戴上看看</text>
+    </view>
+    <view class="gcnt">{{current + 1}}/{{slides.length}}</view>
   </view>
-  <view class="finish-main-actions">  <button class="finish-secondary" bindtap="edit">返回修改</button>
-  <button class="finish-secondary" bindtap="tryon">照片试戴</button>
-<button class="finish-secondary" bindtap="saveDesign">保存设计</button></view><view class="sub">{{saveNote}}</view>
-  <view class="card review-card" wx:if="{{design.beads.length >= 6}}">
-    <view class="row"><view class="title">AI 帮你看看</view><button class="review-action" loading="{{loading}}" bindtap="review">看看这条</button></view>
-    <view class="sub" wx:if="{{!review}}">串好了？让 AI 看看搭配和寓意，给你一两条能一键采纳的小建议。</view>
-    <view class="sub" wx:if="{{review}}">{{review}}</view>
-    <view wx:for="{{suggestions}}" wx:key="index" class="suggestion"><view>{{item.text}}</view><button wx:if="{{!item.applied}}" data-index="{{index}}" bindtap="apply">用这个建议</button><view wx:else class="sub">已采纳</view></view>
-    <button class="review-action" wx:if="{{canUndo}}" bindtap="undo">撤销上次调整</button>
-    <view class="sub" wx:if="{{saveNote}}">{{saveNote}}</view><view class="error" wx:if="{{error}}">{{error}}</view>
+
+  <!-- 价格卡 -->
+  <view class="ocard">
+    <view class="price-row">
+      <text class="price">{{price}}</text>
+      <text class="price-note">{{shippingNote}}</text>
+    </view>
+    <view class="name">{{design.name}}</view>
+    <view class="line" wx:if="{{line}}">{{line}}</view>
+    <view class="tags" wx:if="{{tags}}">{{tags}}</view>
   </view>
-  <view class="error" wx:if="{{shareError}}">{{shareError}}</view>
-  <view class="finish-bar"><view class="finish-sum"><view class="sum-price">¥{{price}}</view><text>预计商品价</text></view><button class="ghost" bindtap="share">分享</button><button class="primary" bindtap="order">去下单</button></view>
+
+  <!-- 已选 / 配送 / 服务 -->
+  <view class="ocard">
+    <view class="rowi" bindtap="openSize">
+      <text>已选</text>
+      <view class="rv">
+        <text wx:if="{{outOfStock}}" class="out">{{outOfStockName}}暂时缺货</text>
+        <text wx:else>{{beadsCount}} 颗 · 手围 {{design.wrist}}cm {{fitText}}</text>
+        <text class="chevron">›</text>
+      </view>
+    </view>
+    <view class="rowi">
+      <text>配送</text>
+      <text class="rv">{{shippingRow}}</text>
+    </view>
+    <view class="rowi">
+      <text>服务</text>
+      <text class="rv">定制商品 · 质量问题 7 天可退换</text>
+    </view>
+  </view>
+
+  <!-- 评价：只有热门款有，评价数据要后端（B14），合并前不显示这块 -->
+  <!-- <view class="ocard" wx:if="{{showReviews}}"> ... </view> -->
+
+  <!-- 详情：每一颗的寓意 -->
+  <view class="ocard">
+    <view class="detail-title">详情</view>
+    <view class="detail-sub">每一颗的寓意</view>
+    <view class="mrow" wx:for="{{counts}}" wx:key="id">
+      <c-bead bead="{{item.bead}}" size="m" />
+      <view class="mt">
+        <view class="mrow-name">{{item.bead.name}}</view>
+        <view class="mrow-line" wx:if="{{item.line}}">{{item.line}}</view>
+      </view>
+      <view class="mrow-count">×{{item.n}}</view>
+    </view>
+  </view>
+
+  <!-- 底部栏：改一改 / 立即下单（缺货时换一颗再下单） -->
+  <c-bar>
+    <view class="bar-btns">
+      <button class="c-btn c-btn--sec bar-sec" bindtap="edit">改一改</button>
+      <button class="c-btn" bindtap="order">{{outOfStock ? '换一颗再下单' : '立即下单'}}</button>
+    </view>
+  </c-bar>
+
+  <!-- 尺寸和价格弹层 -->
+  <c-sheet show="{{showSize}}" title="尺寸和价格" bind:close="closeSize">
+    <view class="sheet-row"><text>颗数</text><text class="rv">{{beadsCount}} 颗</text></view>
+    <view class="sheet-row"><text>总长</text><text class="rv">{{lengthText}}</text></view>
+    <view class="sheet-row" bindtap="goWrist"><text>手围</text><view class="rv"><text>{{design.wrist}}cm，{{fitText}}</text><text class="wrist-edit">改 ›</text></view></view>
+    <view class="sheet-row"><text>珠子</text><text class="rv">{{goods}}</text></view>
+    <view class="sheet-row last">
+      <view class="ship-cell">
+        <view>运费</view>
+        <view class="ship-sub" wx:if="{{shipSub}}">{{shipSub}}</view>
+      </view>
+      <text class="rv">{{shipping}}</text>
+    </view>
+    <view class="sheet-note">页面上的 {{price}} 是到手价，已含运费。示意效果，以实物为准。</view>
+  </c-sheet>
+
+  <!-- 手围确认弹层 -->
+  <c-sheet show="{{showWrist}}" title="先确认手围" bind:close="closeWrist">
+    <view class="wrist-desc">现在按常见的 15cm</view>
+    <view class="wrist-btns">
+      <button class="c-btn c-btn--sec wrist-measure" bindtap="measureWrist">量一下</button>
+      <button class="c-btn" bindtap="confirmWrist">就按 15cm</button>
+    </view>
+  </c-sheet>
+
+  <c-toast />
+</view>
+
+<!-- 加载中：骨架块 -->
+<view class="page" wx:if="{{loading}}">
+  <view class="stage c-skeleton"></view>
+  <view class="ocard">
+    <view class="sk-line c-skeleton" style="width:50%"></view>
+    <view class="sk-line c-skeleton"></view>
+    <view class="sk-line c-skeleton" style="width:70%"></view>
+  </view>
+  <view class="ocard"><view class="sk-line c-skeleton"></view><view class="sk-line c-skeleton"></view><view class="sk-line c-skeleton"></view></view>
+</view>
+
+<!-- 失败 -->
+<view class="page" wx:if="{{error && !loading}}">
+  <c-state title="加载失败" desc="{{error}}" action="再试一次" bind:action="retry" />
+</view>
+
+<!-- 款式已下架 -->
+<view class="page" wx:if="{{down}}">
+  <c-state title="这条款式下架了" desc="去看看别的款式吧" action="去看看别的" bind:action="goHome" />
 </view>

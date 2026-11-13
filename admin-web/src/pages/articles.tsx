@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../api';
 import { CONTRACT } from '../contract';
+import { Can } from '../permissions';
 import { Button } from '../ui/Button';
 import { Drawer } from '../ui/Drawer';
 import { ErrorState } from '../ui/ErrorState';
@@ -56,16 +57,16 @@ export default function ArticlesPage() {
     catch (err) { setFormError((err as Error).message || '删除失败'); }
   };
   return <div style={{ padding: 24, display: 'grid', gap: 16 }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><div><h2 style={{ margin: 0 }}>文章</h2><p className="zy-table-aux">写好后再发布，可关联珠子小知识和首页顺序。</p></div><Button variant="primary" onClick={() => start()}>新建文章</Button></div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><div><h2 style={{ margin: 0 }}>文章</h2><p className="zy-table-aux">写好后再发布，可关联珠子小知识和首页顺序。</p></div><Can perm="edit_content"><Button variant="primary" onClick={() => start()}>新建文章</Button></Can></div>
     {loading ? <div className="zy-card" style={{ padding: 24 }}>正在读取文章…</div> : error ? <ErrorState reason={error} onRetry={load} /> : <Table rows={rows} rowKey={row => row.id} onRowClick={start} columns={[
       { title: '标题', render: row => row.title }, { title: '状态', render: row => statusLabel(row.status) },
       { title: '首页顺序', render: row => row.homeOrder == null ? '不在首页' : row.homeOrder },
       { title: '更新于', render: row => row.updatedAt ? new Date(row.updatedAt).toLocaleString('zh-CN') : '-' },
-      { title: '操作', render: row => <button className="zy-btn zy-btn-secondary" onClick={e => { e.stopPropagation(); void changeStatus(row); }}>{row.status === 'published' ? '撤下' : '发布'}</button> },
+      { title: '操作', render: row => <Can perm="edit_content"><button className="zy-btn zy-btn-secondary" onClick={e => { e.stopPropagation(); void changeStatus(row); }}>{row.status === 'published' ? '撤下' : '发布'}</button></Can> },
     ]} />}
     {editing && <Drawer title={editing === 'new' ? '新建文章' : '编辑文章'} onClose={() => setEditing(null)} footer={<>
-      {editing !== 'new' && <span className="zy-drawer-foot-left"><Button variant="danger" disabled={saving} onClick={() => void remove(editing)}>删除</Button></span>}
-      <Button disabled={saving} onClick={() => setEditing(null)}>取消</Button><Button variant="primary" disabled={saving} onClick={() => void save()}>{saving ? '正在保存…' : '保存草稿'}</Button>
+      {editing !== 'new' && <span className="zy-drawer-foot-left"><Can perm="edit_content"><Button variant="danger" disabled={saving} onClick={() => void remove(editing)}>删除</Button></Can></span>}
+      <Button disabled={saving} onClick={() => setEditing(null)}>取消</Button><Can perm="edit_content"><Button variant="primary" disabled={saving} onClick={() => void save()}>{saving ? '正在保存…' : '保存草稿'}</Button></Can>
     </>}><div style={{ display: 'grid', gap: 14 }}>
       <label className="zy-field"><span className="zy-field-label">标题</span><input className="zy-field-box" value={form.title} onChange={e => patch({ title: e.target.value })} /></label>
       <label className="zy-field"><span className="zy-field-label">题图编号或地址</span><input className="zy-field-box" value={form.cover} onChange={e => patch({ cover: e.target.value })} /></label>

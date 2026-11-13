@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { apiRequest, fmtTime } from '../../api';
-import { can } from '../../permissions';
+import { Can } from '../../permissions';
 import { Button } from '../../ui/Button';
 import { Drawer } from '../../ui/Drawer';
 import { ErrorState } from '../../ui/ErrorState';
@@ -35,7 +35,6 @@ export function KnowledgeDetail({ item, loading, error, canEdit, onClose, onRetr
   const [rollingBack, setRollingBack] = useState(false);
   const data = item?.data;
   const low = data?.confidence?.meaning === 'low';
-  const permitted = canEdit && can('edit_kb');
   async function rollback(version: number) {
     if (!data?.id || !window.confirm(`退回第 ${version} 版？退回后也会记一条新的改动记录，用户端立即生效。`)) return;
     setRollingBack(true); setRollbackError('');
@@ -50,7 +49,7 @@ export function KnowledgeDetail({ item, loading, error, canEdit, onClose, onRetr
   if (editing && item) return <KnowledgeEdit item={item} onCancel={() => setEditing(false)}
     onSaved={() => { setEditing(false); onRetry(); }} onRefresh={onRetry} />;
   return <Drawer title={data?.name || '品种资料'} subtitle={item ? `第 ${item.version} 版` : undefined}
-    onClose={onClose} footer={permitted && item ? <Button onClick={() => setEditing(true)}>编辑</Button> : undefined}>
+    onClose={onClose} footer={item ? <Can perm="edit_kb">{canEdit && <Button onClick={() => setEditing(true)}>编辑</Button>}</Can> : undefined}>
     {loading ? <div>正在读取资料…</div> : error ? <ErrorState reason={error} onRetry={onRetry} /> : data && item ?
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(180px, 1fr)', gap: 20 }}>
         <div>
@@ -75,7 +74,7 @@ export function KnowledgeDetail({ item, loading, error, canEdit, onClose, onRetr
             {item.history.length ? item.history.map(entry => <div key={entry.version} style={{ marginTop: 12, borderTop: '1px solid var(--line)', paddingTop: 10 }}>
               <strong>第 {entry.version} 版</strong><div style={muted}>{entry.savedBy || '后台'} · {dateLabel(entry.savedAt)}</div>
               {entry.note && <div>{entry.note}</div>}
-              {permitted && <div style={{ marginTop: 6 }}><Button disabled={rollingBack} onClick={() => void rollback(entry.version)}>退回这一版</Button></div>}
+              {canEdit && <Can perm="edit_kb"><div style={{ marginTop: 6 }}><Button disabled={rollingBack} onClick={() => void rollback(entry.version)}>退回这一版</Button></div></Can>}
             </div>) : <div style={muted}>暂无改动记录</div>}
           </div>
         </aside>

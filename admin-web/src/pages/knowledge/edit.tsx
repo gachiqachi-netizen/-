@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../../api';
 import { Button } from '../../ui/Button';
+import { Can } from '../../permissions';
 import { Drawer } from '../../ui/Drawer';
 import attributes from '../../../../kb/data/attributes.json';
 import type { KbDetail } from './detail';
@@ -64,7 +65,7 @@ export function KnowledgeEdit({ item, onCancel, onSaved, onRefresh }: { item: Kb
   const tags = draft.meaning?.tags || [];
   const reason = conflict ? '别人刚改过，请刷新' : checking ? '正在检查内容' : requestError || errors.map(row => row.message).join('；') || (route ? '' : '缺少资料编号');
   return <Drawer title={`编辑 · ${draft.name || '品种资料'}`} subtitle={`基于第 ${version} 版`} onClose={onCancel}
-    footer={<><Button onClick={onCancel}>取消</Button><Button variant="primary" disabled={Boolean(reason) || saving} reason={reason || (saving ? '正在保存' : undefined)} onClick={() => void save()}>保存</Button></>}>
+    footer={<><Button onClick={onCancel}>取消</Button><Can perm="edit_kb"><Button variant="primary" disabled={Boolean(reason) || saving} reason={reason || (saving ? '正在保存' : undefined)} onClick={() => void save()}>保存</Button></Can></>}>
     {conflict && <div role="alert" style={red}>别人刚改过。<Button onClick={() => void refresh()}>刷新</Button></div>}
     {requestError && !conflict && <div role="alert" style={red}>{requestError}</div>}
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(180px, 1fr)', gap: 20 }}>

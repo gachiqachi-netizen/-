@@ -52,6 +52,15 @@ class PhotoConfidenceTest(unittest.TestCase):
         self.assertEqual(0.8, out["confidence"]["main"])
         self.assertIsNone(out["confidence"]["accent"])
 
+    def test_只返回main的把握时另外两个是None(self):
+        out = photo_with({"ok": True, "seen": "粉色主珠", "main": "a", "accent": "", "metal": "",
+                          "every": 4, "mainConfidence": 0.7})
+        self.assertTrue(out["ok"])
+        self.assertEqual(out["main"], "a")
+        self.assertEqual(0.7, out["confidence"]["main"])
+        self.assertIsNone(out["confidence"]["accent"])
+        self.assertIsNone(out["confidence"]["metal"])
+
     def test_整体失败带模型给的reason(self):
         out = photo_with({"ok": False, "seen": "", "main": "", "accent": "", "metal": "",
                           "every": 4, "reason": "dark"})

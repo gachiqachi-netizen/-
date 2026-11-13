@@ -89,9 +89,9 @@ PHOTO_SCHEMA = {
         "ok": {"type": "boolean"}, "seen": {"type": "string"},
         "main": {"type": "string"}, "accent": {"type": "string"}, "metal": {"type": "string"},
         "every": {"type": "integer"},
-        "mainConfidence": {"type": "number", "minimum": 0, "maximum": 1},
-        "accentConfidence": {"type": "number", "minimum": 0, "maximum": 1},
-        "metalConfidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "mainConfidence": {"type": "number"},
+        "accentConfidence": {"type": "number"},
+        "metalConfidence": {"type": "number"},
         "reason": {"type": "string", "enum": list(PHOTO_FAILURE_REASONS)},
     },
     "required": ["ok", "seen", "main", "accent", "metal", "every"],
@@ -206,7 +206,7 @@ def photo(beads, image):
               "accent=第二种珠子最像的 id，没有填空字符串；metal=金属隔珠或隔片最像的 id（只能是金属配件），没有填空字符串；"
               "every=配珠或隔珠大约每几颗出现一次（2-6）；seen=一句 15-30 字的话，说看到的颜色、材质和排法。"
               "mainConfidence/accentConfidence/metalConfidence=你对每个识别结果有多大把握，0 到 1 之间的小数（颜色材质都对、看得清就给 0.8 以上，"
-              "只猜得像就低一些）；accent 或 metal 为空时对应的 confidence 也填空字符串。"
+              "只猜得像就低一些）；accent 或 metal 为空时不填对应的 confidence 字段，对哪个结果没把握也可以不填。"
               "ok 为 false 时回答 reason：照片太暗填 dark、太模糊填 blurry、照片里没有手串填 no_bracelet、手串认不出是哪种珠子填 unknown_beads。")
     out = p.json(prompt, PHOTO_SCHEMA, image=image)
     by_id = {b["id"]: b for b in beads}

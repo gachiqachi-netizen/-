@@ -157,9 +157,9 @@ def order_allowed_actions(order):
         actions.append('cancel_order')
     if (groups['orderStatus'] == 'confirmed'
             and groups['paymentStatus'] == 'paid'
-            and groups['fulfillmentStatus'] == 'shipped'
+            and groups['fulfillmentStatus'] in ('shipped', 'delivered')
             and groups['afterSaleStatus'] == 'none'
-            and groups['logisticsStatus'] in ('shipped', 'in_transit')):
+            and groups['logisticsStatus'] in ('shipped', 'in_transit', 'delivered')):
         actions.append('confirm_receipt')
     if groups['logisticsStatus'] != 'not_shipped' or order.get('logistics'):
         actions.append('view_logistics')

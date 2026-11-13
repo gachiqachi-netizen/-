@@ -1,2 +1,43 @@
-<!-- 由任务卡 C0h 手串图 填内容 -->
-<view class="kit">临时页：C0h 手串图</view>
+<view class="kit">
+  <view class="h">手串图 · 正常（单条）</view>
+  <view class="stage">
+    <bracelet beads="{{beadsA}}" size="360" />
+  </view>
+
+  <view class="h">手串图 · 高亮一颗（其余变淡）</view>
+  <view class="stage">
+    <bracelet beads="{{beadsA}}" size="360" selected="2" />
+  </view>
+
+  <view class="h">手串图 · 叠戴（上下各一条半透明）</view>
+  <view class="stage">
+    <bracelet mode="stack" stackBeads="{{[beadsA, beadsB]}}" size="280" />
+  </view>
+
+  <view class="h">手串图 · 中央字标</view>
+  <view class="stage">
+    <bracelet beads="{{beadsA}}" size="360" wordmark="{{true}}" />
+  </view>
+
+  <view class="h">款式格（稿 03）</view>
+  <view class="cells">
+    <cell design="{{cellMoon}}" />
+    <cell design="{{cellRed}}" />
+  </view>
+
+  <view class="h">手串摘要行（稿 19、45），右侧插槽放 “›”</view>
+  <view class="card">
+    <design-row design="{{rowMoon}}" catalog="{{catalog}}" sub="21 颗 · 今天 14:20">
+      <view slot="default" class="more">›</view>
+    </design-row>
+    <design-row design="{{rowRed}}" catalog="{{catalog}}" sub="21 颗 · 手围 15cm 合适">
+      <view slot="default" class="more">›</view>
+    </design-row>
+  </view>
+
+  <view class="h">加载中骨架</view>
+  <view class="sk" wx:if="{{loading}}" />
+  <view class="stage" wx:else>
+    <bracelet beads="{{beadsB}}" size="360" />
+  </view>
+</view>

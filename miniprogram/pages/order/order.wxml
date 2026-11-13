@@ -1,23 +1,71 @@
-<view class="order-page"><view wx:if="{{quoteChanges.length}}" style="padding:24rpx;background:#fff8e8;color:#8a491d;"><view wx:for="{{quoteChanges}}" wx:key="*this">{{item}}</view><button wx:if="{{quotePending && !missing.length}}" bindtap="confirmQuote">确认新价格</button><button wx:if="{{missing.length}}" bindtap="edit">返回修改设计</button></view><view wx:if="{{catalogOffline}}" style="flex-shrink:0;padding:12rpx 24rpx;color:#9b5b18;font-size:24rpx;background:#fff8e8;">正在使用离线示例数据</view>
-  <view wx:if="{{!order && design}}" class="order-content">
-    <view class="order-card">
-      <view class="design-summary"><view class="order-preview"><bracelet-thumb wx:if="{{!previewFallback && catalogReady}}" beads="{{design.beads}}" catalog="{{catalog}}" bind:unavailable="unavailable"/><view wx:if="{{previewFallback}}" wx:for="{{preview}}" wx:key="index" class="preview-bead" style="left:{{item.x}}%;top:{{item.y}}%;background:{{item.color}}"></view></view><view class="summary-info"><view class="design-name">{{design.name}}</view><view class="caption">手围 {{design.wrist}}cm · {{design.beads.length}} 颗</view></view></view>
-      <view class="section-title">材料明细</view>
-      <view class="material-list"><view wx:for="{{items}}" wx:key="id" class="material-line"><view class="material-thumb"><image wx:if="{{item.photo}}" src="{{item.photo}}" mode="aspectFill" class="material-image"/><view wx:else class="material-dot" style="background:radial-gradient(circle at 30% 25%,#fff,{{item.color}})"></view></view><view class="material-info"><view>{{item.name}} {{item.mm}}mm</view><view class="caption">¥{{item.unit}} × {{item.qty}}</view><view wx:if="{{item.pointsText}}" class="caption">{{item.pointsText}}</view><view wx:if="{{item.explanation}}" class="material-explanation">{{item.explanation}}</view><view wx:if="{{item.safety}}" class="material-safety">安全提示：{{item.safety}}</view></view><view class="amount">¥{{item.subtotal}}</view></view></view>
-      <view wx:if="{{missing.length}}" class="error">部分材料已下架或不可用，请返回修改设计。</view>
-      <view class="opt"><text>材料小计</text><text>¥{{goods}}</text></view>
+<view class="page">
+  <c-state wx:if="{{!design}}" title="没找到要下单的手串" action="去首页看看" bind:action="home" />
+  <block wx:else>
+    <view class="address-row {{addressShake ? 'shake' : ''}}" bindtap="manualAddress">
+      <view wx:if="{{person}}"><view class="address-name">{{person}}　{{phone}}</view><view class="address-detail">{{addr}}</view></view>
+      <view wx:else>收货地址</view>
+      <view class="address-actions" wx:if="{{!person}}">
+        <button class="c-btn c-btn--sec small" catchtap="chooseAddress">用微信地址</button>
+        <text catchtap="manualAddress">手动填写 ›</text>
+      </view>
+      <text wx:else class="link">修改 ›</text>
     </view>
-    <view class="order-card">
-      <view class="opt"><text>手围 / 珠串总长</text><view class="value-link" bindtap="wrist">{{design.wrist}}cm / {{length}}cm <text class="muted">修改 ›</text></view></view>
-      <view wx:if="{{fit && fit !== '长度基本合适'}}" class="fit-warning"><text>{{fit}}</text><text class="value-link" bindtap="edit">回去调整 ›</text></view>
-      <view class="opt"><text>穿绳</text><view class="cords"><button class="cord {{cord===0?'chosen':''}}" data-cord="0" bindtap="setCord">弹力线</button><button class="cord {{cord===1?'chosen':''}}" data-cord="1" bindtap="setCord">编织绳 +¥5</button></view></view>
-      <view class="opt"><text>礼盒包装 +¥{{giftPrice}}</text><switch checked="{{gift}}" color="#c8302e" bindchange="setGift"/></view>
-      <view class="opt"><text>手工串制</text><text>¥15</text></view>
-      <view class="opt"><text>运费</text><text>{{ship==='0.00'?'包邮':'¥'+ship+'（满 ¥99 包邮）'}}</text></view>
+
+    <view class="summary">
+      <view class="bracelet"><c-bracelet beads="{{beads}}" size="144" /></view>
+      <view class="summary-text"><view class="name">{{design.name}}</view><view class="meaning">{{design.meaning}}</view><view class="hint">{{design.beads.length}} 颗 · 手围 {{design.wrist}}cm 合适</view></view>
     </view>
-    <view class="order-card form-card"><view class="section-title">收货信息</view><input class="form-input" placeholder="收货人" value="{{person}}" data-key="person" bindinput="input"/><input class="form-input" type="number" placeholder="手机号" value="{{phone}}" data-key="phone" bindinput="input"/><input class="form-input" placeholder="详细地址" value="{{addr}}" data-key="addr" bindinput="input"/><view class="error" wx:if="{{error}}">{{error}}</view><button wx:if="{{needLogin}}" class="submit" bindtap="goLogin">去登录</button><view class="caption muted">当前支付尚未接入，提交后仅创建待支付订单，请勿付款。</view></view>
-    <view class="order-bar"><view class="order-total"><text class="total-price">¥{{total}}</text><text class="caption muted">合计（含运费）</text></view><button class="submit" loading="{{busy}}" disabled="{{busy || !catalogReady || missing.length || quotePending}}" bindtap="submit">提交订单</button></view>
-  </view>
-  <view wx:elif="{{order}}" class="order-card done"><view class="section-title">订单已创建</view><view>订单号 {{order.no}}</view><view>应付 ¥{{order.total}}</view><view>状态：{{order.status}}</view><view class="caption muted">支付尚未接入，请勿付款。</view><button class="submit" bindtap="home">回首页</button><button bindtap="mine">查看我的订单</button></view>
-  <view wx:else class="order-card">未找到设计，请返回重新选择。</view>
+    <view class="rows">
+      <view class="row" bindtap="openMaterials"><text>材料</text><text class="link">{{items.length}} 种 ›</text></view>
+      <view class="row" bindtap="openCord"><text>穿绳</text><text>{{cord === 1 ? '编织绳' : '弹力线'}} ›</text></view>
+      <view class="row" bindtap="openGift"><text>送礼</text><text>{{gift ? '礼盒和贺卡' : '礼盒和贺卡'}} ›</text></view>
+    </view>
+    <view class="rows prices">
+      <view class="row"><text>珠子</text><text>¥{{goods}}</text></view>
+      <view wx:if="{{handwork !== '0.00'}}" class="row"><text>手工费</text><text>¥{{handwork}}</text></view>
+      <view wx:if="{{cord === 1}}" class="row"><text>穿绳</text><text>¥{{cordPrice}}</text></view>
+      <view wx:if="{{gift}}" class="row"><text>礼盒</text><text>¥{{giftPrice}}</text></view>
+      <view class="row"><view>运费<view wx:if="{{shipNote}}" class="hint">{{shipNote}}</view></view><text>{{ship === '0.00' ? '包邮' : '¥' + ship}}</text></view>
+    </view>
+    <view class="payment-note">提交订单后进入付款，付款前可以再次核对金额。</view>
+    <view wx:if="{{error}}" class="error">{{error}}</view>
+    <c-bar>
+      <view slot="top" class="bar-top">
+        <view wx:if="{{fit && fit !== '长度基本合适'}}" class="length-note">{{fit}}，确定这样下单？<text class="link" bindtap="edit">回去调整 ›</text></view>
+        <view class="agreement {{agreeError ? 'agreement-error' : ''}} {{agreeShake ? 'shake' : ''}}">
+          <view class="check {{agreed ? 'checked' : ''}}" bindtap="toggleAgreed">{{agreed ? '✓' : ''}}</view>
+          <view class="agreement-text"><text bindtap="toggleAgreed">{{agreeError ? '请先勾选：' : '我已阅读 '}}</text><text wx:if="{{hasSafety}}" class="under" data-type="材料安全说明" bindtap="openRule">材料安全提示</text><text wx:if="{{hasSafety}}"> 和 </text><text class="under" data-type="定制商品说明" bindtap="openRule">定制商品退换说明</text></view>
+        </view>
+      </view>
+      <view slot="left" class="total">¥{{total}}</view>
+      <button class="c-btn" loading="{{busy}}" bindtap="submit">{{busy ? '正在提交……' : '提交订单'}}</button>
+    </c-bar>
+  </block>
+
+  <c-sheet show="{{sheet === 'address'}}" title="收货地址" bind:close="closeSheet">
+    <input placeholder="收货人" value="{{person}}" data-key="person" bindinput="input" />
+    <input type="number" maxlength="11" placeholder="手机号" value="{{phone}}" data-key="phone" bindinput="input" />
+    <input placeholder="详细地址" value="{{addr}}" data-key="addr" bindinput="input" />
+    <button class="c-btn" bindtap="closeSheet">好了</button>
+  </c-sheet>
+  <c-sheet show="{{sheet === 'materials'}}" title="材料" bind:close="closeSheet">
+    <view wx:for="{{items}}" wx:key="id" class="sheet-row"><view><view>{{item.name}} {{item.mm}}mm ×{{item.qty}}</view><view class="hint">{{item.explanation}}</view><view wx:if="{{item.safety}}" class="hint">{{item.safety}}</view></view><text>¥{{item.subtotal}}</text></view>
+  </c-sheet>
+  <c-sheet show="{{sheet === 'cord'}}" title="穿绳" bind:close="closeSheet">
+    <view class="sheet-row" data-cord="0" bindtap="setCord">弹力线 <text>{{cord === 0 ? '✓' : ''}}</text></view>
+    <view class="sheet-row" data-cord="1" bindtap="setCord">编织绳 +¥{{pricing.cordFen / 100}} <text>{{cord === 1 ? '✓' : ''}}</text></view>
+  </c-sheet>
+  <c-sheet show="{{sheet === 'gift'}}" title="送礼" bind:close="closeSheet">
+    <view class="sheet-row" bindtap="toggleGift">礼盒 +¥{{pricing.giftFen / 100}} <text>{{gift ? '✓' : ''}}</text></view>
+    <view class="sheet-label">贺卡留言（选填，最多 50 字）</view>
+    <textarea maxlength="50" placeholder="写一句想说的话" value="{{giftNote}}" data-key="giftNote" bindinput="input" />
+    <view class="counter">{{giftNote.length}}/50</view>
+    <view class="sheet-row" bindtap="toggleHidePrice">隐藏价格：包裹里不放带价格的单据 <text>{{hidePrice ? '✓' : ''}}</text></view>
+    <button class="c-btn" bindtap="finishGift">好了</button>
+  </c-sheet>
+  <c-sheet show="{{sheet === 'price'}}" title="价格有变化" maskClose="{{false}}">
+    <view>你挑的时候到现在，有材料调了价。</view>
+    <view wx:for="{{quoteChanges}}" wx:key="*this" class="sheet-row">{{item}}</view>
+    <view class="sheet-actions"><button class="c-btn c-btn--sec" bindtap="declinePrice">先不下单</button><button class="c-btn" bindtap="acceptPrice">按新价格提交</button></view>
+  </c-sheet>
 </view>

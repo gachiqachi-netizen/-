@@ -138,7 +138,7 @@ class RefundTruthTest(unittest.TestCase):
                 commerce.create_after_sale(self.db, {'orderNo': no, 'type': atype,
                                                      'reason': '退款', 'refundFen': 0})
             self.assertIn('必须大于 0', str(ctx.exception))
-        resend = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '补发',
+        resend = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '补寄配件',
                                                       'reason': '珠子有瑕疵', 'refundFen': 0})
         self.assertEqual(resend['reservedFen'], 0)
 
@@ -189,7 +189,7 @@ class RefundTruthTest(unittest.TestCase):
     def test_resend_can_complete_and_refund_cannot(self):
         # 补发仍可 approved → completed
         no1 = self.make_order('rt-resend-000001')['no']
-        resend = commerce.create_after_sale(self.db, {'orderNo': no1, 'type': '补发',
+        resend = commerce.create_after_sale(self.db, {'orderNo': no1, 'type': '补寄配件',
                                                       'reason': '珠子有瑕疵', 'refundFen': 0})
         resend = commerce.transition_after_sale(self.db, resend['no'], 'approve')
         resend = commerce.transition_after_sale(self.db, resend['no'], 'approve')

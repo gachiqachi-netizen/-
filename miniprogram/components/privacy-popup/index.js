@@ -10,6 +10,10 @@ Component({
     detached() { if (this.unsubscribe) this.unsubscribe() }
   },
   methods: {
+    openPrivacy() {
+      // 打开微信隐私指引（低版本基础库没有此接口）
+      if (wx.openPrivacyContract) wx.openPrivacyContract({ fail() {} })
+    },
     agree() { privacy.finish(true) },
     reject() {
       privacy.finish(false)

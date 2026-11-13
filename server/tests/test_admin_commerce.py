@@ -280,7 +280,7 @@ class AdminCommerceTest(unittest.TestCase):
     def test_after_sale_resend_has_no_receive(self):
         order = self.make_order('as-resend-000001')
         no = order['no']
-        rec = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '补发', 'reason': '珠子有瑕疵', 'refundFen': 0})
+        rec = commerce.create_after_sale(self.db, {'orderNo': no, 'type': '补寄配件', 'reason': '珠子有瑕疵', 'refundFen': 0})
         as_no = rec['no']
         commerce.transition_after_sale(self.db, as_no, 'approve')
         with self.assertRaises(ValueError):

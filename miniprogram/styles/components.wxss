@@ -1,0 +1,262 @@
+/*
+ * 基础样式和小控件（任务卡 C0f）。这里的类名是契约，后面的卡直接用，一个字不要改。
+ * 规则：颜色/字号/字重/圆角一律用 tokens.wxss 的变量；尺寸用 rpx；不加警告符号。
+ * 样子照 docs/design/mockups-final.html 里同义的类（.btn/.rowi/.tabs/.chip/.chk/.sw/.step/.state）。
+ */
+
+/* 主按钮：黑底白字、高 100rpx、胶囊 */
+.c-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100rpx;
+  border-radius: var(--r-pill);
+  background: var(--c-text);
+  color: var(--c-bg);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  white-space: nowrap;
+}
+
+/* 套在原生 <button> 上：去掉默认边框和最小宽度 */
+button.c-btn {
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+button.c-btn::after {
+  border: 0;
+}
+
+/* 次按钮：灰底黑字 */
+.c-btn--sec {
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-weight: var(--fw-regular);
+}
+
+/* 小号按钮：高 60rpx */
+.c-btn--s {
+  flex: none;
+  height: 60rpx;
+  padding: 0 24rpx;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-regular);
+}
+
+button.c-btn--s {
+  padding: 0 24rpx;
+}
+
+/* 不可点：变淡 */
+.is-off {
+  opacity: 0.35;
+}
+
+/* 文字按钮：一条下划线文字 */
+.c-link {
+  display: inline;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+  text-decoration: underline;
+  text-underline-offset: 6rpx;
+}
+
+/* 列表行：左标签、右值，可选下方说明和错误行 */
+.c-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-tight);
+  min-height: var(--h-row);
+  padding: 0 var(--sp-base);
+  border-bottom: 1rpx solid var(--c-line);
+}
+
+.c-row__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.c-row__label {
+  font-size: var(--fs-body);
+}
+
+.c-row__desc {
+  margin-top: 4rpx;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.c-row__err {
+  margin-top: 4rpx;
+  font-size: var(--fs-caption);
+  color: var(--c-danger);
+}
+
+.c-row__value {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-tight);
+  color: var(--c-text-2);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* 右侧带 “›” 的可点行 */
+.c-row--tap .c-row__value::after {
+  content: "›";
+  color: var(--c-text-2);
+}
+
+/* 文字分段：选中的加粗、下划线 */
+.c-tabs {
+  display: flex;
+  gap: var(--sp-base);
+  padding: var(--sp-tight) var(--sp-base);
+  white-space: nowrap;
+}
+
+.c-tabs__item {
+  font-size: var(--fs-body);
+}
+
+.c-tabs__item.is-on {
+  font-weight: var(--fw-bold);
+  text-decoration: underline;
+  text-underline-offset: 8rpx;
+}
+
+/* 胶囊标签：选中黑底白字 */
+.c-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 56rpx;
+  padding: 0 24rpx;
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.c-chip.is-on {
+  background: var(--c-text);
+  color: var(--c-bg);
+}
+
+/* “已选”标签：带小珠子图 */
+.c-pk {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  height: 56rpx;
+  padding: 0 20rpx 0 8rpx;
+  border: 1rpx solid var(--c-line);
+  border-radius: var(--r-pill);
+  background: var(--c-bg);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.c-pk__bead {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+/* 圆形勾选：选中黑底白勾；错误红圈 */
+.c-check {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36rpx;
+  height: 36rpx;
+  border: 3rpx solid var(--c-text);
+  border-radius: 50%;
+}
+
+.c-check.is-on {
+  background: var(--c-text);
+  border-color: var(--c-text);
+}
+
+.c-check.is-on::after {
+  content: "";
+  width: 14rpx;
+  height: 8rpx;
+  border: solid var(--c-bg);
+  border-width: 0 0 3rpx 3rpx;
+  transform: rotate(-45deg) translate(1rpx, -1rpx);
+}
+
+.c-check.is-err {
+  border-color: var(--c-danger);
+}
+
+/* 开关 */
+.c-switch {
+  position: relative;
+  width: 88rpx;
+  height: 52rpx;
+  border-radius: var(--r-pill);
+  background: var(--c-line);
+}
+
+.c-switch::after {
+  content: "";
+  position: absolute;
+  left: 4rpx;
+  top: 4rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--c-bg);
+}
+
+.c-switch.is-on {
+  background: var(--c-text);
+}
+
+.c-switch.is-on::after {
+  left: 40rpx;
+}
+
+/* 加减键：圆形加减键 + 中间数字 */
+.c-stepper {
+  display: inline-flex;
+  align-items: center;
+  height: 64rpx;
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+}
+
+.c-stepper__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+.c-stepper__num {
+  min-width: 56rpx;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 骨架块：浅灰、不闪动 */
+.c-skeleton {
+  background: var(--c-surface);
+}
+
+/* 分组之间的浅灰条 */
+.c-gap {
+  height: 16rpx;
+  background: var(--c-surface);
+}

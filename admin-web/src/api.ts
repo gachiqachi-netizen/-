@@ -1,70 +1,29 @@
-export const LABELS: Record<string, Record<string, string>> = {
-  productType: {
-    bead: '珠子',
-    spacer: '隔片',
-    charm: '吊坠',
-    cord: '线材',
-    pack: '包装',
-  },
-  productStatus: {
-    draft: '草稿',
-    on_sale: '上架中',
-    off_sale: '已下架',
-    archived: '已归档',
-  },
-  orderStatus: {
-    pending_confirmation: '待确认',
-    confirmed: '已确认',
-    cancelled: '已取消',
-    closed: '已关闭',
-  },
-  paymentStatus: {
-    unpaid: '未支付',
-    paid: '已支付',
-    refund_pending: '退款处理中',
-    refunded: '已退款',
-  },
-  fulfillmentStatus: {
-    unfulfilled: '待排产',
-    in_production: '手工制作中',
-    ready_to_ship: '质检通过待发',
-    shipped: '已发货',
-    completed: '已签收完成',
-  },
-  shippingStatus: {
-    not_shipped: '未发货',
-    in_transit: '运输中',
-    delivered: '已妥投',
-  },
-  afterSaleStatus: {
-    none: '无售后',
-    applied: '待审核',
-    approved: '已同意',
-    rejected: '已拒绝',
-    returned: '退货已收',
-    completed: '售后完成',
-    closed: '已关闭',
-  },
-  workStep: {
-    pending: '待领料排产',
-    picking: '按BOM配珠中',
-    stringing: '手工穿制中',
-    rechecking: '尺寸复核中',
-    qc: '待终检放行',
-    packed: '已包装待发',
-  },
-  scenarios: {
-    custom_bracelet: 'DIY 定制手串',
-    template_order: '同款模板下单',
-    natural_mineral: '天然矿石/晶石材质',
-    metal_accessory: '含金属配饰/隔珠',
-    gift_pack: '礼盒包装订单',
-  },
+// 状态代码和中文只从契约取（A1 导出，见 contract.ts），这里只做查表，不写对照。
+import { CONTRACT } from './contract';
+
+const LABEL_GROUPS: Record<string, Record<string, string>> = {
+  orderStatus: CONTRACT.statusLabels.orderStatus,
+  paymentStatus: CONTRACT.statusLabels.paymentStatus,
+  fulfillmentStatus: CONTRACT.statusLabels.fulfillmentStatus,
+  logisticsStatus: CONTRACT.statusLabels.logisticsStatus,
+  afterSaleStatus: CONTRACT.statusLabels.afterSaleStatus,
+  productTypes: CONTRACT.productTypes,
+  productStatuses: CONTRACT.productStatuses,
+  termStatuses: CONTRACT.termStatuses,
+  termScenarios: CONTRACT.termScenarios,
+  workOrderStatuses: CONTRACT.workOrderStatuses,
+  qualityGateItems: CONTRACT.qualityGateItems,
 };
 
 export function labelOf(group: string, value?: string | null): string {
   if (!value) return '-';
-  return (LABELS[group] && LABELS[group][value]) || value;
+  const table = LABEL_GROUPS[group];
+  const hit = table && table[value];
+  if (!hit) {
+    console.warn(`[contract] 找不到 ${group} 的中文：${value}`);
+    return value;
+  }
+  return hit;
 }
 
 export function fmtTime(ts?: number | string | null): string {

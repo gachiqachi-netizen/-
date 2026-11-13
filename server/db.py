@@ -5,11 +5,11 @@ import threading
 import time
 
 import migrate
+import migrations
 import money
 import seed
 
-TABLES = ("beads", "templates", "banners", "orders", "users", "sessions", "designs", "order_requests", "shares",
-          "audit_logs", "after_sales", "terms")
+TABLES = migrations.ALL_TABLES
 
 
 class DB:

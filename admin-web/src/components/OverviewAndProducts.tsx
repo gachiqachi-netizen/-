@@ -1,11 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import {
-  Package,
-  Sparkles,
-  ShoppingBag,
-  Wrench,
-  ShieldAlert,
-  FileCheck2,
   Plus,
   Search,
   Copy,
@@ -13,13 +7,10 @@ import {
   Edit3,
   CheckCircle2,
   AlertTriangle,
-  ArrowUpRight,
-  Layers,
   Upload,
   X,
 } from 'lucide-react';
-import { apiRequest, labelOf, fmtTime, uploadImageFile } from '../api';
-import { BraceletRingPreview } from './BraceletRingPreview';
+import { apiRequest, labelOf, uploadImageFile } from '../api';
 
 export const StatusBadge: React.FC<{
   tone?: 'emerald' | 'amber' | 'rose' | 'indigo' | 'zinc' | 'crimson';
@@ -49,7 +40,7 @@ export function statusTone(status?: string): 'emerald' | 'amber' | 'rose' | 'ind
   if (['on_sale', 'confirmed', 'paid', 'ready_to_ship', 'shipped', 'completed', 'delivered', 'published', 'passed', 'approved'].includes(status)) {
     return 'emerald';
   }
-  if (['pending_confirmation', 'unpaid', 'unfulfilled', 'in_production', 'in_transit', 'applied', 'pending', 'picking', 'stringing', 'rechecking', 'qc'].includes(status)) {
+  if (['pending_confirmation', 'unpaid', 'unfulfilled', 'producing', 'in_transit', 'requested', 'reviewing', 'paying', 'pending'].includes(status)) {
     return 'amber';
   }
   if (['cancelled', 'rejected', 'failed', 'off_sale'].includes(status)) {
@@ -57,225 +48,6 @@ export function statusTone(status?: string): 'emerald' | 'amber' | 'rose' | 'ind
   }
   return 'zinc';
 }
-
-interface OverviewProps {
-  beads: any[];
-  templates: any[];
-  orders: any[];
-  afterSales: any[];
-  terms: any[];
-  onNavigate: (tab: string, payload?: any) => void;
-}
-
-export const DashboardOverview: React.FC<OverviewProps> = ({
-  beads,
-  templates,
-  orders,
-  afterSales,
-  terms,
-  onNavigate,
-}) => {
-  const onSaleBeads = beads.filter((b) => (b.status || 'on_sale') === 'on_sale').length;
-  const lowStockBeads = beads.filter((b) => Number(b.stock ?? 99) <= 10).length;
-  const onSaleTpls = templates.filter((t) => (t.status || 'on_sale') === 'on_sale').length;
-  const pendingOrders = orders.filter((o) => o.orderStatus === 'pending_confirmation' || o.fulfillmentStatus === 'unfulfilled').length;
-  const inProdOrders = orders.filter((o) => o.fulfillmentStatus === 'in_production' || (o.workOrder && o.workOrder.step !== 'packed')).length;
-  const pendingAs = afterSales.filter((a) => a.status === 'applied' || a.status === 'approved').length;
-  const publishedTerms = terms.filter((t) => t.status === 'published').length;
-
-  const totalRevenue = orders
-    .filter((o) => o.paymentStatus === 'paid' || o.orderStatus === 'confirmed')
-    .reduce((acc, o) => acc + Number(o.total || o.price || 0), 0);
-
-  const cards = [
-    {
-      title: '在售商品 / 珠材 SKU',
-      value: `${onSaleBeads}`,
-      sub: `共 ${beads.length} 款 · ${lowStockBeads} 款低库存预警`,
-      icon: Package,
-      tab: 'products',
-      accent: 'text-zinc-900',
-    },
-    {
-      title: '灵感手串模板',
-      value: `${onSaleTpls}`,
-      sub: `共 ${templates.length} 款 · 支持 13–19cm 动态配方展开`,
-      icon: Sparkles,
-      tab: 'templates',
-      accent: 'text-[#c8302e]',
-    },
-    {
-      title: '待处理 / 排产订单',
-      value: `${pendingOrders}`,
-      sub: `累计订单 ${orders.length} 笔 · 营收 ¥${totalRevenue.toFixed(0)}`,
-      icon: ShoppingBag,
-      tab: 'orders',
-      accent: 'text-amber-600',
-    },
-    {
-      title: '在制工单 & 质检关口',
-      value: `${inProdOrders}`,
-      sub: '冻结设计快照 · 严禁私自替换用料',
-      icon: Wrench,
-      tab: 'orders',
-      accent: 'text-indigo-600',
-    },
-    {
-      title: '待处理售后单',
-      value: `${pendingAs}`,
-      sub: `共 ${afterSales.length} 笔售后记录`,
-      icon: ShieldAlert,
-      tab: 'after-sales',
-      accent: pendingAs > 0 ? 'text-rose-600' : 'text-emerald-600',
-    },
-    {
-      title: '生效服务条款与规则',
-      value: `${publishedTerms}`,
-      sub: `共 ${terms.length} 份 · 支持全局与指定范围快照`,
-      icon: FileCheck2,
-      tab: 'terms',
-      accent: 'text-emerald-700',
-    },
-  ];
-
-  return (
-    <div className="space-y-6">
-      {/* KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {cards.map((c) => {
-          const Icon = c.icon;
-          return (
-            <button
-              key={c.title}
-              onClick={() => onNavigate(c.tab)}
-              className="group text-left bg-white rounded-xl border border-zinc-200/90 p-5 shadow-xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between w-full">
-                <span className="text-xs font-medium text-zinc-500">{c.title}</span>
-                <div className="w-8 h-8 rounded-lg bg-zinc-100 group-hover:bg-zinc-900 group-hover:text-white text-zinc-700 flex items-center justify-center transition-colors">
-                  <Icon className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="mt-3 flex items-baseline justify-between">
-                <span className={`text-3xl font-bold tracking-tight ${c.accent}`}>{c.value}</span>
-                <span className="inline-flex items-center gap-0.5 text-xs font-medium text-zinc-400 group-hover:text-zinc-900 transition-colors">
-                  进入模块 <ArrowUpRight className="w-3.5 h-3.5" />
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-zinc-500 truncate">{c.sub}</p>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Two-column operational workbench summary */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Recent Orders & Production Queue */}
-        <div className="lg:col-span-7 bg-white rounded-xl border border-zinc-200/90 shadow-xs overflow-hidden flex flex-col">
-          <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold text-zinc-900">最新订单与生产做单队列</h3>
-              <p className="text-xs text-zinc-500 mt-0.5">实时同步小程序下单快照、BOM 配珠进度与质检状态</p>
-            </div>
-            <button
-              onClick={() => onNavigate('orders')}
-              className="text-xs font-medium text-zinc-700 hover:text-zinc-900 px-2.5 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-50"
-            >
-              查看全部订单
-            </button>
-          </div>
-          <div className="divide-y divide-zinc-100">
-            {orders.slice(0, 6).map((o) => {
-              const wo = o.workOrder || {};
-              const qg = o.qualityGate || {};
-              return (
-                <div
-                  key={o.no}
-                  onClick={() => onNavigate('orders', { orderNo: o.no })}
-                  className="px-5 py-3.5 hover:bg-zinc-50/80 cursor-pointer transition-colors flex items-center justify-between gap-4"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-zinc-900">{o.no}</span>
-                      <StatusBadge tone={statusTone(o.orderStatus)}>
-                        {labelOf('orderStatus', o.orderStatus)}
-                      </StatusBadge>
-                      <StatusBadge tone={statusTone(o.fulfillmentStatus)}>
-                        {labelOf('fulfillmentStatus', o.fulfillmentStatus)}
-                      </StatusBadge>
-                      {qg.status && (
-                        <StatusBadge tone={statusTone(qg.status)}>
-                          质检:{qg.status === 'passed' ? '通过' : qg.status === 'failed' ? '拦截' : '待检'}
-                        </StatusBadge>
-                      )}
-                    </div>
-                    <div className="text-xs text-zinc-500 mt-1 truncate">
-                      {o.name || '定制手串'} · 手围 {o.wrist || 15}cm · 珠材 {(o.beads || []).length} 颗 · 工序:{' '}
-                      <span className="text-zinc-700 font-medium">{labelOf('workStep', wo.step || 'pending')}</span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-sm font-semibold text-zinc-900">¥{Number(o.total || o.price || 0).toFixed(2)}</div>
-                    <div className="text-[11px] text-zinc-400">{fmtTime(o.createdAt)}</div>
-                  </div>
-                </div>
-              );
-            })}
-            {orders.length === 0 && (
-              <div className="p-8 text-center text-xs text-zinc-400">暂无订单数据</div>
-            )}
-          </div>
-        </div>
-
-        {/* Template Recipe Preview Card */}
-        <div className="lg:col-span-5 bg-white rounded-xl border border-zinc-200/90 shadow-xs overflow-hidden flex flex-col">
-          <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold text-zinc-900">热门模板配方与手围预览</h3>
-              <p className="text-xs text-zinc-500 mt-0.5">支持按 13–19cm 手围自动计算颗数与 BOM 清单</p>
-            </div>
-            <button
-              onClick={() => onNavigate('templates')}
-              className="text-xs font-medium text-[#c8302e] hover:bg-[#c8302e]/5 px-2.5 py-1.5 rounded-lg border border-[#c8302e]/20"
-            >
-              打开模板工作台
-            </button>
-          </div>
-          <div className="p-5 flex-1 flex flex-col justify-between">
-            {templates[0] ? (
-              <div className="flex flex-col items-center">
-                <BraceletRingPreview
-                  beads={templates[0].expandedDesign?.beads || templates[0].beads || []}
-                  wristCm={templates[0].wrist || 15}
-                  size={195}
-                  subtitle={templates[0].name}
-                />
-                <div className="w-full mt-4 grid grid-cols-3 gap-2 text-center bg-zinc-50 rounded-lg p-3 border border-zinc-200/70">
-                  <div>
-                    <div className="text-[11px] text-zinc-500">默认手围</div>
-                    <div className="text-sm font-bold text-zinc-900">{templates[0].wrist || 15} cm</div>
-                  </div>
-                  <div>
-                    <div className="text-[11px] text-zinc-500">展开珠数</div>
-                    <div className="text-sm font-bold text-zinc-900">
-                      {templates[0].expandedDesign?.beadCount || (templates[0].beads || []).length} 颗
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-[11px] text-zinc-500">指导售价</div>
-                    <div className="text-sm font-bold text-[#c8302e]">¥{templates[0].price || 0}</div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="p-8 text-center text-xs text-zinc-400">暂无模板数据</div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 interface ProductsViewProps {
   beads: any[];
@@ -436,9 +208,9 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
             <option value="">全部品类 ({beads.length})</option>
             <option value="bead">珠子 (Bead)</option>
             <option value="spacer">隔片 (Spacer)</option>
-            <option value="charm">吊坠 (Charm)</option>
+            <option value="pendant">吊坠 (Charm)</option>
             <option value="cord">线材 (Cord)</option>
-            <option value="pack">包装 (Pack)</option>
+            <option value="packaging">包装 (Pack)</option>
           </select>
           <select
             value={statusFilter}
@@ -504,7 +276,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
                       </div>
                     </td>
                     <td className="py-3 px-3 text-xs text-zinc-600">
-                      {labelOf('productType', b.type || 'bead')}
+                      {labelOf('productTypes', b.type || 'bead')}
                     </td>
                     <td className="py-3 px-3 font-mono text-xs text-zinc-600">{b.mat || '-'}</td>
                     <td className="py-3 px-3 text-xs font-medium text-zinc-700">{b.sizeMm || 8} mm</td>
@@ -520,7 +292,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
                     </td>
                     <td className="py-3 px-3">
                       <StatusBadge tone={statusTone(b.status || 'on_sale')}>
-                        {labelOf('productStatus', b.status || 'on_sale')}
+                        {labelOf('productStatuses', b.status || 'on_sale')}
                       </StatusBadge>
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -620,9 +392,9 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
                   >
                     <option value="bead">珠子 (Bead)</option>
                     <option value="spacer">隔片 (Spacer)</option>
-                    <option value="charm">吊坠 (Charm)</option>
+                    <option value="pendant">吊坠 (Charm)</option>
                     <option value="cord">线材 (Cord)</option>
-                    <option value="pack">包装 (Pack)</option>
+                    <option value="packaging">包装 (Pack)</option>
                   </select>
                 </div>
                 <div>

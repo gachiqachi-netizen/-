@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Plus, Copy, Trash2, Save, Sparkles, RefreshCw } from 'lucide-react';
-import { apiRequest } from '../api';
+import { apiRequest, fenToYuan } from '../api';
 import { BraceletRingPreview } from './BraceletRingPreview';
 
 interface TemplatesWorkbenchProps {
@@ -22,7 +22,7 @@ export const TemplatesWorkbenchView: React.FC<TemplatesWorkbenchProps> = ({
   const [previewExpanded, setPreviewExpanded] = useState<any | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const beadOptions = useMemo(() => beads.filter((b) => (b.type || 'bead') !== 'pack'), [beads]);
+  const beadOptions = useMemo(() => beads.filter((b) => (b.type || 'bead') !== 'packaging'), [beads]);
 
   useEffect(() => {
     if (!selectedId && templates.length > 0 && !form?._isNew) {
@@ -50,7 +50,7 @@ export const TemplatesWorkbenchView: React.FC<TemplatesWorkbenchProps> = ({
         tagsText: (found.tags || []).join(', '),
       });
       setPreviewWrist(Number(found.wrist || 15));
-      setPreviewExpanded(found.expandedDesign || null);
+      setPreviewExpanded(found.expandedPreview || null);
     }
   }, [selectedId, templates]);
 
@@ -185,7 +185,7 @@ export const TemplatesWorkbenchView: React.FC<TemplatesWorkbenchProps> = ({
     }
   };
 
-  const exp = previewExpanded || form?.expandedDesign || {};
+  const exp = previewExpanded || form?.expandedPreview || {};
   const expBeads = exp.beads || form?.beads || [];
   const expMaterials = exp.materials || [];
 
@@ -233,10 +233,10 @@ export const TemplatesWorkbenchView: React.FC<TemplatesWorkbenchProps> = ({
                 </div>
                 <div className="text-right shrink-0">
                   <div className={`text-sm font-bold ${active ? 'text-white' : 'text-[#c8302e]'}`}>
-                    ¥{t.price || 0}
+                    ¥{t.expandedPreview ? fenToYuan(t.expandedPreview.totalFen) : t.price || 0}
                   </div>
                   <div className={`text-[11px] ${active ? 'text-zinc-300' : 'text-zinc-400'}`}>
-                    {t.wrist || 15}cm · {(t.beads || []).length}颗
+                    {t.wrist || 15}cm · {t.expandedPreview?.count ?? (t.beads || []).length}颗
                   </div>
                 </div>
               </button>
@@ -294,20 +294,20 @@ export const TemplatesWorkbenchView: React.FC<TemplatesWorkbenchProps> = ({
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                     <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-200/80">
                       <div className="text-[11px] text-zinc-500">展开总颗数</div>
-                      <div className="text-lg font-bold text-zinc-900">{exp.beadCount ?? expBeads.length} 颗</div>
+                      <div className="text-lg font-bold text-zinc-900">{exp.count ?? expBeads.length} 颗</div>
                     </div>
                     <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-200/80">
                       <div className="text-[11px] text-zinc-500">累计弦长</div>
-                      <div className="text-lg font-bold text-zinc-900">{exp.totalLengthMm ?? '-'} mm</div>
+                      <div className="text-lg font-bold text-zinc-900">{exp.lengthMm ?? '-'} mm</div>
                     </div>
                     <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-200/80">
                       <div className="text-[11px] text-zinc-500">目标内周长</div>
-                      <div className="text-lg font-bold text-zinc-900">{exp.targetLengthMm ?? previewWrist * 10} mm</div>
+                      <div className="text-lg font-bold text-zinc-900">{exp.targetMm ?? previewWrist * 10} mm</div>
                     </div>
                     <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-200/80">
                       <div className="text-[11px] text-zinc-500">合手公差状态</div>
                       <div className="text-sm font-bold text-emerald-700 mt-1">
-                        {exp.fit?.label || '标准贴合'} ({exp.deltaMm >= 0 ? `+${exp.deltaMm || 0}` : exp.deltaMm || 0}mm)
+                        {exp.fitOk === undefined ? '-' : exp.fitOk ? '合适' : '不合适'}
                       </div>
                     </div>
                   </div>
@@ -329,7 +329,7 @@ export const TemplatesWorkbenchView: React.FC<TemplatesWorkbenchProps> = ({
                             <span className="text-zinc-400 font-mono">({m.sizeMm}mm)</span>
                           </div>
                           <div className="font-semibold text-zinc-800">
-                            × {m.count} 颗 <span className="text-zinc-400 font-normal ml-1">¥{m.subtotal}</span>
+                            × {m.count} 颗 <span className="text-zinc-400 font-normal ml-1">¥{fenToYuan(m.subtotalFen)}</span>
                           </div>
                         </div>
                       ))}

@@ -6,12 +6,43 @@ export const CONTRACT = {
     "edit_address": "修改地址",
     "pay_order": "去支付",
     "reorder": "按这款再串一条",
+    "request_after_sale": "申请售后",
     "view_logistics": "查看物流"
+  },
+  "afterSaleReasons": {
+    "仅退款": [
+      "不想要了",
+      "拍错了，想重新设计",
+      "等太久了",
+      "其他"
+    ],
+    "拒收后退款": [
+      "不想要了",
+      "物流太慢",
+      "其他"
+    ],
+    "改手围重串": [
+      "戴着太紧",
+      "戴着太松"
+    ],
+    "补寄配件": [
+      "少件或漏发",
+      "掉珠或断线",
+      "其他"
+    ],
+    "退货退款": [
+      "珠子有裂纹或瑕疵",
+      "和图片不一样",
+      "掉珠或断线",
+      "其他"
+    ]
   },
   "afterSaleTypes": [
     "仅退款",
     "退货退款",
-    "补发"
+    "补寄配件",
+    "改手围重串",
+    "拒收后退款"
   ],
   "customerStatus": {
     "after_sale_done": {
@@ -254,7 +285,7 @@ export const CONTRACT = {
     "退货退款说明",
     "售后服务说明"
   ],
-  "version": "70b84c33df13",
+  "version": "551b25ff1400",
   "workOrderStatuses": {
     "pending": "待开始",
     "producing": "制作中",

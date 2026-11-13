@@ -1,2 +1,95 @@
-<!-- 由任务卡 C0f 基础样式和小控件 填内容 -->
-<view class="kit">临时页：C0f 基础样式和小控件</view>
+<view class="kit">
+  <view class="h">按钮四种状态并排</view>
+  <view class="line">
+    <button class="c-btn">主按钮</button>
+    <button class="c-btn c-btn--sec">次按钮</button>
+    <button class="c-btn c-btn--s">小号</button>
+    <button class="c-btn is-off" disabled>不可点</button>
+  </view>
+
+  <view class="h">文字链接</view>
+  <view class="line">
+    <view class="c-link">查看售后政策</view>
+  </view>
+
+  <view class="h">列表行</view>
+  <view class="card">
+    <view class="c-row">
+      <view class="c-row__main">
+        <view class="c-row__label">手围</view>
+        <view class="c-row__desc">按手腕最细处量</view>
+      </view>
+      <view class="c-row__value">15cm</view>
+    </view>
+    <view class="c-row c-row--tap" bindtap="onStateLink">
+      <view class="c-row__main">
+        <view class="c-row__label">配送地址</view>
+      </view>
+      <view class="c-row__value">添加</view>
+    </view>
+  </view>
+
+  <view class="h">文字分段</view>
+  <view class="c-tabs">
+    <view class="c-tabs__item is-on">水晶</view>
+    <view class="c-tabs__item">月光石</view>
+    <view class="c-tabs__item">玉石</view>
+  </view>
+
+  <view class="h">胶囊标签</view>
+  <view class="line">
+    <view class="c-chip">温柔</view>
+    <view class="c-chip is-on">明澈</view>
+  </view>
+
+  <view class="h">已选标签</view>
+  <view class="line">
+    <view class="c-pk">
+      <bead class="c-pk__bead" bead="{{bead}}" size="s" />
+      已选 · 海蓝宝
+    </view>
+  </view>
+
+  <view class="h">勾选三种状态</view>
+  <view class="line">
+    <view class="c-check" />
+    <view class="c-check is-on" />
+    <view class="c-check is-err" />
+  </view>
+
+  <view class="h">开关</view>
+  <view class="line">
+    <view class="c-switch is-on" />
+    <view class="c-switch" />
+  </view>
+
+  <view class="h">加减键</view>
+  <view class="line">
+    <view class="c-stepper">
+      <view class="c-stepper__btn" bindtap="onMinus">−</view>
+      <view class="c-stepper__num">{{count}}</view>
+      <view class="c-stepper__btn" bindtap="onPlus">＋</view>
+    </view>
+  </view>
+
+  <view class="h">骨架块</view>
+  <view class="c-skeleton sk" />
+
+  <view class="c-gap" />
+
+  <view class="h">空状态 / 失败状态</view>
+  <c-state
+    title="还没有作品"
+    desc="串好的手串会保存在这里"
+    action="去串一条"
+    bind:action="onStateAction"
+  />
+  <c-state
+    title="加载失败"
+    desc="网络好像不太顺，再试一次"
+    action="重试"
+    link="联系客服"
+    bind:action="onStateAction"
+    bind:link="onStateLink"
+  />
+</view>

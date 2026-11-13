@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "预览 · 基础样式和小控件",
-  "usingComponents": {}
+  "usingComponents": {
+    "c-state": "../../components/state/index",
+    "bead": "../../components/bead/index"
+  }
 }

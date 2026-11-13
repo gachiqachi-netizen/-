@@ -1,2 +1,22 @@
-<!-- 由任务卡 C0i AI 输入区 填内容 -->
-<view class="kit">临时页：C0i AI 输入区</view>
+<view class="kit-composer">
+  <view class="kit-composer__log">
+    <view class="kit-composer__log-title">最近一次事件</view>
+    <view class="kit-composer__log-name">{{lastEvent}}</view>
+    <view class="kit-composer__log-text" wx:if="{{lastText}}">带的内容：{{lastText}}</view>
+  </view>
+  <view class="kit-composer__demo">
+    <c-composer
+      value="{{value}}"
+      tag="{{tag}}"
+      chips="{{chips}}"
+      bindinput="onInput"
+      bindsend="onSend"
+      bindplus="onPlus"
+      bindtag="onTag"
+      bindchip="onChip"
+      bindvoicestart="onVoiceStart"
+      bindvoiceend="onVoiceEnd"
+      bindvoicecancel="onVoiceCancel"
+    />
+  </view>
+</view>

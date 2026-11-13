@@ -1,0 +1,13 @@
+<view class="c-sheet {{show ? 'is-on' : ''}}">
+  <view class="c-sheet__mask" bindtap="onMaskTap" catchtouchmove="noop" />
+  <view class="c-sheet__panel" catchtouchmove="noop">
+    <view class="c-sheet__grab" wx:if="{{grab}}" />
+    <view class="c-sheet__title" wx:if="{{title}}">{{title}}</view>
+    <scroll-view scroll-y class="c-sheet__body">
+      <slot />
+    </scroll-view>
+    <view class="c-sheet__footer">
+      <slot name="footer" />
+    </view>
+  </view>
+</view>

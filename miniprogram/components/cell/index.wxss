@@ -1,0 +1,40 @@
+/* 款式格（稿 03）：名字/寓意/价格字号位置写死，不开放属性改小 */
+.c-cell {
+  background: var(--c-bg);
+  padding-bottom: 24rpx;
+}
+
+.c-cell__img {
+  aspect-ratio: 1;
+  background: var(--c-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.c-cell__tx {
+  padding: 16rpx 28rpx 0;
+}
+
+.c-cell__name {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-cell__line {
+  margin-top: 4rpx;
+  font-size: var(--fs-caption);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-cell__price {
+  margin-top: 4rpx;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+  white-space: nowrap;
+}

@@ -1,0 +1,25 @@
+<view class="c-bracelet" style="width: {{size}}rpx; height: {{height}}rpx;">
+  <view
+    wx:for="{{rings}}"
+    wx:for-item="ring"
+    wx:key="idx"
+    wx:for-index="ri"
+    class="c-bracelet__ring"
+    style="width: {{size}}rpx; height: {{size}}rpx; margin-top: -{{size / 2}}rpx; opacity: {{ring.opacity}}; transform: translateY({{ring.ty}}rpx);"
+  >
+    <view
+      wx:for="{{ring.items}}"
+      wx:for-item="it"
+      wx:key="index"
+      class="c-bracelet__pos {{selected === it.index ? 'is-sel' : ''}} {{selected >= 0 && selected !== it.index ? 'is-dim' : ''}}"
+      style="left: {{it.x}}rpx; top: {{it.y}}rpx; width: {{it.box}}rpx; height: {{it.box}}rpx;"
+    >
+      <view class="c-bracelet__beadwrap" style="width: {{it.d}}rpx; height: {{it.d}}rpx;">
+        <bead bead="{{it.bead}}" size="m" style="width: {{it.d}}rpx; height: {{it.d}}rpx;" />
+      </view>
+    </view>
+    <view wx:if="{{wordmark && ri === 0}}" class="c-bracelet__wm">
+      <wordmark tone="line" size="{{wmSize}}" />
+    </view>
+  </view>
+</view>

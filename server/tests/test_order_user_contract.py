@@ -70,7 +70,8 @@ class OrderUserContractTest(unittest.TestCase):
         public = user_api.perform_order_action(self.db, "ORDER-1", "owner-a", "cancel_order")
         self.assertEqual(public["orderStatus"], "cancelled")
         self.assertEqual(public["paymentStatus"], "closed")
-        self.assertEqual(public["status"], "已取消")
+        self.assertEqual(public["state"]["order"]["code"], "cancelled")
+        self.assertEqual(public["status"], "待支付")
         self.assertEqual(public["allowedActions"], ["reorder"])
         self.assertEqual(
             [entry["group"] for entry in public["statusHistory"][-2:]],
@@ -111,7 +112,8 @@ class OrderUserContractTest(unittest.TestCase):
         self.assertEqual(public["fulfillmentStatus"], "delivered")
         self.assertEqual(public["logisticsStatus"], "delivered")
         self.assertEqual(public["paymentStatus"], "paid")
-        self.assertEqual(public["status"], "已完成")
+        self.assertEqual(public["state"]["order"]["code"], "completed")
+        self.assertEqual(public["status"], "已发货")
         self.assertIn("signedAt", public["logistics"])
         self.assertEqual(public["allowedActions"], ["view_logistics", "write_review", "reorder", "request_after_sale"])
         self.assertEqual(

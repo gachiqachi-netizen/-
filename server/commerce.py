@@ -1258,7 +1258,6 @@ def customer_order_action(db, no, user_id, action, reason=None):
             status.validate_transition("paymentStatus", groups["paymentStatus"], "closed")
             order["orderStatus"] = "cancelled"
             order["paymentStatus"] = "closed"
-            order["status"] = "已取消"  # legacy client compatibility
             append_history(order, "customer", "orderStatus", groups["orderStatus"], "cancelled",
                            "用户取消未支付订单" + ("：" + reason if reason else ""))
             append_history(order, "customer", "paymentStatus", groups["paymentStatus"], "closed", "订单取消，关闭支付")
@@ -1285,7 +1284,6 @@ def customer_order_action(db, no, user_id, action, reason=None):
             status.validate_transition("orderStatus", groups["orderStatus"], "completed")
             _check_order_constraints(order, "orderStatus", "completed")
             order["orderStatus"] = "completed"
-            order["status"] = "已完成"  # legacy client compatibility
             order.setdefault("logisticsHistory", []).append(
                 {"at": now, "actor": "customer", "action": "确认收货", "detail": "用户确认已收到商品"})
             append_history(order, "customer", "orderStatus", groups["orderStatus"], "completed", "用户确认收货")
@@ -1354,7 +1352,6 @@ def auto_complete_delivered(db, now_ms=None, days=AUTO_COMPLETE_DAYS):
             status.validate_transition("orderStatus", groups["orderStatus"], "completed")
             _check_order_constraints(o, "orderStatus", "completed")
             o["orderStatus"] = "completed"
-            o["status"] = "已完成"  # legacy client compatibility
             append_history(o, "system", "orderStatus", groups["orderStatus"], "completed", note)
             o["updatedAt"] = now
             return o
@@ -1407,7 +1404,6 @@ def payment_callback(db, no, callback, user_id=None):
                 status.validate_transition("orderStatus", "pending_confirmation", "confirmed")
                 order["orderStatus"] = "confirmed"
                 append_history(order, "payment", "orderStatus", "pending_confirmation", "confirmed", "付款后自动确认")
-            order["status"] = "待串制"  # legacy client compatibility
         order["updatedAt"] = _now()
         return order
 

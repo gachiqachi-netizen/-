@@ -78,8 +78,10 @@ class UserAPITest(unittest.TestCase):
         b = self.db.list('beads')[0]
         req = {'requestId': 'test-order-00000001', 'name': '测试', 'beads': [b['id']] * 6, 'wrist': 15, 'person': '测试', 'phone': '13800138000', 'addr': '测试地址', 'confirmedQuote': self.quote(b)}
         order = user_api.make_order(self.db, req, 'u1')
-        self.assertEqual(order['status'], '待支付')
-        self.assertFalse(order['paymentAvailable'])
+        self.assertEqual(order['customerStatus']['code'], 'pending_payment')
+        self.assertEqual(order['state']['payment']['code'], 'unpaid')
+        self.assertNotIn('status', order)
+        self.assertNotIn('paymentAvailable', order)
         self.assertEqual(len(order['items']), 6)
         self.assertNotIn('userId', order)
         b['onSale'] = False
@@ -90,6 +92,8 @@ class UserAPITest(unittest.TestCase):
         with self.assertRaises(ValueError):
             user_api.make_order(self.db, {**req, 'requestId': 'test-order-00000002'}, 'u1')
         saved = self.db.get('orders', order['no'])
+        self.assertNotIn('status', saved)
+        self.assertNotIn('paymentAvailable', saved)
         self.assertEqual(saved['items'][0]['name'], b['name'])
 
     def test_toxic_materials_keep_real_knowledge_warnings(self):

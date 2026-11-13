@@ -17,7 +17,6 @@ global.wx = {
   navigateTo: options => { navigated = options.url },
   navigateBack: options => { if (options.success) options.success() },
   reLaunch: options => { navigated = options.url },
-  showToast: () => {},
 }
 const api = require('../utils/api'), auth = require('../utils/auth')
 require('../pages/order/order')
@@ -36,7 +35,7 @@ async function run() {
   const source = fs.readFileSync(path.join(__dirname, '../pages/order/order.wxml'), 'utf8')
   const logic = fs.readFileSync(path.join(__dirname, '../pages/order/order.js'), 'utf8')
   assert.strictEqual((source.match(/class="check /g) || []).length, 1)
-  assert(!logic.includes('wx.showModal(')) // No second confirmation dialog.
+  assert(!source.includes('title="确认下单"')) // No second confirmation sheet.
   let requests = 0, next = catalog(3)
   api.catalog = async force => { assert.strictEqual(force, true); return next }
   auth.authorized = async (path, body) => {

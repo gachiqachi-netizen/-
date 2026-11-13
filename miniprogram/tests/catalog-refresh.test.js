@@ -14,15 +14,15 @@ test('体验和正式请求失败不能降级为示例',async()=>{
 })
 function page(){const p={...definition,data:JSON.parse(JSON.stringify(definition.data)),setData(d){Object.assign(this.data,d)}};store.current=()=>({id:'test',name:'测试',wrist:15,beads:['a','a']});return p}
 test('进入下单强制刷新，改价列明并确认，取消保持禁用',async()=>{
- setup();let modal;wx.showModal=o=>{modal=o;o.success({confirm:false})};wx.request=o=>o.success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:5}]}})
+ setup();wx.request=o=>o.success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:5}]}})
  const p=page();await p.onShow();assert.match(p.data.quoteChanges[0],/3.00 → ¥5.00/);assert.equal(p.data.quotePending,true);assert.equal(p.data.catalogReady,false);assert.equal(p.data.goods,'10.00');p.confirmQuote();assert.equal(p.data.quotePending,false);assert.equal(p.data.catalogReady,true)
 })
 test('材料下架不可确认，目录失联不可下单',async()=>{
- setup();wx.showModal=o=>o.success({confirm:false});wx.request=o=>o.success({statusCode:200,data:{beads:[]}});const p=page();await p.onShow();assert.match(p.data.quoteChanges[0],/下架/);p.confirmQuote();assert.equal(p.data.catalogReady,false)
+ setup();wx.request=o=>o.success({statusCode:200,data:{beads:[]}});const p=page();await p.onShow();assert.match(p.data.quoteChanges[0],/下架/);p.confirmQuote();assert.equal(p.data.catalogReady,false)
  wx.request=o=>o.fail({errMsg:'offline'});await p.onShow();assert.equal(p.data.catalogReady,false);assert.match(p.data.error,/加载失败/);p.setGift({detail:{value:true}});assert.equal(p.data.quotePending,true)
 })
 test('改价待确认时切换礼盒仍不能提交',async()=>{
- setup();wx.showModal=o=>o.success({confirm:false});wx.request=o=>o.success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:5}]}})
+ setup();wx.request=o=>o.success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:5}]}})
  const p=page();await p.onShow();p.setGift({detail:{value:true}})
  assert.equal(p.data.quotePending,true);assert.equal(p.data.catalogReady,false)
  await p.submit();assert.equal(p.data.error,'请先确认新价格')
@@ -34,7 +34,7 @@ test('首次目录加载失败后切换礼盒和编织绳不报错',async()=>{
  assert.equal(p.data.catalogReady,false)
 })
 test('旧页面请求不能覆盖新进入页面的报价',async()=>{
- setup();const requests=[];wx.request=o=>requests.push(o);wx.showModal=o=>o.success({confirm:true});const p=page();const first=p.onShow(),second=p.onShow();requests[1].success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:5}]}});await second;requests[0].success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:2}]}});await first;assert.equal(p.data.goods,'10.00')
+ setup();const requests=[];wx.request=o=>requests.push(o);const p=page();const first=p.onShow(),second=p.onShow();requests[1].success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:5}]}});await second;requests[0].success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:2}]}});await first;assert.equal(p.data.goods,'10.00')
 })
 test('刷新脚本保留卖点安全提示，失败不覆盖原快照',async()=>{
  const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{refresh}=require('../../tools/refresh-catalog-preview')

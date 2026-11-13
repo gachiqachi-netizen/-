@@ -1,8 +1,4 @@
 {
   "navigationBarTitleText": "预览 · 弹层、底栏、浮动提示",
-  "usingComponents": {
-    "c-sheet": "../../components/sheet/index",
-    "c-bar": "../../components/bar/index",
-    "c-toast": "../../components/toast/index"
-  }
+  "usingComponents": {}
 }

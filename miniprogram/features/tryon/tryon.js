@@ -38,11 +38,12 @@ Page({
   selectDesign(e){const d=this.choices[e.currentTarget.dataset.index];if(!d)return;this.useDesign(d);this.closeDesigns()},
   openModes(){this.setData({showModes:true})},
   closeModes(){this.setData({showModes:false})},
-  selectMode(e){const mode=e.currentTarget.dataset.mode;this.closeModes();if(mode==='ar')return this.openAR();if(mode==='photo'){this.setData({mode:'photo'});return this.choose()}this.setData({mode:'model'})},
+  selectMode(e){const mode=e.currentTarget.dataset.mode;this.closeModes();if(mode==='ar')return this.openAR();if(mode==='photo'){this.setData({mode:'photo'});return this.choose()}this.setData({mode:'model',aligned:false})},
   toggle(e){const mode=e.currentTarget.dataset.mode;if(mode===this.data.mode)return;this.setData({mode},()=>{if(mode==='photo'&&this.data.photo)this.draw()})},
-  choose() {
+  saveOrChoose(){if(this.data.aligned)this.saveImage();else this.choose()},
+  choose(e) {
     if(!this.design)return wx.showToast({title:'请先设计手串',icon:'none'})
-    wx.chooseMedia({count:1,mediaType:['image'],sourceType:['camera','album'],success:r=>{
+    wx.chooseMedia({count:1,mediaType:['image'],sourceType:e&&e.currentTarget&&e.currentTarget.dataset.source?[e.currentTarget.dataset.source]:['camera','album'],success:r=>{
       const f=r.tempFiles&&r.tempFiles[0];if(!f)return
       wx.getImageInfo({src:f.tempFilePath,success:info=>{
         if(!info.width||!info.height)return this.setData({error:'照片无法读取，请重新选择。'})

@@ -1,6 +1,6 @@
 # C8c 交付报告
 
-分支：agent/C8c-logistics　最后一个代码提交：727f8f6
+分支：agent/C8c-logistics　最后一个代码提交：3bbabdf
 
 ## 1. 步骤
 | 卡上的步骤（照抄编号和第一句） | 做了 / 没做 | 在哪 |
@@ -31,11 +31,11 @@
 ```
 
 ## 4. 测试
-- 后端开工前 563 项 → 现在 563 项；小程序开工前 215 项 → 现在 215 项。
+- 后端开工前 563 项 → 现在 563 项；小程序开工前 215 项 → 现在 218 项。
 - `python3 -m unittest discover -s server/tests`：两次在 180 秒上限被中止，未产生 `Ran/OK` 汇总；详细模式停在 `test_handler_template_expand_work_order_and_quality_gate`。`python3 -m unittest discover -s server/tests -p test_production_workbench.py`：`Ran 8 tests in 10.940s`、`OK`。
-- `node --test miniprogram/tests/*.test.js`：第一次并行运行时无关的 `ar-model-cache.test.js` 时序用例失败；顺序重跑 `tests 215`、`pass 215`、`fail 0`。
+- `node --test miniprogram/tests/*.test.js`：审核后重跑 `tests 218`、`pass 218`、`fail 0`；新增的物流页 3 项已被此命令发现。
 - `python3 kb/validate.py`：`已填 200/200 种，有问题 0 条，缺 0 种`。
-- `node --test miniprogram/features/logistics/logistics.test.js`：3 项通过。`without tracking provider only waybill is visible and copy gives feedback` 验证无轨迹时单号复制；`only edit_address permission allows pre-shipment address update` 验证发货前改地址；`shipped order never opens address editor` 验证已发货禁止编辑。
+- `node --test miniprogram/tests/logistics-page.test.js`：3 项通过。`without tracking provider only waybill is visible and copy gives feedback` 验证无轨迹时单号复制；`only edit_address permission allows pre-shipment address update` 验证发货前改地址；`shipped order never opens address editor` 验证已发货禁止编辑。
 - 未改旧测试期望；后端发现用例数由 `unittest` discover 的 `countTestCases()` 得到，未将限时中止误写成通过。
 
 ## 5. 自查（贴命令和输出）
@@ -56,4 +56,6 @@ dd0af83 C8c: 开工
 - 后端全量测试在 3 分钟上限内未完成；卡住时最后显示 `test_handler_template_expand_work_order_and_quality_gate`，该文件单独 8 项通过。
 
 ## 7. 审核修改（打回后才有）
-无。
+| 审核意见编号 | 怎么改的 | 提交 hash |
+|---|---|---|
+| 1 | 测试移到 `miniprogram/tests/logistics-page.test.js`，修正 `auth` 和页面模块的相对路径；`node --test miniprogram/tests/*.test.js` 实际运行 218 项，全部通过，包含新增 3 项。 | 3bbabdf |

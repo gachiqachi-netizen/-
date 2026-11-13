@@ -314,6 +314,7 @@ def create_share(db, data, owner_id):
             raise KeyError('设计不存在')
     token = secrets.token_urlsafe(32)
     share = {k: design[k] for k in ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId') if k in design}
+    share['createdAt'] = int(time.time() * 1000)
     if design_id:
         share['designId'] = design_id
     db.put('shares', token, share)
@@ -332,7 +333,10 @@ def read_share(db, token):
         if not design or design.get('deletedAt'):
             return None
     fields = ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId')
-    return {k: d[k] for k in fields if k in d}
+    public = {k: d[k] for k in fields if k in d}
+    public['createdAt'] = d.get('createdAt')
+    public['authorLabel'] = '来自珠养养的一位用户'
+    return public
 
 
 def make_order(db, data, uid):

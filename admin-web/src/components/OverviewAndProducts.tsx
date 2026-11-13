@@ -49,7 +49,7 @@ export function statusTone(status?: string): 'emerald' | 'amber' | 'rose' | 'ind
   if (['on_sale', 'confirmed', 'paid', 'ready_to_ship', 'shipped', 'completed', 'delivered', 'published', 'passed', 'approved'].includes(status)) {
     return 'emerald';
   }
-  if (['pending_confirmation', 'unpaid', 'unfulfilled', 'in_production', 'in_transit', 'applied', 'pending', 'picking', 'stringing', 'rechecking', 'qc'].includes(status)) {
+  if (['pending_confirmation', 'unpaid', 'unfulfilled', 'producing', 'in_transit', 'requested', 'reviewing', 'paying', 'pending'].includes(status)) {
     return 'amber';
   }
   if (['cancelled', 'rejected', 'failed', 'off_sale'].includes(status)) {
@@ -79,8 +79,8 @@ export const DashboardOverview: React.FC<OverviewProps> = ({
   const lowStockBeads = beads.filter((b) => Number(b.stock ?? 99) <= 10).length;
   const onSaleTpls = templates.filter((t) => (t.status || 'on_sale') === 'on_sale').length;
   const pendingOrders = orders.filter((o) => o.orderStatus === 'pending_confirmation' || o.fulfillmentStatus === 'unfulfilled').length;
-  const inProdOrders = orders.filter((o) => o.fulfillmentStatus === 'in_production' || (o.workOrder && o.workOrder.step !== 'packed')).length;
-  const pendingAs = afterSales.filter((a) => a.status === 'applied' || a.status === 'approved').length;
+  const inProdOrders = orders.filter((o) => o.fulfillmentStatus === 'producing').length;
+  const pendingAs = afterSales.filter((a) => a.status === 'requested' || a.status === 'reviewing').length;
   const publishedTerms = terms.filter((t) => t.status === 'published').length;
 
   const totalRevenue = orders
@@ -211,7 +211,7 @@ export const DashboardOverview: React.FC<OverviewProps> = ({
                     </div>
                     <div className="text-xs text-zinc-500 mt-1 truncate">
                       {o.name || '定制手串'} · 手围 {o.wrist || 15}cm · 珠材 {(o.beads || []).length} 颗 · 工序:{' '}
-                      <span className="text-zinc-700 font-medium">{labelOf('workStep', wo.step || 'pending')}</span>
+                      <span className="text-zinc-700 font-medium">{wo.step || '-'}</span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
@@ -245,7 +245,7 @@ export const DashboardOverview: React.FC<OverviewProps> = ({
             {templates[0] ? (
               <div className="flex flex-col items-center">
                 <BraceletRingPreview
-                  beads={templates[0].expandedDesign?.beads || templates[0].beads || []}
+                  beads={templates[0].expandedPreview?.beads || templates[0].beads || []}
                   wristCm={templates[0].wrist || 15}
                   size={195}
                   subtitle={templates[0].name}
@@ -258,7 +258,7 @@ export const DashboardOverview: React.FC<OverviewProps> = ({
                   <div>
                     <div className="text-[11px] text-zinc-500">展开珠数</div>
                     <div className="text-sm font-bold text-zinc-900">
-                      {templates[0].expandedDesign?.beadCount || (templates[0].beads || []).length} 颗
+                      {templates[0].expandedPreview?.count ?? (templates[0].beads || []).length} 颗
                     </div>
                   </div>
                   <div>
@@ -436,9 +436,9 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
             <option value="">全部品类 ({beads.length})</option>
             <option value="bead">珠子 (Bead)</option>
             <option value="spacer">隔片 (Spacer)</option>
-            <option value="charm">吊坠 (Charm)</option>
+            <option value="pendant">吊坠 (Charm)</option>
             <option value="cord">线材 (Cord)</option>
-            <option value="pack">包装 (Pack)</option>
+            <option value="packaging">包装 (Pack)</option>
           </select>
           <select
             value={statusFilter}
@@ -504,7 +504,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
                       </div>
                     </td>
                     <td className="py-3 px-3 text-xs text-zinc-600">
-                      {labelOf('productType', b.type || 'bead')}
+                      {labelOf('productTypes', b.type || 'bead')}
                     </td>
                     <td className="py-3 px-3 font-mono text-xs text-zinc-600">{b.mat || '-'}</td>
                     <td className="py-3 px-3 text-xs font-medium text-zinc-700">{b.sizeMm || 8} mm</td>
@@ -520,7 +520,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
                     </td>
                     <td className="py-3 px-3">
                       <StatusBadge tone={statusTone(b.status || 'on_sale')}>
-                        {labelOf('productStatus', b.status || 'on_sale')}
+                        {labelOf('productStatuses', b.status || 'on_sale')}
                       </StatusBadge>
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -620,9 +620,9 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
                   >
                     <option value="bead">珠子 (Bead)</option>
                     <option value="spacer">隔片 (Spacer)</option>
-                    <option value="charm">吊坠 (Charm)</option>
+                    <option value="pendant">吊坠 (Charm)</option>
                     <option value="cord">线材 (Cord)</option>
-                    <option value="pack">包装 (Pack)</option>
+                    <option value="packaging">包装 (Pack)</option>
                   </select>
                 </div>
                 <div>

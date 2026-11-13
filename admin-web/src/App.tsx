@@ -259,7 +259,7 @@ export const App: React.FC = () => {
                         : item.id === 'orders'
                         ? orders.length
                         : item.id === 'after-sales'
-                        ? afterSales.filter((a) => a.status === 'applied').length
+                        ? afterSales.filter((a) => a.status === 'requested' || a.status === 'reviewing').length
                         : 0;
                     return (
                       <button

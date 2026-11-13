@@ -22,7 +22,6 @@ Page({
     api.catalog().then(c => this.setData({ catalog: c.beads || [] })).catch(() => {})
     if (auth.hasSession()) this.sync()
   },
-  onUnload() { if (this.deleteTimer) clearTimeout(this.deleteTimer) },
   refresh() { this.setData({ works: rowsOf(store.list()) }) },
   async sync() {
     this.setData({ loading: true, failed: false })
@@ -62,14 +61,13 @@ Page({
     this.closeMenu()
     wx.setStorageSync(KEY, all.filter(item => item.id !== d.id)); this.refresh()
     const pending = { d, index, undone: false }
-    this.pendingDelete = pending
     queue.show({ text: `已删除“${d.name}”`, action: '撤销', onAction: () => {
       pending.undone = true
-      if (this.deleteTimer) clearTimeout(this.deleteTimer)
+      if (pending.timer) clearTimeout(pending.timer)
       const latest = store.list(); latest.splice(Math.min(index, latest.length), 0, d)
       wx.setStorageSync(KEY, latest); this.refresh()
     } })
-    this.deleteTimer = setTimeout(() => {
+    pending.timer = setTimeout(() => {
       if (pending.undone || !d.cloudId || !auth.hasSession()) return
       auth.authorized('/designs/' + encodeURIComponent(d.cloudId), undefined, 'DELETE').catch(() => {
         store.save(d); this.refresh(); queue.show({ text: '没删成，作品已恢复' })

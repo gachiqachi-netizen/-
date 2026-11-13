@@ -59,6 +59,7 @@ class AdminPermissionsTests(unittest.TestCase):
             ('POST', '/api/admin/after-sales', 'process_after_sales'),
             ('POST', '/api/admin/terms', 'publish_terms'),
             ('PUT', '/api/admin/orders/no/logistics', 'process_orders'),
+            ('PUT', '/api/admin/orders/no', 'process_orders'),
             ('PUT', '/api/admin/orders/no/work-order', 'work_orders'),
             ('PUT', '/api/admin/orders/no/address', 'edit_order_address'),
             ('PUT', '/api/admin/orders/no/note', 'edit_order_address'),

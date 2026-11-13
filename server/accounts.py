@@ -68,6 +68,7 @@ ROUTE_PERMISSIONS = (
     ("PUT", r"/api/admin/orders/[\w-]+/work-order", "work_orders"),
     ("PUT", r"/api/admin/orders/[\w-]+/quality-gate", "quality_gate"),
     ("PUT", r"/api/admin/orders/[\w-]+/(?:status|logistics)", "process_orders"),
+    ("PUT", r"/api/admin/orders/[\w-]+", "process_orders"),
     ("POST", r"/api/upload", "edit_content"),
 )
 

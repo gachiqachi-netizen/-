@@ -1,4 +1,6 @@
 import React, { useMemo } from 'react';
+import { labelOf } from '../api';
+import { actorLabel } from '../components/OrdersView';
 
 interface TodayPageProps {
   orders: any[];
@@ -9,6 +11,25 @@ interface TodayPageProps {
 }
 
 const pad = (n: number) => String(n).padStart(2, '0');
+
+// 最近操作只写中文：谁、做了什么、哪一单（订单号缩成 CGZ…后 4 位），不显示英文代码和原始说明
+const ACTION_TEXT: Record<string, string> = {
+  start_payment: '发起付款', payment_callback: '付款成功', auto_complete: '签收 7 天自动确认收货',
+  create: '新建', internal_note: '写了内部备注', refund: '退款', change_address: '改了收货地址',
+  archive: '下架', copy: '复制', delete: '删除', update: '修改', update_logistics: '更新了物流',
+  cancel_order: '取消订单', confirm_receipt: '确认收货', approve: '同意售后', reject: '拒绝售后',
+  returning: '记录了退货物流', close: '关闭售后', complete: '完成售后',
+};
+const TARGET_TEXT: Record<string, string> = { order: '订单', after_sale: '售后', product: '商品', template: '模板', term: '条款' };
+const shortId = (id?: string) => (id && id.length > 10 ? `${id.slice(0, 3)}…${id.slice(-4)}` : id || '');
+const describe = (log: any): string => {
+  let what = ACTION_TEXT[log.action] || '';
+  if (log.action === 'transition') {
+    const m = /^(\w+): (\w+) → (\w+)/.exec(String(log.detail || ''));
+    what = m ? `改成${labelOf(m[1], m[3])}` : '改了状态';
+  }
+  return [actorLabel(log.actor), what || '操作了', TARGET_TEXT[log.target] || '', shortId(log.targetId)].filter(Boolean).join(' ');
+};
 
 /** 今天（稿 A02）：一行一件事 + 最近操作 */
 const TodayPage: React.FC<TodayPageProps> = ({ orders, afterSales, beads, auditLogs, onNavigate }) => {
@@ -96,7 +117,7 @@ const TodayPage: React.FC<TodayPageProps> = ({ orders, afterSales, beads, auditL
           {recent.map((log, i) => {
             const d = new Date(Number(log.at) || 0);
             const time = Number(log.at) ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : '-';
-            const text = [log.actor, log.detail || log.action, log.targetId].filter(Boolean).join(' ');
+            const text = describe(log);
             return (
               <div key={i} className="zy-rr">
                 <span className="zy-rr-time">{time}</span>

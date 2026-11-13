@@ -310,7 +310,7 @@ class Handler(BaseHTTPRequestHandler):
                 # 不认识的登录要求一律拒绝，不当成公开接口
                 self.send(401, {"error": "需要登录"})
                 return True
-            ctx = routes.Ctx(db=db, user_id=user_id, admin=is_admin, qs=self.qs())
+            ctx = routes.Ctx(db=db, user_id=user_id, admin=is_admin, qs=self.qs(), ip=self.client_address[0])
             try:
                 status_code, body = fn(ctx, match, data)
             except ValueError as e:

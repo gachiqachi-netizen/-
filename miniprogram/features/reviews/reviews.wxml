@@ -1,4 +1,58 @@
 <view class="page">
-  <view class="title">{{title}}</view>
-  <view class="note">这一页由卡 {{owner}} 做</view>
+  <!-- 三个分段 -->
+  <view class="c-tabs tabs-top">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="c-tabs__item {{tab === item.key ? 'is-on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="switchTab"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- 评价列表：数据等后端 B14 -->
+  <view class="list">
+    <view class="review" wx:for="{{reviews}}" wx:key="id">
+      <view class="avatar"></view>
+      <view class="review-main">
+        <view class="review-meta">{{item.nick}}　手围 {{item.wrist}}cm　{{item.date}}</view>
+        <view class="stars">{{item.stars}}</view>
+        <view class="review-text">{{item.text}}</view>
+        <view class="photos" wx:if="{{item.photos && item.photos.length}}">
+          <view class="photo" wx:for="{{item.photos}}" wx:for-item="p" wx:key="*this"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="state-wrap" wx:if="{{!loading && !error && !reviews.length}}">
+      <c-state title="还没有评价" desc="买过这条手串的人会在这里晒出来" />
+    </view>
+  </view>
+
+  <!-- 加载 / 失败 -->
+  <view wx:if="{{loading}}" class="sk-wrap">
+    <view class="sk-line c-skeleton"></view>
+    <view class="sk-line c-skeleton"></view>
+    <view class="sk-line c-skeleton"></view>
+  </view>
+  <view class="state-wrap" wx:if="{{error && !loading}}">
+    <c-state title="加载失败" desc="{{error}}" action="再试一次" bind:action="retry" />
+  </view>
+
+  <!-- 底部栏：到手价 + 立即下单 -->
+  <c-bar>
+    <view slot="left" class="bar-price">{{price}}</view>
+    <button class="c-btn" bindtap="order">立即下单</button>
+  </c-bar>
+
+  <!-- 手围确认弹层 -->
+  <c-sheet show="{{showWrist}}" title="先确认手围" bind:close="closeWrist">
+    <view class="wrist-desc">现在按常见的 15cm</view>
+    <view class="wrist-btns">
+      <button class="c-btn c-btn--sec wrist-measure" bindtap="measureWrist">量一下</button>
+      <button class="c-btn" bindtap="confirmWrist">就按 15cm</button>
+    </view>
+  </c-sheet>
+
+  <c-toast />
 </view>

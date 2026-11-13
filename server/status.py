@@ -17,7 +17,7 @@ ORDER_STATUSES = ["pending_confirmation", "confirmed", "cancelled", "completed",
 # 支付状态 8 态（对齐验收标准）。支付状态只能由支付回调推进，后台不可手工修改。
 PAYMENT_STATUSES = ["unpaid", "paying", "paid", "pay_failed", "refunding", "refunded", "refund_failed", "closed"]
 FULFILLMENT_STATUSES = ["unfulfilled", "producing", "ready_to_ship", "shipped", "delivered", "exception", "returned"]
-AFTER_SALE_STATUSES = ["none", "requested", "reviewing", "approved", "rejected", "returning", "refunding", "completed", "closed"]
+AFTER_SALE_STATUSES = ["none", "requested", "reviewing", "approved", "rejected", "returning", "refunding", "completed", "closed", "received"]
 LOGISTICS_STATUSES = ["not_shipped", "shipped", "in_transit", "delivered", "exception", "returned"]
 
 # 状态组字段名（物流状态独立成组）
@@ -42,7 +42,7 @@ FULFILLMENT_STATUS_LABELS = {
 }
 AFTER_SALE_STATUS_LABELS = {
     "none": "无售后", "requested": "申请中", "reviewing": "审核中", "approved": "已同意", "rejected": "已拒绝",
-    "returning": "退货中", "refunding": "退款中", "completed": "售后完成", "closed": "售后关闭",
+    "returning": "退货中", "refunding": "退款中", "completed": "售后完成", "closed": "售后关闭", "received": "已收到寄回",
 }
 LOGISTICS_STATUS_LABELS = {
     "not_shipped": "未发货", "shipped": "已发货", "in_transit": "运输中",
@@ -108,11 +108,12 @@ AFTER_SALE_TRANSITIONS = {
     "requested": {"reviewing", "rejected", "closed"},
     "reviewing": {"approved", "rejected", "closed"},
     "approved": {"returning", "refunding", "completed", "closed"},
-    "returning": {"refunding", "closed"},
+    "returning": {"refunding", "closed", "received"},
     "refunding": {"completed", "closed"},
     "rejected": {"closed"},
     "completed": set(),
     "closed": set(),
+    "received": {"completed", "closed"},
 }
 
 # 支付状态合法迁移（同状态视为幂等）。终态 refunded / closed / pay_failed 不再变；

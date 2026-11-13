@@ -4,7 +4,7 @@ const {resolveModelConfig}=require('./model-cache');
 const store=require('../utils/design');
 const api=require('../utils/api');
 Page({
- data:{modelProgress:0,modelLoading:false,frozen:false,scalePercent:135,renderFailed:false,width:320,height:440,beads:[],catalog:[],cameraMounted:false,position:'back',tracked:false,status:'正在准备独立手部识别…',error:'',diag:'TFJS 独立识别 · 不使用微信视觉会话',x:160,y:220,size:30,angle:0,tilt:45},
+ data:{modelProgress:0,modelLoading:false,frozen:false,scalePercent:135,renderFailed:false,width:320,height:440,beads:[],catalog:[],cameraMounted:false,position:'back',tracked:false,status:'把手腕放进画面里',error:'',errorKind:'',diag:'TFJS 独立识别 · 不使用微信视觉会话',x:160,y:220,size:30,angle:0,tilt:45},
  onLoad(){const info=wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync(),d=store.current();this.setData({width:info.windowWidth-32,height:Math.min(520,Math.round(info.windowHeight*.60)),beads:d&&d.beads||[]});api.catalog().then(c=>{if(!this._closed)this.setData({catalog:c.beads||[]})}).catch(()=>this.fail('材料加载失败，请返回后重试'));},
  onReady(){this.initialize()},
  onShow(){this._hidden=false;if(this._tracker&&this._cameraReady)this.startFrames()},
@@ -13,7 +13,7 @@ Page({
  async initialize(){
   if(this._loading||this._closed)return;
   if(!this.data.beads.length){this.fail('请返回先选择一条手串');return}
-  this._loading=true;this.setData({error:'',modelProgress:0,modelLoading:true,status:'正在加载手部模型…'});
+  this._loading=true;this.setData({error:'',errorKind:'',modelProgress:0,modelLoading:true,status:'正在下载手部识别模型…'});
   try {
    await new Promise((resolve,reject)=>wx.authorize({scope:'scope.camera',success:resolve,fail:()=>reject(new Error('请允许摄像头权限后重试'))}));
    const canvas=await new Promise((resolve,reject)=>this.createSelectorQuery().select('#compute').fields({node:true}).exec(r=>r&&r[0]&&r[0].node?resolve(r[0].node):reject(new Error('识别画布创建失败'))));
@@ -74,10 +74,30 @@ Page({
  disposeTracker(){if(this._tracker){try{this._tracker.dispose()}catch(_){}this._tracker=null}},
  setScale(e){const value=Number(e.detail.value);if(!Number.isFinite(value))return;this.setData({scalePercent:value,...(this._pose?{size:Math.min(95,this._pose.size*value/100)}:{})})},
  toggleFreeze(){if(this.data.frozen){this._pose=null;this.setData({frozen:false,tracked:false,status:'请将手背和手腕放入画面'});return}if(this.data.tracked)this.setData({frozen:true,status:'已定格 · 可以调节手串大小'})},
+ goOrder(){wx.navigateTo({url:'/pages/order/order'})},
+ savePhoto(){
+  if(!this.data.frozen||!this._output)return;
+  const ring=this.selectComponent('#ring');
+  if(!ring||!ring.exportImage)return wx.showToast({title:'图片还没准备好',icon:'none'});
+  ring.exportImage((error,path)=>{
+   if(error)return wx.showToast({title:'图片还没准备好',icon:'none'});
+   const canvas=wx.createOffscreenCanvas({type:'2d',width:this.data.width,height:this.data.height});
+   const context=canvas.getContext('2d'),overlay=canvas.createImage();
+   overlay.onload=()=>{
+    context.drawImage(this._output,0,0,this.data.width,this.data.height);
+    context.drawImage(overlay,0,0,this.data.width,this.data.height);
+    context.fillStyle='#ffffff';context.textAlign='right';context.font='20px serif';context.fillText('珠养养',this.data.width-16,this.data.height-32);
+    context.font='8px serif';context.fillText('ZHU YANG YANG',this.data.width-16,this.data.height-18);
+    wx.canvasToTempFilePath({canvas,success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>wx.showToast({title:'已保存到相册'}),fail:()=>wx.showToast({title:'保存失败，请检查相册权限',icon:'none'})}),fail:()=>wx.showToast({title:'图片生成失败',icon:'none'})});
+   };
+   overlay.onerror=()=>wx.showToast({title:'图片生成失败',icon:'none'});
+   overlay.src=path;
+  });
+ },
  switchCamera(){if(this._busy)return;this._pose=null;this.setData({frozen:false});this.stopFrames();this._version=(this._version||0)+1;this._cameraReady=false;this._seenFrame=false;this.setData({cameraMounted:false,tracked:false},()=>{if(!this._closed)this.setData({position:this.data.position==='back'?'front':'back',cameraMounted:true,status:'正在切换相机…'})})},
- retry(){if(this._busy||this._loading)return;if(this.data.renderFailed){wx.redirectTo({url:'/ar-hand/index'});return;}this.stopFrames();this._seenFrame=false;this._cameraReady=false;this.setData({cameraMounted:false,error:'',tracked:false},()=>{if(this._tracker)this.setData({cameraMounted:true,status:'正在重启相机…'});else this.initialize()})},
- fail(message){console.error('[AR-TFJS]',message);if(!this._closed)this.setData({error:message,status:'测试未通过',tracked:false})},
+ retry(){if(this._busy||this._loading)return;if(this.data.renderFailed){wx.redirectTo({url:'/ar-hand/index'});return;}this.stopFrames();this._seenFrame=false;this._cameraReady=false;this.setData({cameraMounted:false,error:'',errorKind:'',tracked:false},()=>{if(this._tracker)this.setData({cameraMounted:true,status:'正在重启相机…'});else this.initialize()})},
+ fail(message){console.error('[AR-TFJS]',message);if(this._closed)return;const permission=/权限|授权|摄像头/.test(message),unsupported=/不支持|不可用|识别画布|画面画布/.test(message),download=this.data.modelLoading&&!permission&&!unsupported;this.setData({error:message,errorKind:permission?'permission':unsupported?'unsupported':download?'download':'other',status:'',tracked:false})},
  overlayError(e){this._renderFailure=e&&e.detail||{};this.stopFrames();this.setData({renderFailed:true});this.fail('手串 3D 渲染失败（'+(this._renderFailure.stage||'unknown')+'）：'+(this._renderFailure.message||'未知错误'))},
  copyDiagnostic(){const d=wx.getDeviceInfo?wx.getDeviceInfo():wx.getSystemInfoSync();wx.setClipboardData({data:JSON.stringify({build:'tfjs-hand-03',scalePercent:this.data.scalePercent,render:this._renderFailure||null,platform:d.platform,model:d.model,system:d.system,status:this.data.status,diag:this.data.diag,error:this.data.error})})},
- privacyRejected(){this.stopFrames();this.setData({cameraMounted:false,error:'未授权摄像头。可以改用照片试戴。',status:'已取消实时试戴'})}
+ privacyRejected(){this.stopFrames();this.setData({cameraMounted:false,error:'未授权摄像头。可以改用照片试戴。',errorKind:'permission',status:''})}
 });

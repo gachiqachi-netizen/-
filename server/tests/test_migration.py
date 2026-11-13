@@ -9,6 +9,7 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import migrate
+import migrations
 from migrate import SCHEMA_MIGRATIONS_TABLE, SQLiteAdapter, run_migrations
 from migrations import TABLES
 
@@ -69,8 +70,8 @@ class MigrationTest(unittest.TestCase):
 
             conn = sqlite3.connect(path)
             applied = run_migrations(conn, SQLiteAdapter())
-            self.assertEqual(applied, ['001', '002', '003', '004', '005', '006', '007', '009', '010', '015'])
-            self.assertEqual(_versions(conn), {'001', '002', '003', '004', '005', '006', '007', '009', '010', '015'})
+            self.assertEqual(applied, [m.VERSION for m in migrations.MIGRATIONS])
+            self.assertEqual(_versions(conn), {m.VERSION for m in migrations.MIGRATIONS})
             existing = {row[0] for row in conn.execute(
                 "SELECT name FROM sqlite_master WHERE type='table'")}
             for t in TABLES:
@@ -99,7 +100,7 @@ class MigrationTest(unittest.TestCase):
             conn.commit()
             applied_again = run_migrations(conn, SQLiteAdapter())
             self.assertEqual(applied_again, [])
-            self.assertEqual(_versions(conn), {'001', '002', '003', '004', '005', '006', '007', '009', '010', '015'})
+            self.assertEqual(_versions(conn), {m.VERSION for m in migrations.MIGRATIONS})
             self.assertEqual(_order_doc(conn, 'O1')['totalFen'], 100)
             conn.close()
 
@@ -125,7 +126,7 @@ class MigrationTest(unittest.TestCase):
                 "SELECT 1 FROM sqlite_master WHERE type='table' AND name='partial_table'").fetchone()
             self.assertIsNone(exists)  # 半迁移状态被回滚
             applied = run_migrations(conn, adapter)  # 可重跑
-            self.assertEqual(applied, ['001', '002', '003', '004', '005', '006', '007', '009', '010', '015'])
+            self.assertEqual(applied, [m.VERSION for m in migrations.MIGRATIONS])
             conn.close()
 
     def test_money_backfill_from_yuan_fields(self):

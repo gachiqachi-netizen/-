@@ -3,6 +3,8 @@ import hashlib
 import hmac
 import contextvars
 import os
+import re
+import money
 import secrets
 import time
 import uuid
@@ -32,6 +34,114 @@ ROLE_PERMISSIONS = {
 ROLE_NAMES = {"owner": "负责人", "operator": "运营", "service": "客服", "maker": "做单师傅"}
 CURRENT_ADMIN = contextvars.ContextVar("current_admin", default=None)
 PBKDF2_ITERATIONS = 600000
+
+# Method, complete path, permission. More specific paths precede collection paths.
+ROUTE_PERMISSIONS = (
+    ("GET", r"/api/admin/audit", "manage_accounts"),
+    ("GET", r"/api/admin/work-orders", "view_work_orders"),
+    ("GET", r"/api/admin/orders/[\w-]+/work-order", "view_work_orders"),
+    ("GET", r"/api/admin/orders(?:/[\w-]+)?", "view_orders"),
+    ("GET", r"/api/admin/after-sales(?:/[\w-]+)?", "process_after_sales"),
+    ("GET", r"/api/admin/beads(?:/[\w-]+)?", "edit_products"),
+    ("GET", r"/api/admin/templates(?:/[\w-]+/expand)?", "edit_templates"),
+    ("GET", r"/api/admin/banners", "edit_content"),
+    ("GET", r"/api/admin/terms", "publish_terms"),
+    ("GET", r"/api/admin/accounts", "manage_accounts"),
+    ("POST", r"/api/admin/accounts/bootstrap", "manage_accounts"),
+    ("PUT", r"/api/admin/accounts/me/password", "manage_accounts"),
+    ("GET", r"/api/admin/shares", "edit_content"),
+    ("GET", r"/api/admin/articles(?:/[\w-]+)?", "edit_content"),
+    ("POST", r"/api/admin/articles(?:/[\w-]+/(?:publish|unpublish))?", "edit_content"),
+    ("PUT", r"/api/admin/articles/[\w-]+", "edit_content"),
+    ("DELETE", r"/api/admin/articles/[\w-]+", "edit_content"),
+    ("POST", r"/api/admin/accounts(?:/[\w-]+(?:/disable|/reset-password)?)?", "manage_accounts"),
+    ("PUT", r"/api/admin/accounts/[\w-]+", "manage_accounts"),
+    ("POST", r"/api/admin/shares/[\w-]+/take-down", "edit_content"),
+    ("POST", r"/api/admin/beads(?:/[\w-]+/copy)?", "edit_products"),
+    ("PUT", r"/api/admin/beads/[\w-]+", "edit_products"),
+    ("DELETE", r"/api/admin/beads/[\w-]+", "edit_products"),
+    ("POST", r"/api/admin/templates(?:/expand|/[\w-]+/copy)?", "edit_templates"),
+    ("PUT", r"/api/admin/templates/[\w-]+", "edit_templates"),
+    ("DELETE", r"/api/admin/templates/[\w-]+", "edit_templates"),
+    ("POST", r"/api/admin/banners", "edit_content"),
+    ("PUT", r"/api/admin/banners/[\w-]+", "edit_content"),
+    ("DELETE", r"/api/admin/banners/[\w-]+", "edit_content"),
+    ("POST", r"/api/admin/terms", "publish_terms"),
+    ("PUT", r"/api/admin/terms/[\w-]+", "publish_terms"),
+    ("DELETE", r"/api/admin/terms/[\w-]+", "publish_terms"),
+    ("POST", r"/api/admin/after-sales", "process_after_sales"),
+    ("PUT", r"/api/admin/after-sales/[\w-]+/transition", "process_after_sales"),
+    ("PUT", r"/api/admin/orders/[\w-]+/(?:address|note)", "edit_order_address"),
+    ("PUT", r"/api/admin/orders/[\w-]+/work-order", "work_orders"),
+    ("PUT", r"/api/admin/orders/[\w-]+/quality-gate", "quality_gate"),
+    ("PUT", r"/api/admin/orders/[\w-]+/(?:status|logistics)", "process_orders"),
+    ("PUT", r"/api/admin/orders/[\w-]+", "process_orders"),
+    ("POST", r"/api/upload", "edit_content"),
+)
+
+
+def route_permission(method, path, data=None, db=None):
+    if method == "PUT" and re.fullmatch(r"/api/admin/orders/[\w-]+/status", path):
+        if isinstance(data, dict) and data.get("to") in ("cancelled", "canceled"):
+            return "cancel_orders"
+    if method == "PUT" and re.fullmatch(r"/api/admin/after-sales/[\w-]+/transition", path):
+        if isinstance(data, dict) and data.get("action") in ("refund", "confirm_refund"):
+            return "refund"
+    if method == "PUT" and re.fullmatch(r"/api/admin/beads/[\w-]+", path):
+        if isinstance(data, dict) and any(key in data for key in ("price", "priceFen")):
+            existing = db.get("beads", path.rsplit("/", 1)[-1]) if db is not None else None
+            if existing is None:
+                return "edit_prices"
+            try:
+                old_fen = (money.parse_fen(existing["priceFen"]) if existing.get("priceFen") is not None
+                           else money.yuan_to_fen(existing["price"]))
+                if ("priceFen" in data and money.parse_fen(data["priceFen"]) != old_fen) or (
+                    "price" in data and money.yuan_to_fen(data["price"]) != old_fen
+                ):
+                    return "edit_prices"
+            except (KeyError, ValueError):
+                return "edit_prices"
+    return next((perm for verb, pattern, perm in ROUTE_PERMISSIONS
+                 if verb == method and re.fullmatch(pattern, path)), None)
+
+
+def has_permission(db, user, perm):
+    if not user or user.get("bootstrap"):
+        return False
+    if user.get("roleId") == "owner":
+        return True
+    role = db.get("admin_roles", user.get("roleId"))
+    return bool(role and perm in role.get("permissions", ()))
+
+
+def mask_order(db, value):
+    """按当前后台账号权限返回副本，不修改数据库里的订单。"""
+    user = CURRENT_ADMIN.get()
+    if user is None:
+        return value
+    show_contact = has_permission(db, user, "view_full_contact")
+    show_cost = has_permission(db, user, "view_cost")
+
+    def masked(item):
+        if isinstance(item, list):
+            return [masked(child) for child in item]
+        if not isinstance(item, dict):
+            return item
+        result = {}
+        for key, child in item.items():
+            if key == "costFen" and not show_cost:
+                continue
+            if key in ("phone", "mobile", "contactPhone", "recipientPhone") and not show_contact:
+                digits = str(child or "")
+                result[key] = digits[:3] + "****" + digits[-4:] if re.fullmatch(r"1\d{10}", digits) else "***"
+            elif key in ("addr", "address") and isinstance(child, str) and not show_contact:
+                district = re.search(r"^.*?(?:区|县|旗)", child)
+                result[key] = district.group(0) + "***" if district else "***"
+            else:
+                result[key] = masked(child)
+        return result
+
+    return masked(value)
 
 
 def hash_password(password):

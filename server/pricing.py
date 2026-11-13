@@ -7,13 +7,37 @@ FREE_SHIPPING_THRESHOLD_FEN = 9900
 SHIPPING_FEN = 800
 
 
-def public_config():
+_db = None
+
+
+def attach(db):
+    global _db
+    _db = db
+
+
+def config():
+    saved = _db.get('settings', 'pricing') if _db is not None else None
+    if saved is not None:
+        return saved
     return {
-        'handworkFen': HANDWORK_FEN,
+        'handwork': {'enabled': True, 'fen': HANDWORK_FEN},
+        'shipping': {'enabled': True, 'fen': SHIPPING_FEN,
+                     'freeThresholdFen': FREE_SHIPPING_THRESHOLD_FEN},
+    }
+
+
+def public_config():
+    current = config()
+    handwork = current['handwork']
+    shipping = current['shipping']
+    return {
+        'handworkFen': handwork['fen'] if handwork['enabled'] else 0,
+        'handworkEnabled': handwork['enabled'],
         'cordFen': CORD_FEN,
         'giftFen': GIFT_FEN,
-        'freeShippingThresholdFen': FREE_SHIPPING_THRESHOLD_FEN,
-        'shippingFen': SHIPPING_FEN,
+        'freeShippingThresholdFen': shipping['freeThresholdFen'],
+        'shippingFen': shipping['fen'] if shipping['enabled'] else 0,
+        'shippingEnabled': shipping['enabled'],
     }
 
 
@@ -26,14 +50,19 @@ def quote(items, options=None):
         if type(price) is not int or type(quantity) is not int or price < 0 or quantity < 0:
             raise ValueError('金额必须使用非负整数分')
         goods += price * quantity
+    current = config()
+    handwork = current['handwork']['fen'] if current['handwork']['enabled'] else 0
+    shipping_config = current['shipping']
     cord = CORD_FEN if options.get('cord') == 1 else 0
     gift = GIFT_FEN if options.get('gift') is True else 0
-    subtotal = goods + HANDWORK_FEN + cord + gift
-    shipping = 0 if subtotal >= FREE_SHIPPING_THRESHOLD_FEN else SHIPPING_FEN
+    subtotal = goods + handwork + cord + gift
+    threshold = shipping_config['freeThresholdFen']
+    shipping = (shipping_config['fen'] if shipping_config['enabled'] and
+                (threshold is None or subtotal < threshold) else 0)
     discount = 0
     return {
         'goodsFen': goods,
-        'handworkFen': HANDWORK_FEN,
+        'handworkFen': handwork,
         'cordFen': cord,
         'giftFen': gift,
         'subtotalFen': subtotal,

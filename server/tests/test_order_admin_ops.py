@@ -161,7 +161,7 @@ class AdminHTTPTests(unittest.TestCase):
         self.assertEqual(body["person"], "李四")
         saved = app.db.get("orders", "ADDR-1")
         self.assertEqual(saved["addr"], NEW_ADDR["addr"])
-        self.assertEqual(saved["addressHistory"][-1]["actor"], "admin")
+        self.assertEqual(saved["addressHistory"][-1]["actor"], "测试负责人")
         self.assertEqual(saved["addressHistory"][-1]["person"], "张三")
 
     def test_admin_change_address_after_shipping_rejected(self):

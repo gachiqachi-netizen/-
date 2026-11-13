@@ -14,6 +14,7 @@ import KnowledgePage from './pages/knowledge';
 import HomePage from './pages/home';
 import ArticlesPage from './pages/articles';
 import AccountsPage from './pages/accounts';
+import LoginPage from './pages/login';
 
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -113,32 +114,7 @@ export const App: React.FC = () => {
   };
 
   if (authed === false) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="zy-card" style={{ width: 360, padding: 28 }}>
-          <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>珠养养 · 后台</div>
-          <div style={{ fontSize: 12, color: 'var(--text-aux)', marginBottom: 20 }}>串个珠生产与运营管理</div>
-          <form onSubmit={handleLogin}>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="请输入管理员口令"
-              className="zy-field-box"
-            />
-            {loginError && (
-              <div className="zy-field-error" style={{ marginTop: 8 }}>
-                {loginError}
-              </div>
-            )}
-            <button type="submit" className="zy-btn zy-btn-primary" style={{ width: '100%', marginTop: 16 }}>
-              进入后台
-            </button>
-          </form>
-        </div>
-      </div>
-    );
+    return <LoginPage onAuthenticated={(roleId) => roleId === 'owner' ? loadAllData() : setAuthed(true)} />;
   }
 
   if (authed !== true) {

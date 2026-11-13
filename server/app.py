@@ -291,7 +291,7 @@ class Handler(BaseHTTPRequestHandler):
         secure = "; Secure" if self.headers.get("X-Forwarded-Proto") == "https" else ""
         cookie = f"beadloop_admin={sid}; Path=/; Max-Age={ADMIN_SESSION_TTL}; HttpOnly; SameSite=Strict{secure}"
         _audit_admin("LOGIN", "/api/admin/session", ip)
-        return self.send(200, {"ok": True}, headers={"Set-Cookie": cookie})
+        return self.send(200, {"ok": True, "mustChangePassword": bool(uid != "__bootstrap__" and user["mustChangePassword"]), "bootstrap": uid == "__bootstrap__", "user": {key: accounts.public_user(user)[key] for key in ("name", "roleId")} if uid != "__bootstrap__" else None}, headers={"Set-Cookie": cookie})
 
     def admin_logout(self):
         sid = self.admin_cookie()

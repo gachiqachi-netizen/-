@@ -45,7 +45,7 @@ function palette(data,n) {
  return centers.map((c,i)=>({rgb:c,share:sums[i]/pixels.length})).filter(x=>x.share>=.04).sort((a,b)=>b.share-a.share)
 }
 Page({
-  data: { photo: '', busy: false, stage: '', result: null, catalog: [], options: [], mainIndex: 0, accentIndex: 0, metalIndex: 0, every: 4, error: '', preview: [], price: 0, length: 0, beadCount: 0, roles: [], selectedMain:'',selectedAccent:'',selectedMetal:'', wrist:15, intervals:[2,3,4,6] },
+  data: { photo: '', busy: false, stage: '', result: null, catalog: [], options: [], mainIndex: 0, accentIndex: 0, metalIndex: 0, every: 4, error: '', preview: [], price: 0, length: 0, beadCount: 0, roles: [], selectedMain:'',selectedAccent:'',selectedMetal:'', wrist:15, intervals:[2,3,4,6], usageOpen:false, permissionDenied:false, picking:false, name:'照片同款' },
   onLoad() {
     api.catalog().then(c => {
       const catalog = c.beads || []
@@ -54,13 +54,25 @@ Page({
       this.setData({ catalog, options })
     }).catch(e => this.setData({ error: e.message }))
   },
-  choose() {
+  choose(e) {
     if (this.data.busy) return
-    wx.chooseMedia({ count: 1, mediaType: ['image'], sourceType: ['album', 'camera'], success: r => {
+    const source = e && e.currentTarget && e.currentTarget.dataset.source || 'camera'
+    wx.chooseMedia({ count: 1, mediaType: ['image'], sourceType: [source], success: r => {
       const file = r.tempFiles && r.tempFiles[0]
       if (!file) return
-      this.setData({ photo: file.tempFilePath, result: null, error: '' }, () => this.recognize())
-    }, fail: () => {} })
+      if (wx.vibrateShort) wx.vibrateShort({type:'light'})
+      this.setData({ photo: file.tempFilePath, result: null, error: '', usageOpen:true, permissionDenied:false })
+    }, fail: err => { if (source === 'camera' && err && /auth|permission|deny/i.test(err.errMsg || '')) this.setData({permissionDenied:true}) } })
+  },
+  retake() { this.setData({photo:'', result:null, error:'', usageOpen:false, permissionDenied:false}) },
+  openSettings() { wx.openSetting({success:()=>this.setData({permissionDenied:false})}) },
+  useExact() { this.setData({usageOpen:false},()=>this.recognize()) },
+  useFeeling() { this.setData({usageOpen:false}); wx.setStorageSync('cgz_photo_for_ai', this.data.photo); wx.switchTab({url:'/pages/ai/ai'}) },
+  rename(e) { this.setData({name:e.detail.value}) },
+  order() { this.edit(); require('../../utils/nav').openOrder() },
+  showAlternatives(e) {
+    const role = this.data.roles.find(item => item.key === e.currentTarget.dataset.role)
+    this.setData({picking:role.key, alternativeOptions:role.options})
   },
   async recognize() {
     if (!this.data.photo || this.data.busy) return
@@ -71,7 +83,7 @@ Page({
       this.recognitionRun++
       this.setData({ busy: false, error: '识别超时，请换一张较小、更清晰的手串照片后重试。', stage: '' })
     }, this.recognitionHardTimeoutMs || 210000)
-    this.setData({ busy: true, error: '', stage: '正在处理照片…' })
+    this.setData({ busy: true, error: '', stage: '正在一颗一颗地认……' })
     try {
       const prepared = await bounded(imageCompress.prepare(this.data.photo), this.compressTimeoutMs || 20000, '图片压缩超时，请裁剪照片或换一张后重试。')
       const compressed = prepared.path
@@ -127,14 +139,15 @@ Page({
     return {ok:true,source:'local',seen:'按照片颜色估算，请确认实际材料',main:main.id,accent:accent&&accent.id||'',metal:metalBead&&metalBead.id||'',every:accentColor?Math.max(2,Math.min(6,Math.round(1/Math.max(share,.17)))):4,colors:{main:body[0].rgb,accent:accentColor&&accentColor.rgb,metal:metal&&metal.rgb}}
   },
   change(e) { this.setData({ [e.currentTarget.dataset.key]: Number(e.detail.value) },()=>this.renderResult()) },
-  chooseRole(e) { const key=e.currentTarget.dataset.role+'Index', id=e.currentTarget.dataset.id; const index=this.data.options.findIndex(o=>o.id===id); const changes={[key]:Math.max(0,index)}; if(e.currentTarget.dataset.role==='main' && this.data.options[this.data.accentIndex] && this.data.options[this.data.accentIndex].id===id) changes.accentIndex=0; this.setData(changes,()=>this.renderResult()) },
+  chooseRole(e) { const key=e.currentTarget.dataset.role+'Index', id=e.currentTarget.dataset.id; const index=this.data.options.findIndex(o=>o.id===id); const changes={[key]:Math.max(0,index),picking:false}; if(e.currentTarget.dataset.role==='main' && this.data.options[this.data.accentIndex] && this.data.options[this.data.accentIndex].id===id) changes.accentIndex=0; this.setData(changes,()=>this.renderResult()) },
   interval(e) {this.setData({every:Number(e.currentTarget.dataset.value)},()=>this.renderResult())},
   renderResult() {
     const {options,catalog,mainIndex,accentIndex,metalIndex,every,wrist}=this.data; const main=options[mainIndex],accent=options[accentIndex],metal=options[metalIndex]; if(!main||!main.id)return;
     const mainBead=catalog.find(b=>b.id===main.id); if(!mainBead)return;
     const pool=catalog.filter(b=>b.mat!=='metal'&&!b.spacer&&b.mm>=6&&b.mm<=12&&!/佛头|三通/.test(b.name)), metals=catalog.filter(b=>b.mat==='metal');
     const colors=this.data.result && this.data.result.colors || {}; const rank=(selected,list,role)=>[...list].sort((a,b)=>Number(b.id===selected)-Number(a.id===selected)||(colors[role] ? distance(colors[role],beadRgb(a))-distance(colors[role],beadRgb(b))+(role!=='metal'&&a.mm!==mainBead.mm?6000:0)-(role!=='metal'&&b.mm!==mainBead.mm?6000:0) : Math.abs((a.mm||0)-mainBead.mm)-Math.abs((b.mm||0)-mainBead.mm))).slice(0,6).map(b=>({...b,color:(b.c||[])[0]||'#ccc',dark:(b.c||[])[1]||'#999',active:b.id===selected}));
-    const roles=[{key:'main',title:'主珠',hint:'数量最多的',none:false,options:rank(main.id,pool,'main')},{key:'accent',title:'配珠',none:true,noneActive:!accent||!accent.id,options:rank(accent&&accent.id,pool.filter(b=>b.id!==main.id),'accent')},{key:'metal',title:'金属点缀',none:true,noneActive:!metal||!metal.id,options:rank(metal&&metal.id,metals,'metal')}];
+    const confidence=this.data.result && this.data.result.confidence || {};
+    const roles=[{key:'main',title:'主珠',hint:'数量最多的',lowConfidence:typeof confidence.main==='number'&&confidence.main<.6,none:false,options:rank(main.id,pool,'main')},{key:'accent',title:'配珠',lowConfidence:typeof confidence.accent==='number'&&confidence.accent<.6,none:true,noneActive:!accent||!accent.id,options:rank(accent&&accent.id,pool.filter(b=>b.id!==main.id),'accent')},{key:'metal',title:'金属点缀',lowConfidence:typeof confidence.metal==='number'&&confidence.metal<.6,none:true,noneActive:!metal||!metal.id,options:rank(metal&&metal.id,metals,'metal')}];
     const interval=Math.max(2,Math.min(6,Number(every)||4));const pattern=Array(interval-1).fill(main.id);pattern.push(accent&&accent.id||main.id);if(metal&&metal.id)pattern.push(metal.id);
     const ids=templates.build({pattern},catalog,wrist)||[], map=Object.fromEntries(catalog.map(b=>[b.id,b])); let price=15,length=0;
     const preview=ids.map((id,i)=>{const b=map[id],a=2*Math.PI*i/ids.length-Math.PI/2; price+=Number(b.price)||0;length+=Number(b.mm)||0;return {key:i,x:50+35*Math.cos(a),y:50+35*Math.sin(a),color:(b.c||[])[0]||'#ccc',dark:(b.c||[])[1]||'#999'}});

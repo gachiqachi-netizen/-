@@ -24,7 +24,7 @@
 ## 3. 改了的文件
 
 ```
- docs/reports/C8a.md                                | 66 ++++++++++++++
+ docs/reports/C8a.md                                | 66 +++++++++++++++
  miniprogram/features/address-edit/address-edit.js  | 98 +++++++++++++++++++++-
  .../features/address-edit/address-edit.json        |  4 +-
  .../features/address-edit/address-edit.wxml        | 21 ++++-

@@ -96,3 +96,12 @@
 
 - **只能改**：`admin-web/src/pages/afterSales/*`、`admin-web/src/pages/reviews.tsx`
 - 现象和要求：售后详情“联系电话”显示“—”，但用户填了电话：读售后记录里的 `contactPhone`，按 A8c 规则打码（没有 `view_full_contact` 权限显示 `140****0000`）；协商历史里的操作人显示成英文 `customer`，改成“用户”（`admin` 改成账号名字，`system` 改成“系统”）；“退款金额：169.00（后端算好）”去掉括号里的开发说明，金额显示“¥169”；评价审核抽屉的“驳回”“通过并公开”改成正式按钮（主按钮黑底、驳回次按钮），布局分块照 A15。
+
+## U12 隐藏滚动条（2026-11-16 补）
+
+- **依赖**：无（和 U5、U9、U10 不改同一批文件，可以并行）　**只能改**：`miniprogram/app.wxss`、`miniprogram/components/sheet/index.wxml`、`miniprogram/pages/ai/ai.wxml`、`miniprogram/pages/diy/diy.wxml` 里 `<scroll-view>` 标签的属性、`miniprogram/tests/` 里新增一个测试
+- 现象：工作台已选珠子、分类、珠子列表、AI 对话、弹层内容滑动时露出灰色滚动条。
+1. `app.wxss` 加全局隐藏：`::-webkit-scrollbar { display: none; width: 0 !important; height: 0 !important; background: transparent; color: transparent; }`（页面滚动和没开 enhanced 的 scroll-view 都生效）。
+2. 上面几处 `<scroll-view>` 都补上 `enhanced show-scrollbar="{{false}}"`（已经有的不动）。只改标签属性，不改别的。
+3. 测试：扫 `miniprogram/**/*.wxml`，每个 `<scroll-view` 都带 `show-scrollbar="{{false}}"` 和 `enhanced`；`app.wxss` 里有 `::-webkit-scrollbar`。以后新增的 scroll-view 漏写会直接测出来。
+4. 截图：工作台（珠子列表滑动一下再截）、AI 配、确认订单弹层打开时，改前改后各一张。

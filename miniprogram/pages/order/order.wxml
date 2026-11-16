@@ -3,10 +3,10 @@
   <block wx:else>
     <c-card><view class="address-row {{addressShake ? 'shake' : ''}}" bindtap="manualAddress">
       <view wx:if="{{person}}"><view class="address-name">{{person}}　{{phone}}</view><view class="address-detail">{{addr}}</view></view>
-      <view wx:else>收货地址</view>
+      <view wx:else class="address-label">收货地址</view>
       <view class="address-actions" wx:if="{{!person}}">
         <button class="c-btn c-btn--sec small" catchtap="chooseAddress">用微信地址</button>
-        <text catchtap="manualAddress">手动填写 ›</text>
+        <text class="address-manual" catchtap="manualAddress">手动填写 ›</text>
       </view>
       <text wx:else class="link">修改 ›</text>
     </view></c-card>

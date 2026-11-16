@@ -7,6 +7,7 @@ const nav = require('../../utils/nav')
 Page({
   data: { offline: false, templates: [], catalog: [], banners: [], homeArticles: [], wrist: 15, wristConfirmed: false, error: '', loading: true, hasDraft: false, configError: '' },
   onShow() {
+    if(wx.showTabBar)wx.showTabBar({ fail() {} })
     if (!this.configErrorShown) {
       this.configErrorShown = true
       this.setData({ configError: getApp().globalData.configError || '' })

@@ -50,7 +50,7 @@ if (typeof Component === 'function') {
       mode: { type: String, value: 'ring' },      // ring 单条 / stack 叠戴
       stackBeads: { type: Array, value: [] },     // stack 模式：[beadsA, beadsB]
     },
-    data: { rings: [], height: 320 },
+    data: { rings: [], height: 320, wordmarkSize: 'tray' },
     observers: {
       'beads, size, mode, stackBeads, wordmark': function () { this.rebuild() },
     },
@@ -74,9 +74,12 @@ if (typeof Component === 'function') {
             ],
           })
         } else {
+          const ring = layout(p.beads, size)
+          const innerDiameter = ring.length ? size - 2 * Math.max(...ring.map(it => it.d)) : size
           this.setData({
             height: size,
-            rings: [{ idx: 0, ty: 0, opacity: 1, items: layout(p.beads, size) }],
+            wordmarkSize: innerDiameter < 190 ? 'corner' : 'tray',
+            rings: [{ idx: 0, ty: 0, opacity: 1, items: ring }],
           })
         }
       },

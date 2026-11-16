@@ -1,4 +1,5 @@
 <view class="c-bracelet" style="width: {{size}}rpx; height: {{height}}rpx;">
+  <view class="c-bracelet__wordmark" wx:if="{{wordmark && mode === 'ring'}}"><c-wordmark tone="line" size="{{wordmarkSize}}" /></view>
   <view
     wx:for="{{rings}}"
     wx:for-item="ring"

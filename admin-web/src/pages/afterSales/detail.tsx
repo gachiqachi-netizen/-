@@ -36,6 +36,7 @@ interface AfterSaleDetail {
   result?: string;
   newWrist?: number;
   reworkOrder?: { workOrderNo: string };
+  handling?: 'direct' | 'repair_return';
 }
 
 /** D5b 售后审核抽屉（稿 A09）：底栏按钮来自后端 allowedActions */
@@ -54,6 +55,7 @@ const AfterSaleDrawer: React.FC<{
   const [userNote, setUserNote] = React.useState('');
   const [busy, setBusy] = React.useState('');
   const [formError, setFormError] = React.useState('');
+  const [handling, setHandling] = React.useState<'direct' | 'repair_return'>('direct');
   const [logisticsPrompt, setLogisticsPrompt] = React.useState<{ action: string; carrierName: string; trackingNo: string } | null>(null);
 
   const load = () => {
@@ -99,7 +101,7 @@ const AfterSaleDrawer: React.FC<{
     try {
       await apiRequest(`/api/admin/after-sales/${encodeURIComponent(afterSaleNo)}/transition`, {
         method: 'PUT',
-        body: { action, note: userNote.trim() },
+        body: { action, note: userNote.trim(), ...(action === 'approve' && rec.type === '补寄配件' && rec.status === 'reviewing' ? { result: handling } : {}) },
       });
       notify('售后状态已更新');
       setUserNote('');
@@ -120,7 +122,7 @@ const AfterSaleDrawer: React.FC<{
       await apiRequest(`/api/admin/after-sales/${encodeURIComponent(afterSaleNo)}/rework-order`, {
         method: 'POST', body: {},
       });
-      notify('重串工单已生成');
+      notify(rec.handling === 'repair_return' ? '维修工单已生成' : '重串工单已生成');
       load();
       onChanged();
     } catch (err: any) {
@@ -191,10 +193,10 @@ const AfterSaleDrawer: React.FC<{
                 </Button>
               </span></Can>
             ))}
-            {rec.type === '改手围重串' && rec.status === 'received' && !rec.reworkOrder ? (
+            {(rec.type === '改手围重串' || (rec.type === '补寄配件' && rec.handling === 'repair_return')) && rec.status === 'received' && !rec.reworkOrder ? (
               <Can perm="process_after_sales"><span style={{ marginLeft: 8 }}>
                 <Button variant="primary" disabled={busy !== ''} onClick={createRework}>
-                  {busy === 'rework' ? '提交中…' : CONTRACT.actions.generate_rework_order}
+                  {busy === 'rework' ? '提交中…' : rec.handling === 'repair_return' ? '生成维修工单' : CONTRACT.actions.generate_rework_order}
                 </Button>
               </span></Can>
             ) : null}
@@ -214,7 +216,7 @@ const AfterSaleDrawer: React.FC<{
               <div>用户说明：{rec.userNote || '—'}</div>
               <div>退款金额：{rec.refundFen != null ? `¥${fenToYuan(rec.refundFen).replace(/\.00$/, '')}` : '—'}</div>
               {rec.newWrist != null ? <div>新手围：{rec.newWrist}cm</div> : null}
-              {rec.reworkOrder ? <div>重串工单：{rec.reworkOrder.workOrderNo}（到做单页查看）</div> : null}
+              {rec.reworkOrder ? <div>{rec.handling === 'repair_return' ? '维修工单' : '重串工单'}：{rec.reworkOrder.workOrderNo}（到做单页查看）{rec.handling === 'repair_return' ? ' · 运费和差价已线下沟通' : ''}</div> : null}
               <div>联系电话：{can('view_full_contact') ? (rec.contactPhone || rec.phone || '—') : ((rec.contactPhone || rec.phone)?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') || '—')}</div>
               {Array.isArray(rec.images) && rec.images.length > 0 && (
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -246,6 +248,7 @@ const AfterSaleDrawer: React.FC<{
           <div className="zy-card">
             <div className="zy-card-title">处理</div>
             <div style={{ padding: '12px 16px', display: 'grid', rowGap: 8 }}>
+              {rec.type === '补寄配件' && rec.status === 'reviewing' ? <label>处理方式 <select value={handling} onChange={e => setHandling(e.target.value as 'direct' | 'repair_return')}><option value="direct">直接补寄</option><option value="repair_return">寄回维修</option></select></label> : null}
               <label style={{ fontSize: 13 }}>
                 给用户的说明
                 <textarea

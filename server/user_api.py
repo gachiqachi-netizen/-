@@ -228,7 +228,11 @@ def get_my_order(db, no, uid):
     order = db.get('orders', no)
     if not order or order.get('userId') != uid:
         raise KeyError('订单不存在')
-    return public_order(order)
+    result = public_order(order)
+    fulfillment = status.derive_status(order)['fulfillmentStatus']
+    photo = (order.get('workOrder') or {}).get('finishedPhoto')
+    result['qcPhotos'] = [photo] if fulfillment in ('shipped', 'delivered', 'exception', 'returned') and isinstance(photo, str) and photo else []
+    return result
 
 
 def change_my_order_address(db, no, uid, data):

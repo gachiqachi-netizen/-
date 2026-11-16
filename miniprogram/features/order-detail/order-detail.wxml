@@ -14,6 +14,7 @@
         <c-card><view slot="title">收货</view><view class="address">{{order.person}} · {{order.phone}}<view class="sub">{{order.addr}}</view></view></c-card>
         <c-card>
           <view class="product" bindtap="viewProduct"><view class="thumb"><bracelet-thumb beads="{{order.items}}" catalog="{{catalog}}" /></view><view class="product-text"><view class="product-name">{{order.name}}</view><view class="sub product-spec">{{order.beads.length}} 颗 · 手围 {{order.wrist}}cm</view></view></view>
+          <view class="qc-photos" wx:if="{{order.qcPhotos.length}}"><view class="qc-photos-title">实拍图</view><scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="qc-photos-scroll"><view class="qc-photos-list"><view class="qc-photo" wx:for="{{order.qcPhotos}}" wx:key="*this" data-index="{{index}}" bindtap="previewQcPhoto"><c-skeleton wx:if="{{!qcPhotoState[index]}}" shape="block" width="100%" ratio="1/1"/><image wx:if="{{qcPhotoState[index] !== 'failed'}}" src="{{item}}" mode="aspectFill" lazy-load="{{true}}" data-index="{{index}}" bindload="qcPhotoLoaded" binderror="qcPhotoFailed"/><text wx:if="{{qcPhotoState[index] === 'failed'}}">图片暂时无法显示</text></view></view></scroll-view></view>
           <c-cell label="材料" value="{{items.length}} 种" arrow="{{true}}" bind:tap="openMaterials" />
           <c-cell label="珠子" value="{{order.goodsPrice}}" />
           <c-cell wx:if="{{order.handworkPrice}}" label="手工费" value="{{order.handworkPrice}}" />

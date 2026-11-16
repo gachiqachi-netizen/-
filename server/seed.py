@@ -88,7 +88,7 @@ for i, t in enumerate(TEMPLATES):
 
 BANNERS = [
     {"id": "b1", "tag": "考试季", "title": "金榜题名手串", "sub": "紫水晶配白水晶，考前戴上安心", "tpl": "t3", "go": "", "newUser": False},
-    {"id": "b2", "tag": "新人礼", "title": "首单立减 ¥10", "sub": "自己设计的手串，师傅手工串好寄到家", "tpl": "", "go": "diy", "newUser": True},
+    {"id": "b2", "tag": "自己串", "title": "串出自己的心意", "sub": "自己设计的手串，师傅手工串好寄到家", "tpl": "", "go": "diy", "newUser": True},
     {"id": "b3", "tag": "送礼", "title": "甜蜜粉晶", "sub": "粉晶加草莓晶，送女朋友不会错", "tpl": "t2", "go": "", "newUser": False},
 ]
 for i, b in enumerate(BANNERS):

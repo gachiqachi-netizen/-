@@ -3,10 +3,11 @@ const api = require('../../utils/api')
 const { yuan } = require('../../utils/money')
 
 Page({
-  data: { order: null, types: [], loading: true, error: '', policyOpen: false },
+  data: { order: null, types: [], loading: true, error: '', policyOpen: false, loginRequired: false },
   onLoad(query) { this.no = query.no; return this.load() },
   async load() {
     this.setData({ loading: true, error: '' })
+    if (typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && !auth.hasSession()) return this.setData({ loading: false, loginRequired: true, order: null })
     try {
       const no = encodeURIComponent(this.no)
       const [order, result] = await Promise.all([
@@ -24,6 +25,7 @@ Page({
     } catch (error) { this.setData({ error: api.userMessage(error) }) }
     finally { this.setData({ loading: false }) }
   },
+  goLogin() { auth.goLogin({ type: 'navigate', url: '/features/after-sale/type?no=' + encodeURIComponent(this.no) }) },
   select(e) {
     const type = e.currentTarget.dataset.type
     wx.redirectTo({ url: '/features/after-sale/apply?no=' + encodeURIComponent(this.no) + '&type=' + encodeURIComponent(type) })

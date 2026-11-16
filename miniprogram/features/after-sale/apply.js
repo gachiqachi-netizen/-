@@ -6,10 +6,11 @@ function needsPhoto(reason) { return /裂纹|瑕疵|图片|掉珠|断线|少件|
 
 Page({
   data: { option: null, reasons: [], reason: '', note: '', phone: '', newWrist: '', photos: [],
-    amount: '0.00', loading: true, submitting: false, error: '', photoError: '', reasonOpen: false },
+    amount: '0.00', loading: true, submitting: false, error: '', photoError: '', reasonOpen: false, loginRequired: false },
   onLoad(query) { this.no = query.no; this.type = decodeURIComponent(query.type || ''); return this.load() },
   async load() {
     this.setData({ loading: true, error: '' })
+    if (typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && !auth.hasSession()) return this.setData({ loading: false, loginRequired: true, option: null })
     try {
       const no = encodeURIComponent(this.no)
       const [order, result] = await Promise.all([
@@ -22,6 +23,7 @@ Page({
     } catch (error) { this.setData({ error: api.userMessage(error) }) }
     finally { this.setData({ loading: false }) }
   },
+  goLogin() { auth.goLogin({ type: 'navigate', url: '/features/after-sale/apply?no=' + encodeURIComponent(this.no) + '&type=' + encodeURIComponent(this.type) }) },
   toggleReasons() { this.setData({ reasonOpen: !this.data.reasonOpen }) },
   chooseReason(e) { this.setData({ reason: e.currentTarget.dataset.reason, reasonOpen: false, photoError: '' }) },
   inputNote(e) { this.setData({ note: e.detail.value }) },

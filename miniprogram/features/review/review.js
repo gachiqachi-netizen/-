@@ -6,10 +6,11 @@ const labels = ['', '很不满意', '不满意', '一般', '满意', '很满意'
 Page({
   data: { orderId: '', name: '', beads: [], catalog: [], spec: '', rating: 5, label: '很满意',
     stars: [1, 2, 3, 4, 5], content: '', photos: [], anonymous: true,
-    readOnly: false, submitting: false, error: '', loadError: '' },
+    readOnly: false, submitting: false, error: '', loadError: '', loginRequired: false },
   onLoad(query) {
     const orderId = query.orderId || query.id || ''
     this.setData({ orderId })
+    if (typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && !auth.hasSession()) return this.setData({ loginRequired: true, loadError: '' })
     if (!orderId) return this.setData({ loadError: '找不到订单' })
     const path = '/my/orders/' + encodeURIComponent(orderId)
     auth.authorized(path, null, 'GET').then(order => {
@@ -29,6 +30,7 @@ Page({
     }).catch(() => {})
   },
   retryLoad() { this.setData({ loadError: '' }); this.onLoad({ orderId: this.data.orderId }) },
+  goLogin() { auth.goLogin({ type: 'navigate', url: '/features/review/review?orderId=' + encodeURIComponent(this.data.orderId) }) },
   back() { wx.navigateBack() },
   rate(event) {
     if (this.data.readOnly) return

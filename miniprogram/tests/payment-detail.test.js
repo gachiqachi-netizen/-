@@ -7,7 +7,7 @@ global.Page = value => { definition = value }
 global.getApp = () => ({ globalData: { apiBase: 'https://example.test' } })
 global.wx = { reLaunch: o => { route = o.url }, navigateTo: o => { route = o.url },
   stopPullDownRefresh: () => {}, setClipboardData: o => o.success(),
-  getStorageSync: () => ({}), setStorageSync: () => {} }
+  getStorageSync: key => key === 'cgz_token' ? 'test-token' : key === 'cgz_expiry' ? Math.floor(Date.now() / 1000) + 3600 : ({}), setStorageSync: () => {} }
 function page(value) { const p = { ...value, data: JSON.parse(JSON.stringify(value.data)) }; p.setData = (d, cb) => { Object.assign(p.data, d); if (cb) cb() }; return p }
 
 test('提交成功立即开启模拟付款；金额使用付款接口的整数分', async () => {

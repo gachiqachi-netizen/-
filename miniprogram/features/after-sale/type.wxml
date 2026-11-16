@@ -1,7 +1,8 @@
 <c-page>
   <view class="surface">
     <c-card wx:if="{{loading}}"><view class="hint">正在读取订单…</view></c-card>
-    <c-state wx:if="{{error && !order}}" title="暂时看不到申请选项" desc="{{error}}" action="再试一次" bind:action="load" />
+    <c-state wx:if="{{loginRequired}}" title="登录后查看售后" desc="登录后就能申请或查看售后" action="去登录" bind:action="goLogin" />
+    <c-state wx:elif="{{error && !order}}" title="暂时看不到申请选项" desc="{{error}}" action="再试一次" bind:action="load" />
     <block wx:if="{{order}}">
       <c-card><view class="summary"><view class="name">{{order.name}}</view><view class="hint">订单 {{order.no}} · 实付 {{order.paidPrice}}</view></view></c-card>
       <c-card>

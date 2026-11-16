@@ -10,5 +10,5 @@
     <view class="safety" wx:if="{{safetyNote}}">{{safetyNote}}<view wx:if="{{safetyCare}}">{{safetyCare}}</view></view>
     <view wx:if="{{!selected && similar}}" class="similar" bindtap="similar">看看相似的：{{similar.name}} ›</view>
   </view>
-  <view slot="footer"><button class="c-btn c-btn--block submit" disabled="{{!selected}}" bindtap="add">{{selected ? '加 ' + quantity + ' 颗到手串' : '暂时缺货'}}</button></view>
+  <view slot="footer" class="bead-sheet-footer"><button class="c-btn c-btn--block submit" disabled="{{!selected}}" bindtap="add">{{selected ? '加 ' + quantity + ' 颗到手串' : '暂时缺货'}}</button></view>
 </c-sheet>

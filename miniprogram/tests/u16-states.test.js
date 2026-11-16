@@ -40,9 +40,67 @@ test('接口错误转换区分断网与服务器故障', () => {
 
 test('订单未登录与评价读取失败隐藏表单', () => {
   assert.match(read('components/bead-sheet/index.wxml'), /c-btn c-btn--block submit/)
+  assert.match(read('components/bead-sheet/index.wxss'), /bead-sheet-footer\s*\{\s*width:\s*100%/)
   assert.match(read('pages/login/login.js'), /agreed: false/)
   assert.match(read('features/order-detail/order-detail.wxml'), /loginRequired[^>]*title="登录后查看订单"[^>]*action="去登录"/)
   const review = read('features/review/review.wxml')
-  assert.match(review, /<c-state wx:if="\{\{loadError\}\}"/)
+  assert.match(review, /<c-state wx:elif="\{\{loadError\}\}"/)
   assert.match(review, /<block wx:else>[\s\S]*<c-bar wx:if="\{\{!readOnly\}\}"/)
+})
+
+test('订单详情没有会话时直接显示登录状态，登录后返回原订单', async () => {
+  const auth = require('../utils/auth')
+  const oldWx = global.wx, oldPage = global.Page
+  const oldHasSession = auth.hasSession, oldGoLogin = auth.goLogin
+  let definition, next
+  try {
+    global.wx = { getStorageSync: () => '' }
+    global.Page = config => { definition = config }
+    auth.hasSession = () => false
+    auth.goLogin = value => { next = value }
+    const file = require.resolve('../features/order-detail/order-detail')
+    delete require.cache[file]
+    require(file)
+    const page = { ...definition, no: 'DEMO-123', paidIntent: true,
+      data: { ...definition.data }, setData(patch) { Object.assign(this.data, patch) } }
+    await page.load()
+    assert.equal(page.data.loginRequired, true)
+    assert.equal(page.data.loading, false)
+    assert.equal(page.data.order, null)
+    page.goLogin()
+    assert.deepEqual(next, { type: 'navigate', url: '/features/order-detail/order-detail?no=DEMO-123&paid=1' })
+  } finally {
+    auth.hasSession = oldHasSession
+    auth.goLogin = oldGoLogin
+    global.wx = oldWx
+    global.Page = oldPage
+  }
+})
+
+test('我的订单没有会话时显示登录入口，不读取订单', async () => {
+  const auth = require('../utils/auth')
+  const oldWx = global.wx, oldPage = global.Page
+  const oldHasSession = auth.hasSession, oldAuthorized = auth.authorized
+  let definition, called = false
+  try {
+    global.wx = { getStorageSync: () => '' }
+    global.Page = config => { definition = config }
+    auth.hasSession = () => false
+    auth.authorized = async () => { called = true; return [] }
+    const file = require.resolve('../features/orders/orders')
+    delete require.cache[file]
+    require(file)
+    const page = { ...definition, data: { ...definition.data },
+      setData(patch) { Object.assign(this.data, patch) } }
+    await page.loadOrders(true)
+    assert.equal(called, false)
+    assert.equal(page.data.loggedIn, false)
+    assert.equal(page.data.error, '登录后查看订单')
+    assert.deepEqual(page.data.rows, [])
+  } finally {
+    auth.hasSession = oldHasSession
+    auth.authorized = oldAuthorized
+    global.wx = oldWx
+    global.Page = oldPage
+  }
 })

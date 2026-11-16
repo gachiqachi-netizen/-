@@ -24,6 +24,10 @@ Page({
   openMaterials() { this.setData({ sheet: 'materials' }) },
   async load() {
     this.setData({ loading: true, ready: false, error: '', loginRequired: false })
+    if (typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && !auth.hasSession()) {
+      this.setData({ loading: false, loginRequired: true, order: null })
+      return
+    }
     try {
       const raw = await auth.authorized('/my/orders/' + encodeURIComponent(this.no), null, 'GET')
       if (!raw) throw new Error('未找到该订单')
@@ -59,7 +63,7 @@ Page({
         } catch (_) { this.setData({ afterSaleNo: '' }) }
       } else this.setData({ afterSaleNo: '' })
     } catch (e) { this.setData({ error: api.userMessage(e), order: null,
-      loginRequired: e.status === 401 || (typeof wx.getStorageSync === 'function' && !auth.hasSession()) }) }
+      loginRequired: e.status === 401 || (typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && !auth.hasSession()) }) }
     finally { this.setData({ loading: false }) }
   },
   goLogin() { auth.goLogin({ type: 'navigate', url: '/features/order-detail/order-detail?no=' + encodeURIComponent(this.no) + (this.paidIntent ? '&paid=1' : '') }) },

@@ -1,4 +1,4 @@
-.c-card { margin-bottom: var(--sp-tight); }
+.c-card { margin-bottom: var(--sp-tight) !important; }
 .rows .c-cell-row { margin: 0; }
 .address-row, .sheet-row { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
 .address-row { min-height: var(--h-row); box-sizing: border-box; }

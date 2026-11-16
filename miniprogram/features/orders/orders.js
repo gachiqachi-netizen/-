@@ -65,6 +65,10 @@ Page({
 
   loadOrders(withSkeleton) {
     if (withSkeleton) this.setData({ loading: true, error: '' })
+    if (typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && !auth.hasSession()) {
+      this.setData({ loggedIn: false, rows: [], visible: [], error: '登录后查看订单', loading: false })
+      return Promise.resolve()
+    }
     return auth.authorized('/my/orders')
       .then(rows => {
         const orders = (Array.isArray(rows) ? rows : []).map(buildRow)
@@ -79,7 +83,7 @@ Page({
   },
 
   goLogin() {
-    wx.navigateTo({ url: '/pages/login/login' })
+    auth.goLogin({ type: 'navigate', url: '/' + (this.route || 'features/orders/orders') })
   },
 
   goDiy() {

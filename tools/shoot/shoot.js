@@ -8,18 +8,63 @@ const path = require('node:path')
 const { randomUUID } = require('node:crypto')
 const templates = require('../../miniprogram/utils/template')
 const pages = require('./pages.json')
-const base = 'http://127.0.0.1:8801'
+const base = process.env.SHOOT_BASE_URL || 'http://127.0.0.1:8801'
 const project = path.resolve(__dirname, '../../miniprogram')
 const cli = process.env.WECHAT_DEVTOOLS_CLI || '/Applications/wechatwebdevtools.app/Contents/MacOS/cli'
 
 function options() {
   const args = process.argv.slice(2)
   const get = name => { const i = args.indexOf(name); return i < 0 ? '' : args[i + 1] || '' }
-  if (!get('--out')) throw new Error('用法：node tools/shoot/shoot.js --out docs/reports/shots/<卡号>/<before|after> [--only order-confirm,order-detail]')
+  if (!get('--out')) throw new Error('用法：node tools/shoot/shoot.js --out docs/reports/shots/<卡号> [--only order-confirm,order-detail] [--timing]')
   const only = get('--only').split(',').map(x => x.trim()).filter(Boolean)
   const unknown = only.filter(x => !pages.some(p => p.name === x || p.name.startsWith(x + '-')))
   if (unknown.length) throw new Error('未知页面：' + unknown.join(', '))
-  return { out: path.resolve(get('--out')), only }
+  return { out: path.resolve(get('--out')), only, timing: args.includes('--timing') }
+}
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+async function waitReady(page) {
+  const started = Date.now()
+  let legacyWaited = false
+  while (Date.now() - started < 10000) {
+    const data = await page.data()
+    if (Object.prototype.hasOwnProperty.call(data || {}, 'ready')) {
+      if (data.ready === true) return { ms: Date.now() - started, source: 'ready' }
+    } else {
+      const skeleton = await page.$('.c-skeleton') || await page.$('c-skeleton')
+      if (!skeleton) {
+        // Older pages may have no skeleton at all. Give their first render a short grace period.
+        if (legacyWaited) return { ms: Date.now() - started, source: 'no-skeleton' }
+        legacyWaited = true
+        await sleep(800)
+        continue
+      }
+    }
+    await sleep(200)
+  }
+  throw new Error('未加载完：10 秒内未出现 ready: true，或骨架仍在画面中')
+}
+
+async function screenWarnings(page) {
+  const data = await page.data()
+  const hasFreeProduct = (data.catalog || data.items || []).some(item =>
+    item && (item.priceFen === 0 || item.price === 0))
+  // Text can be a bare child of <view>; scanning only <text> misses price summaries.
+  const nodes = [...(await page.$$('text') || []), ...(await page.$$('button') || []),
+    ...(await page.$$('view') || [])]
+  const visible = (await Promise.all(nodes.map(node => node.text().catch(() => '')))).join(' ')
+  const warnings = []
+  for (const value of ['NaN', 'undefined', '0 种']) {
+    if (visible.includes(value)) warnings.push(value)
+  }
+  if (!hasFreeProduct && visible.includes('¥0.00')) warnings.push('¥0.00')
+  return warnings
+}
+
+async function openPage(mini, url) {
+  return ['/pages/home/home', '/pages/diy/diy', '/pages/ai/ai', '/pages/mine/mine'].includes(url)
+    ? mini.switchTab(url) : mini.reLaunch(url)
 }
 
 async function api(route, { method = 'GET', body, token, cookie } = {}) {
@@ -129,8 +174,47 @@ async function capture(mini, destination) {
   } finally { try { fs.unlinkSync(raw) } catch (_) {} }
 }
 
+async function runTiming(mini, data, selected, out) {
+  const rows = []
+  for (const item of selected) {
+    const url = item.path.replace(/\{(\w+)\}/g, (_, key) => data[key])
+    const samples = []
+    for (const phase of ['cold', 'cached']) {
+      try {
+        if (phase === 'cold') {
+          await mini.callWxMethod('clearStorageSync')
+          await mini.callWxMethod('setStorageSync', 'cgz_token', data.token)
+          await mini.callWxMethod('setStorageSync', 'cgz_expiry', data.expiry)
+          const design = { id: 't2-timing-design', ...data.design }
+          await mini.callWxMethod('setStorageSync', 'cgz_current_design', design)
+          await mini.callWxMethod('setStorageSync', 'cgz_miniprogram_designs', [design])
+        }
+        const opened = Date.now()
+        const page = await mini.reLaunch(url)
+        if (!page) throw new Error('页面没有打开')
+        const ready = await waitReady(page)
+        const ms = Date.now() - opened
+        const warnings = await screenWarnings(page)
+        samples.push({ ms, source: ready.source, warnings })
+        console.log(`${item.name} ${phase}: ${ms}ms (${ready.source})`)
+        if (warnings.length) console.warn(`\x1b[31m警告 ${item.name}: ${warnings.join('、')}\x1b[0m`)
+      } catch (error) {
+        samples.push({ error: error.message })
+        console.error(`${item.name} ${phase}: ${error.message}`)
+      }
+    }
+    rows.push({ name: item.name, cold: samples[0], cached: samples[1] })
+  }
+  const cell = sample => sample.error ? `失败：${sample.error}` : `${sample.ms} (${sample.source})`
+  const lines = ['# 小程序页面加载耗时', '', '从打开页面到 `ready: true`；旧页面回退到骨架消失。单位：毫秒。', '',
+    '| 页面 | 冷启动 | 有缓存 | 警告 |', '| --- | ---: | ---: | --- |',
+    ...rows.map(row => `| ${row.name} | ${cell(row.cold)} | ${cell(row.cached)} | ${[...(row.cold.warnings || []), ...(row.cached.warnings || [])].join('、') || '无'} |`), '']
+  fs.writeFileSync(path.join(out, 'timing.md'), lines.join('\n'))
+  if (rows.some(row => row.cold.error || row.cached.error)) process.exitCode = 1
+}
+
 async function main() {
-  const { out, only } = options()
+  const { out, only, timing } = options()
   const selected = pages.filter(p => !only.length || only.some(key => p.name === key || p.name.startsWith(key + '-')))
   fs.mkdirSync(out, { recursive: true })
   const started = Date.now(), mini = await connect(), results = []
@@ -140,6 +224,10 @@ async function main() {
       throw new Error(`请在开发者工具模拟器选 iPhone 12/13 (Pro)（390×844）；当前是 ${device.model} ${device.screenWidth}×${device.screenHeight}`)
     }
     const data = await seed()
+    if (timing) {
+      await runTiming(mini, data, selected, out)
+      return
+    }
     console.log('自动化已连接，准备登录与选模板')
     await mini.callWxMethod('setStorageSync', 'cgz_token', data.token)
     await mini.callWxMethod('setStorageSync', 'cgz_expiry', data.expiry)
@@ -154,10 +242,9 @@ async function main() {
     for (const item of selected) {
       try {
         const url = item.path.replace(/\{(\w+)\}/g, (_, key) => data[key])
-        const page = ['/pages/home/home', '/pages/diy/diy', '/pages/ai/ai', '/pages/mine/mine'].includes(url)
-          ? await mini.switchTab(url) : await mini.reLaunch(url)
+        const page = await openPage(mini, url)
         if (!page) throw new Error('页面没有打开')
-        await page.waitFor(item.name === 'share-poster' ? 2500 : 900)
+        const ready = await waitReady(page)
         if (item.name === 'ai-match') {
           const newChat = await page.$('.ai-new')
           if (newChat) { await newChat.tap(); await page.waitFor(300) }
@@ -176,15 +263,16 @@ async function main() {
           if (!complete) throw new Error('AI 配 30 秒内没有返回完整方案')
         }
         if (item.name === 'order-confirm') {
-          const gift = (await page.$$('.rows .row'))[2]
-          if (!gift) throw new Error('送礼入口不存在')
-          await gift.tap()
+          await page.setData({ sheet: 'gift' })
         }
         const state = await page.data()
         if (state.error || state.configError) throw new Error(state.error || state.configError)
+        const warnings = await screenWarnings(page)
+        if (warnings.length) console.warn(`\x1b[31m警告 ${item.name}: ${warnings.join('、')}\x1b[0m`)
         const file = path.join(out, item.name + '.png')
         await capture(mini, file)
-        results.push({ page: item.name, ok: true, bytes: fs.statSync(file).size })
+        results.push({ page: item.name, ok: true, readyMs: ready.ms, readySource: ready.source,
+          warnings, bytes: fs.statSync(file).size })
         console.log(`OK ${item.name} ${Math.round(fs.statSync(file).size / 1024)}KB`)
       } catch (error) {
         try { fs.unlinkSync(path.join(out, item.name + '.png')) } catch (_) {}

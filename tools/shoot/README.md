@@ -21,7 +21,12 @@
 ```bash
 SHOOT_ADMIN_TOKEN=local-dev-only node tools/shoot/shoot.js --out docs/reports/shots/U4/before
 SHOOT_ADMIN_TOKEN=local-dev-only node tools/shoot/shoot.js --out docs/reports/shots/U4/after --only order-confirm,order-detail
+SHOOT_ADMIN_TOKEN=local-dev-only node tools/shoot/shoot.js --out docs/reports/shots/T2 --only home,workbench --timing
 ```
+
+`--timing` 会先清除模拟器本机缓存，重新写入演示登录和作品，再分别测冷启动与有缓存打开；从打开页面到加载完成的时间写入输出目录的 `timing.md`。没有加载完成的页面会标“未加载完”，不会默默截图。`SHOOT_BASE_URL` 可将截图服务改到其他本地端口，例如 `http://127.0.0.1:8892`。
+
+页面第一屏真实内容渲染后调用 `setData({ ready: true })`；每次重新加载开始时先设 `ready: false`。脚本最多轮询 10 秒。尚未加 `ready` 的旧页面，会等待 `.c-skeleton` 消失；原本没有骨架的旧页面保留短暂渲染等待。截图前检查 `NaN`、`undefined`、`¥0.00`（有零元商品时除外）和“0 种”，在终端显示红色警告，并写入 `result.json`。
 
 `--only order-detail` 会截所有订单详情状态。页面清单、路径、参数和前置操作见 [pages.json](pages.json)。脚本先通过开发接口登录测试用户，用现有接口建立模板作品、未支付订单、运输中订单、已签收订单、售后和评价，再交给 `miniprogram-automator` 导航和截图。模拟付款不会扣款。图片输出为 390×844 PNG；`result.json` 记录各页成功与失败及总耗时，任一页失败时进程返回非零退出码。每张图片超过 300KB 时视为失败。
 

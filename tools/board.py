@@ -12,7 +12,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TASKS = ROOT / 'docs/design/tasks'
-BASE = 'origin/integration/2026-11'
+import os
+BASE = os.environ.get('BOARD_BASE', 'origin/integration/2026-11')  # 审核在临时目录里合并后用 BOARD_BASE=HEAD
 WAVE1 = {'A11', 'A11m', 'C0g', 'C0i', 'C0z', 'C2', 'D2', 'D1b'}
 OWNER_ONLY = {'C11b': '负责人在开发者工具和真机上把三条主流程逐屏走一遍（等 V3、W1、U16 都合并后）'}
 ADMIN_FILES = {'admin-wave1.md', 'admin-wave2.md'}
@@ -57,13 +58,13 @@ def prompt(r, title):
     if kind in ADMIN_FILES or r['card'] in ('AI2', 'V4', 'V5', 'F1', 'F2', 'F3', 'U11', 'R1'):
         extra.append('改了后台就加跑 npm run build（第一次先 cd admin-web && npm ci），打包文件不提交。')
     deps = '、'.join(r['deps'])
-    gate = (f'开工前先跑 git log {BASE} --oneline | grep -E "^[0-9a-f]+ ({"|".join(r["deps"])}):"，'
+    gate = (f'开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ ({"|".join(r["deps"])}):"，'
             f'{deps} 都有提交才开工，否则停下等我。') if r['deps'] else ''
     return (
         '你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），'
-        f'所有工作从 {BASE} 开始。\n'
+        f'所有工作从 origin/integration/2026-11 开始。\n'
         f'这次直接领 {r["card"]}（{title}，卡在 docs/design/tasks/{r["file"]}，先读文件开头的共同规矩，再读 {r["card"]} 这一节）。{gate}\n'
-        f'从最新的 {BASE} 开新目录 ~/chuan-{r["card"]}，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：'
+        f'从最新的 origin/integration/2026-11 开新目录 ~/chuan-{r["card"]}，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：'
         f'领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 {r["branch"]}，不要直接推 integration。'
         + ''.join(extra) + '\n'
         f'交付后回复“{r["card"]} 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。'

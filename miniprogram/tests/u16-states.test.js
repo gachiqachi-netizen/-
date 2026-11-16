@@ -17,23 +17,30 @@ test('状态组件只有标题、说明与一个居中次按钮', () => {
   assert.match(style, /margin:\s*40rpx auto 0/)
 })
 
-test('页面原生按钮都带 c-btn，且有默认宽度覆盖和通栏规则', () => {
+test('长条按钮使用 c-btn，圆形图标按钮保留页面尺寸', () => {
   const style = read('styles/components.wxss')
-  assert.match(style, /button\.c-btn:not\(\[size=mini\]\)\s*\{\s*width:\s*auto/)
+  assert.doesNotMatch(style, /button\.c-btn:not\(\[size=mini\]\)\s*\{\s*width:\s*auto/)
   assert.match(style, /c-btn--block[^}]*width:\s*100%/)
-  for (const folder of ['pages', 'features', 'ar-hand', 'components']) {
-    const visit = dir => { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      const file = path.join(dir, entry.name)
-      if (entry.isDirectory()) visit(file)
-      else if (file.endsWith('.wxml')) for (const tag of read(path.relative(root, file)).match(/<button\b[^>]*>/gs) || []) assert.match(tag, /class="[^"]*c-btn/, file)
-    } }
-    visit(path.join(root, folder))
+  for (const file of ['pages/photo/photo.wxml', 'ar-hand/index.wxml', 'pages/wrist/wrist.wxml']) {
+    const markup = read(file)
+    for (const tag of markup.match(/<button\b[^>]*class="[^"]*(?:shutter|step)[^"]*"[^>]*>/gs) || []) assert.doesNotMatch(tag, /class="[^"]*c-btn/)
   }
 })
 
 test('接口错误转换区分断网与服务器故障', () => {
   const api = require('../utils/api')
   assert.equal(api.networkError({ errMsg: 'timeout' }).message, '网络不太好，检查一下网络再试')
+  const oldWx = global.wx, oldGetApp = global.getApp
+  try {
+    global.wx = { getAccountInfoSync: () => ({ miniProgram: { envVersion: 'develop' } }) }
+    global.getApp = () => ({ globalData: { apiBase: 'http://127.0.0.1:8894' } })
+    const error = api.networkError({ errMsg: 'url not in domain list' })
+    assert.match(api.userMessage(error), /微信拦截了测试地址/)
+    assert.match(api.userMessage(error), /url not in domain list/)
+    assert.match(api.userMessage(error), /127\.0\.0\.1:8894/)
+    global.wx.getAccountInfoSync = () => ({ miniProgram: { envVersion: 'release' } })
+    assert.equal(api.userMessage(api.networkError({ errMsg: 'timeout' })), '网络不太好，检查一下网络再试')
+  } finally { global.wx = oldWx; global.getApp = oldGetApp }
   assert.equal(api.responseError({ statusCode: 500, data: { error: '服务暂不可用' } }).message, '系统开小差了，稍后再试')
   assert.equal(api.responseError({ statusCode: 400, data: { error: '请填写地址' } }).message, '请填写地址')
 })

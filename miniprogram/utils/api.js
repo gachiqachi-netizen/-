@@ -1,5 +1,13 @@
 function networkError(error) {
-  const result = new Error('网络不太好，检查一下网络再试')
+  const friendly = '网络不太好，检查一下网络再试'
+  const raw = error && error.errMsg || '未知网络错误'
+  const info = typeof wx !== 'undefined' && wx.getAccountInfoSync && wx.getAccountInfoSync()
+  const debug = info && info.miniProgram && info.miniProgram.envVersion === 'develop'
+  const cause = /domain list|url not in/i.test(raw)
+    ? '微信拦截了测试地址，请在右上角打开调试后退出重进'
+    : '手机无法连接电脑测试服务'
+  const message = debug ? friendly + '；' + cause + '；' + raw + '；地址：' + ((typeof getApp === 'function' && getApp().globalData.apiBase) || '未配置') : friendly
+  const result = new Error(message)
   result.code = 'NETWORK'
   return result
 }
@@ -12,7 +20,8 @@ function responseError(response) {
   return error
 }
 function userMessage(error) {
-  if (error && (error.code === 'NETWORK' || /连接失败|offline|network|timeout/i.test(error.message || ''))) return '网络不太好，检查一下网络再试'
+  if (error && error.code === 'NETWORK') return error.message || '网络不太好，检查一下网络再试'
+  if (error && /连接失败|offline|network|timeout/i.test(error.message || '')) return '网络不太好，检查一下网络再试'
   if (error && error.status >= 400 && error.status < 500) return error.message || '请求没有完成，请再试一次'
   if (error && /^(未找到|找不到|订单不存在)/.test(error.message || '')) return error.message
   return '系统开小差了，稍后再试'

@@ -1,6 +1,6 @@
 <view class="wrist-page">
   <view wx:if="{{!measured}}" class="intro">还没量过，先按常见的 15cm</view><view wx:else class="intro-spacer"></view>
-  <view class="measure-row"><button class="c-btn step" disabled="{{min}}" data-step="-0.5" bindtap="step">−</button><view class="measure"><text class="measure-number">{{display}}</text><text class="measure-unit"> cm</text></view><button class="c-btn step" disabled="{{max}}" data-step="0.5" bindtap="step">＋</button></view>
+  <view class="measure-row"><button class="step" disabled="{{min}}" data-step="-0.5" bindtap="step">−</button><view class="measure"><text class="measure-number">{{display}}</text><text class="measure-unit"> cm</text></view><button class="step" disabled="{{max}}" data-step="0.5" bindtap="step">＋</button></view>
   <view class="ruler" bindtouchstart="rulerStart" bindtouchmove="rulerMove" bindtouchend="rulerEnd"><view class="ruler-mark" style="left:{{marker}}%"></view></view>
   <view class="bead-count">按 {{mm}}mm 珠子，大约 {{count}} 颗</view>
   <view class="tabs"><view class="tab {{noTape?'':'on'}}" data-tape="yes" bindtap="tape">有软尺</view><view class="tab {{noTape?'on':''}}" data-tape="no" bindtap="tape">没有软尺</view></view>

@@ -2,12 +2,10 @@
   <c-state wx:if="{{!design}}" title="没找到要下单的手串" action="去首页看看" bind:action="home" />
   <c-state wx:elif="{{error && !catalogReady && !loading}}" title="材料暂时没加载出来" desc="{{error}}" action="再试一次" bind:action="retryCatalog" />
   <block wx:else>
-    <c-card><view class="address-row {{addressShake ? 'shake' : ''}}">
-      <c-cell wx:if="{{person}}" label="{{person}}　{{phone}}" value="{{addr}}" arrow="{{true}}" bind:tap="manualAddress" />
-      <c-cell wx:else label="收货地址"><view slot="value" class="address-actions">
-        <button class="c-btn c-btn--sec c-btn--s" catchtap="chooseAddress">用微信地址</button>
-        <text class="address-manual" catchtap="manualAddress">手动填写 ›</text>
-      </view></c-cell>
+    <c-card><view class="address-row {{addressShake ? 'shake' : ''}}" bindtap="addressEntry">
+      <view wx:if="{{person}}" class="address-copy"><view class="address-name">{{person}}　{{phone}}</view><view class="address-detail">{{addr}}</view></view>
+      <view wx:else class="address-copy address-empty"><text class="address-pin">⌖</text><text>添加收货地址</text></view>
+      <text class="address-arrow">›</text>
     </view></c-card>
 
     <c-card><view class="summary">

@@ -21,7 +21,7 @@
  <view wx:if="{{!modelLoading && !error}}" class="bottom">
   <view wx:if="{{frozen}}" class="again" bindtap="toggleFreeze">再来一次</view>
   <view class="status">{{status}}</view>
-  <view wx:if="{{!frozen}}" class="actions"><view bindtap="photoTryon">用照片试</view><button class="c-btn shutter" disabled="{{!tracked}}" bindtap="toggleFreeze" aria-label="定格"/><view></view></view>
+  <view wx:if="{{!frozen}}" class="actions"><view bindtap="photoTryon">用照片试</view><button class="shutter" disabled="{{!tracked}}" bindtap="toggleFreeze" aria-label="定格"/><view></view></view>
   <view wx:else class="actions frozen-actions"><button class="c-btn c-btn--sec" bindtap="savePhoto">保存照片</button><button class="c-btn primary" bindtap="goOrder">去下单</button></view>
  </view>
  <camera wx:if="{{cameraMounted}}" class="capture" device-position="{{position}}" flash="off" frame-size="medium" bindinitdone="cameraReady" binderror="cameraError"/>

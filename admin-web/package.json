@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build"
+    "build": "tsc --noEmit && vite build",
+    "check:layout": "node scripts/check-layout.cjs"
   },
   "dependencies": {
     "react": "19.0.0",

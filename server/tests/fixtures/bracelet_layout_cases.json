@@ -1,0 +1,12 @@
+[
+  {"name":"single","size":80,"repeat":1,"sequence":[{"mm":8,"colors":["#aa0000","#ffaaaa"],"photo":"/one.png"}]},
+  {"name":"pair","size":96,"repeat":2,"sequence":[{"mm":8,"colors":["#112233","#445566"]}]},
+  {"name":"three-mixed","size":120,"repeat":1,"sequence":[{"mm":12},{"mm":4,"spacer":true},{"mm":8}]},
+  {"name":"eight-uniform","size":160,"repeat":8,"sequence":[{"mm":8}]},
+  {"name":"twelve-alternating","size":180,"repeat":6,"sequence":[{"mm":10,"photo":"/bead.png"},{"mm":6,"spacer":true}]},
+  {"name":"nineteen-small","size":80,"repeat":19,"sequence":[{"mm":8}]},
+  {"name":"forty-mixed","size":80,"repeat":20,"sequence":[{"mm":8},{"mm":4,"spacer":true}]},
+  {"name":"eighty-dense","size":240,"repeat":80,"sequence":[{"mm":6}]},
+  {"name":"spacer-rich","size":200,"repeat":4,"sequence":[{"mm":12,"colors":["#111111","#aaaaaa"]},{"mm":2,"spacer":true},{"mm":8}]},
+  {"name":"large-mixed-photos","size":320,"repeat":2,"sequence":[{"mm":14,"photo":"/a.png"},{"mm":10,"photo":"/b.png"},{"mm":4,"spacer":true},{"mm":8,"colors":["#123456","#abcdef"]}]}
+]

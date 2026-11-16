@@ -45,16 +45,19 @@ test('空数组 / 没有 size 返回空，缺 mm 的珠子被跳过', () => {
 
 for (const count of [19, 40]) {
   test(`80px 容器中的 ${count} 颗珠子直径和整圈都不溢出`, () => {
-    const items = layout(Array.from({ length: count }, (_, index) => ({ id: String(index), mm: 8 })), 80)
-    assert.equal(items.length, count)
-    for (const item of items) {
-      const centerX = item.x + item.box / 2
-      const centerY = item.y + item.box / 2
-      const radius = Math.hypot(centerX - 40, centerY - 40)
-      assert.ok(item.d > 0 && item.d < 80)
-      assert.ok(radius + item.d / 2 <= 40, `第 ${item.index + 1} 颗越过容器边界`)
-      assert.ok(item.x >= 0 && item.y >= 0 && item.x + item.box <= 80 && item.y + item.box <= 80,
-        `第 ${item.index + 1} 颗外框越过容器边界`)
+    // iPhone 设计稿的 80px 对应约 160rpx；再测更窄的 80rpx。
+    for (const size of [160, 80]) {
+      const items = layout(Array.from({ length: count }, (_, index) => ({ id: String(index), mm: 8 })), size)
+      assert.equal(items.length, count)
+      for (const item of items) {
+        const centerX = item.x + item.box / 2
+        const centerY = item.y + item.box / 2
+        const radius = Math.hypot(centerX - size / 2, centerY - size / 2)
+        assert.ok(item.d > 0 && item.d < size)
+        assert.ok(radius + item.d / 2 <= size / 2, `第 ${item.index + 1} 颗越过容器边界`)
+        assert.ok(item.x >= 0 && item.y >= 0 && item.x + item.box <= size && item.y + item.box <= size,
+          `第 ${item.index + 1} 颗外框越过容器边界`)
+      }
     }
   })
 }

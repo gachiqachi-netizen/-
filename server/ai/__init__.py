@@ -18,13 +18,27 @@ _provider = None
 _provider_err = None
 
 
-def provider():
+def provider(feature="design"):
     """选择 AI provider；生产推荐 AI_PROVIDER=zerone，并使用 Agent 独立运行密钥。"""
     global _provider, _provider_err
+    import ai_settings
+    if feature not in ('design', 'photo'):
+        raise ValueError('AI 功能不正确')
+    settings = ai_settings.current()
+    if not settings['photoEnabled' if feature == 'photo' else 'designEnabled']:
+        return None
+    want = settings['provider'] or os.environ.get('AI_PROVIDER', '').lower()
+    selected = (want, settings['model'], settings['visionModel'])
+    if getattr(provider, '_selected', None) != selected:
+        _provider = None
+        _provider_err = None
+        provider._selected = selected
     if _provider or _provider_err:
-        return _provider
-    want = os.environ.get("AI_PROVIDER", "").lower()
+        return ai_settings.PhotoUsageProvider(_provider) if feature == 'photo' and _provider else _provider
     try:
+        if want and not ai_settings.configured().get(want, {}).get('configured'):
+            _provider_err = '所选 AI 服务未配置'
+            return None
         if want == "zerone" or (not want and os.environ.get("ZERONE_AGENT_URL") and os.environ.get("ZERONE_AGENT_API_KEY")):
             from .zerone import ZerOneProvider
             _provider = ZerOneProvider()
@@ -36,9 +50,16 @@ def provider():
             _provider = OpenAICompatProvider()
         else:
             _provider_err = "未配置 AI 模型"
+        if _provider is not None:
+            if settings['model']:
+                _provider.model = settings['model']
+                if want == 'zerone':
+                    _provider.agent = settings['model']
+            if settings['visionModel']:
+                _provider.vision_model = settings['visionModel']
     except Exception:   # Do not expose configuration details or secrets in the public status endpoint.
         _provider_err = "AI 初始化失败，请检查服务配置"
-    return _provider
+    return ai_settings.PhotoUsageProvider(_provider) if feature == 'photo' and _provider else _provider
 
 
 def status():
@@ -264,7 +285,7 @@ def _confidence(v):
 
 def photo(beads, image):
     """拍照做同款：认出照片里的主珠、配珠、金属点缀各最像料包里哪一颗。排法和颗数由前台按手围算。"""
-    p = provider()
+    p = provider(feature="photo")
     if not p:
         return None
     prompt = ("用户拍了一张喜欢的手串照片，想用我们料包里的珠子做同款。你只需要认珠子，不用设计。\n"

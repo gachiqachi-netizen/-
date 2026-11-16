@@ -24,11 +24,12 @@ Page({
   if(!this.canvasReady||this.data.loading||!this.data.design||!this.map||this.data.preview||!this.data.items.length)return
   const revision=this.renderRevision=(this.renderRevision||0)+1
   const d=this.data.design,items=this.data.items,w=this.data.width,h=this.data.height,s=w/720
-  const paths=await Promise.all(items.map(b=>this.localPhoto(b.photoMd||b.photo)))
+  const points=layout(items,500*s)
+  const paths=await Promise.all(items.map((b,i)=>this.localPhoto((points[i].r*2<=96?b.photoSm:points[i].r*2<=240?b.photoMd:b.photo)||b.photo)))
   if(revision!==this.renderRevision||keyOf(store.current())!==this.designKey)return
   const ctx=wx.createCanvasContext('shareCard',this)
   ctx.setFillStyle('#fff');ctx.fillRect(0,0,w,h);ctx.setFillStyle('#f5f4f2');ctx.fillRect(16*s,16*s,688*s,620*s)
-  const points=layout(items,500*s),left=110*s,top=82*s
+  const left=110*s,top=82*s
   points.forEach((point,i)=>{
     const x=left+point.x,y=top+point.y,r=point.r
     ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip()

@@ -48,6 +48,8 @@ const AfterSaleDrawer: React.FC<{
 }> = ({ afterSaleNo, onClose, onChanged, notify, onViewOrder }) => {
   const [rec, setRec] = React.useState<AfterSaleDetail | null>(null);
   const [orderVisual, setOrderVisual] = React.useState<VisualBead[]>([]);
+  const [orderFinishedPhoto, setOrderFinishedPhoto] = React.useState('');
+  const [reworkFinishedPhoto, setReworkFinishedPhoto] = React.useState('');
   const [error, setError] = React.useState('');
   const [userNote, setUserNote] = React.useState('');
   const [busy, setBusy] = React.useState('');
@@ -57,9 +59,16 @@ const AfterSaleDrawer: React.FC<{
   const load = () => {
     setError('');
     setOrderVisual([]);
+    setOrderFinishedPhoto(''); setReworkFinishedPhoto('');
     apiRequest<AfterSaleDetail>(`/api/admin/after-sales/${encodeURIComponent(afterSaleNo)}`)
       .then((sale) => {
         setRec(sale);
+        apiRequest<{ finishedPhoto: string }>(`/api/admin/after-sales/${encodeURIComponent(afterSaleNo)}/finished-photo`)
+          .then(result => setReworkFinishedPhoto(result.finishedPhoto || ''))
+          .catch(() => setReworkFinishedPhoto(''));
+        apiRequest<{ finishedPhoto: string }>(`/api/admin/orders/${encodeURIComponent(sale.orderNo)}/finished-photo`)
+          .then(result => setOrderFinishedPhoto(result.finishedPhoto || ''))
+          .catch(() => setOrderFinishedPhoto(''));
         return apiRequest<{ designSnapshot?: { sequence?: VisualBead[] } }>(`/api/admin/orders/${encodeURIComponent(sale.orderNo)}`)
           .then((order) => setOrderVisual(order.designSnapshot?.sequence || []))
           .catch(() => setOrderVisual([]));
@@ -221,6 +230,8 @@ const AfterSaleDrawer: React.FC<{
             <div className="zy-card-title">订单</div>
             <div style={{ padding: '12px 16px', fontSize: 13 }}>
               {orderVisual.length > 0 ? <Bracelet sequence={orderVisual} size={152} label="售后订单手串图" /> : null}
+              {orderFinishedPhoto && <div style={{ margin: '8px 0' }}><div className="zy-table-aux">原订单质检成品实拍图</div><img src={orderFinishedPhoto} alt="原订单质检成品实拍图" style={{ width: 152, height: 152, objectFit: 'cover', borderRadius: 8 }} /></div>}
+              {reworkFinishedPhoto && <div style={{ margin: '8px 0' }}><div className="zy-table-aux">重串质检成品实拍图</div><img src={reworkFinishedPhoto} alt="重串质检成品实拍图" style={{ width: 152, height: 152, objectFit: 'cover', borderRadius: 8 }} /></div>}
               {rec.orderNo}{' '}
               <span
                 className="zy-table-aux"

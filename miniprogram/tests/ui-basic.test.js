@@ -16,10 +16,12 @@ test('步骤 1 列的每个类名都出现在 components.wxss', () => {
     'c-btn', 'c-btn--sec', 'c-btn--s', 'is-off',
     'c-link', 'c-row', 'c-row--tap',
     'c-tabs', 'c-chip', 'c-pk',
-    'c-check', 'c-switch', 'c-stepper', 'c-skeleton', 'c-gap',
+    'c-check', 'c-switch', 'c-stepper', 'c-gap',
     'is-on', 'is-err',
   ]
   for (const n of names) {
     assert.ok(css.includes('.' + n), `components.wxss 缺少 .${n}`)
   }
+  const skeleton = fs.readFileSync(path.join(__dirname, '../components/skeleton/index.wxss'), 'utf8')
+  assert.ok(skeleton.includes('.c-skeleton'), '骨架样式应由 c-skeleton 组件提供')
 })

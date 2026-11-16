@@ -53,6 +53,8 @@ def provider():
         if _provider is not None:
             if settings['model']:
                 _provider.model = settings['model']
+                if want == 'zerone':
+                    _provider.agent = settings['model']
             if settings['visionModel']:
                 _provider.vision_model = settings['visionModel']
     except Exception:   # Do not expose configuration details or secrets in the public status endpoint.

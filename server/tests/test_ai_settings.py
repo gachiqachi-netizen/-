@@ -86,6 +86,18 @@ class AISettingsTests(unittest.TestCase):
         today = body['days'][-1]['design']
         self.assertEqual(today, {'calls': 2, 'failures': 1, 'avgElapsedMs': 200})
 
+    def test_photo_provider_records_usage_without_image_or_prompt(self):
+        fake = mock.Mock()
+        fake.name = 'fake'
+        fake.json.return_value = {'ok': True}
+        wrapped = ai_settings.PhotoUsageProvider(fake)
+        self.assertEqual(wrapped.json('私密提示', {}, image=('image/png', 'secret-image')), {'ok': True})
+        (row,) = self.db.list('ai_logs')
+        self.assertEqual(row['kind'], 'photo')
+        self.assertTrue(row['ok'])
+        self.assertNotIn('secret-image', str(row))
+        self.assertNotIn('私密提示', str(row))
+
 
 if __name__ == '__main__':
     unittest.main()

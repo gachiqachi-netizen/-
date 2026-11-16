@@ -1,5 +1,7 @@
 """AI feature settings; credentials stay exclusively in the server environment."""
 import os
+import time
+import uuid
 from datetime import datetime, timezone
 
 import ai_logs
@@ -56,3 +58,33 @@ def save(db, data, actor):
     audit(db, actor, 'update_ai_settings', 'settings', 'ai',
           f"服务商 {saved['provider'] or '环境默认'}；AI 配 {'开' if saved['designEnabled'] else '关'}；拍照 {'开' if saved['photoEnabled'] else '关'}")
     return saved
+
+
+class PhotoUsageProvider:
+    """Record photo usage without persisting image bytes or user prompts."""
+
+    def __init__(self, wrapped):
+        self.wrapped = wrapped
+
+    def __getattr__(self, name):
+        return getattr(self.wrapped, name)
+
+    def json(self, prompt, schema, image=None):
+        started = time.monotonic()
+        ok = False
+        try:
+            result = self.wrapped.json(prompt, schema, image=image)
+            ok = True
+            return result
+        finally:
+            try:
+                db = ai_logs._db
+                if db is not None:
+                    db.put('ai_logs', uuid.uuid4().hex, {
+                        'kind': 'photo', 'input': '拍照做同款', 'output': '', 'plans': [],
+                        'elapsedMs': int((time.monotonic() - started) * 1000),
+                        'by': self.wrapped.name, 'ok': ok, 'error': '' if ok else '调用失败',
+                        'at': int(time.time() * 1000),
+                    })
+            except Exception:
+                pass

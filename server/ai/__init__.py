@@ -34,7 +34,7 @@ def provider():
         _provider_err = None
         provider._selected = selected
     if _provider or _provider_err:
-        return _provider
+        return ai_settings.PhotoUsageProvider(_provider) if feature == 'photoEnabled' and _provider else _provider
     try:
         if want and not ai_settings.configured().get(want, {}).get('configured'):
             _provider_err = '所选 AI 服务未配置'
@@ -57,7 +57,7 @@ def provider():
                 _provider.vision_model = settings['visionModel']
     except Exception:   # Do not expose configuration details or secrets in the public status endpoint.
         _provider_err = "AI 初始化失败，请检查服务配置"
-    return _provider
+    return ai_settings.PhotoUsageProvider(_provider) if feature == 'photoEnabled' and _provider else _provider
 
 
 def status():

@@ -1,20 +1,231 @@
 [
-  {"name":"home","title":"首页","path":"/pages/home/home","before":"切到首页，等待目录加载"},
-  {"name":"workbench","title":"工作台","path":"/pages/diy/diy","before":"选择首个模板作品后切到自己串"},
-  {"name":"bracelet-detail","title":"手串详情","path":"/pages/finish/finish","before":"选择首个模板作品"},
-  {"name":"ai-match","title":"AI 配","path":"/pages/ai/ai","before":"提交一句‘想要清冷一点，上班也能戴’，等待方案返回"},
-  {"name":"order-confirm","title":"确认订单","path":"/pages/order/order","before":"选择模板作品，打开送礼弹层"},
-  {"name":"order-success","title":"下单成功","path":"/features/order-detail/order-detail?no={paidNo}&paid=1","before":"模拟付款成功后打开成功页"},
-  {"name":"order-detail-pending","title":"待支付订单详情","path":"/features/order-detail/order-detail?no={pendingNo}","before":"创建一笔未付款订单"},
-  {"name":"order-detail-transit","title":"运输中订单详情","path":"/features/order-detail/order-detail?no={transitNo}","before":"模拟付款、质检、发货、物流运输中"},
-  {"name":"order-detail-after-sale","title":"售后中订单详情","path":"/features/order-detail/order-detail?no={saleOrderNo}","before":"已签收订单申请售后"},
-  {"name":"my-orders","title":"我的订单","path":"/features/orders/orders","before":"开发版登录并创建演示订单"},
-  {"name":"mine","title":"我的","path":"/pages/mine/mine","before":"开发版登录"},
-  {"name":"write-review","title":"写评价","path":"/features/review/review?orderId={paidNo}","before":"打开已签收订单的评价页"},
-  {"name":"after-sale-type","title":"选择售后类型","path":"/features/after-sale/type?no={paidNo}","before":"打开已签收订单的可申请售后类型"},
-  {"name":"after-sale-apply","title":"申请售后","path":"/features/after-sale/apply?no={paidNo}&type={saleType}","before":"选择退货退款并打开申请页"},
-  {"name":"after-sale-detail","title":"售后详情","path":"/features/after-sale/detail?no={saleNo}","before":"打开新建售后记录"},
-  {"name":"friend-landing","title":"好友落地页","path":"/features/shared/shared?id={shareId}","before":"分享模板作品后打开分享链接"},
-  {"name":"share-poster","title":"分享海报","path":"/pages/share/share","before":"选择模板作品并等待海报绘制"},
-  {"name":"address-edit","title":"编辑地址","path":"/features/address-edit/address-edit","before":"打开新增地址页"}
+  {
+    "name": "home",
+    "title": "首页",
+    "path": "/pages/home/home",
+    "before": "切到首页，等待目录加载",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "loading"
+    ]
+  },
+  {
+    "name": "workbench",
+    "title": "工作台",
+    "path": "/pages/diy/diy",
+    "before": "选择首个模板作品后切到自己串",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "loading"
+    ]
+  },
+  {
+    "name": "bracelet-detail",
+    "title": "手串详情",
+    "path": "/pages/finish/finish",
+    "before": "选择首个模板作品",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "loading"
+    ]
+  },
+  {
+    "name": "ai-match",
+    "title": "AI 配",
+    "path": "/pages/ai/ai",
+    "before": "提交一句‘想要清冷一点，上班也能戴’，等待方案返回",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "order-confirm",
+    "title": "确认订单",
+    "path": "/pages/order/order",
+    "before": "选择模板作品，打开送礼弹层",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "order-success",
+    "title": "下单成功",
+    "path": "/features/order-detail/order-detail?no={paidNo}&paid=1",
+    "before": "模拟付款成功后打开成功页",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "order-detail-pending",
+    "title": "待支付订单详情",
+    "path": "/features/order-detail/order-detail?no={pendingNo}",
+    "before": "创建一笔未付款订单",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "order-detail-transit",
+    "title": "运输中订单详情",
+    "path": "/features/order-detail/order-detail?no={transitNo}",
+    "before": "模拟付款、质检、发货、物流运输中",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "order-detail-after-sale",
+    "title": "售后中订单详情",
+    "path": "/features/order-detail/order-detail?no={saleOrderNo}",
+    "before": "已签收订单申请售后",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "my-orders",
+    "title": "我的订单",
+    "path": "/features/orders/orders",
+    "before": "开发版登录并创建演示订单",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "mine",
+    "title": "我的",
+    "path": "/pages/mine/mine",
+    "before": "开发版登录",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "write-review",
+    "title": "写评价",
+    "path": "/features/review/review?orderId={paidNo}",
+    "before": "打开已签收订单的评价页",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "after-sale-type",
+    "title": "选择售后类型",
+    "path": "/features/after-sale/type?no={paidNo}",
+    "before": "打开已签收订单的可申请售后类型",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "after-sale-apply",
+    "title": "申请售后",
+    "path": "/features/after-sale/apply?no={paidNo}&type={saleType}",
+    "before": "选择退货退款并打开申请页",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "after-sale-detail",
+    "title": "售后详情",
+    "path": "/features/after-sale/detail?no={saleNo}",
+    "before": "打开新建售后记录",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  },
+  {
+    "name": "friend-landing",
+    "title": "好友落地页",
+    "path": "/features/shared/shared?id={shareId}",
+    "before": "分享模板作品后打开分享链接",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "loading"
+    ]
+  },
+  {
+    "name": "share-poster",
+    "title": "分享海报",
+    "path": "/pages/share/share",
+    "before": "选择模板作品并等待海报绘制",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "loading"
+    ]
+  },
+  {
+    "name": "address-edit",
+    "title": "编辑地址",
+    "path": "/features/address-edit/address-edit",
+    "before": "打开新增地址页",
+    "states": [
+      "normal",
+      "empty",
+      "error",
+      "logged-out",
+      "loading"
+    ]
+  }
 ]

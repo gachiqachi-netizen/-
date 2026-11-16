@@ -286,4 +286,5 @@ async function main() {
   console.log(`完成 ${results.filter(x => x.ok).length}/${results.length} 页，耗时 ${summary.elapsedSeconds} 秒`)
   if (results.some(x => !x.ok)) process.exitCode = 1
 }
-main().catch(error => { console.error(error.message); process.exitCode = 1 })
+if (require.main === module) main().catch(error => { console.error(error.message); process.exitCode = 1 })
+module.exports = { connect, seed, openPage, waitReady, capture, screenWarnings, api }

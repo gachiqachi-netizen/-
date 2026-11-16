@@ -21,7 +21,7 @@ Page({
   onLoad(q) { this.no = q.no; this.paidIntent = q.paid === '1'; this.catalogPromise = api.catalog().then(c => { this.setData({ catalog: c.beads || [] }); return c }).catch(() => ({})); return this.load() },
   onPullDownRefresh() { return this.load().finally(() => wx.stopPullDownRefresh()) },
   async load() {
-    this.setData({ loading: true, error: '' })
+    this.setData({ loading: true, ready: false, error: '' })
     try {
       const raw = await auth.authorized('/my/orders/' + encodeURIComponent(this.no), null, 'GET')
       if (!raw) throw new Error('未找到该订单')
@@ -48,7 +48,7 @@ Page({
       const paidLanding = !!this.paidIntent && raw.paymentStatus === 'paid'
       this.paidIntent = false
       const afterSaleActive = String(state.code).startsWith('after_sale')
-      this.setData({ order, items: materials.fromSnapshot(raw.items || []), paidLanding, primaryAction, secondaryActions, afterSaleActive })
+      this.setData({ order, items: materials.fromSnapshot(raw.items || []), paidLanding, primaryAction, secondaryActions, afterSaleActive, ready: true })
       if (afterSaleActive) {
         try {
           const result = await auth.authorized('/my/orders/' + encodeURIComponent(this.no) + '/after-sales')

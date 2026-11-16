@@ -65,6 +65,9 @@
   "__usePrivacyCheck__": true,
   "lazyCodeLoading": "requiredComponents",
   "style": "v2",
+  "preloadRule": {
+    "pages/home/home": { "network": "all", "packages": ["features"] }
+  },
   "subPackages": [
     {
       "root": "ar-hand",

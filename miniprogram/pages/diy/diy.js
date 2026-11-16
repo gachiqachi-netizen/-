@@ -19,7 +19,7 @@ Page({
     if(global&&global.pendingWorkbenchBeadKbId){this.pendingBeadKbId=global.pendingWorkbenchBeadKbId;delete global.pendingWorkbenchBeadKbId}
     const d=store.current()||store.create();this.setData({soundOn:wx.getStorageSync('cgz_sound')!==false})
     if (!this.data.design || this.data.design.id!==d.id) { this.history=[]; this.setData({selected:-1,renderFallback:false}) }
-    this.setData({design:d,catalogReady:false,wristConfirmed:!!wx.getStorageSync('cgz_wrist_confirmed')}); api.catalog().then(c=>{if(!this.data.design||this.data.design.id!==d.id)return;const beads=c.beads||[], cats=[...new Set(beads.map(b=>b.mat))].map(id=>({id,name:CATS[id]||id}));this.setData({catalog:beads,pricing:c.pricing||{},cats,catalogReady:true,error:''});this.update();this.refreshStackPreview();this.focusKbBead()}).catch(e=>this.setData({catalogReady:false,error:e.message}))
+    this.setData({design:d,catalogReady:false,ready:false,wristConfirmed:!!wx.getStorageSync('cgz_wrist_confirmed')}); api.catalog().then(c=>{if(!this.data.design||this.data.design.id!==d.id)return;const beads=c.beads||[], cats=[...new Set(beads.map(b=>b.mat))].map(id=>({id,name:CATS[id]||id}));this.setData({catalog:beads,pricing:c.pricing||{},cats,catalogReady:true,error:''});this.update();this.refreshStackPreview();this.focusKbBead();this.setData({ready:true})}).catch(e=>this.setData({catalogReady:false,error:e.message}))
     api.request('/kb/rules').then(r=>{if(Array.isArray(r.counts)){const counts=[...new Set(r.counts.filter(c=>c.count>=11&&c.count<=30&&c.confidence!=='low').map(c=>c.count))].sort((a,b)=>a-b);if(counts.length)this.setData({counts})}}).catch(()=>{})
   },
   update(){

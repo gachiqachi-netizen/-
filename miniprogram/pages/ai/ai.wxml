@@ -3,7 +3,7 @@
     <view wx:if="{{messages.length}}" class="ai-new" style="height:{{navHeight}}rpx" bindtap="clear">新对话</view>
     <text>AI 配</text>
   </view>
-  <scroll-view class="ai-chat" scroll-y show-scrollbar="{{false}}" scroll-into-view="{{scrollTo}}" scroll-with-animation>
+  <scroll-view class="ai-chat" scroll-y enhanced show-scrollbar="{{false}}" scroll-into-view="{{scrollTo}}" scroll-with-animation>
     <view wx:if="{{!messages.length}}" class="ai-welcome">
       <view class="ai-welcome-title">想要什么感觉，直接说</view>
       <view class="ai-examples"><view wx:for="{{examples}}" wx:key="*this" class="ai-example" data-text="{{item}}" bindtap="example">{{item}}</view></view>

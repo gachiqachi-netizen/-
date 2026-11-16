@@ -429,6 +429,7 @@ def make_order(db, data, uid):
     enriched = {i: kb.enrich(beads[i]) for i in set(ids)}
     snapshot = [{**{key: enriched[i].get(key, [] if key == 'points' else '')
                     for key in ('id', 'name', 'mm', 'mat', 'spacer', 'price', 'photo', 'kb', 'points', 'meaning', 'summary', 'safety')},
+                 'c': beads[i].get('c'),
                  'photo': beads[i].get('photo'),
                  'priceFen': bead_price_fen(beads[i]),
                  'unitPriceFen': bead_price_fen(beads[i])} for i in ids]

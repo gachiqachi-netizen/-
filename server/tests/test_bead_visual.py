@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -38,11 +39,39 @@ class BeadVisualTest(unittest.TestCase):
                 {'id': bead['id'], 'unitPriceFen': unit, 'mm': bead['mm']}]},
         }, 'owner')
         saved = self.db.get('orders', order['no'])
+        self.assertTrue(all(item['colors'] == bead['c'][:2]
+                            for item in saved['designSnapshot']['sequence']))
         original = list(saved['designSnapshot']['sequence'][0]['colors'])
         changed = dict(bead, c=['#123456', '#654321'], photo='/new-photo.png')
         self.db.put('beads', bead['id'], changed)
         self.assertEqual(commerce.build_design_snapshot(self.db, saved)['sequence'][0]['colors'], original)
         self.assertNotEqual(original, changed['c'])
+
+    def test_order_snapshot_with_catalog_lock_uses_frozen_colors(self):
+        bead = self.bead
+        frozen = dict(bead, priceFen=user_api.bead_price_fen(bead))
+        result, errors = [], []
+
+        def make_snapshot():
+            try:
+                result.append(commerce.build_design_snapshot(
+                    self.db, {'beads': [bead['id']] * 6, 'wrist': 15},
+                    frozen_items=[frozen] * 6))
+            except Exception as error:
+                errors.append(error)
+
+        worker = threading.Thread(target=make_snapshot, daemon=True)
+        self.db.lock.acquire()  # 另一个请求正在读写商品目录
+        try:
+            worker.start()
+            worker.join(1)
+            self.assertFalse(worker.is_alive(), '冻结快照不应等待商品目录锁')
+        finally:
+            self.db.lock.release()
+            worker.join(1)
+        self.assertFalse(errors)
+        self.assertTrue(all(item['colors'] == bead['c'][:2]
+                            for item in result[0]['sequence']))
 
     def test_old_order_fills_visual_from_catalog_and_missing_product_is_gray(self):
         legacy = {'designSnapshot': {'sequence': [

@@ -108,7 +108,7 @@
 
 ## U13 图片和卡片的形状统一（2026-11-16 补）
 
-- **依赖**：U5、U9、U10 合并后再做（它们也改订单、售后、评价页的样式，避免撞车）　**只能改**：`miniprogram/components/card/*`、`miniprogram/components/nav-bar/*`、`miniprogram/components/page/*`（见第 0 条）、`miniprogram/pages/` 和 `miniprogram/features/` 下各页的 `.wxss`（只改 `border-radius`、卡片间距、背景这类形状相关的样式），`tools/check-ui.py`、`tools/check-ui-baseline.json`、`miniprogram/tests/` 里对应测试
+- **依赖**：U5、U9、U10 合并后再做（它们也改订单、售后、评价页的样式，避免撞车）　**只能改**：`miniprogram/components/card/*`、`miniprogram/components/nav-bar/*`、`miniprogram/components/page/*`、各页面 `.json` 和 wxml 里的导航那一行（见第 0、0b 条）、`miniprogram/pages/` 和 `miniprogram/features/` 下各页的 `.wxss`（只改 `border-radius`、卡片间距、背景这类形状相关的样式），`tools/check-ui.py`、`tools/check-ui-baseline.json`、`miniprogram/tests/` 里对应测试
 - **规矩**（03 设计规范 3.3 节，早就定了，各页没照做）：**能点的是圆的，只用来看的是方的。**
   - 直角（`--r-panel`）：照片、宣传位图片、款式格、商品缩略图、文章题图、整块版面、列表、弹层。
   - 胶囊或圆形（`--r-pill`）：按钮、输入条、标签、发送键、头像、加减键、加照片的格子。
@@ -116,8 +116,24 @@
   - 例外只有两个：AI 配的推荐卡片和输入区，沿用圆角卡（04 第 0 节写明的）。
 - 要做的：
   0. `c-card` 现在没有内边距，卡片里的字贴着卡片边（U5、U9 截图里很明显）：给 `c-card` 加内边距 `--sp-base`（左右）和 `--sp-tight`（上下），各页面里为了凑边距自己加的 padding 一并去掉。
-  0b. `c-nav-bar` 现在会跟着页面一起滚走，滚动后页面内容压到状态栏上（U9 截图 after-sale-apply-bottom.png）。导航栏改成固定在顶部（`position: fixed`），`c-page` 顶部留出导航栏的高度。
+  0b. **导航栏改回微信自带的**：03 设计规范 6.2 节写明“不做自定义导航栏，唯一的例外是工作台”。U2 把订单详情、好友落地页、售后等页面换成了自定义导航，导致滚动时导航跟着滚走、内容压到状态栏（U9 截图 after-sale-apply-bottom.png）。除工作台（`pages/diy`）以外，所有页面去掉 `"navigationStyle": "custom"` 和 `<c-nav-bar>`，标题写在页面的 `.json` 里（`navigationBarTitleText`）；从分享进来的页面，微信会自动显示回首页按钮。工作台保留 `c-nav-bar`，并让它固定在顶部（`position: fixed`），内容从导航栏下面开始。这一条可以改各页面的 `.json` 和 wxml 里导航那一行。
   1. 全部页面过一遍，把图片、宣传位、款式格、缩略图、题图上的圆角改成直角；首页宣传位、热门款照上面的规矩改。
   2. 把“加照片”的格子统一成圆形（评价、申请售后、拍照做同款里如果有）。
   3. 扩展 `tools/check-ui.py`：选择器名里带 `image`、`img`、`photo`、`banner`、`cover`、`thumb`、`grid`、`swiper` 的规则，如果用了 `--r-pill` 或数值圆角，就报错（AI 卡片的类名加进例外名单）。改完的页面从基线里删掉对应条目，基线只减不加。
   4. 截图：首页、手串详情、我的作品、文章页、我的订单、写评价，改前改后各一张。
+
+## U14 按钮尺寸和位置统一（2026-11-16 补）
+
+- **依赖**：U13 合并后再做（都改各页样式，避免撞车）　**只能改**：`miniprogram/components/bar/*`、`miniprogram/components/sheet/*`（底部按钮区）、`miniprogram/styles/components.wxss`（`.c-btn`）、各页面 wxml 里底部按钮和列表内按钮那几行及对应 wxss、`tools/check-ui.py`、`tools/check-ui-baseline.json`、`miniprogram/tests/` 里对应测试
+- **规矩**（03 设计规范 7.1 节和第 4 条）：按钮只有两种高度：常规 104rpx（`--h-btn`）、列表内小号 64rpx（`--h-btn-s`）；胶囊圆角；**一屏只有一个主按钮**，放在页面最下面。底部栏只允许三种排法：
+  1. 只有一个动作：**通栏**（左右边距 `--sp-base`，宽度占满），比如“发布”“确认收货”“撤销申请”“好了”。
+  2. 两个动作：**左右各占一半**，左边次按钮、右边主按钮，比如手串详情的“改一改 / 立即下单”、好友落地页的“我也串一条 / 照这条串一条”。
+  3. 价格加动作：左边价格、右边主按钮，按钮宽度固定为栏宽的一半，比如确认订单、工作台“串好了”。
+  - 列表里的按钮（我的订单卡片上的“去支付”“查看物流”等）一律小号，靠右，最多两个。
+  - 弹层底部按钮同上：一个就通栏，两个就各占一半。
+- 现象（截图可见）：手串详情“改一改”和“立即下单”宽度不一样；订单详情“确认收货”、写评价“发布”、售后详情“撤销申请”只占右边一半、左边空着；送礼弹层“好了”不居中也不通栏。
+- 要做的：
+  1. `c-bar` 按上面三种排法实现（没有左侧内容时自动通栏，两个按钮时等宽），页面只选排法、不自己写宽度。
+  2. 所有页面底部按钮、弹层按钮、列表按钮过一遍，改成上面的规矩。
+  3. `check-ui.py` 加一条：选择器名里带 `btn`、`button`、`action` 的规则，`height` 必须是 `--h-btn` 或 `--h-btn-s`，`width` 不能写死数值（百分比 50%、100% 除外）。改完的页面从基线里删掉，基线只减不加。
+  4. 截图：手串详情、确认订单、订单详情（运输中）、写评价、售后详情、我的订单、好友落地页、送礼弹层，改前改后各一张。

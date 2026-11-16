@@ -18,14 +18,14 @@ _provider = None
 _provider_err = None
 
 
-def provider():
+def provider(feature="design"):
     """选择 AI provider；生产推荐 AI_PROVIDER=zerone，并使用 Agent 独立运行密钥。"""
     global _provider, _provider_err
-    import inspect
     import ai_settings
+    if feature not in ('design', 'photo'):
+        raise ValueError('AI 功能不正确')
     settings = ai_settings.current()
-    feature = 'photoEnabled' if inspect.currentframe().f_back.f_code.co_name == 'photo' else 'designEnabled'
-    if not settings[feature]:
+    if not settings['photoEnabled' if feature == 'photo' else 'designEnabled']:
         return None
     want = settings['provider'] or os.environ.get('AI_PROVIDER', '').lower()
     selected = (want, settings['model'], settings['visionModel'])
@@ -34,7 +34,7 @@ def provider():
         _provider_err = None
         provider._selected = selected
     if _provider or _provider_err:
-        return ai_settings.PhotoUsageProvider(_provider) if feature == 'photoEnabled' and _provider else _provider
+        return ai_settings.PhotoUsageProvider(_provider) if feature == 'photo' and _provider else _provider
     try:
         if want and not ai_settings.configured().get(want, {}).get('configured'):
             _provider_err = '所选 AI 服务未配置'
@@ -59,7 +59,7 @@ def provider():
                 _provider.vision_model = settings['visionModel']
     except Exception:   # Do not expose configuration details or secrets in the public status endpoint.
         _provider_err = "AI 初始化失败，请检查服务配置"
-    return ai_settings.PhotoUsageProvider(_provider) if feature == 'photoEnabled' and _provider else _provider
+    return ai_settings.PhotoUsageProvider(_provider) if feature == 'photo' and _provider else _provider
 
 
 def status():
@@ -285,7 +285,7 @@ def _confidence(v):
 
 def photo(beads, image):
     """拍照做同款：认出照片里的主珠、配珠、金属点缀各最像料包里哪一颗。排法和颗数由前台按手围算。"""
-    p = provider()
+    p = provider(feature="photo")
     if not p:
         return None
     prompt = ("用户拍了一张喜欢的手串照片，想用我们料包里的珠子做同款。你只需要认珠子，不用设计。\n"

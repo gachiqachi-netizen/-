@@ -34,11 +34,32 @@ class AISettingsTests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_disabled_design_falls_back_and_photo_gate_is_independent(self):
-        self.db.put('settings', 'ai', {'designEnabled': False, 'photoEnabled': True})
-        self.assertIsNone(ai.provider())
-        self.assertIsNone(ai.design([], '清爽', [], 15))
-        self.db.put('settings', 'ai', {'designEnabled': True, 'photoEnabled': False})
-        self.assertIsNone(ai.photo([], ('image/png', 'eA==')))
+        fake = mock.Mock()
+        fake.name = 'openai-compat'
+        fake.model = 'fake-model'
+        fake.json.return_value = {'ok': False, 'reason': 'no_bracelet', 'seen': ''}
+        env = {'AI_API_KEY': 'test-key', 'AI_BASE_URL': 'https://example.test'}
+        with mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch('ai.openai_compat.OpenAICompatProvider', return_value=fake):
+            self.db.put('settings', 'ai', {'designEnabled': False, 'photoEnabled': True})
+            self.assertIsNone(ai.provider())
+            self.assertIsNone(ai.design([], '清爽', [], 15))
+            self.assertIsNotNone(ai.provider(feature='photo'))
+            self.assertFalse(ai.photo([], ('image/png', 'eA=='))['ok'])
+            self.db.put('settings', 'ai', {'designEnabled': True, 'photoEnabled': False})
+            self.assertIsNotNone(ai.provider())
+            self.assertIsNone(ai.provider(feature='photo'))
+            self.assertIsNone(ai.photo([], ('image/png', 'eA==')))
+
+    def test_validation_errors_are_chinese_without_field_names(self):
+        cases = [({'designEnabled': 'yes'}, 'AI 配开关必须是开或关'),
+                 ({'photoEnabled': 1}, '拍照做同款开关必须是开或关'),
+                 ({'provider': 3}, '服务商不正确'),
+                 ({'model': 3}, '模型名称不正确'),
+                 ({'visionModel': 3}, '看图模型名称不正确')]
+        for payload, message in cases:
+            with self.subTest(payload=payload), self.assertRaisesRegex(ValueError, '^' + message + '$'):
+                ai_settings.validate(payload, self.db)
 
     def test_unconfigured_provider_is_rejected(self):
         with mock.patch.dict(os.environ, {}, clear=True):

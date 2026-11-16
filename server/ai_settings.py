@@ -38,12 +38,14 @@ def validate(data, db=None):
         raise ValueError('AI 设置包含未知字段')
     result = {k: current(db)[k] for k in allowed}
     result.update(data)
+    labels = {'designEnabled': 'AI 配开关', 'photoEnabled': '拍照做同款开关',
+              'provider': '服务商', 'model': '模型名称', 'visionModel': '看图模型名称'}
     for key in ('designEnabled', 'photoEnabled'):
         if type(result[key]) is not bool:
-            raise ValueError(key + ' 必须是布尔值')
+            raise ValueError(labels[key] + '必须是开或关')
     for key in ('provider', 'model', 'visionModel'):
         if not isinstance(result[key], str) or len(result[key]) > 100:
-            raise ValueError(key + ' 不正确')
+            raise ValueError(labels[key] + '不正确')
         result[key] = result[key].strip()
     if result['provider'] and not configured().get(result['provider'], {}).get('configured'):
         raise ValueError('所选服务商未配置密钥')

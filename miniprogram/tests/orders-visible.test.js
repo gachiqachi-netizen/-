@@ -15,7 +15,10 @@ test('五笔订单切换每个分栏时 visible 条数与分栏数字一致', as
   global.Page = value => { definition = value }
   require.cache[authPath] = { id: authPath, filename: authPath, loaded: true, exports: {
     hasSession: () => true,
-    authorized: async () => statuses.map((code, index) => ({
+    authorized: async url => url.includes('/actions/confirm_receipt') ? {
+      no: 'ORDER-2', name: '手串2', beads: [], items: [], payableFen: 100,
+      customerStatus: { code: 'completed', label: '已完成', tone: 'normal' },
+    } : statuses.map((code, index) => ({
       no: `ORDER-${index}`, name: `手串${index}`, beads: [], items: [], payableFen: 100,
       customerStatus: { code, label: code, tone: 'normal' },
     })),
@@ -32,6 +35,13 @@ test('五笔订单切换每个分栏时 visible 条数与分栏数字一致', as
       assert.equal(page.data.visible.length, page.data.counts[tab.key], tab.key)
     }
     assert.equal(page.data.visible.length, 1)
+    page.switchTab({ currentTarget: { dataset: { key: 'shipping' } } })
+    page.setData({ confirmNo: 'ORDER-2' })
+    page.confirmReceipt()
+    await new Promise(resolve => setImmediate(resolve))
+    assert.equal(page.data.visible.length, page.data.counts.shipping)
+    assert.equal(page.data.visible.length, 0)
+    assert.equal(page.data.counts.all, 5)
   } finally {
     global.Page = previousPage
     if (previousAuth) require.cache[authPath] = previousAuth; else delete require.cache[authPath]

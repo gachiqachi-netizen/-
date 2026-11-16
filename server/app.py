@@ -422,8 +422,16 @@ class Handler(BaseHTTPRequestHandler):
                 with open(fp, "rb") as f:
                     return self.send(200, f.read(), "application/json" if fp.endswith(".json") else "application/octet-stream")
             if path == "/api/catalog":
+                import hashlib
                 beads, tpls, banners = on_sale_catalog()
-                return self.send(200, {"beads": beads, "templates": tpls, "banners": banners, "ai": ai.status(), "pricing": pricing.public_config(), "homeArticles": __import__("home").home_articles(db)})
+                catalog = {"beads": beads, "templates": tpls, "banners": banners,
+                           "ai": ai.status(), "pricing": pricing.public_config(),
+                           "homeArticles": __import__("home").home_articles(db)}
+                raw = json.dumps(catalog, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                version = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
+                if self.qs().get("v", [""])[0] == version:
+                    return self.send(200, {"unchanged": True, "version": version})
+                return self.send(200, {**catalog, "version": version})
             if path == "/api/meta/contract":
                 import contract
                 return self.send(200, contract.payload())

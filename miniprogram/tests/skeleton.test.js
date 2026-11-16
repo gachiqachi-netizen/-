@@ -22,6 +22,19 @@ test('skeleton has only block, line, circle and pill shapes with token colors', 
 test('eight loading regions use skeleton components without old shimmer classes', () => {
   for (const page of pages) {
     assert.match(read(`miniprogram/${page}.wxml`), /<c-skeleton\b/, page)
+    assert.equal(JSON.parse(read(`miniprogram/${page}.json`)).usingComponents['c-skeleton'], '/components/skeleton/index', page)
     assert.doesNotMatch(read(`miniprogram/${page}.wxss`), /\.(?:[\w-]*skeleton[\w-]*|sk-[\w-]+)\b|@keyframes sk-/i, page)
+  }
+})
+
+test('no old skeleton selector or loading shimmer remains outside the component', () => {
+  const visit = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const full = path.join(dir, entry.name)
+    return entry.isDirectory() ? visit(full) : entry.name.endsWith('.wxss') ? [full] : []
+  })
+  for (const file of visit(path.join(root, 'miniprogram'))) {
+    if (file.includes('/components/skeleton/')) continue
+    const style = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+    assert.doesNotMatch(style, /\.(?:[\w-]*skeleton[\w-]*|sk(?:-[\w-]+)?)\b|@keyframes\s+(?:[\w-]*skeleton[\w-]*|sk-[\w-]+)/i, file)
   }
 })

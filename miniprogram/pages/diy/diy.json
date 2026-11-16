@@ -1,1 +1,1 @@
-{"navigationStyle":"custom","usingComponents":{"bead-sheet":"/components/bead-sheet/index","c-nav-bar":"/components/nav-bar/index"}}
+{"navigationStyle":"custom","usingComponents":{"c-skeleton":"/components/skeleton/index","bead-sheet":"/components/bead-sheet/index","c-nav-bar":"/components/nav-bar/index"}}

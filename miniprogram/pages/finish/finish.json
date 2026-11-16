@@ -1,3 +1,4 @@
 {
-  "navigationBarTitleText": ""
+  "navigationBarTitleText": "",
+  "usingComponents": {"c-skeleton": "/components/skeleton/index"}
 }

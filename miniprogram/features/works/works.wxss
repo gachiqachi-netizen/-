@@ -9,5 +9,5 @@
 .works-empty-title { color: var(--c-text); font-size: var(--fs-title); font-weight: var(--fw-bold); margin-bottom: 12rpx; }
 .works-link { color: var(--c-text); text-decoration: underline; margin-top: 24rpx; }
 
-.works-share { width: 100%; border: 0; border-radius: 0; background: var(--c-bg); color: var(--c-text); font-size: var(--fs-body); text-align: left; }
+.works-share { width: 100%; border: 0; border-radius: var(--r-pill); background: var(--c-bg); color: var(--c-text); font-size: var(--fs-body); text-align: left; }
 .works-share::after { border: 0; }

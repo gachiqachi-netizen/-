@@ -14,7 +14,7 @@
 .photo { background: var(--c-bg); }
 .photo image { width: 100%; height: 100%; }
 .remove { position: absolute; right: 0; top: 0; width: 36rpx; height: 36rpx; line-height: 36rpx; border-radius: var(--r-pill); background: var(--c-text); color: var(--c-bg); font-size: var(--fs-body); }
-.add-photo { border-radius: var(--r-panel); background: var(--c-bg); flex-direction: column; }
+.add-photo { border-radius: var(--r-pill); background: var(--c-bg); flex-direction: column; }
 .add-photo text:first-child { font-size: var(--fs-title); }
 .photo-hint { padding: var(--sp-tight) 0; }
 .error { padding: var(--sp-base) 0; color: var(--c-danger); font-size: var(--fs-caption); }

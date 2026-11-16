@@ -1,2 +1,2 @@
-.c-card { box-sizing: border-box; background: var(--c-bg); border-radius: var(--r-panel); margin-bottom: var(--sp-section); }
+.c-card { box-sizing: border-box; background: var(--c-bg); border-radius: var(--r-panel); margin-bottom: var(--sp-section); padding: var(--sp-tight) var(--sp-base); }
 .c-card__title { font-size: var(--fs-title); font-weight: var(--fw-bold); }

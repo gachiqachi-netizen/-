@@ -23,7 +23,7 @@ page {
   display: inline-block;
   margin-right: 12rpx;
   padding: 12rpx 28rpx;
-  border-radius: 999rpx;
+  border-radius: var(--r-pill);
   background: var(--c-bg);
   border: 1rpx solid var(--c-line);
   color: var(--c-text-2);
@@ -64,7 +64,7 @@ page {
 .card {
   background: var(--c-bg);
   border: 1rpx solid var(--c-line);
-  border-radius: 24rpx;
+  border-radius: var(--r-panel);
   padding: 28rpx;
 }
 
@@ -111,7 +111,7 @@ page {
   width: 128rpx;
   height: 128rpx;
   flex: none;
-  border-radius: 18rpx;
+  border-radius: var(--r-panel);
   background: radial-gradient(circle at 50% 42%, var(--c-surface), var(--c-line));
   overflow: hidden;
 }
@@ -170,7 +170,7 @@ page {
 .btn-primary,
 .btn-secondary {
   margin: 0;
-  border-radius: 999rpx;
+  border-radius: var(--r-pill);
   font-size: 26rpx;
   line-height: 64rpx;
   height: 64rpx;
@@ -251,7 +251,7 @@ page {
 }
 
 .sk {
-  border-radius: 12rpx;
+  border-radius: var(--r-panel);
   background: linear-gradient(90deg, var(--c-surface) 25%, var(--c-surface) 50%, var(--c-surface) 75%);
   background-size: 200% 100%;
   animation: sk-sweep 1.2s infinite;
@@ -279,7 +279,7 @@ page {
   width: 128rpx;
   height: 128rpx;
   flex: none;
-  border-radius: 18rpx;
+  border-radius: var(--r-panel);
 }
 
 .sk-col {

@@ -45,7 +45,7 @@
   font-size: 22rpx;
   background: var(--c-text);
   color: var(--c-bg);
-  border-radius: 20rpx;
+  border-radius: var(--r-pill);
   padding: 4rpx 16rpx;
 }
 
@@ -224,6 +224,6 @@
 /* 骨架块 */
 .sk-line {
   height: 32rpx;
-  border-radius: 8rpx;
+  border-radius: var(--r-panel);
   margin-bottom: 24rpx;
 }

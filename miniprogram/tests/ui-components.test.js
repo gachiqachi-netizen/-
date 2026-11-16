@@ -10,6 +10,7 @@ const read = p => fs.readFileSync(path.join(root, p), 'utf8')
 test('page and card use token spacing and panel radius', () => {
   assert.match(read('miniprogram/components/page/index.wxss'), /var\(--sp-base\)/)
   assert.match(read('miniprogram/components/card/index.wxss'), /var\(--r-panel\)/)
+  assert.match(read('miniprogram/components/card/index.wxss'), /padding:\s*var\(--sp-tight\) var\(--sp-base\)/)
   assert.match(read('miniprogram/components/card/index.wxml'), /slot name="title"/)
 })
 test('cell renders row, arrow and monochrome switch', () => {
@@ -30,6 +31,25 @@ test('bar exposes three layouts and token button height', () => {
 test('navigation aligns title with capsule measurements', () => {
   assert.match(read('miniprogram/components/nav-bar/index.js'), /getMenuButtonBoundingClientRect/)
   assert.match(read('miniprogram/components/nav-bar/index.wxml'), /navHeight/)
+  assert.match(read('miniprogram/components/nav-bar/index.wxml'), /statusHeight \+ navHeight/)
+  assert.match(read('miniprogram/components/nav-bar/index.wxss'), /position:\s*fixed/)
+})
+test('UI checker enforces square image areas but allows circular add-photo', () => {
+  const dir = fs.mkdtempSync(path.join(root, 'miniprogram', 'ui-shape-'))
+  const file = path.join(dir, 'shape.wxss')
+  try {
+    fs.writeFileSync(file, '.photo { border-radius: var(--r-pill); }\n')
+    let result = spawnSync('python3', ['tools/check-ui.py', file], { cwd: root, encoding: 'utf8' })
+    assert.equal(result.status, 1)
+    assert.match(result.stdout, /:shape:/)
+    fs.writeFileSync(file, '.cover { border-radius: 18rpx; }\n')
+    result = spawnSync('python3', ['tools/check-ui.py', file], { cwd: root, encoding: 'utf8' })
+    assert.equal(result.status, 1)
+    assert.match(result.stdout, /:shape:/)
+    fs.writeFileSync(file, '.photo { border-radius: var(--r-panel); }\n.add-photo { border-radius: var(--r-pill); }\n')
+    result = spawnSync('python3', ['tools/check-ui.py', file], { cwd: root, encoding: 'utf8' })
+    assert.equal(result.status, 0)
+  } finally { fs.rmSync(dir, { recursive: true, force: true }) }
 })
 test('home navigation shows home icon and switches to the home tab', () => {
   const wxml = read('miniprogram/components/nav-bar/index.wxml')

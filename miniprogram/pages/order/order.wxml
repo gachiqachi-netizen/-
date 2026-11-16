@@ -64,7 +64,7 @@
     <textarea maxlength="50" placeholder="写一句想说的话" value="{{giftNote}}" data-key="giftNote" bindinput="input" />
     <view class="counter">{{giftNote.length}}/50</view>
     <c-cell label="隐藏价格：包裹里不放带价格的单据" switch="{{true}}" checked="{{hidePrice}}" bind:change="toggleHidePrice" />
-    <button class="c-btn gift-done" bindtap="finishGift">好了</button>
+    <view slot="footer" class="gift-footer"><button class="c-btn" bindtap="finishGift">好了</button></view>
   </c-sheet>
   <c-sheet show="{{sheet === 'price'}}" title="价格有变化" maskClose="{{false}}">
     <view>你挑的时候到现在，有材料调了价。</view>

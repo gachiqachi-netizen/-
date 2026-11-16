@@ -22,7 +22,7 @@
 .under { text-decoration: underline; }
 .agreement-error { color: var(--c-danger); }
 .agreement-error .check { border-color: var(--c-danger); }
-.gift-done { width: 100%; margin: 24rpx 0 0; }
+.gift-footer { display: flex; width: 100%; margin-top: 24rpx; }
 .total { font-size: var(--fs-title); font-weight: var(--fw-bold); white-space: nowrap; }
 .safety-copy { white-space: pre-line; line-height: 1.6; }
 .sheet-row { min-height: 88rpx; padding: 16rpx 0; border-bottom: 1rpx solid var(--c-line); }

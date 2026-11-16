@@ -8,5 +8,8 @@
   {"name":"forty-mixed","size":80,"repeat":20,"sequence":[{"mm":8},{"mm":4,"spacer":true}]},
   {"name":"eighty-dense","size":240,"repeat":80,"sequence":[{"mm":6}]},
   {"name":"spacer-rich","size":200,"repeat":4,"sequence":[{"mm":12,"colors":["#111111","#aaaaaa"]},{"mm":2,"spacer":true},{"mm":8}]},
-  {"name":"large-mixed-photos","size":320,"repeat":2,"sequence":[{"mm":14,"photo":"/a.png"},{"mm":10,"photo":"/b.png"},{"mm":4,"spacer":true},{"mm":8,"colors":["#123456","#abcdef"]}]}
+  {"name":"large-mixed-photos","size":320,"repeat":2,"sequence":[{"mm":14,"photo":"/a.png"},{"mm":10,"photo":"/b.png"},{"mm":4,"spacer":true},{"mm":8,"colors":["#123456","#abcdef"]}]},
+  {"name":"ten-four-tangent","size":240,"repeat":8,"sequence":[{"mm":10,"photo":"/main.png"},{"mm":4,"spacer":true,"photo":"/spacer.png"}]},
+  {"name":"twelve-six-tangent","size":280,"repeat":7,"sequence":[{"mm":12},{"mm":6,"spacer":true}]},
+  {"name":"buddha-head-tangent","size":300,"repeat":1,"sequence":[{"mm":16,"photo":"/buddha.png"},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8},{"mm":8}]}
 ]

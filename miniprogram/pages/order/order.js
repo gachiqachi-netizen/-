@@ -61,9 +61,10 @@ Page({
       this.setData({ catalogReady: !changes.length && !this.data.missing.length,
         sheet: changes.length ? 'price' : '' })
     } catch (error) {
-      if (!generation || generation === this.quoteGeneration) this.setData({ loading: false, catalogReady: false, error: '材料信息加载失败，点提交再试一次' })
+      if (!generation || generation === this.quoteGeneration) this.setData({ loading: false, catalogReady: false, error: api.userMessage(error) })
     }
   },
+  retryCatalog() { this.loadPromise = this.loadCatalog(++this.quoteGeneration); return this.loadPromise },
   async loadAddress() {
     if (typeof wx.getStorageSync !== 'function' || !auth.hasSession || !auth.hasSession() || this.data.person) return
     try {

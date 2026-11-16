@@ -1,22 +1,27 @@
 function networkError(error) {
-  const raw = error && error.errMsg || '未知网络错误'
-  const info = wx.getAccountInfoSync && wx.getAccountInfoSync()
-  const debug = info && info.miniProgram && info.miniProgram.envVersion === 'develop'
-  let message = '无法连接服务，请稍后重试'
-  if (debug) {
-    message = /domain list|url not in/i.test(raw)
-      ? '微信拦截了测试地址，请在右上角打开调试后退出重进'
-      : '手机无法连接电脑测试服务'
-    message += '；' + raw + '；地址：' + getApp().globalData.apiBase
-  }
-  return new Error(message)
+  const result = new Error('网络不太好，检查一下网络再试')
+  result.code = 'NETWORK'
+  return result
+}
+function responseError(response) {
+  const status = response.statusCode
+  const raw = response.data || {}
+  const error = new Error(status >= 500 ? '系统开小差了，稍后再试' : (raw.error || '请求没有完成，请再试一次'))
+  error.status = status
+  error.code = raw.code
+  return error
+}
+function userMessage(error) {
+  if (error && error.code === 'NETWORK') return '网络不太好，检查一下网络再试'
+  if (error && error.status >= 400 && error.status < 500) return error.message || '请求没有完成，请再试一次'
+  return '系统开小差了，稍后再试'
 }
 function request(path, data, method, options) {
   const g = getApp().globalData
   if (g.configError || !g.apiBase) return Promise.reject(new Error(g.configError || '服务地址尚未配置'))
   const base = g.apiBase
   const timeout = options && Number(options.timeout)
-  return new Promise((resolve, reject) => wx.request({url: base + '/api' + path, method: method || (data ? 'POST' : 'GET'), data, timeout:timeout > 0 ? timeout : 10000, success(r) { if (r.statusCode >= 200 && r.statusCode < 300) resolve(r.data); else { const error = new Error((r.data && r.data.error) || '服务暂不可用'); error.status = r.statusCode; error.code = r.data && r.data.code; reject(error) } }, fail(error) { reject(networkError(error)) } }))
+  return new Promise((resolve, reject) => wx.request({url: base + '/api' + path, method: method || (data ? 'POST' : 'GET'), data, timeout:timeout > 0 ? timeout : 10000, success(r) { if (r.statusCode >= 200 && r.statusCode < 300) resolve(r.data); else reject(responseError(r)) }, fail(error) { reject(networkError(error)) } }))
 }
 function showCatalogSource(offline) {
   if (typeof getCurrentPages !== 'function') return
@@ -116,4 +121,4 @@ function catalog(force) {
   }
   return fetchCatalog('', !!develop, false)
 }
-module.exports = {request,catalog,networkError}
+module.exports = {request,catalog,networkError,responseError,userMessage}

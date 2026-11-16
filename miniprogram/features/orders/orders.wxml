@@ -15,23 +15,12 @@
   </view>
 
   <!-- 加载失败 -->
-  <view class="card error-card" wx:elif="{{error && !rows.length}}">
-    <view class="error-text">{{error}}</view>
-    <view class="error-actions">
-      <button class="btn-secondary" bindtap="retry">重试</button>
-      <button class="btn-primary" wx:if="{{!loggedIn}}" bindtap="goLogin">去登录</button>
-    </view>
-  </view>
+  <c-state wx:elif="{{error && !rows.length && !loggedIn}}" title="登录后查看订单" desc="登录后就能看到你的订单" action="去登录" bind:action="goLogin" />
+  <c-state wx:elif="{{error && !rows.length}}" title="暂时看不到订单" desc="{{error}}" action="再试一次" bind:action="retry" />
 
   <!-- 空 -->
-  <view class="card empty-card" wx:elif="{{!rows.length}}">
-    <view class="empty-title">还没有订单</view>
-    <view class="empty-sub">串好一条，下单后会出现在这里</view>
-    <button class="btn-primary empty-btn" bindtap="goDiy">去串一条</button>
-  </view>
-  <view class="card empty-card" wx:elif="{{!visible.length}}">
-    <view class="empty-sub">这里没有订单</view>
-  </view>
+  <c-state wx:elif="{{!rows.length}}" title="还没有订单" desc="串好一条，下单后会出现在这里" action="去串一条" bind:action="goDiy" />
+  <c-state wx:elif="{{!visible.length}}" title="这里没有订单" desc="试试看看其他状态" />
 
   <!-- 订单卡片：编号+状态 → 商品行 → 实付 → 按钮靠右 -->
   <view class="cards{{fade ? ' fade-on' : ''}}" wx:else>

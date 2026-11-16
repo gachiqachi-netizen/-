@@ -6,18 +6,18 @@ const labels = ['', '很不满意', '不满意', '一般', '满意', '很满意'
 Page({
   data: { orderId: '', name: '', beads: [], catalog: [], spec: '', rating: 5, label: '很满意',
     stars: [1, 2, 3, 4, 5], content: '', photos: [], anonymous: true,
-    readOnly: false, submitting: false, error: '' },
+    readOnly: false, submitting: false, error: '', loadError: '' },
   onLoad(query) {
     const orderId = query.orderId || query.id || ''
     this.setData({ orderId })
-    if (!orderId) return this.setData({ error: '找不到订单' })
+    if (!orderId) return this.setData({ loadError: '找不到订单' })
     const path = '/my/orders/' + encodeURIComponent(orderId)
     auth.authorized(path, null, 'GET').then(order => {
       const beads = Array.isArray(order.beads) ? order.beads.length : ''
       const wrist = order.wrist || ''
       this.setData({ name: order.name || '手串', beads: order.beads || [], catalog: order.items || [],
         spec: [beads ? beads + ' 颗' : '', wrist ? '手围 ' + wrist + 'cm' : ''].filter(Boolean).join(' · ') })
-    }).catch(error => this.setData({ error: error.message || '订单加载失败' }))
+    }).catch(error => this.setData({ loadError: api.userMessage(error) }))
     if (typeof getApp === 'function') api.catalog().then(result => this.setData({ catalog: result.beads || [] })).catch(() => {})
     auth.authorized(path + '/review', null, 'GET').then(review => {
       if (!review || !review.id) return
@@ -28,6 +28,7 @@ Page({
         photos: (review.photoIds || []).map(id => ({ id, url: '', status: 'done' })) })
     }).catch(() => {})
   },
+  retryLoad() { this.setData({ loadError: '' }); this.onLoad({ orderId: this.data.orderId }) },
   back() { wx.navigateBack() },
   rate(event) {
     if (this.data.readOnly) return

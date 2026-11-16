@@ -5,5 +5,6 @@
     "c-bracelet": "/components/bracelet/index",
     "c-composer": "/components/composer/index",
     "c-toast": "/components/toast/index"
+    ,"c-state": "/components/state/index"
   }
 }

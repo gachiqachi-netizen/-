@@ -27,6 +27,9 @@ button.c-btn {
   min-width: 0;
 }
 
+button.c-btn:not([size=mini]) { width: auto; }
+.c-btn--block, button.c-btn.c-btn--block:not([size=mini]) { width: 100%; }
+
 button.c-btn::after {
   border: 0;
 }

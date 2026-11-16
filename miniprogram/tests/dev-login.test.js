@@ -20,12 +20,12 @@ test('开发版手机预览在微信未配置时同样改用开发登录',async(
 })
 test('正式版不走开发登录，503 直接抛错',async()=>{
   const {auth,calls}=setup('release','ios',{statusCode:503,data:{error:'微信登录尚未配置'}},'https://api.beadloop.cn')
-  await assert.rejects(auth.login(),/微信登录尚未配置/)
+  await assert.rejects(auth.login(),/系统开小差了，稍后再试/)
   assert.ok(!calls.some(u=>u.endsWith('/auth/dev')))
 })
 test('体验版不走开发登录，503 直接抛错',async()=>{
   const {auth,calls}=setup('trial','devtools',{statusCode:503,data:{error:'微信登录尚未配置'}},'https://api.beadloop.cn')
-  await assert.rejects(auth.login(),/微信登录尚未配置/)
+  await assert.rejects(auth.login(),/系统开小差了，稍后再试/)
   assert.ok(!calls.some(u=>u.endsWith('/auth/dev')))
 })
 test('开发者工具误报体验版时本机服务仍改用开发登录',async()=>{
@@ -35,6 +35,6 @@ test('开发者工具误报体验版时本机服务仍改用开发登录',async(
 })
 test('只认 503 状态码：相同报错文字的其他状态不降级',async()=>{
   const {auth,calls}=setup('develop','devtools',{statusCode:500,data:{error:'微信登录尚未配置'}})
-  await assert.rejects(auth.login(),/微信登录尚未配置/)
+  await assert.rejects(auth.login(),/系统开小差了，稍后再试/)
   assert.ok(!calls.some(u=>u.endsWith('/auth/dev')))
 })

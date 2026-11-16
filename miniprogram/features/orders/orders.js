@@ -70,7 +70,7 @@ Page({
         const orders = (Array.isArray(rows) ? rows : []).map(buildRow)
         this.setData({ loggedIn: auth.hasSession(), rows: orders, visible: group.rowsInTab(orders, this.data.tab), counts: group.countsOf(orders), error: '', loadedOnce: true })
       })
-      .catch(e => this.setData({ loggedIn: auth.hasSession(), error: e.message || '读取失败' }))
+      .catch(e => this.setData({ loggedIn: auth.hasSession(), error: api.userMessage(e) }))
       .finally(() => this.setData({ loading: false }))
   },
 

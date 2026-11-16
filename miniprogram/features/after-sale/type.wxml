@@ -1,12 +1,12 @@
 <c-page>
   <view class="surface">
     <c-card wx:if="{{loading}}"><view class="hint">正在读取订单…</view></c-card>
-    <c-card wx:if="{{error}}"><view class="error">{{error}}</view><button class="c-btn c-btn--sec" bindtap="load">重试</button></c-card>
+    <c-state wx:if="{{error && !order}}" title="暂时看不到申请选项" desc="{{error}}" action="再试一次" bind:action="load" />
     <block wx:if="{{order}}">
       <c-card><view class="summary"><view class="name">{{order.name}}</view><view class="hint">订单 {{order.no}} · 实付 {{order.paidPrice}}</view></view></c-card>
       <c-card>
         <c-cell wx:for="{{types}}" wx:key="type" arrow="{{true}}" data-type="{{item.type}}" bind:tap="select"><view slot="label"><view class="name">{{item.label}}</view><view class="hint">{{item.description}}</view></view></c-cell>
-        <view wx:if="{{!types.length}}" class="empty">已经过了在线申请的时间，请联系客服</view>
+        <c-state wx:if="{{!types.length}}" title="现在不能在线申请" desc="已经过了在线申请的时间" />
       </c-card>
       <view class="policy">定制商品非质量问题不支持七天无理由退换。<text bindtap="showPolicy">查看售后政策</text></view>
     </block>

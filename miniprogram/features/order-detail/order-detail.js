@@ -16,13 +16,14 @@ function beijingTime(value) {
 
 Page({
   data: { order: null, items: [], catalog: [], loading: true, error: '', actionBusy: '', payment: null,
+    loginRequired: false,
     primaryAction: null, secondaryActions: [], afterSaleNo: '', afterSaleActive: false,
     paymentAmount: '', sheet: '', paidLanding: false, cancelReasons: ['不想要了', '想改一改再下单', '地址填错了', '其他'] },
   onLoad(q) { this.no = q.no; this.paidIntent = q.paid === '1'; this.catalogPromise = api.catalog().then(c => { this.setData({ catalog: c.beads || [] }); return c }).catch(() => ({})); return this.load() },
   onPullDownRefresh() { return this.load().finally(() => wx.stopPullDownRefresh()) },
   openMaterials() { this.setData({ sheet: 'materials' }) },
   async load() {
-    this.setData({ loading: true, ready: false, error: '' })
+    this.setData({ loading: true, ready: false, error: '', loginRequired: false })
     try {
       const raw = await auth.authorized('/my/orders/' + encodeURIComponent(this.no), null, 'GET')
       if (!raw) throw new Error('未找到该订单')
@@ -57,9 +58,11 @@ Page({
           this.setData({ afterSaleNo: latest && latest.no || '' })
         } catch (_) { this.setData({ afterSaleNo: '' }) }
       } else this.setData({ afterSaleNo: '' })
-    } catch (e) { this.setData({ error: e.message || '订单读取失败', order: null }) }
+    } catch (e) { this.setData({ error: api.userMessage(e), order: null,
+      loginRequired: e.status === 401 || (typeof wx.getStorageSync === 'function' && !auth.hasSession()) }) }
     finally { this.setData({ loading: false }) }
   },
+  goLogin() { auth.goLogin({ type: 'navigate', url: '/features/order-detail/order-detail?no=' + encodeURIComponent(this.no) + (this.paidIntent ? '&paid=1' : '') }) },
   async startPayment() {
     if (this.data.actionBusy || !this.data.order) return
     this.setData({ actionBusy: 'pay_order' })

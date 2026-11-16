@@ -7,7 +7,7 @@
       <c-bead wx:else bead="{{bead}}" size="l" />
     </view>
     <view class="content">
-      <button class="share" open-type="share">分享</button>
+      <button class="c-btn share" open-type="share">分享</button>
       <view class="title">{{article.title}}</view>
       <view wx:for="{{article.body}}" wx:key="index" class="paragraph">{{item}}</view>
     </view>

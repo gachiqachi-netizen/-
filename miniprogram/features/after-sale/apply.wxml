@@ -1,7 +1,8 @@
 <c-page>
   <view class="surface">
     <c-card wx:if="{{loading}}"><view class="hint">正在读取申请选项…</view></c-card>
-    <c-card wx:if="{{error}}"><view class="error">{{error}}</view><button wx:if="{{!option}}" class="c-btn c-btn--sec" bindtap="load">重试</button></c-card>
+    <c-state wx:if="{{error && !option}}" title="暂时不能申请" desc="{{error}}" action="再试一次" bind:action="load" />
+    <view wx:elif="{{error}}" class="error">{{error}}</view>
     <block wx:if="{{option}}">
       <c-card><view class="summary">{{option.label}}</view></c-card>
       <c-card><c-cell label="原因" value="{{reason || '请选择原因'}}" arrow="{{true}}" bind:tap="toggleReasons" /><view wx:if="{{reasonOpen}}" class="reasons"><view wx:for="{{reasons}}" wx:key="*this" class="reason" data-reason="{{item}}" bindtap="chooseReason">{{item}}</view></view></c-card>

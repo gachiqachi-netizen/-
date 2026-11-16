@@ -1,14 +1,17 @@
 <c-page>
   <c-cell wx:if="{{shareId}}" label="更多" arrow bind:tap="more" />
   <c-card wx:if="{{loading}}"><view class="share-loading"><c-skeleton shape="block" width="100%" ratio="3/5"/></view></c-card>
-  <c-card wx:if="{{design}}">
+  <c-state wx:elif="{{!design && error}}" title="还不能生成海报" desc="{{error}}" action="再试一次" bind:action="retry" />
+  <c-state wx:elif="{{!design}}" title="先串好一条手串" desc="完成设计后再来生成海报" />
+  <c-state wx:if="{{design && error && !ready}}" title="还不能生成海报" desc="{{error}}" action="再试一次" bind:action="retry" />
+  <c-card wx:if="{{design && (ready || !error)}}">
 
     <canvas canvas-id="shareCard" class="share-card" style="width:{{width}}px;height:{{height}}px" />
   </c-card>
   <c-card wx:if="{{albumDenied}}"><view class="permission">没有相册权限，去设置里打开</view><button class="c-btn c-btn--sec" bindtap="openAlbumSettings">去设置</button></c-card>
   <c-card wx:if="{{shareError}}"><view class="error">{{shareError}}</view></c-card>
-  <c-card wx:if="{{error && !albumDenied}}"><view class="error">{{error}}</view></c-card>
+  <c-card wx:if="{{error && ready && !albumDenied}}"><view class="error">{{error}}</view></c-card>
   <c-card wx:if="{{moreOpen}}"><c-cell label="看看朋友打开是什么样" arrow bind:tap="viewFriend"/><button class="c-btn c-btn--sec" bindtap="closeMore">收起</button></c-card>
-  <c-bar wx:if="{{design}}" layout="dual"><button slot="secondary" wx:if="{{!shareId}}" class="c-btn c-btn--sec" loading="{{shareBusy}}" bindtap="prepareShare">分享给好友</button><button slot="secondary" wx:else class="c-btn c-btn--sec" open-type="share">发给朋友</button><button class="c-btn" bindtap="saveCard" loading="{{saveBusy}}" disabled="{{!ready||saveBusy}}">保存图片</button></c-bar>
+  <c-bar wx:if="{{design && (ready || !error)}}" layout="dual"><button slot="secondary" wx:if="{{!shareId}}" class="c-btn c-btn--sec" loading="{{shareBusy}}" bindtap="prepareShare">分享给好友</button><button slot="secondary" wx:else class="c-btn c-btn--sec" open-type="share">发给朋友</button><button class="c-btn" bindtap="saveCard" loading="{{saveBusy}}" disabled="{{!ready||saveBusy}}">保存图片</button></c-bar>
 </c-page>
 <c-toast />

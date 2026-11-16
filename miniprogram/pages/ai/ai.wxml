@@ -36,7 +36,7 @@
       </view>
     </view>
     <view wx:if="{{busy}}" class="ai-wait"><view class="ai-loading"><c-skeleton shape="block" width="100%" ratio="2/1"/><c-skeleton shape="line" width="80%" font="body"/><c-skeleton shape="line" width="50%" font="caption"/></view></view>
-    <view wx:if="{{error}}" class="ai-error">{{error}} <text bindtap="retry" data-index="{{messages.length - 1}}">再试一次</text></view>
+    <c-state wx:if="{{error}}" title="搭配暂时没完成" desc="{{error}}" action="再试一次" bind:action="retryLast" />
     <view id="chat-end" />
   </scroll-view>
   <view class="ai-composer"><c-composer value="{{text}}" placeholder="{{hasResults ? '还想怎么改，直接说' : '说说想要的感觉、送谁、预算…'}}" tag="手围 {{wrist}}cm" chips="{{chips}}" voice="{{false}}" photo="{{false}}" sending="{{busy}}" bind:input="input" bind:send="submit" bind:chip="onChip" bind:tag="onTag" /></view>

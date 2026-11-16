@@ -1,4 +1,5 @@
 const auth = require('../../utils/auth')
+const api = require('../../utils/api')
 
 function yuan(fen) { return (Number(fen || 0) / 100).toFixed(2) }
 function needsPhoto(reason) { return /裂纹|瑕疵|图片|掉珠|断线|少件|漏发/.test(reason || '') }
@@ -18,7 +19,7 @@ Page({
       const option = (result.types || []).find(item => item.type === this.type)
       if (!option) throw new Error('这笔订单现在不能申请这种售后')
       this.setData({ option, reasons: option.reasons, amount: yuan(option.refundFen), phone: order.phone || '' })
-    } catch (error) { this.setData({ error: error.message || '读取失败，请重试' }) }
+    } catch (error) { this.setData({ error: api.userMessage(error) }) }
     finally { this.setData({ loading: false }) }
   },
   toggleReasons() { this.setData({ reasonOpen: !this.data.reasonOpen }) },

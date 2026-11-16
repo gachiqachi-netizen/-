@@ -128,7 +128,7 @@ Page({
       if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
     } catch (err) {
       const draft = String(this.data.text || '').trim()
-      this.setData({ text: draft || text, error: (err.message || '搭配失败，请重试') + (draft ? '。上次未发送成功：' + text : ''), messages: prior.concat({ role: 'me', text, at: now, failed: true, time: marker ? timeLabel(now) : '' }), scrollTo: 'chat-end' })
+      this.setData({ text: draft || text, error: api.userMessage(err) + (draft ? '。上次未发送成功：' + text : ''), messages: prior.concat({ role: 'me', text, at: now, failed: true, time: marker ? timeLabel(now) : '' }), scrollTo: 'chat-end' })
       this.persist()
     } finally {
       clearTimeout(this.waitTimer1); clearTimeout(this.waitTimer2)
@@ -136,6 +136,7 @@ Page({
     }
   },
   retry(e) { const m = this.data.messages[Number(e.currentTarget.dataset.index)]; if (!m) return; this.setData({ messages: this.data.messages.filter(x => x !== m), text: m.text, error: '' }); return this.submit() },
+  retryLast() { return this.retry({ currentTarget: { dataset: { index: this.data.messages.length - 1 } } }) },
   designAt(e) {
     const m = this.data.messages[Number(e.currentTarget.dataset.message)]
     return m && m.results && m.results[Number(e.currentTarget.dataset.index)]

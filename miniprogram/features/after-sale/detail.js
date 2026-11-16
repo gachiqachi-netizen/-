@@ -21,7 +21,7 @@ Page({
         try{const order=await auth.authorized('/my/orders/'+encodeURIComponent(sale.orderNo));this.setOrder(order);const catalog=await api.catalog();this.setData({catalog:catalog.beads||[]})}
         catch(_){this.setData({order:null})}
       }
-    }catch(error){this.setData({error:error.message||'售后记录暂时无法读取'})}
+    }catch(error){this.setData({error:api.userMessage(error)})}
     finally{this.setData({loading:false});if(wx.stopPullDownRefresh)wx.stopPullDownRefresh()}
   },
   onPullDownRefresh(){this.load()},

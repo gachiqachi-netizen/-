@@ -265,8 +265,9 @@ class ProductionWorkbenchTest(unittest.TestCase):
             "note": "复检全部合格",
         })
         self.assertTrue(passed_detail["qualityGate"]["passed"])
-        self.assertEqual(passed_detail["workOrder"]["status"], "qc_passed")
-        self.assertIn("ready_to_ship", passed_detail["allowedTransitions"]["fulfillmentStatus"])
+        self.assertEqual(passed_detail["workOrder"]["status"], "ready_to_ship")
+        self.assertEqual(passed_detail["fulfillmentStatus"], "ready_to_ship")
+        self.assertIn("shipped", passed_detail["allowedTransitions"]["fulfillmentStatus"])
 
         ready_order = commerce.transition_order_status(self.db, no, "fulfillmentStatus", "ready_to_ship")
         self.assertEqual(ready_order["fulfillmentStatus"], "ready_to_ship")
@@ -361,11 +362,6 @@ class ProductionWorkbenchHandlerTest(unittest.TestCase):
         stored["paymentStatus"] = "paid"
         stored["paidFen"] = total
         app.db.put("orders", no, stored)
-        self.assertEqual(
-            self.call_handler(f"/api/admin/orders/{no}/status", "PUT", {"group": "fulfillmentStatus", "to": "producing"}, admin=True)[0],
-            200,
-        )
-
         code, _ = self.call_handler(f"/api/admin/orders/{no}/work-order", "PUT", {"replaceMaterial": "bad"}, admin=True)
         self.assertEqual(code, 400)
 
@@ -386,6 +382,7 @@ class ProductionWorkbenchHandlerTest(unittest.TestCase):
             "inspector": "质检王", "note": "长度偏短2mm",
         }, admin=True)
         self.assertEqual(code, 200)
+        self.assertEqual(app.db.get("orders", no).get("fulfillmentStatus", "unfulfilled"), "unfulfilled")
         code, _ = self.call_handler(f"/api/admin/orders/{no}/status", "PUT", {"group": "fulfillmentStatus", "to": "ready_to_ship"}, admin=True)
         self.assertEqual(code, 400)
 
@@ -394,6 +391,7 @@ class ProductionWorkbenchHandlerTest(unittest.TestCase):
             "inspector": "质检王", "note": "复检合格",
         }, admin=True)
         self.assertEqual(code, 200)
+        self.assertEqual(app.db.get("orders", no)["fulfillmentStatus"], "ready_to_ship")
         code, updated_order = self.call_handler(
             f"/api/admin/orders/{no}/status", "PUT",
             {"group": "fulfillmentStatus", "to": "ready_to_ship"},

@@ -4,7 +4,7 @@ const path = require('node:path')
 const { queue } = require('../utils/toast')
 
 const pagePath = path.resolve(__dirname, '../features/review/review.js')
-const apiPath = path.resolve(__dirname, '../utils/api.js')
+const authPath = path.resolve(__dirname, '../utils/auth.js')
 const flush = () => new Promise(resolve => setImmediate(resolve))
 
 function makePage(reply = {}) {
@@ -12,12 +12,12 @@ function makePage(reply = {}) {
   const toasts = []
   const unsubscribe = queue.subscribe(item => { if (item) toasts.push(item.text) })
   let backs = 0
-  const originalApi = require.cache[apiPath]
+  const originalAuth = require.cache[authPath]
   const originalPage = global.Page
   const originalWx = global.wx
   let definition
-  require.cache[apiPath] = { id: apiPath, filename: apiPath, loaded: true, exports: {
-    request: (url, data, method) => {
+  require.cache[authPath] = { id: authPath, filename: authPath, loaded: true, exports: {
+    authorized: (url, data, method) => {
       calls.push({ url, data, method })
       if (url.endsWith('/review') && method === 'GET') return reply.existing ? Promise.resolve(reply.existing) : Promise.reject(new Error('评价不存在'))
       if (url.endsWith('/review') && method === 'POST') return Promise.resolve(reply.submit || { status: 'pending' })
@@ -37,8 +37,8 @@ function makePage(reply = {}) {
   const restore = () => {
     unsubscribe()
     delete require.cache[pagePath]
-    if (originalApi) require.cache[apiPath] = originalApi
-    else delete require.cache[apiPath]
+    if (originalAuth) require.cache[authPath] = originalAuth
+    else delete require.cache[authPath]
     global.Page = originalPage
     global.wx = originalWx
   }

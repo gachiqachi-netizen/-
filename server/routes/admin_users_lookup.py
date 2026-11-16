@@ -28,7 +28,11 @@ def lookup(ctx, match, data):
     users = ctx.db.list('users')
     orders = ctx.db.list('orders')
     if re.fullmatch(r'\d{4}', query):
-        matches = [user for user in users if str(user.get('phoneMasked') or '').endswith(query)]
+        owner_ids = {order.get('userId') for order in orders
+                     if str(order.get('phone') or '').endswith(query)}
+        matches = [user for user in users
+                   if str(user.get('phoneMasked') or '').endswith(query)
+                   or user['id'] in owner_ids]
     else:
         owner_ids = {order.get('userId') for order in orders
                      if query in (str(order.get('no') or ''), str(order['id']))}

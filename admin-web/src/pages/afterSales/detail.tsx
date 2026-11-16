@@ -169,7 +169,7 @@ const AfterSaleDrawer: React.FC<{
                   disabled={busy !== ''}
                   onClick={() => runAction(action)}
                 >
-                  {busy === action ? '提交中…' : (ACTION_LABELS[action] || action)}
+                  {busy === action ? '提交中…' : (action === 'approve' && rec.status === 'requested' ? '开始审核' : ACTION_LABELS[action] || action)}
                 </Button>
               </span></Can>
             ))}

@@ -192,7 +192,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
   }, [activeOrderNo]);
 
   const matchSearch = (o: any, kw: string) => {
-    const hay = `${o.no || ''} ${o.name || ''} ${o.addr?.name || ''} ${o.addr?.phone || ''}`.toLowerCase();
+    const hay = `${o.no || ''} ${o.name || ''} ${o.person || ''} ${o.phone || ''} ${o.addr?.name || ''} ${o.addr?.phone || ''}`.toLowerCase();
     return hay.includes(kw);
   };
 
@@ -619,6 +619,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                     shipped={['shipped', 'in_transit', 'delivered', 'exception', 'returned'].includes(
                       String(detail.logisticsStatus || '')
                     )}
+                    canEditLogistics={!['delivered', 'returned'].includes(String(detail.logisticsStatus || '')) && detail.orderStatus !== 'completed'}
                     logistics={detail.logistics}
                     onChanged={() => {
                       loadOrderDetail(detail.no);

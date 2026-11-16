@@ -69,6 +69,7 @@ const AfterSalesPage: React.FC<{
           onChange={(e) => setQ(e.target.value)}
         />
         <Can perm="process_after_sales"><Button onClick={() => setReturnAddressOpen(true)}>寄回地址</Button></Can>
+        <Button onClick={() => void onRefresh()}>刷新列表</Button>
       </div>
       <Tabs items={TABS.map((t) => ({ ...t, count: counts[t.key] }))} active={tab} onChange={setTab} />
       {filtered.length === 0 ? (

@@ -1,5 +1,5 @@
 const { queue: toast } = require('../../utils/toast')
-const { request } = require('../../utils/api')
+const auth = require('../../utils/auth')
 const labels = ['', '很不满意', '不满意', '一般', '满意', '很满意']
 
 Page({
@@ -11,14 +11,13 @@ Page({
     this.setData({ orderId })
     if (!orderId) return this.setData({ error: '找不到订单' })
     const path = '/my/orders/' + encodeURIComponent(orderId)
-    request(path, null, 'GET').then(order => {
-      const item = (order.items && order.items[0]) || order
-      const beads = item.bead_count || item.beadCount || ''
-      const wrist = item.wrist_cm || item.wristCm || ''
-      this.setData({ name: item.name || item.design_name || '手串', image: item.thumbnail || item.image || '',
+    auth.authorized(path, null, 'GET').then(order => {
+      const beads = Array.isArray(order.beads) ? order.beads.length : ''
+      const wrist = order.wrist || ''
+      this.setData({ name: order.name || '手串', image: order.thumbnail || order.image || '',
         spec: [beads ? beads + ' 颗' : '', wrist ? '手围 ' + wrist + 'cm' : ''].filter(Boolean).join(' · ') })
     }).catch(error => this.setData({ error: error.message || '订单加载失败' }))
-    request(path + '/review', null, 'GET').then(review => {
+    auth.authorized(path + '/review', null, 'GET').then(review => {
       if (!review || !review.id) return
       const rating = Number(review.stars) || 5
       this.setData({ readOnly: review.status !== 'machine_failed', rating, label: labels[rating], content: review.text || '',
@@ -47,7 +46,7 @@ Page({
     else photos[index] = photo
     this.setData({ photos })
     wx.getFileSystemManager().readFile({ filePath: path, encoding: 'base64',
-      success: file => request('/my/uploads', {
+      success: file => auth.authorized('/my/uploads', {
         filename: path.split('/').pop(), contentType: /\.png$/i.test(path) ? 'image/png' : /\.webp$/i.test(path) ? 'image/webp' : 'image/jpeg',
         data: file.data
       }, 'POST')
@@ -83,7 +82,7 @@ Page({
     if (this.data.photos.some(photo => photo.status === 'uploading')) return this.setData({ error: '照片还在上传' })
     if (this.data.photos.some(photo => photo.status === 'failed')) return this.setData({ error: '照片没传上，请重试' })
     this.setData({ submitting: true, error: '' })
-    request('/my/orders/' + encodeURIComponent(this.data.orderId) + '/review', {
+    auth.authorized('/my/orders/' + encodeURIComponent(this.data.orderId) + '/review', {
       stars: this.data.rating, text: this.data.content.trim(),
       photoIds: this.data.photos.map(photo => photo.id), anonymous: this.data.anonymous
     }, 'POST').then(result => {

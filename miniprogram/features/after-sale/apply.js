@@ -6,7 +6,7 @@ function needsPhoto(reason) { return /裂纹|瑕疵|图片|掉珠|断线|少件|
 Page({
   data: { option: null, reasons: [], reason: '', note: '', phone: '', newWrist: '', photos: [],
     amount: '0.00', loading: true, submitting: false, error: '', photoError: '', reasonOpen: false },
-  onLoad(query) { this.no = query.no; this.type = query.type; return this.load() },
+  onLoad(query) { this.no = query.no; this.type = decodeURIComponent(query.type || ''); return this.load() },
   async load() {
     this.setData({ loading: true, error: '' })
     try {

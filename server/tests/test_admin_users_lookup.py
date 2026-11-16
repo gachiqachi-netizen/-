@@ -28,7 +28,8 @@ class AdminUsersLookupTest(unittest.TestCase):
         self.db.put('orders', 'order-1', {'userId': 'u1', 'no': 'CZ2026A',
                                          'orderStatus': 'confirmed', 'totalFen': 12345})
         self.db.put('orders', 'order-2', {'userId': 'u2', 'no': 'CZ2026B',
-                                         'orderStatus': 'completed', 'totalFen': 9000})
+                                         'orderStatus': 'completed', 'totalFen': 9000,
+                                         'phone': '13812340000'})
         self.db.put('after_sales', 'sale-1', {'orderNo': 'CZ2026A'})
         self.db.put('designs', 'design-1', {'userId': 'u1'})
 
@@ -52,6 +53,11 @@ class AdminUsersLookupTest(unittest.TestCase):
     def test_order_number_finds_only_owner(self):
         self.assertEqual([user['userId'] for user in self.lookup('CZ2026B')], ['u2'])
         self.assertEqual(self.lookup('CZ2026'), [])
+
+    def test_receiver_phone_suffix_finds_order_owner(self):
+        users = self.lookup('0000')
+        self.assertEqual([user['userId'] for user in users], ['u2'])
+        self.assertNotIn('13812340000', json.dumps(users, ensure_ascii=False))
 
     def test_empty_query_rejected_and_permission_declared(self):
         with self.assertRaises(ValueError):

@@ -59,11 +59,11 @@
       <view class="oc-amount">实付 <text class="oc-price">{{item.payableYuan}}</text></view>
       <view class="oc-actions">
         <button
-          wx:if="{{tab === 'after_sale' && item.afterSaleStatus === 'returning'}}"
+          wx:if="{{tab === 'after_sale' && item.afterSaleStatus === 'approved'}}"
           class="btn-primary btn-sm"
           data-no="{{item.no}}"
           catchtap="fillReturn"
-        >填写单号</button>
+        >查看售后</button>
         <button
           wx:if="{{item.action}}"
           class="btn-primary btn-sm{{busyNo === item.no ? ' busy' : ''}}"

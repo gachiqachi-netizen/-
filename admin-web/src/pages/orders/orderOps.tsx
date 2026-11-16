@@ -6,10 +6,11 @@ const OrdersOpsPanel: React.FC<{
   orderNo: string;
   internalNotes: Array<{ at?: number; actor?: string; text?: string }>;
   shipped: boolean;
+  canEditLogistics: boolean;
   logistics?: { carrierName?: string; carrierCode?: string; trackingNo?: string } | null;
   onChanged: () => void;
   notify: (msg: string, type?: 'success' | 'error') => void;
-}> = ({ orderNo, internalNotes, shipped, logistics, onChanged, notify }) => {
+}> = ({ orderNo, internalNotes, shipped, canEditLogistics, logistics, onChanged, notify }) => {
   const [noteText, setNoteText] = useState('');
   const [savingNote, setSavingNote] = useState(false);
   const [addrOpen, setAddrOpen] = useState(false);
@@ -174,12 +175,12 @@ const OrdersOpsPanel: React.FC<{
               </div>
             </div>
           )}
-          {shipped && !lgOpen && (
+          {shipped && canEditLogistics && !lgOpen && (
             <button type="button" className="zy-btn zy-btn-secondary" style={{ justifySelf: 'start' }} onClick={openLg}>
               改运单号
             </button>
           )}
-          {shipped && lgOpen && (
+          {shipped && canEditLogistics && lgOpen && (
             <div style={{ display: 'grid', rowGap: 8, maxWidth: 420 }}>
               <input style={inputStyle} placeholder="快递公司" value={lg.carrierName} onChange={(e) => setLg({ ...lg, carrierName: e.target.value })} />
               <input style={inputStyle} placeholder="运单号" value={lg.trackingNo} onChange={(e) => setLg({ ...lg, trackingNo: e.target.value })} />
@@ -192,11 +193,12 @@ const OrdersOpsPanel: React.FC<{
               </div>
             </div>
           )}
-          {shipped && (
+          {shipped && canEditLogistics && (
             <div className="zy-table-aux" style={{ fontSize: 12 }}>
               已发货，地址不能再改；用户看到的发货信息以这里保存的快递和单号为准。
             </div>
           )}
+          {shipped && !canEditLogistics && <div className="zy-table-aux" style={{ fontSize: 12 }}>已签收，物流信息不能再修改。</div>}
         </div>
       </div>
     </>

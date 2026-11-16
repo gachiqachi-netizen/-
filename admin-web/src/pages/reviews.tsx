@@ -7,7 +7,7 @@ import { EmptyState } from '../ui/EmptyState';
 import { Table } from '../ui/Table';
 import { Tabs } from '../ui/Tabs';
 
-type Status = 'pending' | 'published' | 'rejected' | 'taken_down';
+type Status = 'pending' | 'machine_failed' | 'published' | 'rejected' | 'taken_down';
 type Action = 'approve' | 'reject' | 'take-down';
 type Review = {
   id: string; orderNo: string; templateId?: string | null; stars: number; text: string;
@@ -15,7 +15,7 @@ type Review = {
   rejectReason?: string | null; machine?: { textOk?: boolean; textReason?: string | null; photos?: { id: string; status: string }[] };
 };
 const TABS: { key: Status; label: string }[] = [
-  { key: 'pending', label: '待人审' }, { key: 'published', label: '已公开' },
+  { key: 'pending', label: '待人审' }, { key: 'machine_failed', label: '机审未通过' }, { key: 'published', label: '已公开' },
   { key: 'rejected', label: '已驳回' }, { key: 'taken_down', label: '已下架' },
 ];
 const statusName = (value: string) => (CONTRACT.reviewStatuses as Record<string, string>)[value] || value;
@@ -28,7 +28,7 @@ const issue = (r: Review) => {
 const danger = { color: 'var(--c-danger, #c2352b)' };
 
 const ReviewsPage: React.FC = () => {
-  const [rows, setRows] = useState<Record<Status, Review[]>>({ pending: [], published: [], rejected: [], taken_down: [] });
+  const [rows, setRows] = useState<Record<Status, Review[]>>({ pending: [], machine_failed: [], published: [], rejected: [], taken_down: [] });
   const [tab, setTab] = useState<Status>('pending');
   const [query, setQuery] = useState('');
   const [machine, setMachine] = useState('all');

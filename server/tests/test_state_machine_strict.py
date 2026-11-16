@@ -111,6 +111,17 @@ class StrictStateMachineTest(unittest.TestCase):
         self.assertEqual(saved['logistics']['trackingNo'], 'SF2')
         self.assertNotIn('shippedAt', saved['logistics'])
 
+    def test_update_logistics_rejects_signed_order(self):
+        no = self.make_order('sm-strict-signed-logistics')['no']
+        order = self.db.get('orders', no)
+        order.update(orderStatus='completed', paymentStatus='paid',
+                     fulfillmentStatus='delivered', logisticsStatus='delivered',
+                     logistics={'carrierName': '顺丰', 'trackingNo': 'SF-OLD', 'signedAt': 1700000000000})
+        self.db.put('orders', no, order)
+        with self.assertRaisesRegex(ValueError, '已签收'):
+            commerce.update_order_logistics(self.db, no, {'trackingNo': 'SF-NEW'})
+        self.assertEqual(self.db.get('orders', no)['logistics']['trackingNo'], 'SF-OLD')
+
     def test_ship_transition_auto_writes_shipped_at(self):
         no = self.make_order('sm-strict-000006')['no']
         self.set_paid(no)

@@ -56,6 +56,7 @@ export const App: React.FC = () => {
         catch (err: any) {
           if (err.status === 401) throw err;
           if (err.status === 403) { denied[key] = err.need || '没有权限'; return empty; }
+          if (key === 'knowledge' && err.status === 404) return empty;
           throw err;
         }
       };
@@ -94,6 +95,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     loadAllData();
   }, [loadAllData]);
+
+  useEffect(() => {
+    if (page === 'afterSales' || page === 'orders') void loadAllData();
+  }, [page, loadAllData]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

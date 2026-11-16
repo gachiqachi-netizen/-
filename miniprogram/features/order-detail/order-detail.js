@@ -59,7 +59,9 @@ Page({
     if (code === 'confirm_receipt') return this.performAction(code)
     if (code === 'reorder') return this.reorder()
     if (code === 'view_logistics') return wx.navigateTo({ url: '/features/logistics/logistics?no=' + encodeURIComponent(this.no) })
-    if (code === 'request_after_sale') return wx.navigateTo({ url: '/features/after-sale/after-sale?no=' + encodeURIComponent(this.no) })
+    if (code === 'edit_address') return wx.navigateTo({ url: '/features/address-edit/address-edit?orderNo=' + encodeURIComponent(this.no) })
+    if (code === 'request_after_sale') return wx.navigateTo({ url: '/features/after-sale/type?no=' + encodeURIComponent(this.no) })
+    if (code === 'write_review') return wx.navigateTo({ url: '/features/review/review?orderId=' + encodeURIComponent(this.no) })
   },
   async cancel(e) { this.setData({ sheet: '' }); return this.performAction('cancel_order', e.currentTarget.dataset.reason) },
   async performAction(code, reason) {

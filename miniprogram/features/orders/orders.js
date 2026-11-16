@@ -65,7 +65,7 @@ Page({
     return auth.authorized('/my/orders')
       .then(rows => {
         const orders = (Array.isArray(rows) ? rows : []).map(buildRow)
-        this.setData({ loggedIn: auth.hasSession(), rows, counts: group.countsOf(orders), error: '', loadedOnce: true })
+        this.setData({ loggedIn: auth.hasSession(), rows: orders, counts: group.countsOf(orders), error: '', loadedOnce: true })
       })
       .catch(e => this.setData({ loggedIn: auth.hasSession(), error: e.message || '读取失败' }))
       .finally(() => this.setData({ loading: false }))
@@ -96,13 +96,17 @@ Page({
   },
 
   // 点行进订单详情；售后分栏进售后详情（04 第 13 节）
-  viewDetail(e) {
+  async viewDetail(e) {
     const no = e.currentTarget.dataset.no
     if (!no) return
-    const url = this.data.tab === 'after_sale'
-      ? '/features/after-sale/detail?no=' + encodeURIComponent(no)
-      : '/features/order-detail/order-detail?no=' + encodeURIComponent(no)
-    wx.navigateTo({ url })
+    if (this.data.tab === 'after_sale') {
+      try {
+        const result = await auth.authorized('/my/orders/' + encodeURIComponent(no) + '/after-sales')
+        const sale = (result.afterSales || [])[0]
+        if (sale) return wx.navigateTo({ url: '/features/after-sale/detail?no=' + encodeURIComponent(sale.no) })
+      } catch (error) { return toast.show({ text: error.message || '售后记录暂时无法读取' }) }
+    }
+    wx.navigateTo({ url: '/features/order-detail/order-detail?no=' + encodeURIComponent(no) })
   },
 
   // 行尾主按钮：确认收货原地执行并更新这一行；其余动作进订单详情处理
@@ -136,6 +140,6 @@ Page({
   // 售后分栏：退货中需要寄回的行尾“填写单号”
   fillReturn(e) {
     const no = e.currentTarget.dataset.no
-    if (no) wx.navigateTo({ url: '/features/after-sale/return?no=' + encodeURIComponent(no) })
+    if (no) this.viewDetail({ currentTarget: { dataset: { no } } })
   },
 })

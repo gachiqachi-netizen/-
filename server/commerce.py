@@ -1106,6 +1106,18 @@ def record_quality_gate(db, no, data, actor=ACTOR):
             order, actor, "fulfillmentStatus", groups["fulfillmentStatus"], groups["fulfillmentStatus"],
             f"质检关口：{'通过' if passed else '不通过'}（{inspector}）{(' · ' + note) if note else ''}"
         )
+        if not passed and groups["fulfillmentStatus"] == "ready_to_ship":
+            order["fulfillmentStatus"] = "producing"
+            append_history(order, actor, "fulfillmentStatus", "ready_to_ship", "producing", "复检不通过，退回制作")
+        if passed and groups["paymentStatus"] == "paid":
+            current = groups["fulfillmentStatus"]
+            if current == "unfulfilled":
+                order["fulfillmentStatus"] = "producing"
+                append_history(order, actor, "fulfillmentStatus", current, "producing", "质检通过，自动开始履约")
+                current = "producing"
+            if current == "producing":
+                order["fulfillmentStatus"] = "ready_to_ship"
+                append_history(order, actor, "fulfillmentStatus", current, "ready_to_ship", "质检通过，自动放行待发货")
         return order
 
     saved = _atomic_order_transition(
@@ -1418,6 +1430,11 @@ def update_order_logistics(db, no, logistics, actor=ACTOR):
     order = db.get("orders", no)
     if not order:
         raise KeyError("订单不存在")
+    groups = status.derive_status(order)
+    if (groups["logisticsStatus"] == "delivered" or
+            groups["fulfillmentStatus"] == "delivered" or
+            groups["orderStatus"] == "completed"):
+        raise ValueError("订单已签收，不能再修改物流信息")
     lg = dict(logistics or {})
     clean = {k: str(v or "").strip()[:100] for k, v in lg.items()
              if k in ("carrierCode", "carrierName", "trackingNo", "note")}

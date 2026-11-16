@@ -369,7 +369,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
               disabled={qcBusy !== ''}
               onClick={() => submitQc(true)}
             >
-              {qcBusy === 'pass' ? '提交中…' : '通过，可以发货'}
+              {qcBusy === 'pass' ? '提交中…' : '通过并转待发货'}
             </Button>
           ) : (
             <span style={{ alignSelf: 'center' }} className="wo-spec">四项全勾上才能点“通过”</span>

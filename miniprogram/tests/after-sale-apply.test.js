@@ -23,7 +23,7 @@ async function run() {
   p.select({ currentTarget: { dataset: { type: '退货退款' } } })
   assert.match(destination, /after-sale\/apply\?no=C9-1&type=/)
   require('../features/after-sale/apply')
-  p = page(); await p.onLoad({ no: 'C9-1', type: '退货退款' })
+  p = page(); await p.onLoad({ no: 'C9-1', type: encodeURIComponent('退货退款') })
   assert.deepEqual(p.data.reasons, options.types[0].reasons)
   assert.equal(p.data.amount, '12.00')
   await p.submit(); assert.equal(submitted, undefined)

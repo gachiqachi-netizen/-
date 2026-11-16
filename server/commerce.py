@@ -1785,6 +1785,7 @@ def create_rework_order(db, sale_no, actor=ACTOR):
               "progress": 0, "paymentStatus": status.derive_status(order)["paymentStatus"],
               "mockPayment": False, "customerNote": original.get("customerNote") or "",
               "operatorNote": "运费和差价已线下沟通" if rec.get("handling") == "repair_return" else "",
+              "offlineTermsNote": "运费和差价已线下沟通" if rec.get("handling") == "repair_return" else "",
               "wrist": wrist, "sequence": snapshot["sequence"],
               "materials": snapshot["materials"], "count": snapshot["count"],
               "lengthMm": snapshot["lengthMm"], "targetMm": snapshot["targetMm"],

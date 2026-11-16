@@ -17,7 +17,7 @@ function beijingTime(value) {
 Page({
   data: { order: null, items: [], catalog: [], loading: true, error: '', actionBusy: '', payment: null,
     primaryAction: null, secondaryActions: [], afterSaleNo: '', afterSaleActive: false,
-    paymentAmount: '', sheet: '', paidLanding: false, cancelReasons: ['不想要了', '想改一改再下单', '地址填错了', '其他'] },
+    paymentAmount: '', sheet: '', paidLanding: false, qcPhotoState: {}, cancelReasons: ['不想要了', '想改一改再下单', '地址填错了', '其他'] },
   onLoad(q) { this.no = q.no; this.paidIntent = q.paid === '1'; this.catalogPromise = api.catalog().then(c => { this.setData({ catalog: c.beads || [] }); return c }).catch(() => ({})); return this.load() },
   onPullDownRefresh() { return this.load().finally(() => wx.stopPullDownRefresh()) },
   openMaterials() { this.setData({ sheet: 'materials' }) },
@@ -36,7 +36,9 @@ Page({
       const handworkFen = Number.isInteger(raw.handworkFen) ? raw.handworkFen
         : (Number.isInteger(raw.designSnapshot && raw.designSnapshot.handworkFen)
           ? raw.designSnapshot.handworkFen : Math.max(0, quotedHandwork))
-      const order = Object.assign({}, raw, { state,
+      const qcPhotos = (raw.qcPhotos || []).filter(url => typeof url === 'string' && url).map(url =>
+        /^(https?:|wxfile:|data:)/.test(url) ? url : getApp().globalData.apiBase + url)
+      const order = Object.assign({}, raw, { state, qcPhotos,
         payable: money.yuan(Number.isInteger(raw.payableFen) ? raw.payableFen : 0),
         goodsPrice: money.yuan(Number.isInteger(raw.goodsFen) ? raw.goodsFen : 0),
         handworkPrice: handworkFen > 0 ? money.yuan(handworkFen) : '',
@@ -49,7 +51,7 @@ Page({
       const paidLanding = !!this.paidIntent && raw.paymentStatus === 'paid'
       this.paidIntent = false
       const afterSaleActive = String(state.code).startsWith('after_sale')
-      this.setData({ order, items: materials.fromSnapshot(raw.items || []), paidLanding, primaryAction, secondaryActions, afterSaleActive, ready: true })
+      this.setData({ order, items: materials.fromSnapshot(raw.items || []), paidLanding, primaryAction, secondaryActions, afterSaleActive, qcPhotoState: {}, ready: true })
       if (afterSaleActive) {
         try {
           const result = await auth.authorized('/my/orders/' + encodeURIComponent(this.no) + '/after-sales')
@@ -60,6 +62,9 @@ Page({
     } catch (e) { this.setData({ error: e.message || '订单读取失败', order: null }) }
     finally { this.setData({ loading: false }) }
   },
+  qcPhotoLoaded(e) { this.setData({ ['qcPhotoState.' + e.currentTarget.dataset.index]: 'loaded' }) },
+  qcPhotoFailed(e) { this.setData({ ['qcPhotoState.' + e.currentTarget.dataset.index]: 'failed' }) },
+  previewQcPhoto(e) { const photos = this.data.order && this.data.order.qcPhotos; if (photos && photos.length) wx.previewImage({ current: photos[e.currentTarget.dataset.index], urls: photos }) },
   async startPayment() {
     if (this.data.actionBusy || !this.data.order) return
     this.setData({ actionBusy: 'pay_order' })

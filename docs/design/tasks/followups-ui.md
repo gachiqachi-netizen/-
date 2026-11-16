@@ -108,13 +108,14 @@
 
 ## U13 图片和卡片的形状统一（2026-11-16 补）
 
-- **依赖**：U5、U9、U10 合并后再做（它们也改订单、售后、评价页的样式，避免撞车）　**只能改**：`miniprogram/pages/` 和 `miniprogram/features/` 下各页的 `.wxss`（只改 `border-radius`、卡片间距、背景这类形状相关的样式），`tools/check-ui.py`、`tools/check-ui-baseline.json`、`miniprogram/tests/` 里对应测试
+- **依赖**：U5、U9、U10 合并后再做（它们也改订单、售后、评价页的样式，避免撞车）　**只能改**：`miniprogram/components/card/*`（见第 0 条）、`miniprogram/pages/` 和 `miniprogram/features/` 下各页的 `.wxss`（只改 `border-radius`、卡片间距、背景这类形状相关的样式），`tools/check-ui.py`、`tools/check-ui-baseline.json`、`miniprogram/tests/` 里对应测试
 - **规矩**（03 设计规范 3.3 节，早就定了，各页没照做）：**能点的是圆的，只用来看的是方的。**
   - 直角（`--r-panel`）：照片、宣传位图片、款式格、商品缩略图、文章题图、整块版面、列表、弹层。
   - 胶囊或圆形（`--r-pill`）：按钮、输入条、标签、发送键、头像、加减键、加照片的格子。
   - 首页两列款式格：两格之间只留 2rpx 的缝（露出分隔色），没有圆角、没有阴影；宣传位是直角通栏图。
   - 例外只有两个：AI 配的推荐卡片和输入区，沿用圆角卡（04 第 0 节写明的）。
 - 要做的：
+  0. `c-card` 现在没有内边距，卡片里的字贴着卡片边（U5、U9 截图里很明显）：给 `c-card` 加内边距 `--sp-base`（左右）和 `--sp-tight`（上下），各页面里为了凑边距自己加的 padding 一并去掉。
   1. 全部页面过一遍，把图片、宣传位、款式格、缩略图、题图上的圆角改成直角；首页宣传位、热门款照上面的规矩改。
   2. 把“加照片”的格子统一成圆形（评价、申请售后、拍照做同款里如果有）。
   3. 扩展 `tools/check-ui.py`：选择器名里带 `image`、`img`、`photo`、`banner`、`cover`、`thumb`、`grid`、`swiper` 的规则，如果用了 `--r-pill` 或数值圆角，就报错（AI 卡片的类名加进例外名单）。改完的页面从基线里删掉对应条目，基线只减不加。

@@ -22,4 +22,3 @@ button.c-btn.c-state__action:not([size=mini]) {
   margin: 40rpx auto 0;
   border: 1rpx solid var(--c-line);
 }
-

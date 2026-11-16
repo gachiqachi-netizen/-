@@ -15,6 +15,8 @@ function reflow(shared, catalog, wrist) {
 }
 
 function meaningFor(shared, catalog) {
+  const written = String(shared.meaning || '').trim()
+  if (written) return written
   const byId = Object.fromEntries(catalog.map(bead => [bead.id, bead]))
   const beads = (shared.beads || []).map(id => byId[id]).filter(Boolean)
   return keywords(beads, 4).filter(tag => tag !== '点缀').slice(0, 3).join(' · ')

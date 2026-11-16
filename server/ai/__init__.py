@@ -21,10 +21,24 @@ _provider_err = None
 def provider():
     """选择 AI provider；生产推荐 AI_PROVIDER=zerone，并使用 Agent 独立运行密钥。"""
     global _provider, _provider_err
+    import inspect
+    import ai_settings
+    settings = ai_settings.current()
+    feature = 'photoEnabled' if inspect.currentframe().f_back.f_code.co_name == 'photo' else 'designEnabled'
+    if not settings[feature]:
+        return None
+    want = settings['provider'] or os.environ.get('AI_PROVIDER', '').lower()
+    selected = (want, settings['model'], settings['visionModel'])
+    if getattr(provider, '_selected', None) != selected:
+        _provider = None
+        _provider_err = None
+        provider._selected = selected
     if _provider or _provider_err:
         return _provider
-    want = os.environ.get("AI_PROVIDER", "").lower()
     try:
+        if want and not ai_settings.configured().get(want, {}).get('configured'):
+            _provider_err = '所选 AI 服务未配置'
+            return None
         if want == "zerone" or (not want and os.environ.get("ZERONE_AGENT_URL") and os.environ.get("ZERONE_AGENT_API_KEY")):
             from .zerone import ZerOneProvider
             _provider = ZerOneProvider()
@@ -36,6 +50,11 @@ def provider():
             _provider = OpenAICompatProvider()
         else:
             _provider_err = "未配置 AI 模型"
+        if _provider is not None:
+            if settings['model']:
+                _provider.model = settings['model']
+            if settings['visionModel']:
+                _provider.vision_model = settings['visionModel']
     except Exception:   # Do not expose configuration details or secrets in the public status endpoint.
         _provider_err = "AI 初始化失败，请检查服务配置"
     return _provider

@@ -2,6 +2,7 @@ const { queue: toast } = require('../../utils/toast')
 const api = require('../../utils/api')
 const store = require('../../utils/design')
 const nav = require('../../utils/nav')
+const { keywords } = require('../../utils/meaning')
 
 function viewerWrist() {
   const value = Number(wx.getStorageSync('cgz_wrist'))
@@ -17,15 +18,8 @@ function meaningFor(shared, catalog) {
   const written = String(shared.meaning || '').trim()
   if (written) return written
   const byId = Object.fromEntries(catalog.map(bead => [bead.id, bead]))
-  const words = []
-  ;(shared.beads || []).forEach(id => {
-    const bead = byId[id]
-    if (!bead) return
-    ;(bead.tags || []).forEach(tag => {
-      if (tag && tag !== '点缀' && !words.includes(tag) && words.length < 3) words.push(tag)
-    })
-  })
-  return words.join(' · ')
+  const beads = (shared.beads || []).map(id => byId[id]).filter(Boolean)
+  return keywords(beads, 4).filter(tag => tag !== '点缀').slice(0, 3).join(' · ')
 }
 
 function dateLabel(milliseconds) {
@@ -66,7 +60,7 @@ Page({
       const notes = Object.keys(counts).filter(id => map[id]).map(id => ({ id, name: map[id].name, meaning: map[id].meaning || (map[id].tags || []).join(' · '), count: counts[id] }))
       this.setData({ design, catalog, notes, missing, measured: wrist.measured, loading: false,
         authorLabel: shared.authorLabel || '来自珠养养的一位用户', dateLabel: dateLabel(shared.createdAt),
-        meaning: meaningFor(shared, catalog), tags: notes.flatMap(item => item.meaning ? item.meaning.split(' · ') : []).slice(0, 3).join(' · ') })
+        meaning: meaningFor({ beads: shared.beads }, catalog), tags: '' })
     }).catch(e => this.setData({ loading: false, deleted: e.status === 404, error: e.status === 404 ? '' : '暂时没连上，请再试一次' }))
   },
   home() { wx.switchTab({ url: '/pages/home/home' }) },

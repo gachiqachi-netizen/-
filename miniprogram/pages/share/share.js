@@ -1,7 +1,7 @@
 const { queue: toast } = require('../../utils/toast')
 const api=require('../../utils/api'),store=require('../../utils/design'),auth=require('../../utils/auth')
 const keyOf=d=>d&&JSON.stringify([d.name,d.wrist,d.beads])
-function wrap(text,maxChars,maxLines){const chars=Array.from(String(text||''));const lines=[];for(let i=0;i<chars.length&&lines.length<maxLines;i+=maxChars)lines.push(chars.slice(i,i+maxChars).join(''));if(chars.length>maxChars*maxLines)lines[maxLines-1]=lines[maxLines-1].slice(0,-1)+'…';return lines}
+function wrap(text,maxChars,maxLines){const chars=Array.from(String(text||''));const lines=[];let i=0;while(i<chars.length&&lines.length<maxLines){const line=chars.slice(i,i+maxChars);i+=line.length;while(i<chars.length&&/^[，。！？、；：,.!?;:]$/.test(chars[i]))line.push(chars[i++]);lines.push(line.join(''))}if(i<chars.length&&lines.length)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';return lines}
 Page({
  data:{design:null,width:343,height:505,loading:true,ready:false,preview:false,missing:0,error:'',saveBusy:false,shareBusy:false,shareId:'',shareError:'',items:[],catalog:[],snapshot:"",snapshotFailed:false,tags:[],meaning:'',qrPath:'',qrFallback:true,albumDenied:false,moreOpen:false},
  onLoad(){const w=Math.max(200,Math.min(430,wx.getSystemInfoSync().windowWidth-32));this.setData({width:w,height:Math.round(w*1060/720)})},
@@ -22,8 +22,8 @@ Page({
   else {ctx.setFontSize(20*s);ctx.fillText('微信搜索「珠养养」小程序',350*s,1010*s)}
   ctx.draw(false,()=>{if(keyOf(store.current())===this.designKey){this.setData({ready:true});wx.canvasToTempFilePath({canvasId:'shareCard',x:0,y:0,width:w,height:w*4/5,destWidth:w*2,destHeight:Math.round(w*8/5),success:r=>this.setData({shareImage:r.tempFilePath})},this)}})
  },
- saveCard(){if(!this.data.ready||this.data.saveBusy)return;this.setData({saveBusy:true,error:''});wx.canvasToTempFilePath({canvasId:'shareCard',destWidth:this.data.width*2,destHeight:this.data.height*2,success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>toast.show({ text: '已保存到相册' }),fail:e=>this.setData({albumDenied:/auth|authorize|deny/i.test(e.errMsg||''),error:'保存失败，请稍后重试。'}),complete:()=>this.setData({saveBusy:false})}),fail:()=>this.setData({saveBusy:false,error:'图片生成失败，请重试。'})},this)},
- openAlbumSettings(){wx.openSetting({})},
+ saveCard(){if(!this.data.ready||this.data.saveBusy)return;this.setData({saveBusy:true,error:'',albumDenied:false});wx.canvasToTempFilePath({canvasId:'shareCard',destWidth:this.data.width*2,destHeight:this.data.height*2,success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>toast.show({ text: '已保存到相册' }),fail:e=>{const denied=/auth|authorize|deny|permission|scope/i.test(e.errMsg||'');this.setData({albumDenied:denied,error:denied?'没有相册权限，去设置里打开':'保存失败，请稍后重试。'})},complete:()=>this.setData({saveBusy:false})}),fail:()=>this.setData({saveBusy:false,error:'图片生成失败，请重试。'})},this)},
+ openAlbumSettings(){wx.openSetting({success:r=>{if(r.authSetting&&r.authSetting['scope.writePhotosAlbum'])this.setData({albumDenied:false,error:''})}})},
  more(){if(!this.data.shareId)return toast.show({ text: '请先准备分享' });this.setData({moreOpen:true})},
  closeMore(){this.setData({moreOpen:false})},
  viewFriend(){this.closeMore();wx.navigateTo({url:'/features/shared/shared?id='+encodeURIComponent(this.data.shareId)})},
@@ -36,3 +36,4 @@ Page({
  buySame(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });const original=this.data.design;const next={...store.create(),name:original.name,wrist:original.wrist,beads:original.beads.slice(),meaning:original.meaning,source:'shared'};store.selected(next);wx.navigateTo({url:'/pages/order/order'})},
  order(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });wx.navigateTo({url:'/pages/order/order'})}
 })
+module.exports = { wrap }

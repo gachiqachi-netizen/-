@@ -108,7 +108,7 @@ async function seed() {
     pattern: template.pattern || [], tail: template.tail || [] }
   const { data: session } = await api('/auth/dev', { method: 'POST', body: { name: 'T1-auto-screenshots' } })
   const token = session.token
-  await api('/auth/phone', { method: 'POST', token, body: { code: 'dev-00000000' } })
+  const { data: phone } = await api('/auth/phone', { method: 'POST', token, body: { code: 'dev-00000000' } })
   await api('/designs', { method: 'POST', token, body: design })
   const { data: shared } = await api('/shares', { method: 'POST', token, body: design })
   const byId = Object.fromEntries(catalog.beads.map(bead => [bead.id, bead]))
@@ -149,7 +149,7 @@ async function seed() {
   const { data: sale } = await api(`/my/orders/${encodeURIComponent(saleOrder.no)}/after-sales`, { method: 'POST', token,
     body: { type: choice.type, reason: choice.reasons[0], userNote: '截图测试售后',
       idempotencyKey: 't1-shoot-' + randomUUID(), contactPhone: '10000000000' } })
-  return { token, expiry: session.expiresAt, design, pendingNo: pending.no, paidNo: paid.no,
+  return { token, expiry: session.expiresAt, phoneMasked: phone.phoneMasked, design, pendingNo: pending.no, paidNo: paid.no,
     transitNo: transit.no, saleOrderNo: saleOrder.no, saleNo: sale.afterSale.no,
     shareId: shared.shareId, saleType: encodeURIComponent(choice.type) }
 }

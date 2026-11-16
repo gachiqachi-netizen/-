@@ -135,8 +135,7 @@
       "normal",
       "empty",
       "error",
-      "logged-out",
-      "loading"
+      "logged-out"
     ]
   },
   {
@@ -221,11 +220,7 @@
     "path": "/features/address-edit/address-edit",
     "before": "打开新增地址页",
     "states": [
-      "normal",
-      "empty",
-      "error",
-      "logged-out",
-      "loading"
+      "normal"
     ]
   }
 ]

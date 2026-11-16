@@ -15,11 +15,10 @@
       style="left: {{it.x}}rpx; top: {{it.y}}rpx; width: {{it.box}}rpx; height: {{it.box}}rpx;"
     >
       <view class="c-bracelet__beadwrap" style="width: {{it.d}}rpx; height: {{it.d}}rpx;">
-        <bead bead="{{it.bead}}" size="m" style="width: {{it.d}}rpx; height: {{it.d}}rpx;" />
+        <view wx:if="{{it.metal}}" class="c-bracelet__metal" style="width: {{it.d}}rpx; height: {{it.d}}rpx; background: linear-gradient(90deg, {{it.shade}}, {{it.face}} 45%, {{it.shade}});" />
+        <view wx:elif="{{size <= 240}}" class="c-bracelet__sphere" style="width: {{it.d}}rpx; height: {{it.d}}rpx; background: radial-gradient(circle at 32% 28%, {{it.face}}, {{it.shade}});" />
+        <bead wx:else bead="{{it.bead}}" size="m" style="width: {{it.d}}rpx; height: {{it.d}}rpx;" />
       </view>
-    </view>
-    <view wx:if="{{wordmark && ri === 0}}" class="c-bracelet__wm">
-      <wordmark tone="line" size="{{wmSize}}" />
     </view>
   </view>
 </view>

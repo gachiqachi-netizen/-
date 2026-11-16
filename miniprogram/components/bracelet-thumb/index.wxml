@@ -1,1 +1,4 @@
-<image class="thumbnail" src="{{src}}" mode="aspectFit" lazy-load="{{true}}" binderror="imageError" aria-label="手串配色示意图" />
+<view class="thumbnail" aria-label="手串配色示意图">
+  <c-bracelet wx:if="{{items.length}}" beads="{{items}}" size="{{sizeRpx}}" />
+  <image wx:else class="thumbnail__fallback" src="{{src}}" mode="aspectFit" lazy-load="{{true}}" binderror="imageError" />
+</view>

@@ -42,3 +42,29 @@ test('空数组 / 没有 size 返回空，缺 mm 的珠子被跳过', () => {
   assert.equal(items.length, 1)
   assert.equal(items[0].bead.id, 'a')
 })
+
+for (const count of [19, 40]) {
+  test(`80px 容器中的 ${count} 颗珠子直径和整圈都不溢出`, () => {
+    const items = layout(Array.from({ length: count }, (_, index) => ({ id: String(index), mm: 8 })), 80)
+    assert.equal(items.length, count)
+    for (const item of items) {
+      const centerX = item.x + item.box / 2
+      const centerY = item.y + item.box / 2
+      const radius = Math.hypot(centerX - 40, centerY - 40)
+      assert.ok(item.d > 0 && item.d < 80)
+      assert.ok(radius + item.d / 2 <= 40, `第 ${item.index + 1} 颗越过容器边界`)
+      assert.ok(item.x >= 0 && item.y >= 0 && item.x + item.box <= 80 && item.y + item.box <= 80,
+        `第 ${item.index + 1} 颗外框越过容器边界`)
+    }
+  })
+}
+
+test('隔珠按自身毫米数缩小并使用目录里的金属色', () => {
+  const [main, spacer] = layout([
+    { id: 'main', mm: 8, c: ['var(--c-text)', 'var(--c-text-2)'] },
+    { id: 'spacer', mm: 2, spacer: true, mat: 'metal', c: ['var(--c-line)', 'var(--c-text-2)'] },
+  ], 160)
+  assert.ok(spacer.d < main.d)
+  assert.equal(spacer.metal, true)
+  assert.equal(spacer.face, 'var(--c-line)')
+})

@@ -8,23 +8,31 @@ function layout(beads, size) {
   if (!list.length || !size) return []
   const total = list.reduce((s, b) => s + b.mm, 0)
   const maxMm = Math.max.apply(null, list.map(b => b.mm))
+  // 小图为选中描边留边距；大图继续按原来的外沿贴边规则排。
+  const inset = size <= 240 ? 6 : 0
   // 所有珠子刚好排满一圈（依次相切）：
   // 珠径 d = k·mm，圆心半径 rc = size/2 − k·maxMm/2，相切要求 Σd = 2π·rc
   // ⇒ k·total = π·size − π·k·maxMm ⇒ k = π·size / (total + π·maxMm)
-  const k = Math.PI * size / (total + Math.PI * maxMm)
-  const rc = size / 2 - k * maxMm / 2
+  const k = Math.PI * (size - 2 * inset) / (total + Math.PI * maxMm)
+  const rc = (size - 2 * inset) / 2 - k * maxMm / 2
   let angle = -Math.PI / 2
   return list.map((bead, index) => {
-    const d = Math.max(8, k * bead.mm)
+    const d = Math.max(2, Math.round(k * bead.mm))
     const step = bead.mm / total * Math.PI * 2
     const mid = angle + step / 2
     angle += step
-    const box = Math.round(d) + 8 // 外框留 8rpx，选中描边不挤珠子
+    const box = d + 8 // 外框留 8rpx，选中描边不挤珠子
+    const material = String(bead.mat || '').toLowerCase()
+    const metal = !!bead.spacer || /metal|silver|gold|steel|银|金属|隔/.test(material)
+    const colors = Array.isArray(bead.c) ? bead.c : []
     return {
       index: index,
       bead: bead,
-      d: Math.round(d),
+      d: d,
       box: box,
+      metal: metal,
+      face: colors[0] || 'var(--c-line)',
+      shade: colors[1] || 'var(--c-text-2)',
       x: Math.round(size / 2 + rc * Math.cos(mid) - box / 2),
       y: Math.round(size / 2 + rc * Math.sin(mid) - box / 2),
     }
@@ -42,7 +50,7 @@ if (typeof Component === 'function') {
       mode: { type: String, value: 'ring' },      // ring 单条 / stack 叠戴
       stackBeads: { type: Array, value: [] },     // stack 模式：[beadsA, beadsB]
     },
-    data: { rings: [], height: 320, wmSize: 'nav' },
+    data: { rings: [], height: 320 },
     observers: {
       'beads, size, mode, stackBeads, wordmark': function () { this.rebuild() },
     },
@@ -53,14 +61,12 @@ if (typeof Component === 'function') {
       rebuild() {
         const p = this.properties
         const size = Number(p.size) || 320
-        const wmSize = size >= 280 ? 'tray' : size >= 140 ? 'nav' : 'corner'
         if (p.mode === 'stack') {
           // 叠戴：上下各一条半透明
           const a = (p.stackBeads && p.stackBeads[0]) || []
           const b = (p.stackBeads && p.stackBeads[1]) || []
           const gap = Math.round(size * 0.36)
           this.setData({
-            wmSize: wmSize,
             height: size + gap,
             rings: [
               { idx: 0, ty: -gap / 2, opacity: 0.55, items: layout(a, size) },
@@ -69,7 +75,6 @@ if (typeof Component === 'function') {
           })
         } else {
           this.setData({
-            wmSize: wmSize,
             height: size,
             rings: [{ idx: 0, ty: 0, opacity: 1, items: layout(p.beads, size) }],
           })

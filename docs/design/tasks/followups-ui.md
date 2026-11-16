@@ -3,6 +3,7 @@
 > 共同规矩：照 `02-prompts.md` 的总提示词做；测试放 `miniprogram/tests/` 或 `server/tests/`；对照设计稿用 `python3 docs/design/tasks/screen.py s<屏号>`（后台 `A<屏号>`）；颜色、字号、圆角只用 C0a 的变量（`styles/tokens.wxss`），不写新颜色；尺寸规则 `pages/diy/logic.js` 一个字不能改；金额整数分；用户看到的文字只讲寓意、不出现英文代码。
 > 每张卡只改自己列出的文件；要动别的文件先停下来问。**U1–U11 都要等 T1、U0 合并后再做**：页面一律用 U0 的 `c-page`、`c-card`、`c-cell`、`c-bar`、`c-nav-bar` 拼，不自己画；交付前跑 `python3 tools/check-ui.py` 必须通过；用 T1 的脚本截改前改后（`--only` 本卡涉及的页），截图提交到 `docs/reports/shots/<卡号>/`，报告里贴出来。
 > 状态修复已合并（e04a7e0），U5、U8、U9 不用再等它。
+> U0 组件用法：页面注册并使用 `c-page`、`c-card`（标题放 `slot="title"`）、`c-cell`、`c-nav-bar`；`c-bar` 通过 `layout="price"`（左侧 `slot="left"` + 默认按钮）、`layout="dual"`（`slot="secondary"` + 默认按钮）、`layout="agreement"`（上方 `slot="top"`、左侧价格和默认按钮）选择三种底部栏。
 
 ## T1 自动截图（底子卡，先做）
 

@@ -128,7 +128,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
       const result = await apiRequest<{ finishedPhoto: string }>(photoPath, {
         method: 'POST', body: { filename: file.name, contentType: file.type, data },
       });
-      setFinishedPhoto(result.finishedPhoto);
+      setFinishedPhoto(`data:${file.type};base64,${data}`);
     } catch (err: any) { setQcError(err.message || '上传失败'); }
     finally { setPhotoBusy(false); }
   };

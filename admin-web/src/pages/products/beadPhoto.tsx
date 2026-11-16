@@ -39,7 +39,7 @@ export default function BeadPhoto({ bead, compare, onUploaded }: {
         const result = await apiRequest<{ photo: string }>(`/api/admin/beads/${encodeURIComponent(bead.id)}/photo`, {
           method: 'POST', body: { images },
         });
-        setPhoto(result.photo); onUploaded(result.photo);
+        setPhoto(`data:image/png;base64,${images.photo.data}`); onUploaded(result.photo);
       } finally { source.close(); }
     } catch (err: any) { setError(err.message || '上传失败'); }
     finally { setBusy(false); }

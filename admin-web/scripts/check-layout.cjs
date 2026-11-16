@@ -16,7 +16,7 @@ moduleUnderTest._compile(compiled, source)
 const adminLayout = moduleUnderTest.exports.layout
 const miniLayout = require('../../miniprogram/utils/bracelet-layout').layout
 const cases = require('../../server/tests/fixtures/bracelet_layout_cases.json')
-assert.equal(cases.length, 10)
+assert.equal(cases.length, 13)
 
 for (const item of cases) {
   const sequence = Array.from({ length: item.repeat }, () => item.sequence).flat()
@@ -33,6 +33,19 @@ for (const item of cases) {
     assert.deepEqual(admin[i].colors, mini[i].colors, item.name)
     assert.ok(admin[i].x - admin[i].r >= -1e-8 && admin[i].x + admin[i].r <= item.size + 1e-8, item.name)
     assert.ok(admin[i].y - admin[i].r >= -1e-8 && admin[i].y + admin[i].r <= item.size + 1e-8, item.name)
+    if (item.name.endsWith('-tangent')) {
+      const center = item.size / 2
+      const distanceToCenter = Math.hypot(admin[i].x - center, admin[i].y - center)
+      const firstDistance = Math.hypot(admin[0].x - center, admin[0].y - center)
+      assert.ok(Math.abs(distanceToCenter - firstDistance) < 0.01, `${item.name}: centers differ`)
+      const next = admin[(i + 1) % admin.length]
+      assert.ok(Math.abs(Math.hypot(admin[i].x - next.x, admin[i].y - next.y) - admin[i].r - next.r) <= 0.01,
+        `${item.name}: adjacent beads do not touch`)
+      for (let j = i + 1; j < admin.length; j++) {
+        assert.ok(Math.hypot(admin[i].x - admin[j].x, admin[i].y - admin[j].y) + 0.5 >= admin[i].r + admin[j].r,
+          `${item.name}: beads overlap`)
+      }
+    }
   }
 }
 

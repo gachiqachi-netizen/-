@@ -7,8 +7,8 @@ function sequenceOf(item) {
   return Array.from({ length: item.repeat }, () => item.sequence).flat()
 }
 
-test('十组共用用例都按珠序从正上方顺时针排在容器内', () => {
-  assert.equal(cases.length, 10)
+test('十三组共用用例都按珠序从正上方顺时针排在容器内', () => {
+  assert.equal(cases.length, 13)
   for (const item of cases) {
     const sequence = sequenceOf(item)
     const result = layout(sequence, item.size)
@@ -34,4 +34,24 @@ test('隔珠半径按毫米数缩小，80 颗和单颗边界可用', () => {
   assert.ok(Math.abs(pair[0].r / pair[1].r - 6) < 1e-10)
   assert.equal(layout([{ mm: 8 }], 80).length, 1)
   assert.equal(layout(Array.from({ length: 80 }, () => ({ mm: 8 })), 80).length, 80)
+})
+
+test('大小珠混排圆心同圆、首尾相切且任意两颗不重叠', () => {
+  for (const item of cases.filter(row => row.name.endsWith('-tangent'))) {
+    const beads = layout(sequenceOf(item), item.size)
+    const center = item.size / 2
+    const radius = Math.hypot(beads[0].x - center, beads[0].y - center)
+    for (let i = 0; i < beads.length; i++) {
+      const a = beads[i]
+      assert.ok(Math.abs(Math.hypot(a.x - center, a.y - center) - radius) < 0.01, item.name)
+      for (let j = i + 1; j < beads.length; j++) {
+        const b = beads[j]
+        const distance = Math.hypot(a.x - b.x, a.y - b.y)
+        assert.ok(distance + 0.5 >= a.r + b.r, `${item.name}: ${i + 1}/${j + 1} overlap`)
+      }
+      const next = beads[(i + 1) % beads.length]
+      const distance = Math.hypot(a.x - next.x, a.y - next.y)
+      assert.ok(Math.abs(distance - a.r - next.r) <= 0.01, `${item.name}: ${i + 1} tangent`)
+    }
+  }
 })

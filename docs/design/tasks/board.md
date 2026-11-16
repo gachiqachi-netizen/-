@@ -1,34 +1,23 @@
 # 任务看板
 
 > 自动生成，别手改。更新：`git fetch origin --prune && python3 tools/board.py`。审核每合并一次都会重新生成并推送。
-> 总共 114 张（第一波之外），已完成 109 张。
+> 总共 115 张（第一波之外），已完成 109 张。
 
-## 在做或待审（0）
-
-无
-
-## 现在能派（1）
+## 在做或待审（1）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
-| U16 | 空状态、错误状态和确认订单的地址行 |  |
+| U16 | 空状态、错误状态和确认订单的地址行 | 分支上有提交，交了就告诉审核 |
 
-### 提示词（一张卡一个对话，整段复制）
-
-<details><summary>U16 空状态、错误状态和确认订单的地址行</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 U16（空状态、错误状态和确认订单的地址行，卡在 docs/design/tasks/followups-ui.md，先读文件开头的共同规矩，再读 U16 这一节）。开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ (U15|T3):"，U15、T3 都有提交才开工，否则停下等我。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-U16，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/U16-states-address，不要直接推 integration。页面只用 U0 的 c-page、c-card、c-cell、c-bar 组件拼；交付前跑 python3 tools/check-ui.py；用 tools/shoot 截改前改后的图（先登录、等数据加载完；空状态、出错状态也截），提交到 docs/reports/shots/U16/。
-交付后回复“U16 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
-
-## 等前面的卡（0）
+## 现在能派（0）
 
 无
+
+## 等前面的卡（1）
+
+| 卡 | 做什么 | 说明 |
+|---|---|---|
+| V7 | 手串图只分大小、不分样式 | 等 U16 |
 
 ## 等负责人（4）
 

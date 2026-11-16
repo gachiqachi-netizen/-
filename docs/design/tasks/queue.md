@@ -124,6 +124,11 @@
 | U14 | agent/U14-button-size | followups-ui.md | U13 | 任何 |  |  |
 | U15 | agent/U15-skeleton | followups-ui.md | U14 | 任何 |  |  |
 | W1 | agent/W1-workbench-tray | followups-ui.md | U14、U15 | 任何 |  |  |
+| T2 | agent/T2-shoot-ready | followups-perf.md |  | 任何 |  |  |
+| P1 | agent/P1-load-speed | followups-perf.md |  | 任何 |  |  |
+| V6 | agent/V6-qc-photo-mini | followups-perf.md | V3 | 任何 |  |  |
+| AI1 | agent/AI1-ai-settings-api | followups-perf.md |  | 任何 |  |  |
+| AI2 | agent/AI2-ai-settings-page | followups-perf.md | AI1 | 任何 |  |  |
 | U11 | agent/U11-admin-aftersale-review-fix | followups-ui.md |  | 任何 |  |  |
 
 已完成（不用再领）：A1、A2、A4a、A4b、A4c、A5a、A5b、C0a、C0b、C0c、C0d、C0e、C0f、C0h、C0j、D0、D1。A12 不做（尺寸规则已统一）。A9b 是负责人在后台做的数据任务，不在队列里。

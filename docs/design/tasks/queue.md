@@ -101,16 +101,18 @@
 | F7 | agent/F7-design-name-check | followups.md |  | 任何 |  |  |
 | D9 | agent/D9-admin-cleanup | admin-wave2.md | D3c、D4、D5a、D5b、D6a、D6b、D7a、D7b、D7c、D8、KD2、F1、F2、F3、F5 | 任何 |  |  |
 | A10 | agent/A10-drop-legacy | backend-wave2.md | C11a、D9、F4 | 任何 |  |  |
-| U1 | agent/U1-bracelet-thumb | followups-ui.md |  | 任何 |  |  |
-| U2 | agent/U2-nav-bar | followups-ui.md |  | 任何 |  |  |
-| U3 | agent/U3-home-fix | followups-ui.md |  | 任何 |  |  |
-| U4 | agent/U4-order-confirm-fix | followups-ui.md |  | 任何 |  |  |
-| U5 | agent/U5-order-detail-fix | followups-ui.md | U1、U2 | 任何 |  |  |
-| U6 | agent/U6-ai-fix | followups-ui.md |  | 任何 |  |  |
-| U7 | agent/U7-share-fix | followups-ui.md |  | 任何 |  |  |
-| U8 | agent/U8-orders-list-fix | followups-ui.md |  | 任何 |  |  |
-| U9 | agent/U9-after-sale-fix | followups-ui.md | U1 | 任何 |  |  |
-| U10 | agent/U10-review-address-fix | followups-ui.md | U1、U2 | 任何 |  |  |
+| T1 | agent/T1-auto-screenshots | followups-ui.md |  | 任何 |  |  |
+| U0 | agent/U0-ui-base | followups-ui.md |  | 任何 |  |  |
+| U1 | agent/U1-bracelet-thumb | followups-ui.md | U0、T1 | 任何 |  |  |
+| U2 | agent/U2-nav-bar | followups-ui.md | U0、T1 | 任何 |  |  |
+| U3 | agent/U3-home-fix | followups-ui.md | U0、T1 | 任何 |  |  |
+| U4 | agent/U4-order-confirm-fix | followups-ui.md | U0、T1 | 任何 |  |  |
+| U5 | agent/U5-order-detail-fix | followups-ui.md | U0、T1、U1、U2 | 任何 |  |  |
+| U6 | agent/U6-ai-fix | followups-ui.md | U0、T1 | 任何 |  |  |
+| U7 | agent/U7-share-fix | followups-ui.md | U0、T1 | 任何 |  |  |
+| U8 | agent/U8-orders-list-fix | followups-ui.md | U0、T1 | 任何 |  |  |
+| U9 | agent/U9-after-sale-fix | followups-ui.md | U0、T1、U1 | 任何 |  |  |
+| U10 | agent/U10-review-address-fix | followups-ui.md | U0、T1、U1、U2 | 任何 |  |  |
 | U11 | agent/U11-admin-aftersale-review-fix | followups-ui.md |  | 任何 |  |  |
 
 已完成（不用再领）：A1、A2、A4a、A4b、A4c、A5a、A5b、C0a、C0b、C0c、C0d、C0e、C0f、C0h、C0j、D0、D1。A12 不做（尺寸规则已统一）。A9b 是负责人在后台做的数据任务，不在队列里。

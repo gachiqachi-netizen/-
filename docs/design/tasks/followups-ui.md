@@ -1,8 +1,33 @@
 # 真机走查修改卡 U1–U11（2026-11-16，负责人走完三条主流程后）
 
 > 共同规矩：照 `02-prompts.md` 的总提示词做；测试放 `miniprogram/tests/` 或 `server/tests/`；对照设计稿用 `python3 docs/design/tasks/screen.py s<屏号>`（后台 `A<屏号>`）；颜色、字号、圆角只用 C0a 的变量（`styles/tokens.wxss`），不写新颜色；尺寸规则 `pages/diy/logic.js` 一个字不能改；金额整数分；用户看到的文字只讲寓意、不出现英文代码。
-> 每张卡只改自己列出的文件；要动别的文件先停下来问。**改完必须在微信开发者工具里截图**（iPhone 12/13 尺寸），改前改后各一张放进报告；打不开开发者工具就写明，由负责人看。
+> 每张卡只改自己列出的文件；要动别的文件先停下来问。**U1–U11 都要等 T1、U0 合并后再做**：页面一律用 U0 的 `c-page`、`c-card`、`c-cell`、`c-bar`、`c-nav-bar` 拼，不自己画；交付前跑 `python3 tools/check-ui.py` 必须通过；用 T1 的脚本截改前改后（`--only` 本卡涉及的页），截图提交到 `docs/reports/shots/<卡号>/`，报告里贴出来。
 > 状态修复已合并（e04a7e0），U5、U8、U9 不用再等它。
+
+## T1 自动截图（底子卡，先做）
+
+- **依赖**：无　**谁做**：在装了微信开发者工具的那台电脑上做　**只能改**：新建 `tools/shoot/`（`package.json`、`shoot.js`、`pages.json`、`README.md`）；`.gitignore` 加 `tools/shoot/node_modules/`
+- **为什么**：执行者一直看不到页面，样式全靠猜。这张卡做一个脚本，自动打开小程序各页并截图，以后每张界面卡交付都附改前改后截图。
+1. 用微信官方的 `miniprogram-automator`（只装在 `tools/shoot/` 里，写进它自己的 `package.json`，不加到小程序或后端的依赖）。开发者工具要先在“设置 → 安全设置”里打开“服务端口”；CLI 路径（macOS 默认 `/Applications/wechatwebdevtools.app/Contents/MacOS/cli`）用环境变量 `WECHAT_DEVTOOLS_CLI` 可改，写进 README。
+2. 前提：本地服务按 README 起在 8801（`DEV_LOGIN=1`、`PAYMENT_PROVIDER=mock`、`DEMO_ORDERS=1`、临时 `DATA_DIR`）。脚本先用开发版登录、造好演示数据（一个模板作品、一笔待支付订单、一笔已签收订单、一条售后、一条评价），造数据只调现有接口，不改后端。
+3. `pages.json` 列出要截的页：首页、工作台、手串详情、AI 配（发一句话后）、确认订单（含送礼弹层打开）、下单成功、订单详情（待支付、运输中、售后中各一张）、我的订单、我的、写评价、选择售后类型、申请售后、售后详情、好友落地页、分享海报、编辑地址。每页写清路径、参数和截图前要做的操作。
+4. 运行 `node tools/shoot/shoot.js --out docs/reports/shots/<卡号>/<before|after>`：按 iPhone 13（390×844）截图，文件名用页面名，比如 `order-confirm.png`；`--only order-confirm,order-detail` 只截指定页。
+5. 截图很小（每张压到 300KB 以内），可以提交进仓库。本卡自己跑一遍，把全量截图提交到 `docs/reports/shots/T1/`，作为现状基线。
+6. 报告写清楚：第一次配置要负责人点哪里、跑一次要多久、哪些页截不出来和原因。
+
+## U0 统一版式组件和样式检查（底子卡，先做）
+
+- **依赖**：无　**只能改**：`miniprogram/components/` 下新建 `page/`、`card/`、`nav-bar/`，改 `bar/`、`cell/`；`miniprogram/styles/components.wxss`；新建 `tools/check-ui.py`、`tools/check-ui-baseline.json`、`miniprogram/tests/ui-components.test.js`。**不改任何页面**（页面由 U1–U11 换成用这些组件）。
+- **为什么**：`styles/tokens.wxss` 早就定好了颜色、字号、间距、圆角（能点的胶囊、只看的直角、页面左右边距 40rpx、按钮高 104rpx），但各页没按它写，自己画了圆角大卡片、乱写间距。
+1. 组件，尺寸只用 tokens 变量，不接受页面传颜色和尺寸：
+   - `c-page`：页面底色、左右边距 `--sp-base`、底部给固定按钮栏留出高度（含安全区）。
+   - `c-card`：白底、直角（`--r-panel`），区块之间 `--sp-section`；有标题插槽。
+   - `c-cell`（已有，补齐）：左标题、右内容、可选箭头和开关，行高 `--h-row`；开关是黑白的，不用微信默认绿色。
+   - `c-bar`（已有，补齐）：底部固定栏，支持“左边价格 + 右边主按钮”“两个按钮”“上面一行勾选 + 下面一行价格和按钮”三种布局；按钮高 `--h-btn`、胶囊圆角；适配底部安全区。
+   - `c-nav-bar`：自定义导航栏，用状态栏高度和右上角胶囊位置算布局，标题和胶囊垂直对齐；左边“返回”或“回首页”图标（C0b 图标、无灰底）。
+2. `tools/check-ui.py`：扫 `miniprogram/**/*.wxss`（跳过 `styles/tokens.wxss`）：写死的颜色（`#xxx`、`rgb()`）、`font-size` 不是 tokens 变量、`border-radius` 不是 tokens 变量，都报出来。现有的违规全部记进 `check-ui-baseline.json` 作为基线，基线里的不报错，**新增的违规直接失败**。以后每张界面卡交付前必须跑过，并且基线只能减不能加。
+3. 测试：组件渲染出的类名和变量正确（node 测试读 wxss、wxml 文本断言即可）；`check-ui.py` 对一个故意写了 `#ff0000` 的临时文件报错。
+4. 在 `docs/design/tasks/followups-ui.md` 开头的共同规矩后面补一句用法说明（组件名、三种底部栏怎么写），这一处可以改。
 
 ## U1 手串缩略图和隔珠画法（共用组件）
 
@@ -12,9 +37,9 @@
 
 ## U2 顶部导航栏
 
-- **只能改**：`miniprogram/components/` 下自定义导航栏组件（没有就新建 `components/nav-bar/`），以及用到自定义导航栏的页面的 `.json` 和导航那几行 wxml：`pages/diy/*`、`features/order-detail/*`、`features/shared/*`、`features/review/*`
+- **只能改**：用到自定义导航栏的页面（导航组件 `c-nav-bar` 由 U0 做好，本卡只把页面换成用它）的 `.json` 和导航那几行 wxml：`pages/diy/*`、`features/order-detail/*`、`features/shared/*`、`features/review/*`
 - 现象：工作台“我的作品 >”压在状态栏上；订单详情、好友落地页左上“回首页”是灰色圆圈，落地页“首页”两个字掉到导航栏下面；写评价页出现两个标题（微信自带一个、页面自己画一个）。
-- 要求：自定义导航栏统一用 `wx.getMenuButtonBoundingClientRect` 和状态栏高度算位置，和右上角胶囊垂直对齐；回首页按钮用 C0b 的图标、无灰底；不需要自定义导航的页面（写评价）去掉自己画的标题，只用微信自带的。
+- 要求：这几页的自定义导航全部换成 U0 的 `c-nav-bar`；不需要自定义导航的页面（写评价）去掉自己画的标题，只用微信自带的。
 
 ## U3 首页
 
@@ -66,7 +91,7 @@
 - **只能改**：`miniprogram/features/review/*`、`miniprogram/features/address-edit/*`
 - 现象和要求：评价页商品缩略图是空灰框（用 U1 的组件）；“匿名评价”开关改成黑白（不用微信默认绿色）；匿名说明和后端一致（后端匿名昵称是“X*”的写法，页面写“昵称显示成‘X*’”或照后端实际返回改）；编辑地址页底部“发货后不能在这里改，请联系客服”改成“发货后不能修改地址”（客服还没定）。标题重复的问题由 U2 处理，这张卡不碰导航。
 
-## U11 后台售后和评价的显示
+## U11 后台售后和评价的显示（后台卡，不用等 T1、U0）
 
 - **只能改**：`admin-web/src/pages/afterSales/*`、`admin-web/src/pages/reviews.tsx`
 - 现象和要求：售后详情“联系电话”显示“—”，但用户填了电话：读售后记录里的 `contactPhone`，按 A8c 规则打码（没有 `view_full_contact` 权限显示 `140****0000`）；协商历史里的操作人显示成英文 `customer`，改成“用户”（`admin` 改成账号名字，`system` 改成“系统”）；“退款金额：169.00（后端算好）”去掉括号里的开发说明，金额显示“¥169”；评价审核抽屉的“驳回”“通过并公开”改成正式按钮（主按钮黑底、驳回次按钮），布局分块照 A15。

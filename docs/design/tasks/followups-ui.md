@@ -177,7 +177,7 @@
 
 ## U16 空状态、错误状态和确认订单的地址行
 
-- **依赖**：U15、T3（先看 T3 的全状态截图，把同类问题一起改）　**只能改**：`miniprogram/components/state/*`、各页面里空、出错、没登录那几块的 wxml 和 wxss（工作台 `pages/diy` 除外，归 W1）、`miniprogram/pages/order/*` 的地址行和区块间距、`miniprogram/tests/` 里新增测试
+- **依赖**：U15、T3（先看 T3 的全状态截图，把同类问题一起改）　**只能改**：`miniprogram/components/state/*`、`miniprogram/styles/components.wxss`（只改按钮那几条，见第 6 条）、各页面里空、出错、没登录那几块的 wxml 和 wxss、各页面 wxml 里的 `<button>` 标签（工作台 `pages/diy` 除外，归 W1）、`miniprogram/pages/order/*` 的地址行和区块间距、`miniprogram/pages/login/*`、`miniprogram/tests/` 里新增测试
 - **规矩**（03 设计规范 7.11 节 `c-state`）：居中，上方留 160rpx；一行大标题（56rpx）加一行次要字说明；下面最多一个**次按钮，宽 320rpx，居中**；不配插画；错误说明讲清原因和下一步，按钮写“再试一次”。
 - 现象：确认订单“没找到要下单的手串”——标题和按钮错位，按钮偏左、变形。确认订单的地址行——“用微信地址”被拉得很宽。确认订单区块之间空白太大（地址和商品之间隔了大半屏）。
 - 要做的：
@@ -186,4 +186,7 @@
   3. 确认订单地址行（04 第 539 行）：没有地址时，左边“收货地址”，右边是**小号次按钮**“用微信地址”（高 `--h-btn-s`、按文字宽度、不拉伸）加文字链接“手动填写 ›”，整行就是一个 `c-cell` 列表行；有默认地址时整行显示姓名、手机号、地址，点了进地址页。
   4. 确认订单的区块间距：同一张卡片里的行之间不留额外空白，卡片之间只留 `--sp-tight`，不要大段空白。
   5. 测试：`c-state` 渲染出的按钮宽 320rpx、居中；扫各页面 wxml，空和出错的地方都用 `c-state`。
-  6. 截图：T3 里所有空、出错、没登录状态的改前改后对照；确认订单有地址、没地址各一张。
+  6. **原生按钮宽度被微信默认样式压住**（登录页“手机号快捷登录”只有一半宽、偏左，是同一个原因）：微信给原生 `<button>` 默认了 `width: 184px`，而且写的是 `button:not([size=mini])`，比页面里 `.login-button { width: 100% }` 这类写法优先级更高，所以页面怎么写都不生效。在 `styles/components.wxss` 里统一覆盖：`button.c-btn:not([size=mini]) { width: auto; }`，通栏按钮再加 `.c-btn--block { width: 100%; }`；页面里通栏的按钮用 `c-btn c-btn--block`，不再各自写宽度。全仓库还有 26 个 `<button>` 没带 `c-btn` 类，逐个补上（是按钮就用 `c-btn` 或 `c-btn--sec`，不是按钮就别用 `<button>`）。这一条可以改 `styles/components.wxss` 和各页面 wxml 里的 `<button>` 标签。
+  7. 登录页：“手机号快捷登录”通栏；协议勾选框**默认不勾**（C1a 的规矩），截图时确认是没勾的状态。
+  8. 测试：扫全部 wxml，每个 `<button>` 都带 `c-btn`；`styles/components.wxss` 里有对 `button.c-btn:not([size=mini])` 的覆盖。
+  9. 截图：T3 里所有空、出错、没登录状态的改前改后对照；确认订单有地址、没地址各一张；登录页一张。

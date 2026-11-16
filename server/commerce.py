@@ -15,6 +15,7 @@ import payments
 import plans
 import pricing
 import status
+from bead_visual import VISUAL_KEYS, current_visual, visual_of
 
 ACTOR = "admin"
 
@@ -819,7 +820,14 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
     """
     existing = (order_or_data or {}).get("designSnapshot")
     if isinstance(existing, dict) and existing.get("sequence"):
-        return existing
+        sequence = existing["sequence"]
+        if all(all(key in bead for key in VISUAL_KEYS) for bead in sequence):
+            return existing
+        restored = []
+        for bead in sequence:
+            visual = current_visual(db, bead.get("id"))
+            restored.append({**visual, **bead, **{key: visual[key] for key in VISUAL_KEYS if key not in bead}})
+        return {**existing, "sequence": restored}
     d = dict(order_or_data or {})
     ids = list(d.get("beads") or [])
     items = list(frozen_items if frozen_items is not None else (d.get("items") or []))
@@ -840,6 +848,13 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
             raw_b = db.get("beads", bid)
             snap_item = kb.enrich(raw_b) if raw_b else {"id": bid, "name": bid, "mm": 8, "priceFen": 0}
         snap_item = snap_item or {"id": bid, "name": bid, "mm": 8, "priceFen": 0}
+        current = db.get("beads", bid) if db is not None else None
+        visual_source = {**(current or {}), **snap_item}
+        if "colors" not in snap_item and "c" not in snap_item and current:
+            visual_source["c"] = current.get("c")
+        if not snap_item.get("photo") and current:
+            visual_source["photo"] = current.get("photo")
+        visual = visual_of(visual_source) if current or snap_item.get("c") or snap_item.get("colors") else current_visual(db, bid)
         mm = float(snap_item.get("mm") or 0)
         ufen = _bead_unit_fen(snap_item) if ("priceFen" in snap_item or "price" in snap_item) else int(snap_item.get("unitPriceFen") or 0)
         is_spacer = bool(snap_item.get("spacer") or snap_item.get("type") == "spacer")
@@ -859,6 +874,7 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
             "summary": snap_item.get("summary") or "",
             "safety": snap_item.get("safety") or "",
         }
+        seq_entry.update({key: visual[key] for key in VISUAL_KEYS if key not in seq_entry or key in ("colors", "photo")})
         sequence.append(seq_entry)
         if bid not in bom_map:
             bom_order.append(bid)

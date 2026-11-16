@@ -1,7 +1,7 @@
-"""V5 单珠照片按料共用、图片验收和质检成品照。"""
+"""V5 三尺寸单珠照片、文件头验收和成品照。无需图片库。"""
 import base64
-import io
 import os
+import struct
 import sys
 import tempfile
 import unittest
@@ -9,7 +9,6 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from PIL import Image
 from routes import bead_photos
 
 
@@ -19,8 +18,9 @@ class MemoryDB:
             'b6': {'name': '白水晶', 'mm': 6},
             'b8': {'name': '白水晶', 'mm': 8},
             'b9': {'name': '黑曜石', 'mm': 8},
-        }, 'orders': {'O1': {'workOrder': {}}}, 'after_sales': {'A1': {'reworkOrder': {'workOrderNo': 'RWO1'}}},
-                     'uploads': {}, 'audit_logs': {}}
+        }, 'orders': {'O1': {'workOrder': {}}},
+            'after_sales': {'A1': {'reworkOrder': {'workOrderNo': 'RWO1'}}},
+            'uploads': {}, 'audit_logs': {}}
 
     def get(self, table, rid):
         row = self.rows[table].get(rid)
@@ -34,20 +34,22 @@ class MemoryDB:
         return self.get(table, rid)
 
 
-def payload(size=800, background='white', center=True, fmt='PNG'):
-    mode = 'RGBA' if background == 'transparent' else 'RGB'
-    bg = (255, 255, 255, 0) if mode == 'RGBA' else (255, 255, 255)
-    width, height = (size, size) if isinstance(size, int) else size
-    img = Image.new(mode, (width, height), bg)
-    size = min(width, height)
-    if center:
-        from PIL import ImageDraw
-        ImageDraw.Draw(img).ellipse((size // 8, size // 8, size * 7 // 8, size * 7 // 8), fill=(70, 50, 30, 255) if mode == 'RGBA' else (70, 50, 30))
-    output = io.BytesIO()
-    img.save(output, fmt)
-    return {'filename': 'bead.' + ('jpg' if fmt == 'JPEG' else 'png'),
-            'contentType': 'image/jpeg' if fmt == 'JPEG' else 'image/png',
-            'data': base64.b64encode(output.getvalue()).decode()}
+def png(size, width=None, raw=None):
+    if raw is None:
+        raw = (b'\x89PNG\r\n\x1a\n' + struct.pack('>I', 13) + b'IHDR'
+               + struct.pack('>II', width or size, size) + b'\x08\x06\x00\x00\x00' + b'\x00\x00\x00\x00')
+    return {'filename': 'bead.png', 'contentType': 'image/png', 'width': size, 'height': size,
+            'data': base64.b64encode(raw).decode()}
+
+
+def jpg(size):
+    raw = b'\xff\xd8\xff\xc0\x00\x0b\x08' + struct.pack('>HH', size, size) + b'\x03\x01\x11\x00\xff\xd9'
+    return {'filename': 'bead.jpg', 'contentType': 'image/jpeg', 'width': size, 'height': size,
+            'data': base64.b64encode(raw).decode()}
+
+
+def images():
+    return {'images': {field: png(size) for field, size in bead_photos.SIZES.items()}}
 
 
 class BeadPhotoTests(unittest.TestCase):
@@ -70,39 +72,45 @@ class BeadPhotoTests(unittest.TestCase):
                       [(auth, pattern) for _, pattern, _, auth in bead_photos.ROUTES])
         self.assertTrue(all(auth in ('edit_products', 'quality_gate', 'view_work_orders') for _, _, _, auth in bead_photos.ROUTES))
 
-    def test_same_name_sizes_share_photo_and_audit(self):
-        code, result = bead_photos.upload_bead_photo(self.ctx, self.match('b6'), payload())
+    def test_all_three_sizes_saved_for_same_name_and_audit(self):
+        code, result = bead_photos.upload_bead_photo(self.ctx, self.match('b6'), images())
         self.assertEqual(code, 200)
         self.assertEqual(result['count'], 2)
-        self.assertEqual(self.db.get('beads', 'b6')['photo'], result['photo'])
-        self.assertEqual(self.db.get('beads', 'b8')['photo'], result['photo'])
-        self.assertNotIn('photo', self.db.get('beads', 'b9'))
+        for field in bead_photos.SIZES:
+            self.assertEqual(self.db.get('beads', 'b6')[field], result[field])
+            self.assertEqual(self.db.get('beads', 'b8')[field], result[field])
+            self.assertNotIn(field, self.db.get('beads', 'b9'))
         self.assertEqual(len(self.db.list('audit_logs')), 1)
 
-    def test_accepts_jpeg_and_transparent_png(self):
-        for image in (payload(fmt='JPEG'), payload(background='transparent')):
-            self.assertEqual(bead_photos.upload_bead_photo(self.ctx, self.match('b6'), image)[0], 200)
-
-    def test_rejects_size_background_and_empty_center(self):
-        for image, message in ((payload(600), '800×800'), (payload((900, 800)), '正方形'), (payload(center=False), '中央')):
-            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
-                bead_photos.upload_bead_photo(self.ctx, self.match('b6'), image)
-        dark = payload()
-        raw = base64.b64decode(dark['data'])
-        image = Image.open(io.BytesIO(raw))
-        image.putpixel((0, 0), (0, 0, 0))
-        out = io.BytesIO(); image.save(out, 'PNG')
-        dark['data'] = base64.b64encode(out.getvalue()).decode()
-        with self.assertRaisesRegex(ValueError, '四角'):
-            bead_photos.upload_bead_photo(self.ctx, self.match('b6'), dark)
+    def test_standard_library_header_accepts_jpeg_and_rejects_wrong_dimensions(self):
+        self.assertEqual(bead_photos._image(jpg(480), 480)[0:2], b'\xff\xd8')
+        bad = images(); bad['images']['photoMd'] = png(240, width=241)
+        with self.assertRaisesRegex(ValueError, '宽高'):
+            bead_photos.upload_bead_photo(self.ctx, self.match('b6'), bad)
         self.assertEqual(len(self.db.list('uploads')), 0)
+
+    def test_rejects_format_size_and_missing_variant(self):
+        bad = images(); bad['images']['photoSm']['contentType'] = 'image/jpeg'
+        with self.assertRaisesRegex(ValueError, '格式'):
+            bead_photos.upload_bead_photo(self.ctx, self.match('b6'), bad)
+        bad = images(); bad['images']['photoSm'] = png(95)
+        with self.assertRaisesRegex(ValueError, '96×96'):
+            bead_photos.upload_bead_photo(self.ctx, self.match('b6'), bad)
+        bad = images(); bad['images'].pop('photoMd')
+        with self.assertRaisesRegex(ValueError, '三种尺寸'):
+            bead_photos.upload_bead_photo(self.ctx, self.match('b6'), bad)
+
+    def test_rejects_over_one_megabyte(self):
+        bad = images(); bad['images']['photo'] = png(480, raw=b'\x89PNG\r\n\x1a\n' + b'x' * (1024 * 1024))
+        with self.assertRaisesRegex(ValueError, '1MB'):
+            bead_photos.upload_bead_photo(self.ctx, self.match('b6'), bad)
 
     def test_finished_photo_saved_to_work_order(self):
         with patch.object(bead_photos.commerce, 'get_work_order', return_value={'workOrderNo': 'WO1'}):
-            code, result = bead_photos.upload_finished_photo(self.ctx, self.match('orders', 'O1'), payload())
+            code, result = bead_photos.upload_finished_photo(self.ctx, self.match('orders', 'O1'), png(800))
         self.assertEqual(code, 200)
         self.assertEqual(self.db.get('orders', 'O1')['workOrder']['finishedPhoto'], result['finishedPhoto'])
         self.assertEqual(bead_photos.finished_photo(self.ctx, self.match('orders', 'O1'), None)[1], result)
-        code, result = bead_photos.upload_finished_photo(self.ctx, self.match('after-sales', 'A1'), payload())
+        code, result = bead_photos.upload_finished_photo(self.ctx, self.match('after-sales', 'A1'), png(800))
         self.assertEqual(code, 200)
         self.assertEqual(self.db.get('after_sales', 'A1')['reworkOrder']['finishedPhoto'], result['finishedPhoto'])

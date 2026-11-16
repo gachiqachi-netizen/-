@@ -14,16 +14,33 @@ export default function BeadPhoto({ bead, compare, onUploaded }: {
     if (!file || !bead.id) return;
     setBusy(true); setError('');
     try {
-      const data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
-        reader.onerror = () => reject(new Error('读取图片失败'));
-        reader.readAsDataURL(file);
-      });
-      const result = await apiRequest<{ photo: string }>(`/api/admin/beads/${encodeURIComponent(bead.id)}/photo`, {
-        method: 'POST', body: { filename: file.name, contentType: file.type, data },
-      });
-      setPhoto(result.photo); onUploaded(result.photo);
+      if (!['image/png', 'image/jpeg'].includes(file.type)) throw new Error('只支持 PNG 或 JPG 图片');
+      const source = await createImageBitmap(file);
+      try {
+        if (source.width !== source.height || source.width < 800) throw new Error('图片必须是至少 800×800 的正方形');
+        const original = document.createElement('canvas');
+        original.width = source.width; original.height = source.height;
+        const context = original.getContext('2d');
+        if (!context) throw new Error('浏览器无法检查图片');
+        context.drawImage(source, 0, 0);
+        const corners = [[0, 0], [source.width - 1, 0], [0, source.height - 1], [source.width - 1, source.height - 1]];
+        for (const [x, y] of corners) {
+          const [r, g, b, a] = context.getImageData(x, y, 1, 1).data;
+          if (a >= 240 && (r < 240 || g < 240 || b < 240)) throw new Error('四角须透明或接近白色');
+        }
+        const images: Record<string, { filename: string; contentType: string; width: number; height: number; data: string }> = {};
+        for (const [field, size] of [['photo', 480], ['photoMd', 240], ['photoSm', 96]] as const) {
+          const canvas = document.createElement('canvas');
+          canvas.width = size; canvas.height = size;
+          canvas.getContext('2d')?.drawImage(source, 0, 0, size, size);
+          images[field] = { filename: `${field}.png`, contentType: 'image/png', width: size, height: size,
+            data: canvas.toDataURL('image/png').split(',')[1] };
+        }
+        const result = await apiRequest<{ photo: string }>(`/api/admin/beads/${encodeURIComponent(bead.id)}/photo`, {
+          method: 'POST', body: { images },
+        });
+        setPhoto(result.photo); onUploaded(result.photo);
+      } finally { source.close(); }
     } catch (err: any) { setError(err.message || '上传失败'); }
     finally { setBusy(false); }
   };

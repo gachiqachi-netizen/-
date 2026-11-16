@@ -45,6 +45,7 @@ Component({
   options: { styleIsolation: 'apply-shared' },
   properties: {
     bead: { type: Object, value: null },
+    fluid: { type: Boolean, value: false },
     size: { type: String, value: 'm' },   // s 48rpx / m 80rpx / l 120rpx
     state: { type: String, value: 'normal' }, // normal / loading / off
   },

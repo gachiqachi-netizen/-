@@ -32,7 +32,7 @@ Component({
       const byId = Object.fromEntries(catalog.map(bead => [bead.id, bead]))
       const items = (this.properties.beads || []).map(value => typeof value === 'object' && value ? value : byId[value]).filter(Boolean)
       this.setData({ items, src: items.length ? this.data.src || thumbs.PLACEHOLDER : thumbs.PLACEHOLDER })
-      if (items.length) return
+      if (items.length && (this.properties.beads || []).every(value => typeof value === 'object' && value)) return
       thumbs.get(this.properties.beads, this.properties.catalog, this.thumbSize).then(result => {
         // A recycled/detached component must not receive an old request's image.
         if (!this.thumbReady || revision !== this.thumbRevision) return

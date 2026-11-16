@@ -13,7 +13,7 @@
         <c-cell wx:if="{{view.contactPhone}}" label="联系电话" value="{{view.contactPhone}}" />
         <c-cell wx:if="{{view.photos.length}}" label="申请照片" value="{{view.photos.length}} 张" />
       </c-card>
-      <c-card wx:if="{{product}}"><view class="product"><view class="thumb"><bracelet-thumb beads="{{product.beads}}" catalog="{{catalog}}" /></view><view class="product-text"><view class="product-name">{{product.name}}</view><view class="hint">{{productSub}}</view></view></view></c-card>
+      <c-card wx:if="{{product}}"><view class="product"><view class="thumb"><bracelet-thumb beads="{{product.beads}}" /></view><view class="product-text"><view class="product-name">{{product.name}}</view><view class="hint">{{productSub}}</view></view></view></c-card>
       <c-card wx:if="{{view.canReorder || sale.status === 'closed' || (sale.status === 'rejected' && sale.result)}}">
         <c-cell wx:if="{{sale.status === 'closed'}}" label="{{reapplyLabel}}" arrow="{{true}}" bind:tap="reapply" />
         <c-cell wx:if="{{view.canReorder}}" label="再串一条" arrow="{{true}}" bind:tap="copyAgain" />

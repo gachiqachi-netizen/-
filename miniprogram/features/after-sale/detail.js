@@ -26,7 +26,7 @@ Page({
   },
   onPullDownRefresh(){this.load()},
   showRecord(sale,order){this.setData({sale,view:saleView(sale),applicationTime:beijingTime(sale.createdAt),error:''});if(order)this.setOrder(order)},
-  setOrder(order){this.setData({order,product:{name:order.name||'手串',line:order.meaning||'',beads:order.beads||[]},productSub:`${(order.beads||[]).length} 颗 · 手围 ${order.wrist||15}cm`})},
+  setOrder(order){this.setData({order,product:{name:order.name||'手串',line:order.meaning||'',beads:(order.designSnapshot&&order.designSnapshot.sequence)||[]},productSub:`${(order.beads||[]).length} 颗 · 手围 ${order.wrist||15}cm`})},
   openHistory(){this.setData({historyOpen:true})},closeHistory(){this.setData({historyOpen:false})},
   openCancel(){this.setData({cancelOpen:true})},closeCancel(){this.setData({cancelOpen:false})},
   async confirmCancel(){

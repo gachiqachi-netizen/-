@@ -45,7 +45,7 @@
 | B-11c | agent/B-11c-design-delete | backend-wave2.md | A11 | 任何 | B-3 |  |
 | B-12 | agent/B-12-ai-logs | backend-wave2.md | A8b、A11m | 任何 |  |  |
 | B-13 | agent/B-13-tracking | backend-wave2.md | A11 | 任何 |  | 选快递查询服务商 |
-| B-14 | agent/B-14-wechat-pay | backend-wave2.md | A5b | Codex |  | 负责人确认允许接真实支付、准备好证书和 HTTPS 回调域名 |
+| B-14 | agent/B-14-wechat-pay | backend-wave2.md | A5b | Codex |  |  |
 | A5c | agent/A5c-rewrist | backend-wave2.md | A5b | Codex |  |  |
 | C1p | agent/C1p-page-shells | miniprogram-wave2.md | C0z | 任何 |  |  |
 | C1a | agent/C1a-login-page | miniprogram-wave2.md | A7、C1p | 任何 |  |  |

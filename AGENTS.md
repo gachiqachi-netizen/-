@@ -20,7 +20,7 @@
   node --test miniprogram/tests/*.test.js
   python3 kb/validate.py
   ```
-- 不接真实支付；不写任何真实密钥、令牌、手机号、地址。
+- 真实支付只在 B-14 里接，默认仍是模拟支付（`PAY_CHANNEL=mock`）；不写任何真实密钥、令牌、手机号、地址，密钥一律只读环境变量。
 - 给用户看的文字只讲寓意不讲功效（禁用词表在 `kb/data/attributes.json`）。
 - 金额按“分”的整数计算；尺寸规则不能改（以小程序工作台 `miniprogram/pages/diy/logic.js` 的 `stats` 为准（`pages/editor/logic.js` 只是转接），后端 `server/plans.py` 的 `main_mm`、`target_for`、`_fill` 与它一致；两边共用用例在 `server/tests/fixtures/size_rule_cases.json`，不要只改一边）。
 - 小程序代码不要依赖 `URL` 等浏览器对象；地址不要写死，一律走 `miniprogram/config.js`。

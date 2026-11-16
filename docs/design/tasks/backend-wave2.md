@@ -379,12 +379,21 @@
 
 ---
 
-## B-14 接入微信支付
+## B-14 接入微信支付（2026-11-16 负责人确认：商户号和密钥已备好，可以开工）
 
-- **依赖**：**E6（商户号、APIv3 密钥、证书）**　**大小**：L
-
-在 `payments.py` 加 `wechat` 通道：`create_payment` 调统一下单（JSAPI），返回 `wx.requestPayment` 要的参数；`/api/payments/notify` 用平台证书验签、解密，再调 `apply_callback`（和模拟支付同一个函数）；`handle_refund` 调退款 API，退款结果回调同样处理。密钥只放环境变量。上线前用小额真实订单走一遍付款和退款。**商户号下来之前不开工。**
-
+- **依赖**：A5b（已完成）　**大小**：L　**只能改**：`server/payments.py`、新建 `server/wechat_pay.py`、支付和退款相关路由、`server/config` 里读环境变量的地方、`miniprogram/pages/order/order.js`、`miniprogram/features/order-detail/order-detail.js` 里付款那一段、`server/tests/`、`miniprogram/tests/` 里支付相关测试、`docs/deploy.md`（没有就新建）
+- **通道开关**：环境变量 `PAY_CHANNEL=mock|wechat`，**默认 mock**。不配置时一切照旧，现有测试全部不改就能过。
+- **密钥只读环境变量，仓库里一个字都不许出现**：`WXPAY_MCHID`、`WXPAY_APPID`、`WXPAY_API_V3_KEY`、`WXPAY_CERT_SERIAL`、`WXPAY_PRIVATE_KEY_PATH`（商户私钥文件路径）、`WXPAY_PLATFORM_PUBLIC_KEY_PATH` 和 `WXPAY_PLATFORM_PUBLIC_KEY_ID`（微信支付公钥；如负责人用的是平台证书，就改读平台证书，两种都支持）、`WXPAY_NOTIFY_URL`（https 回调地址）。`wechat` 通道缺任何一项，启动时报错并说缺哪一项，不许静默退回 mock。
+- **后端**：
+  1. 下单：JSAPI 下单（`/v3/pay/transactions/jsapi`），金额用订单的“分”整数，`openid` 用登录用户的；返回 `wx.requestPayment` 要的 `timeStamp`、`nonceStr`、`package`、`signType=RSA`、`paySign`。同一订单重复点付款要复用未过期的预付单，不重复下单。
+  2. 回调 `/api/payments/notify`：验签 → AES-256-GCM 解密 → 核对商户号、订单号、金额 → 调 `apply_callback`（和模拟支付同一个函数）；重复回调幂等；验签失败返回失败、不改订单。
+  3. 前端付完不信前端结果：`requestPayment` 成功后调查单接口确认，没确认前订单页显示“支付确认中”。
+  4. 退款：`handle_refund` 调 `/v3/refund/domestic/refunds`，退款回调同样验签解密幂等处理；金额不能超过实付。
+  5. 用标准库加 `cryptography`（项目已有依赖就用，没有先停下来问）；不引入第三方微信支付 SDK。
+- **小程序**：`payment.mock` 为真走原来的模拟流程；否则调 `wx.requestPayment`，用户取消时提示“已取消支付”、订单仍是待付款可以再付。
+- **测试**：用测试里临时生成的 RSA 密钥对伪造签名和回调，覆盖：下单参数和签名、验签失败、金额不符、重复回调、退款超额、缺环境变量报错、mock 通道不受影响。**不许在测试或代码里放任何真实商户号、密钥、openid。**
+- **部署说明**：在 `docs/deploy.md` 写清楚负责人要在服务器上配的环境变量、私钥文件放哪、商户平台要配的回调地址、上线前自检步骤。
+- **不做**：真实环境的付款验证由负责人用一笔小额真实订单完成（付款 → 退款），执行 agent 不拿密钥、不连真实商户平台。
 ---
 
 ## A5c 改手围重串

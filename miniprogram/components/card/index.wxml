@@ -1,0 +1,1 @@
+<view class="c-card"><view class="c-card__title"><slot name="title" /></view><slot /></view>

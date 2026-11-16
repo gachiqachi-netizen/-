@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  height: 100rpx;
+  height: var(--h-btn);
   border-radius: var(--r-pill);
   background: var(--c-text);
   color: var(--c-bg);
@@ -41,7 +41,7 @@ button.c-btn::after {
 /* 小号按钮：高 60rpx */
 .c-btn--s {
   flex: none;
-  height: 60rpx;
+  height: var(--h-btn-s);
   padding: 0 24rpx;
   font-size: var(--fs-caption);
   font-weight: var(--fw-regular);

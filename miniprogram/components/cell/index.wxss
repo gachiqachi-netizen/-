@@ -38,3 +38,10 @@
   color: var(--c-text-2);
   white-space: nowrap;
 }
+.c-cell-row { min-height: var(--h-row); display: flex; align-items: center; justify-content: space-between; gap: var(--sp-tight); border-bottom: 1rpx solid var(--c-line); }
+.c-cell-row__label { flex: 1; font-size: var(--fs-body); }
+.c-cell-row__right { display: flex; align-items: center; gap: var(--sp-tight); color: var(--c-text-2); font-size: var(--fs-body); }
+.c-cell-row__arrow { width: var(--sp-tight); height: var(--sp-tight); }
+.c-cell-row__switch { width: var(--h-btn-s); height: var(--sp-base); padding: var(--sp-tight); box-sizing: border-box; display: flex; align-items: center; border-radius: var(--r-pill); background: var(--c-line); }
+.c-cell-row__switch.is-on { justify-content: flex-end; background: var(--c-text); }
+.c-cell-row__knob { width: var(--sp-tight); height: var(--sp-tight); border-radius: var(--r-pill); background: var(--c-bg); }

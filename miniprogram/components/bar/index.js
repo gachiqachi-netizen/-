@@ -2,7 +2,8 @@
 // 插槽：name="top"（勾选行等）、name="left"（价格）、默认（按钮）。
 // 带底部安全区；组件在原位置留一个同高占位，页面内容不会被盖住。
 Component({
-  options: { styleIsolation: 'apply-shared' },
+  options: { styleIsolation: 'apply-shared', multipleSlots: true },
+  properties: { layout: { type: String, value: 'price' } },
   data: { holderHeight: 0 },
   lifetimes: {
     ready() {

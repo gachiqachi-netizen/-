@@ -1,0 +1,1 @@
+.c-page { box-sizing: border-box; min-height: 100vh; background: var(--c-bg); padding: 0 var(--sp-base) calc(var(--h-btn) + var(--sp-base) + env(safe-area-inset-bottom)); }

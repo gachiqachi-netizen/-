@@ -41,3 +41,5 @@
   align-items: center;
   min-width: 320rpx;
 }
+.c-bar__main--dual .c-bar__btn { flex: 1; min-width: 0; gap: var(--sp-tight); }
+.c-bar__btn .c-btn { height: var(--h-btn); border-radius: var(--r-pill); }

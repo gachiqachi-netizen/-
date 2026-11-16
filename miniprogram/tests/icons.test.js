@@ -7,7 +7,7 @@ const ROOT = path.join(__dirname, '..')
 const ICONS = [
   'back', 'undo', 'stack', 'share', 'save', 'mic', 'plus', 'minus',
   'up', 'check', 'copy', 'close', 'more', 'chevron-right', 'camera',
-  'image', 'hand', 'spark', 'bead',
+  'image', 'hand', 'spark', 'bead', 'home',
 ]
 
 test('every icon name from step 1 has an svg file', () => {

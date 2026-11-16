@@ -10,10 +10,16 @@ const money = require('../../utils/money')
 
 const STORAGE = 'cgz_ai_chat'
 const EXAMPLES = ['想要清冷一点，上班也能戴', '送闺蜜生日，她喜欢粉色', '想要夏天海边的感觉']
+const BEIJING_OFFSET = 8 * 60 * 60 * 1000
+function beijingDate(at) { return new Date(Number(at) + BEIJING_OFFSET) }
+function beijingDay(at) {
+  const date = beijingDate(at)
+  return `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`
+}
 function timeLabel(at) {
-  const date = new Date(at), today = new Date()
-  const day = date.toDateString() === today.toDateString() ? '今天' : `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-  return `${day} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+  const date = beijingDate(at)
+  const day = beijingDay(at) === beijingDay(Date.now()) ? '今天' : `${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`
+  return `${day} ${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')}`
 }
 function safeReply(reply, count) {
   const text = String(reply || '')
@@ -40,7 +46,7 @@ Page({
     const old = typeof wx.getStorageSync === 'function' && wx.getStorageSync(STORAGE)
     if (Array.isArray(old) && !this.data.messages.length) {
       const latest = old.slice().reverse().find(m => m.results && m.results.length)
-      this.setData({ messages: old, hasResults: !!latest, chips: latest ? quickReplies(latest.results[latest.activeIndex || 0]) : [] })
+      this.setData({ messages: old.map(m => m.time ? { ...m, time: timeLabel(m.at) } : m), hasResults: !!latest, chips: latest ? quickReplies(latest.results[latest.activeIndex || 0]) : [] })
     }
     api.catalog().then(c => {
       this.catalog = c.beads || []
@@ -95,7 +101,7 @@ Page({
     if (!text || this.data.busy) return
     const history = this.data.messages.filter(m => m.role === 'me').map(m => m.text).slice(-4)
     const prior = this.data.messages.slice(), now = Date.now(), last = prior[prior.length - 1]
-    const marker = !last || now - Number(last.at || 0) >= 300000 || new Date(last.at).toDateString() !== new Date(now).toDateString()
+    const marker = !last || now - Number(last.at || 0) >= 300000 || beijingDay(last.at) !== beijingDay(now)
     this.setData({ text: '', busy: true, error: '', waitText: '正在配……', messages: prior.concat({ role: 'me', text, at: now, time: marker ? timeLabel(now) : '' }) })
     this.waitTimer1 = setTimeout(() => this.setData({ waitText: '还在挑珠子……' }), 5000)
     this.waitTimer2 = setTimeout(() => this.setData({ waitText: '比平时慢，再等一下' }), 12000)

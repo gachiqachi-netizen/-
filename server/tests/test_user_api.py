@@ -61,7 +61,12 @@ class UserAPITest(unittest.TestCase):
         self.assertGreater(public_share['createdAt'], 0)
         self.assertEqual(public_share, {'name': '测试', 'wrist': 15, 'beads': ['a', 'b'],
                                         'createdAt': public_share['createdAt'],
-                                        'authorLabel': '来自珠养养的一位用户'})
+                                        'authorLabel': '来自珠养养的一位用户',
+                                        'visual': public_share['visual']})
+        self.assertIsInstance(public_share['visual'], list)
+        self.assertEqual(len(public_share['visual']), len(public_share['beads']))
+        for bead in public_share['visual']:
+            self.assertTrue({'id', 'mm', 'colors', 'photo'} <= bead.keys())
         self.assertNotIn('userId', public_share)
         self.assertIsNone(user_api.read_share(self.db, 'bad'))
         self.assertIsNone(user_api.read_share(self.db, 'a' * 43))

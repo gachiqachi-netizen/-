@@ -331,6 +331,8 @@ def create_share(db, data, owner_id):
             raise KeyError('设计不存在')
     token = secrets.token_urlsafe(32)
     share = {k: design[k] for k in ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId') if k in design}
+    from bead_visual import current_visual
+    share['visual'] = [current_visual(db, bead_id) for bead_id in design['beads']]
     share['createdAt'] = int(time.time() * 1000)
     if design_id:
         share['designId'] = design_id
@@ -351,6 +353,8 @@ def read_share(db, token):
             return None
     fields = ('name', 'beads', 'wrist', 'special', 'pattern', 'tail', 'fixed', 'meaning', 'source', 'tplId')
     public = {k: d[k] for k in fields if k in d}
+    from bead_visual import current_visual
+    public['visual'] = d['visual'] if isinstance(d.get('visual'), list) else [current_visual(db, bead_id) for bead_id in d.get('beads') or []]
     public['createdAt'] = d.get('createdAt')
     public['authorLabel'] = '来自珠养养的一位用户'
     return public
@@ -425,6 +429,7 @@ def make_order(db, data, uid):
     enriched = {i: kb.enrich(beads[i]) for i in set(ids)}
     snapshot = [{**{key: enriched[i].get(key, [] if key == 'points' else '')
                     for key in ('id', 'name', 'mm', 'mat', 'spacer', 'price', 'photo', 'kb', 'points', 'meaning', 'summary', 'safety')},
+                 'c': beads[i].get('c'),
                  'photo': beads[i].get('photo'),
                  'priceFen': bead_price_fen(beads[i]),
                  'unitPriceFen': bead_price_fen(beads[i])} for i in ids]

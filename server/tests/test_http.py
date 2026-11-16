@@ -218,7 +218,12 @@ class HTTPTest(unittest.TestCase):
         public_share = self.request('/api/shares/' + shared['shareId'])[1]
         self.assertEqual(public_share, {'name':'公开作品','beads':['zt8'],'wrist':15,
                                         'createdAt':public_share['createdAt'],
-                                        'authorLabel':'来自珠养养的一位用户'})
+                                        'authorLabel':'来自珠养养的一位用户',
+                                        'visual':public_share['visual']})
+        self.assertIsInstance(public_share['visual'], list)
+        self.assertEqual(len(public_share['visual']), len(public_share['beads']))
+        for bead in public_share['visual']:
+            self.assertTrue({'id', 'mm', 'colors', 'photo'} <= bead.keys())
         self.assertIsInstance(public_share['createdAt'], int)
         self.assertNotIn('userId', public_share)
 

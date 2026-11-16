@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../api';
 import { AdminMe, canPage, pageNeed } from '../permissions';
+import { Can } from '../permissions';
+import AiSettingsPage from '../pages/aiSettings';
 
 export interface NavItem {
   key: string;
@@ -46,6 +48,7 @@ export const MENU: NavGroup[] = [
     items: [
       { key: 'accounts', label: '账号与权限' },
       { key: 'audit', label: '操作记录' },
+      { key: 'aiSettings', label: 'AI 设置' },
     ],
   },
 ];
@@ -88,7 +91,8 @@ export const Shell: React.FC<ShellProps> = ({
         ? `需要“${error.data.need}”，找负责人开通。` : error.message || '权限读取失败'); });
     return () => { alive = false; };
   }, []);
-  const denied = me !== null && !canPage(active, me);
+  const allowed = (key: string) => key === 'aiSettings' ? !!me?.permissions.includes('manage_accounts') : !!me && canPage(key, me);
+  const denied = me !== null && !allowed(active);
   return (
     <div className="zy-shell">
       <aside className="zy-side">
@@ -97,7 +101,7 @@ export const Shell: React.FC<ShellProps> = ({
           <span className="zy-side-brand-sub">后台</span>
         </div>
         <nav className="zy-side-nav">
-          {MENU.map((g) => ({ ...g, items: me ? g.items.filter((item) => canPage(item.key, me)) : [] })).filter((g) => g.items.length).map((g) => (
+          {MENU.map((g) => ({ ...g, items: me ? g.items.filter((item) => allowed(item.key)) : [] })).filter((g) => g.items.length).map((g) => (
             <div key={g.group || 'top'}>
               {g.group && <div className="zy-side-group">{g.group}</div>}
               {g.items.map((item) => {
@@ -144,7 +148,7 @@ export const Shell: React.FC<ShellProps> = ({
         <main className="zy-content">
           {loadError ? <div role="alert">{loadError}</div> :
             !me ? <div>正在读取权限…</div> :
-            denied ? <div className="zy-card zy-empty" role="alert"><h2>你没有这个页面的权限</h2><p>需要“{pageNeed(active)}”，找负责人开通。</p></div> : children}
+            denied ? <div className="zy-card zy-empty" role="alert"><h2>你没有这个页面的权限</h2><p>需要“{active === 'aiSettings' ? '管理账号和权限' : pageNeed(active)}”，找负责人开通。</p></div> : active === 'aiSettings' ? <Can perm="manage_accounts"><AiSettingsPage /></Can> : children}
         </main>
       </div>
     </div>

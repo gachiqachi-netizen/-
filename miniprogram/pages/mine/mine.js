@@ -8,6 +8,7 @@ const ui=require('../home/data')
 Page({
  data:{loggedIn:false,name:'',avatar:'',designCount:0,orderCount:0,recent:null,recentBeads:[],catalog:[],orderError:false,wrist:15},
  onShow(){
+  if(wx.showTabBar)wx.showTabBar({ fail() {} })
   const loggedIn=auth.hasSession()&&!!wx.getStorageSync('cgz_phone_masked'),works=store.list()
   this.setData({loggedIn,name:wx.getStorageSync('cgz_display_name')||'',avatar:wx.getStorageSync('cgz_avatar')||'',designCount:works.length,wrist:ui.wrist(),orderCount:0,recent:null,recentBeads:[],orderError:false})
   api.catalog().then(c=>{this.setData({catalog:c.beads||[]});this.refreshRecentBeads()}).catch(()=>{})

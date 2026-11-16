@@ -39,6 +39,7 @@ Page({
     this.setData({ navTop: (info.statusBarHeight || 0) * ratio, navHeight: menu ? (menu.bottom - (info.statusBarHeight || 0) + menu.top - (info.statusBarHeight || 0)) * ratio : 88 })
   },
   onShow() {
+    if(wx.showTabBar)wx.showTabBar({ fail() {} })
     const currentWrist = wrist()
     if (this.lastWrist && this.lastWrist !== currentWrist) queue.show({ text: `已按 ${currentWrist}cm 重新判断` })
     this.lastWrist = currentWrist

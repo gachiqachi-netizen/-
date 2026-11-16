@@ -10,12 +10,18 @@ function positions(beads, size) {
       face: (bead.colors || [])[0] || 'var(--c-line)' }
   })
 }
+function wordmarkSize(ring, size) {
+  if (!ring.length) return 'tray'
+  const center = size / 2
+  const innerRadius = Math.min(...ring.map(it => Math.hypot(it.left + it.r - center, it.top + it.r - center) - it.r))
+  return innerRadius * 2 < 190 ? 'corner' : 'tray'
+}
 if (typeof Component === 'function') Component({
   options: { styleIsolation: 'apply-shared' },
   properties: { beads: { type: Array, value: [] }, size: { type: Number, value: 320 }, wordmark: { type: Boolean, value: false },
     selected: { type: Number, value: -1 }, mode: { type: String, value: 'ring' }, stackBeads: { type: Array, value: [] } },
-  data: { rings: [], height: 320 },
-  observers: { 'beads,size,mode,stackBeads': function () { this.rebuild() } },
+  data: { rings: [], height: 320, wordmarkSize: 'tray' },
+  observers: { 'beads,size,mode,stackBeads,wordmark': function () { this.rebuild() } },
   lifetimes: { attached() { this.rebuild() } },
   methods: { rebuild() {
     const p = this.properties, size = Number(p.size) || 320
@@ -25,7 +31,10 @@ if (typeof Component === 'function') Component({
         { idx: 0, ty: -gap / 2, opacity: 0.55, items: positions((p.stackBeads || [])[0], size) },
         { idx: 1, ty: gap / 2, opacity: 0.55, items: positions((p.stackBeads || [])[1], size) },
       ] })
-    } else this.setData({ height: size, rings: [{ idx: 0, ty: 0, opacity: 1, items: positions(p.beads, size) }] })
+    } else {
+      const ring = positions(p.beads, size)
+      this.setData({ height: size, wordmarkSize: wordmarkSize(ring, size), rings: [{ idx: 0, ty: 0, opacity: 1, items: ring }] })
+    }
   } },
 })
-module.exports = { layout: positions, normalize }
+module.exports = { layout: positions, normalize, wordmarkSize }

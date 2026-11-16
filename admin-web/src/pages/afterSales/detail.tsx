@@ -27,9 +27,10 @@ interface AfterSaleDetail {
   refundFen?: number;
   createdAt?: number;
   phone?: string;
+  contactPhone?: string;
   images?: string[];
   allowedActions?: string[];
-  history?: Array<{ at?: number; actor?: string; from?: string; to?: string; note?: string }>;
+  history?: Array<{ at?: number; actor?: string; actorName?: string; operatorName?: string; from?: string; to?: string; note?: string }>;
   returnLogistics?: { carrierName?: string; trackingNo?: string };
   result?: string;
   newWrist?: number;
@@ -194,10 +195,10 @@ const AfterSaleDrawer: React.FC<{
               <div>类型：{rec.type}</div>
               <div>原因：{rec.reason || '—'}</div>
               <div>用户说明：{rec.userNote || '—'}</div>
-              <div>退款金额：{rec.refundFen != null ? `${fenToYuan(rec.refundFen)}（后端算好）` : '—'}</div>
+              <div>退款金额：{rec.refundFen != null ? `¥${fenToYuan(rec.refundFen).replace(/\.00$/, '')}` : '—'}</div>
               {rec.newWrist != null ? <div>新手围：{rec.newWrist}cm</div> : null}
               {rec.reworkOrder ? <div>重串工单：{rec.reworkOrder.workOrderNo}（到做单页查看）</div> : null}
-              <div>联系电话：{rec.phone || '—'}</div>
+              <div>联系电话：{(rec.contactPhone || rec.phone)?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') || '—'}</div>
               {Array.isArray(rec.images) && rec.images.length > 0 && (
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {rec.images.map((src, i) => (
@@ -267,7 +268,7 @@ const AfterSaleDrawer: React.FC<{
               {(rec.history || []).map((h, i) => (
                 <div key={i} style={{ fontSize: 13 }}>
                   <span className="zy-table-aux">{fmtTime(h.at)}</span>{' '}
-                  {h.actor ? `${h.actor} ` : ''}
+                  {h.actor ? `${h.actor === 'customer' ? '用户' : h.actor === 'system' ? '系统' : h.actor === 'admin' ? (h.operatorName || h.actorName || '管理员') : h.actor} ` : ''}
                   {h.from && h.to ? `${STATUS_LABELS[h.from] || h.from} → ${STATUS_LABELS[h.to] || h.to}` : ''}
                   {h.note ? `：${h.note}` : ''}
                 </div>

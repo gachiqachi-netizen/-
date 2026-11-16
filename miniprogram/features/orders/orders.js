@@ -35,6 +35,7 @@ Page({
     tabs: group.TABS,
     tab: 'all',
     rows: [],
+    visible: [],
     counts: { all: 0 },
     loading: true,
     error: '',
@@ -48,7 +49,7 @@ Page({
 
   onLoad(query) {
     const tab = group.TABS.some(t => t.key === query.tab) ? query.tab : 'all'
-    this.setData({ tab })
+    this.setData({ tab, visible: group.rowsInTab(this.data.rows, tab) })
   },
 
   onShow() {
@@ -65,7 +66,7 @@ Page({
     return auth.authorized('/my/orders')
       .then(rows => {
         const orders = (Array.isArray(rows) ? rows : []).map(buildRow)
-        this.setData({ loggedIn: auth.hasSession(), rows: orders, counts: group.countsOf(orders), error: '', loadedOnce: true })
+        this.setData({ loggedIn: auth.hasSession(), rows: orders, visible: group.rowsInTab(orders, this.data.tab), counts: group.countsOf(orders), error: '', loadedOnce: true })
       })
       .catch(e => this.setData({ loggedIn: auth.hasSession(), error: e.message || '读取失败' }))
       .finally(() => this.setData({ loading: false }))
@@ -87,12 +88,8 @@ Page({
     const tab = e.currentTarget.dataset.key
     if (tab === this.data.tab) return
     // 切分类列表淡入，不整页刷新
-    this.setData({ tab, fade: false })
+    this.setData({ tab, visible: group.rowsInTab(this.data.rows, tab), fade: false })
     setTimeout(() => this.setData({ fade: true }), 30)
-  },
-
-  visibleRows() {
-    return group.rowsInTab(this.data.rows, this.data.tab)
   },
 
   // 点行进订单详情；售后分栏进售后详情（04 第 13 节）
@@ -130,7 +127,7 @@ Page({
           .then(updated => {
             const fresh = buildRow(updated)
             const rows = this.data.rows.map(item => (item.no === no ? fresh : item))
-            this.setData({ rows, counts: group.countsOf(rows) })
+            this.setData({ rows, visible: group.rowsInTab(rows, this.data.tab), counts: group.countsOf(rows) })
             toast.show({ text: '已确认收货' })
           })
           .catch(err => toast.show({ text: err.message || '操作失败' }))

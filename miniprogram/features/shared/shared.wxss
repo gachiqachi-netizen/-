@@ -1,4 +1,5 @@
-.stage{height:660rpx;background:var(--c-surface);position:relative}
+.stage{height:660rpx;background:var(--c-surface);position:relative;display:flex;align-items:center;justify-content:center}
+.rotate-btn{position:absolute;right:var(--sp-base);bottom:var(--sp-base)}
 .stage-mark{position:absolute;top:47%;left:0;width:100%;text-align:center;font-family:serif;letter-spacing:8rpx;pointer-events:none}
 .stage-mark text,.brand text{display:block;font-family:serif;font-size:var(--fs-caption);letter-spacing:3rpx;margin-top:var(--sp-tight)}
 .intro{text-align:center;padding:var(--sp-base) 0}.name{font-size:var(--fs-display);font-weight:var(--fw-bold);margin:var(--sp-tight) 0}.meaning{font-size:var(--fs-body);margin:var(--sp-tight) 0}

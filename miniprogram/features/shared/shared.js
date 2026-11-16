@@ -36,7 +36,7 @@ function shortCodeFromScene(scene) {
 }
 
 Page({
-  data: { design: null, catalog: [], notes: [], error: '', loading: true, deleted: false, measured: false, authorLabel: '', dateLabel: '', meaning: '', tags: '' },
+  data: { design: null, catalog: [], visual: [], rotating: false, notes: [], error: '', loading: true, deleted: false, measured: false, authorLabel: '', dateLabel: '', meaning: '', tags: '' },
   onLoad(options) {
     this.shareOptions = options
     if (options.scene) {
@@ -58,12 +58,13 @@ Page({
       const counts = {}
       shared.beads.forEach(id => { counts[id] = (counts[id] || 0) + 1 })
       const notes = Object.keys(counts).filter(id => map[id]).map(id => ({ id, name: map[id].name, meaning: map[id].meaning || (map[id].tags || []).join(' · '), count: counts[id] }))
-      this.setData({ design, catalog, notes, missing, measured: wrist.measured, loading: false,
+      this.setData({ design, catalog, visual: shared.visual || [], rotating: false, notes, missing, measured: wrist.measured, loading: false,
         authorLabel: shared.authorLabel || '来自珠养养的一位用户', dateLabel: dateLabel(shared.createdAt),
         meaning: meaningFor({ beads: shared.beads }, catalog), tags: '' })
     }).catch(e => this.setData({ loading: false, deleted: e.status === 404, error: e.status === 404 ? '' : '暂时没连上，请再试一次' }))
   },
   home() { wx.switchTab({ url: '/pages/home/home' }) },
+  toggleRotate() { this.setData({ rotating: !this.data.rotating }) },
   retry() { this.setData({ loading: true, error: '', deleted: false }); this.onLoad(this.shareOptions || {}) },
   start() { const design = store.create(); store.selected(design); nav.openWorkbench(design) },
   use() { if (!this.data.design) return; const design = this.data.design; store.selected(design); nav.openWorkbench(design); toast.show({ text: this.data.measured ? `已按你的 ${design.wrist}cm 手围排成 ${design.beads.length} 颗` : '先按常见的 15cm 排好' }) }

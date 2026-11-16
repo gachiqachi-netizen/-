@@ -1,5 +1,6 @@
 const { queue: toast } = require('../../utils/toast')
 const api=require('../../utils/api'),store=require('../../utils/design'),auth=require('../../utils/auth')
+const { layout } = require('../../utils/bracelet-layout')
 const keyOf=d=>d&&JSON.stringify([d.name,d.wrist,d.beads])
 function wrap(text,maxChars,maxLines){const chars=Array.from(String(text||''));const lines=[];let i=0;while(i<chars.length&&lines.length<maxLines){const line=chars.slice(i,i+maxChars);i+=line.length;while(i<chars.length&&/^[，。！？、；：,.!?;:]$/.test(chars[i]))line.push(chars[i++]);lines.push(line.join(''))}if(i<chars.length&&lines.length)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';return lines}
 Page({
@@ -7,20 +8,42 @@ Page({
  onLoad(){const w=Math.max(200,Math.min(430,wx.getSystemInfoSync().windowWidth-32));this.setData({width:w,height:Math.round(w*1060/720)})},
  onReady(){this.canvasReady=true;this.renderCard()},
  onShow(){const d=store.current(),key=keyOf(d);if(!d||!Array.isArray(d.beads)||!d.beads.length){this.setData({loading:false,error:'请先完成手串设计。',ready:false});return}if(key!==this.shareKey)this.setData({shareId:'',shareError:''});this.designKey=key;this.setData({design:d,loading:true,error:'',ready:false,snapshot:'',snapshotFailed:false});api.catalog().then(c=>{if(keyOf(store.current())!==key)return;this.catalog=c.beads||[];this.calculate(d);this.setData({catalog:this.catalog,loading:false},()=>this.renderCard())}).catch(()=>this.setData({loading:false,error:'材料信息暂不可用，请稍后重试。',ready:false}))},
- calculate(d){const map={};this.catalog.forEach(b=>{map[b.id]=b});this.map=map;let missing=0;const tags=[];const items=d.beads.map((id,i)=>{const b=map[id];if(!b){missing++;return null}(b.tags||[]).forEach(t=>{if(t!=='点缀'&&!tags.includes(t))tags.push(t)});const a=2*Math.PI*i/d.beads.length-Math.PI/2;return {index:i,x:50+35*Math.cos(a),y:50+35*Math.sin(a),color:(b.c||[])[0]||'#bcb6b1'}}).filter(Boolean);const meaning=d.meaning||d.aiMeaning||tags.slice(0,3).join(' · ');this.setData({items,missing,tags:tags.slice(0,3),meaning})},
- snapshotReady(){if(this.snapshotBusy||this.data.snapshot||!this.data.design)return;const component=this.selectComponent('#share3d');if(!component)return;this.snapshotBusy=true;const key=this.designKey;component.exportImage((err,path)=>{this.snapshotBusy=false;if(key!==keyOf(store.current()))return;if(err){this.snapshotUnavailable();return}this.setData({snapshot:path},()=>this.renderCard())})},
- snapshotUnavailable(){this.setData({snapshotFailed:true,error:'3D 分享图暂不可用，请稍后重试。',ready:false})},
- renderCard(){if(!this.canvasReady||this.data.loading||!this.data.design||!this.map||this.data.preview||!this.data.snapshot)return;const d=this.data.design,ctx=wx.createCanvasContext('shareCard',this),w=this.data.width,h=this.data.height,s=w/720
+ calculate(d){const map={};this.catalog.forEach(b=>{map[b.id]=b});this.map=map;let missing=0;const tags=[];const items=d.beads.map((id,i)=>{const b=map[id];if(!b){missing++;return null}(b.tags||[]).forEach(t=>{if(t!=='点缀'&&!tags.includes(t))tags.push(t)});return {...b,colors:b.colors||b.c||[]}}).filter(Boolean);const meaning=d.meaning||d.aiMeaning||tags.slice(0,3).join(' · ');this.setData({items,missing,tags:tags.slice(0,3),meaning})},
+ photoPath(photo){
+  if(!photo)return ''
+  if(/^(https?:|data:|wxfile:)/.test(photo))return photo
+  const base=getApp().globalData.apiBase
+  return base?base+photo:''
+ },
+ localPhoto(photo){return new Promise(resolve=>{
+   const url=this.photoPath(photo)
+   if(!url)return resolve('')
+   wx.getImageInfo({src:url,success:r=>resolve(r.path||''),fail:()=>resolve('')})
+ })},
+ async renderCard(){
+  if(!this.canvasReady||this.data.loading||!this.data.design||!this.map||this.data.preview||!this.data.items.length)return
+  const revision=this.renderRevision=(this.renderRevision||0)+1
+  const d=this.data.design,items=this.data.items,w=this.data.width,h=this.data.height,s=w/720
+  const paths=await Promise.all(items.map(b=>this.localPhoto(b.photoMd||b.photo)))
+  if(revision!==this.renderRevision||keyOf(store.current())!==this.designKey)return
+  const ctx=wx.createCanvasContext('shareCard',this)
   ctx.setFillStyle('#fff');ctx.fillRect(0,0,w,h);ctx.setFillStyle('#f5f4f2');ctx.fillRect(16*s,16*s,688*s,620*s)
-  ctx.drawImage(this.data.snapshot,92*s,112*s,536*s,411*s)
-  ctx.setFillStyle('#111');ctx.setFontSize(28*s);ctx.fillText('珠养养 ZHU YANG YANG',56*s,74*s)
+  const points=layout(items,500*s),left=110*s,top=82*s
+  points.forEach((point,i)=>{
+    const x=left+point.x,y=top+point.y,r=point.r
+    ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip()
+    if(paths[i]){ctx.translate(x,y);ctx.rotate(point.rotate*Math.PI/180);ctx.drawImage(paths[i],-r,-r,2*r,2*r)}
+    else{ctx.setFillStyle((point.colors||[])[0]||'#bcb6b1');ctx.fillRect(x-r,y-r,2*r,2*r)}
+    ctx.restore()
+  })
+  ctx.setFillStyle('#111');ctx.setFontSize(28*s);ctx.fillText('珠养养',56*s,74*s)
   ctx.setFontSize(42*s);ctx.fillText(String(d.name||'我的手串').slice(0,12),56*s,715*s)
   ctx.setFontSize(26*s);wrap(this.data.meaning,20,2).forEach((line,i)=>ctx.fillText(line,56*s,(795+i*40)*s))
   const day=new Date();ctx.setFontSize(22*s);ctx.fillText(`我自己串的 · ${day.getFullYear()}.${day.getMonth()+1}.${day.getDate()}`,56*s,935*s)
   ctx.fillText('你也来串一条',56*s,980*s)
   if(this.data.qrPath)ctx.drawImage(this.data.qrPath,540*s,870*s,120*s,120*s)
-  else {ctx.setFontSize(20*s);ctx.fillText('微信搜索「珠养养」小程序',350*s,1010*s)}
-  ctx.draw(false,()=>{if(keyOf(store.current())===this.designKey){this.setData({ready:true});wx.canvasToTempFilePath({canvasId:'shareCard',x:0,y:0,width:w,height:w*4/5,destWidth:w*2,destHeight:Math.round(w*8/5),success:r=>this.setData({shareImage:r.tempFilePath})},this)}})
+  else{ctx.setFontSize(20*s);ctx.fillText('微信搜索「珠养养」小程序',350*s,1010*s)}
+  ctx.draw(false,()=>{if(revision===this.renderRevision&&keyOf(store.current())===this.designKey){this.setData({ready:true});wx.canvasToTempFilePath({canvasId:'shareCard',x:0,y:0,width:w,height:w*4/5,destWidth:w*2,destHeight:Math.round(w*8/5),success:r=>this.setData({shareImage:r.tempFilePath})},this)}})
  },
  saveCard(){if(!this.data.ready||this.data.saveBusy)return;this.setData({saveBusy:true,error:'',albumDenied:false});wx.canvasToTempFilePath({canvasId:'shareCard',destWidth:this.data.width*2,destHeight:this.data.height*2,success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>toast.show({ text: '已保存到相册' }),fail:e=>{const denied=/auth|authorize|deny|permission|scope/i.test(e.errMsg||'');this.setData({albumDenied:denied,error:denied?'没有相册权限，去设置里打开':'保存失败，请稍后重试。'})},complete:()=>this.setData({saveBusy:false})}),fail:()=>this.setData({saveBusy:false,error:'图片生成失败，请重试。'})},this)},
  openAlbumSettings(){wx.openSetting({success:r=>{if(r.authSetting&&r.authSetting['scope.writePhotosAlbum'])this.setData({albumDenied:false,error:''})}})},

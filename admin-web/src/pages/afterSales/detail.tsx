@@ -268,7 +268,7 @@ const AfterSaleDrawer: React.FC<{
               {(rec.history || []).map((h, i) => (
                 <div key={i} style={{ fontSize: 13 }}>
                   <span className="zy-table-aux">{fmtTime(h.at)}</span>{' '}
-                  {h.actor ? `${h.actor === 'customer' ? '用户' : h.actor === 'system' ? '系统' : h.actor === 'admin' ? (h.operatorName || h.actorName || '管理员') : h.actor} ` : ''}
+                  {h.actor ? `${h.actor === 'customer' ? '用户' : h.actor === 'system' ? '系统' : h.actor === 'admin' ? (h.operatorName || h.actorName || '管理员') : '操作人'} ` : ''}
                   {h.from && h.to ? `${STATUS_LABELS[h.from] || h.from} → ${STATUS_LABELS[h.to] || h.to}` : ''}
                   {h.note ? `：${h.note}` : ''}
                 </div>

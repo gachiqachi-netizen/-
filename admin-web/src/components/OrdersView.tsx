@@ -132,6 +132,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
   const [tab, setTab] = useState(initialTab || 'all');
   const [activeOrderNo, setActiveOrderNo] = useState<string | null>(null);
   const [detail, setDetail] = useState<any | null>(null);
+  const [finishedPhoto, setFinishedPhoto] = useState('');
   const [workForm, setWorkForm] = useState<any>({
     assignee: '',
     step: CONTRACT.workOrderSteps[0],
@@ -162,6 +163,10 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
     try {
       const d = await apiRequest(`/api/admin/orders/${encodeURIComponent(no)}`);
       setDetail(d);
+      setFinishedPhoto('');
+      apiRequest<{ finishedPhoto: string }>(`/api/admin/orders/${encodeURIComponent(no)}/finished-photo`)
+        .then(result => setFinishedPhoto(result.finishedPhoto || ''))
+        .catch(() => setFinishedPhoto(''));
       const wo = d.workOrder || {};
       setWorkForm({
         assignee: wo.assignee || '',
@@ -536,6 +541,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                 {/* 手串 */}
                 <div className="zy-card" style={{ marginBottom: 16 }}>
                   <div className="zy-card-title">手串</div>
+                  {finishedPhoto && <div style={{ padding: '8px 16px' }}><div className="zy-table-aux">质检成品实拍图</div><img src={finishedPhoto} alt="质检成品实拍图" style={{ width: 152, height: 152, objectFit: 'cover', borderRadius: 8 }} /></div>}
                   <div style={{ padding: '14px 16px' }}>
                     {snapBeads.length > 0 ? <Bracelet sequence={snapBeads} size={152} label={`${detail.name || '定制手串'} 手串图`} /> : null}
                     <div>

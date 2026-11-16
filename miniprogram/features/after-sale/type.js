@@ -1,4 +1,5 @@
 const auth = require('../../utils/auth')
+const { yuan } = require('../../utils/money')
 
 Page({
   data: { order: null, types: [], loading: true, error: '', policyOpen: false },
@@ -18,7 +19,7 @@ Page({
         '补寄配件': '掉珠、断线，补寄或寄回修',
         '改手围重串': '尺寸不合适，寄回按新手围重串'
       }
-      this.setData({ order, types: (result.types || []).map(item => ({ ...item, description: descriptions[item.type] || '' })) })
+      this.setData({ order: { ...order, paidPrice: yuan(Number.isInteger(order.payableFen) ? order.payableFen : 0) }, types: (result.types || []).map(item => ({ ...item, description: descriptions[item.type] || '' })) })
     } catch (error) { this.setData({ error: error.message || '读取失败，请重试' }) }
     finally { this.setData({ loading: false }) }
   },

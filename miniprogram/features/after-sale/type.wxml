@@ -1,13 +1,16 @@
-<view class="page">
-  <view wx:if="{{loading}}" class="hint">正在读取订单…</view>
-  <view wx:if="{{error}}" class="error">{{error}}<button bindtap="load">重试</button></view>
-  <block wx:if="{{order}}">
-    <view class="summary"><view class="name">{{order.name}}</view><view class="hint">订单 {{order.no}} · 实付 ¥{{order.total}}</view></view>
-    <view wx:for="{{types}}" wx:key="type" class="option" data-type="{{item.type}}" bindtap="select">
-      <view><view class="option-title">{{item.label}}</view><view class="hint">{{item.description}}</view></view><text>›</text>
-    </view>
-    <view wx:if="{{!types.length}}" class="empty">已经过了在线申请的时间，请联系客服</view>
-    <view class="policy">定制商品非质量问题不支持七天无理由退换。<text bindtap="showPolicy">查看售后政策</text></view>
-  </block>
-</view>
-<c-sheet show="{{policyOpen}}" title="售后政策" maskClose="{{false}}"><view>定制商品非质量问题不支持七天无理由退换。</view><button slot="footer" bindtap="closePolicy">确定</button></c-sheet>
+<c-page>
+  <c-nav-bar title="选择售后类型" home="{{true}}" />
+  <view class="surface">
+    <c-card wx:if="{{loading}}"><view class="hint">正在读取订单…</view></c-card>
+    <c-card wx:if="{{error}}"><view class="error">{{error}}</view><button class="c-btn c-btn--sec" bindtap="load">重试</button></c-card>
+    <block wx:if="{{order}}">
+      <c-card><view class="summary"><view class="name">{{order.name}}</view><view class="hint">订单 {{order.no}} · 实付 {{order.paidPrice}}</view></view></c-card>
+      <c-card>
+        <c-cell wx:for="{{types}}" wx:key="type" arrow="{{true}}" data-type="{{item.type}}" bind:tap="select"><view slot="label"><view class="name">{{item.label}}</view><view class="hint">{{item.description}}</view></view></c-cell>
+        <view wx:if="{{!types.length}}" class="empty">已经过了在线申请的时间，请联系客服</view>
+      </c-card>
+      <view class="policy">定制商品非质量问题不支持七天无理由退换。<text bindtap="showPolicy">查看售后政策</text></view>
+    </block>
+  </view>
+  <c-sheet show="{{policyOpen}}" title="售后政策" maskClose="{{false}}"><view>定制商品非质量问题不支持七天无理由退换。</view><view slot="footer" class="footer"><button class="c-btn" bindtap="closePolicy">确定</button></view></c-sheet>
+</c-page>

@@ -6,5 +6,5 @@ Component({
     const capsule = wx.getMenuButtonBoundingClientRect()
     this.setData({ statusHeight: info.statusBarHeight || 0, navHeight: capsule.height + 2 * (capsule.top - (info.statusBarHeight || 0)), capsuleRight: info.screenWidth - capsule.left })
   } },
-  methods: { goBack() { if (this.data.home) wx.reLaunch({ url: '/pages/home/index' }); else wx.navigateBack({ delta: 1 }) } },
+  methods: { goBack() { if (this.data.home) wx.switchTab({ url: '/pages/home/home' }); else wx.navigateBack({ delta: 1 }) } },
 })

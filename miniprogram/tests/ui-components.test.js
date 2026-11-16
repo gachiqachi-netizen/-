@@ -3,6 +3,7 @@ const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
 const { spawnSync } = require('node:child_process')
+const vm = require('node:vm')
 const root = path.resolve(__dirname, '../..')
 const read = p => fs.readFileSync(path.join(root, p), 'utf8')
 
@@ -29,6 +30,30 @@ test('bar exposes three layouts and token button height', () => {
 test('navigation aligns title with capsule measurements', () => {
   assert.match(read('miniprogram/components/nav-bar/index.js'), /getMenuButtonBoundingClientRect/)
   assert.match(read('miniprogram/components/nav-bar/index.wxml'), /navHeight/)
+})
+test('home navigation shows home icon and switches to the home tab', () => {
+  const wxml = read('miniprogram/components/nav-bar/index.wxml')
+  assert.match(wxml, /wx:if="{{home}}" src="\.\.\/\.\.\/assets\/icons\/home\.svg"/)
+  const calls = []
+  let component
+  vm.runInNewContext(read('miniprogram/components/nav-bar/index.js'), {
+    Component: definition => { component = definition },
+    wx: { switchTab: options => calls.push(['switchTab', options.url]), navigateBack: () => calls.push(['navigateBack']) },
+  })
+  component.methods.goBack.call({ data: { home: true } })
+  assert.deepEqual(calls, [['switchTab', '/pages/home/home']])
+})
+test('back navigation shows back icon and navigates back', () => {
+  const wxml = read('miniprogram/components/nav-bar/index.wxml')
+  assert.match(wxml, /wx:else src="\.\.\/\.\.\/assets\/icons\/back\.svg"/)
+  const calls = []
+  let component
+  vm.runInNewContext(read('miniprogram/components/nav-bar/index.js'), {
+    Component: definition => { component = definition },
+    wx: { switchTab: () => calls.push(['switchTab']), navigateBack: options => calls.push(['navigateBack', options.delta]) },
+  })
+  component.methods.goBack.call({ data: { home: false } })
+  assert.deepEqual(calls, [['navigateBack', 1]])
 })
 test('UI checker rejects a new literal color', () => {
   const dir = fs.mkdtempSync(path.join(root, 'miniprogram', 'ui-check-'))

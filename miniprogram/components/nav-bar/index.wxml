@@ -1,4 +1,4 @@
 <view class="c-nav-bar" style="padding-top: {{statusHeight}}px; height: {{navHeight}}px; padding-right: {{capsuleRight}}px;">
-  <view class="c-nav-bar__back" bindtap="goBack"><image src="../../assets/icons/back.svg" /></view>
+  <view class="c-nav-bar__back" bindtap="goBack"><image wx:if="{{home}}" src="../../assets/icons/home.svg" /><image wx:else src="../../assets/icons/back.svg" /></view>
   <view class="c-nav-bar__title">{{title}}</view>
 </view>

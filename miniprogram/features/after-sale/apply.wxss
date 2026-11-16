@@ -1,15 +1,15 @@
-.surface { min-height: 100vh; background: var(--c-surface); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base); box-sizing: border-box; }
+.surface { min-height: 100vh; background: var(--c-surface); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base) var(--sp-base) calc(var(--h-btn) + var(--sp-section) + env(safe-area-inset-bottom)); box-sizing: border-box; }
 .summary { font-weight: var(--fw-bold); padding: var(--sp-base) 0; }
-.field { padding: var(--sp-base) 0; }
+.field { padding: var(--sp-tight) 0; }
 .field input, .field textarea { margin-top: var(--sp-tight); background: var(--c-surface); padding: var(--sp-tight); border-radius: var(--r-panel); }
-.field textarea { width: 100%; height: 160rpx; box-sizing: border-box; }
+.field textarea { display: block; width: 100%; height: 120rpx; box-sizing: border-box; }
 .hint { color: var(--c-text-2); font-size: var(--fs-caption); }
 .error { color: var(--c-danger); font-size: var(--fs-caption); }
 .reasons { background: var(--c-surface); padding: 0 var(--sp-tight); }
 .reason { padding: var(--sp-tight); border-bottom: 1rpx solid var(--c-line); }
 .photos { display: flex; flex-wrap: wrap; gap: var(--sp-tight); margin-top: var(--sp-tight); }
-.photo { position: relative; width: 120rpx; height: 120rpx; font-size: var(--fs-caption); }
+.photo { position: relative; width: 120rpx; height: 120rpx; overflow: hidden; border-radius: var(--r-panel); font-size: var(--fs-caption); }
 .photo image { width: 100%; height: 100%; }
 .remove { position: absolute; right: 0; top: 0; background: var(--c-text); color: var(--c-bg); border-radius: var(--r-pill); padding: 0 var(--sp-tight); }
-.add { width: 120rpx; height: 120rpx; flex: none; display: flex; align-items: center; justify-content: center; border: 1rpx solid var(--c-line); border-radius: var(--r-panel); background: var(--c-surface); font-size: var(--fs-title); }
+.add { width: 120rpx; height: 120rpx; flex: none; display: flex; align-items: center; justify-content: center; border: 1rpx solid var(--c-line); border-radius: var(--r-pill); background: var(--c-surface); font-size: var(--fs-title); }
 .footnote { margin-top: var(--sp-section); }

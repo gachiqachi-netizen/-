@@ -10,8 +10,7 @@
       <view class="photos"><view wx:for="{{photos}}" wx:key="path" class="photo"><image src="{{item.path}}" mode="aspectFill" data-index="{{index}}" bindtap="retryPhoto"/><text wx:if="{{item.busy}}">上传中…</text><text wx:if="{{item.error}}" data-index="{{index}}" bindtap="retryPhoto">{{item.error}}</text><text class="remove" data-index="{{index}}" bindtap="removePhoto">×</text></view><view wx:if="{{photos.length < 6}}" class="add" bindtap="addPhoto">＋</view></view>
         <view wx:if="{{photoError}}" class="error">{{photoError}}</view>
       </view></c-card>
-      <c-card><view class="field"><view>说明 <text class="hint">选填</text></view><textarea maxlength="500" placeholder="请描述遇到的问题" value="{{note}}" bindinput="inputNote"/></view></c-card>
-      <c-card><c-cell label="退款金额" value="¥{{amount}}" /><view class="field"><view>联系电话</view><input type="number" maxlength="11" value="{{phone}}" bindinput="inputPhone" placeholder="请输入联系电话" /></view><view wx:if="{{option.type === '改手围重串'}}" class="field"><view>新手围（cm）</view><input type="digit" value="{{newWrist}}" bindinput="inputWrist" placeholder="13–20"/></view></c-card>
+      <c-card><view class="field"><view>说明 <text class="hint">选填</text></view><textarea maxlength="500" placeholder="请描述遇到的问题" value="{{note}}" bindinput="inputNote"/></view><c-cell label="退款金额" value="¥{{amount}}" /><view class="field"><view>联系电话</view><input type="number" maxlength="11" value="{{phone}}" bindinput="inputPhone" placeholder="请输入联系电话" /></view><view wx:if="{{option.type === '改手围重串'}}" class="field"><view>新手围（cm）</view><input type="digit" value="{{newWrist}}" bindinput="inputWrist" placeholder="13–20"/></view></c-card>
       <view class="hint footnote">审核通过后，按页面提示寄回。</view>
     </block>
   </view>

@@ -117,7 +117,8 @@
 | U13 | agent/U13-shape-audit | followups-ui.md | U5、U9、U10 | 任何 |  |  |
 | V1 | agent/V1-bead-visual-snapshot | followups-visual.md |  | 任何 |  |  |
 | V2 | agent/V2-bracelet-layout | followups-visual.md |  | 任何 |  |  |
-| V3 | agent/V3-mini-bracelet-unify | followups-visual.md | V1、V2、U9、U13、U14、U15 | 任何 |  |  |
+| V2b | agent/V2b-tangent-layout | followups-visual.md | V2 | 任何 |  |  |
+| V3 | agent/V3-mini-bracelet-unify | followups-visual.md | V1、V2、V2b、U9、U13、U14、U15 | 任何 |  |  |
 | V4 | agent/V4-admin-bracelet-unify | followups-visual.md | V1、V2 | 任何 |  |  |
 | V5 | agent/V5-bead-photo-upload | followups-visual.md | V2、V4 | 任何 |  |  |
 | U14 | agent/U14-button-size | followups-ui.md | U13 | 任何 |  |  |

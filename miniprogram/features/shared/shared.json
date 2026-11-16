@@ -1,1 +1,1 @@
-{"navigationBarTitleText": "好友的手串", "usingComponents": {"bracelet3d": "/components/bracelet3d/index"}}
+{"navigationStyle":"custom","usingComponents":{"bracelet3d":"/components/bracelet3d/index","c-page":"/components/page/index","c-card":"/components/card/index","c-cell":"/components/cell/index","c-bar":"/components/bar/index","c-nav-bar":"/components/nav-bar/index","c-toast":"/components/toast/index"}}

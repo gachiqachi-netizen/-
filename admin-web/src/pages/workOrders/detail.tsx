@@ -78,6 +78,8 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
   const [failNote, setFailNote] = useState('');
   const [qcError, setQcError] = useState('');
   const [qcBusy, setQcBusy] = useState('');
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [finishedPhoto, setFinishedPhoto] = useState('');
   const [sequenceText, setSequenceText] = useState('');
   const [sequenceNote, setSequenceNote] = useState('');
   const [shippingCarrier, setShippingCarrier] = useState('');
@@ -87,8 +89,12 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
     ? `/api/admin/rework-orders/${encodeURIComponent(reworkSaleNo)}`
     : `/api/admin/orders/${encodeURIComponent(orderNo)}/work-order`;
 
+  const photoPath = reworkSaleNo
+    ? `/api/admin/after-sales/${encodeURIComponent(reworkSaleNo)}/finished-photo`
+    : `/api/admin/orders/${encodeURIComponent(orderNo)}/finished-photo`;
   const load = () => {
     setError('');
+    apiRequest<{ finishedPhoto: string }>(photoPath).then(r => setFinishedPhoto(r.finishedPhoto || '')).catch(() => setFinishedPhoto(''));
     apiRequest<WorkOrder>(workPath)
       .then((w) => {
         setWo(w);
@@ -108,6 +114,24 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
       .then((current) => setInspectorName(current.name || ''))
       .catch((e) => setQcError(e.message || '当前账号读取失败'));
   }, []);
+
+  const uploadFinishedPhoto = async (file?: File) => {
+    if (!file) return;
+    setPhotoBusy(true); setQcError('');
+    try {
+      const data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
+        reader.onerror = () => reject(new Error('读取图片失败'));
+        reader.readAsDataURL(file);
+      });
+      const result = await apiRequest<{ finishedPhoto: string }>(photoPath, {
+        method: 'POST', body: { filename: file.name, contentType: file.type, data },
+      });
+      setFinishedPhoto(result.finishedPhoto);
+    } catch (err: any) { setQcError(err.message || '上传失败'); }
+    finally { setPhotoBusy(false); }
+  };
 
   const saveStep = (step: string) => {
     if (!wo || step === wo.step) return;
@@ -350,6 +374,13 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
             {item.key === 'sizeOk' && wo.lengthMm ? `（量出来 ${wo.lengthMm}mm）` : ''}
           </label>
         ))}
+        <div style={{ margin: '12px 0' }}>
+          <label className="zy-btn zy-btn-secondary" style={{ display: 'inline-block', cursor: 'pointer' }}>
+            {photoBusy ? '上传中…' : '上传成品照'}
+            <input type="file" accept="image/png,image/jpeg" hidden disabled={photoBusy} onChange={e => { void uploadFinishedPhoto(e.target.files?.[0]); e.target.value = ''; }} />
+          </label>
+          {finishedPhoto && <div style={{ marginTop: 10 }}><img src={finishedPhoto} alt="质检成品实拍图" style={{ width: 180, height: 180, objectFit: 'cover', borderRadius: 8 }} /></div>}
+        </div>
         <div className="wo-qc-fields">
           <label>
             质检人

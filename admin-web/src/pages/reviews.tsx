@@ -3,6 +3,7 @@ import { apiRequest, fmtTime } from '../api';
 import { CONTRACT } from '../contract';
 import { Can } from '../permissions';
 import { Drawer } from '../ui/Drawer';
+import { Button } from '../ui/Button';
 import { EmptyState } from '../ui/EmptyState';
 import { Table } from '../ui/Table';
 import { Tabs } from '../ui/Tabs';
@@ -93,13 +94,13 @@ const ReviewsPage: React.FC = () => {
       { title: '', width: 70, render: () => '审核 ›' },
     ]} />}
     {active && <Drawer title="审核评价" subtitle={`${statusName(active.status)} · ${fmtTime(active.createdAt)} 提交`} onClose={() => { if (!busy) setSelected(''); }} footer={<>
-      {active.status === 'pending' && <Can perm="moderate_reviews"><><button type="button" className="zy-drawer-foot-left" disabled={busy} onClick={() => void act('reject')}>驳回</button><button type="button" disabled={busy} onClick={() => void act('approve')}>通过并公开</button></></Can>}
+      {active.status === 'pending' && <Can perm="moderate_reviews"><div style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}><Button variant="secondary" disabled={busy} onClick={() => void act('reject')}>驳回</Button><Button variant="primary" disabled={busy} onClick={() => void act('approve')}>通过并公开</Button></div></Can>}
       {active.status === 'published' && <Can perm="moderate_reviews"><button type="button" disabled={busy} onClick={() => void act('take-down')}>下架</button></Can>}
     </>}>
-      <section><h3>评价</h3><div>{active.orderNo} · {'★'.repeat(active.stars)}{'☆'.repeat(5 - active.stars)}</div><p style={active.machine?.textOk === false ? danger : undefined}>{active.text || '只打了星'}</p><div>晒图：{active.photoIds?.length || 0} 张 · {active.anonymous ? '匿名' : '非匿名'}</div></section>
-      <section><h3>机审</h3><div style={active.machine?.textOk === false ? danger : undefined}>文字：{active.machine?.textOk === false ? active.machine.textReason || '未通过' : '通过'}</div><div style={active.machine?.photos?.some(p => p.status === 'rejected') ? danger : undefined}>图片：{active.machine?.photos?.length ? active.machine.photos.map(p => p.status === 'passed' ? '通过' : p.status === 'pending' ? '检查中' : '未通过').join('、') : '无'}</div></section>
-      {active.rejectReason && <section><h3>处理原因</h3><p>{active.rejectReason}</p></section>}
-      {(active.status === 'pending' || active.status === 'published') && <section><label htmlFor="review-reason">{active.status === 'pending' ? '不通过的原因（发给用户）' : '下架原因'}</label><textarea id="review-reason" value={reason} onChange={e => setReason(e.target.value)} maxLength={300} placeholder="提交时必填" style={{ display: 'block', width: '100%', minHeight: 90, boxSizing: 'border-box' }} /></section>}
+      <section className="zy-card" style={{ padding: 16, marginBottom: 16 }}><h3>评价</h3><div>{active.orderNo} · {'★'.repeat(active.stars)}{'☆'.repeat(5 - active.stars)}</div><p style={active.machine?.textOk === false ? danger : undefined}>{active.text || '只打了星'}</p><div>晒图：{active.photoIds?.length || 0} 张 · {active.anonymous ? '匿名' : '非匿名'}</div></section>
+      <section className="zy-card" style={{ padding: 16, marginBottom: 16 }}><h3>机审</h3><div style={active.machine?.textOk === false ? danger : undefined}>文字：{active.machine?.textOk === false ? active.machine.textReason || '未通过' : '通过'}</div><div style={active.machine?.photos?.some(p => p.status === 'rejected') ? danger : undefined}>图片：{active.machine?.photos?.length ? active.machine.photos.map(p => p.status === 'passed' ? '通过' : p.status === 'pending' ? '检查中' : '未通过').join('、') : '无'}</div></section>
+      {active.rejectReason && <section className="zy-card" style={{ padding: 16, marginBottom: 16 }}><h3>处理原因</h3><p>{active.rejectReason}</p></section>}
+      {(active.status === 'pending' || active.status === 'published') && <section className="zy-card" style={{ padding: 16 }}><h3>处理</h3><label htmlFor="review-reason">{active.status === 'pending' ? '不通过的原因（发给用户）' : '下架原因'}</label><textarea id="review-reason" value={reason} onChange={e => setReason(e.target.value)} maxLength={300} placeholder="驳回或下架时必填" style={{ display: 'block', width: '100%', minHeight: 90, boxSizing: 'border-box' }} /></section>}
       {error && <div role="alert" style={danger}>{error}</div>}
     </Drawer>}
   </div>;

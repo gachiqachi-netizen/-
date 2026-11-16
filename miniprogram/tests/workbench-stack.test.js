@@ -78,7 +78,7 @@ test('托盘上拉放大、松手复位，长按拖动可换位', () => {
   assert.deepEqual(p.data.design.beads,['b','a','a'])
   assert.equal(p.data.trayExpanded,false)
 })
-test('更多可切落珠声，按 108 颗进入多圈串', () => {
+test('更多可切落珠声，按 21 颗串', () => {
   const p=page(['a'])
   p.toggleMore()
   assert.equal(p.data.moreOpen,true)
@@ -86,9 +86,9 @@ test('更多可切落珠声，按 108 颗进入多圈串', () => {
   assert.equal(p.data.soundOn,false)
   p.openCount()
   assert.equal(p.data.countOpen,true)
-  p.count({currentTarget:{dataset:{count:108}}})
-  assert.equal(p.data.design.beads.length,108)
-  assert.equal(p.data.fit,'多圈串')
+  p.count({currentTarget:{dataset:{count:21}}})
+  assert.equal(p.data.design.beads.length,21)
+  assert.notEqual(p.data.fit,'多圈串')
   assert.equal(p.data.countOpen,false)
 })
 test('起名只从珠子 tags 推荐；禁用词不能保存，输入最多八字', () => {

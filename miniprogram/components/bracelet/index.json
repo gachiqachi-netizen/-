@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
-    "bead": "../bead/index"
+    "bead": "../bead/index",
+    "c-wordmark": "../wordmark/index"
   }
 }

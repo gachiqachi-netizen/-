@@ -3,6 +3,15 @@
   overflow: hidden;
 }
 
+.c-bracelet__wordmark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
 .c-bracelet__ring {
   position: absolute;
   left: 0;

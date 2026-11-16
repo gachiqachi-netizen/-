@@ -15,7 +15,8 @@ def _actions(sale):
     status = sale.get('status')
     if status in ('requested', 'reviewing'):
         return ['cancel_after_sale']
-    if status == 'approved' and sale.get('type') in ('退货退款', '改手围重串'):
+    if status == 'approved' and (sale.get('type') in ('退货退款', '改手围重串') or
+                                 (sale.get('type') == '补寄配件' and sale.get('handling') == 'repair_return')):
         return ['submit_return']
     return []
 

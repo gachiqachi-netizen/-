@@ -1565,7 +1565,8 @@ def create_after_sale(db, data, actor=ACTOR):
         return rec
 
 
-def _after_sale_target(action, current, atype):
+def _after_sale_target(action, current, atype, handling=None):
+    repair = atype == "补寄配件" and handling == "repair_return"
     if action == "refund":
         if atype not in REFUND_TYPES:
             raise ValueError("这种售后不退款")
@@ -1586,13 +1587,13 @@ def _after_sale_target(action, current, atype):
             return "rejected"
         raise ValueError("只有申请中或审核中的售后才能拒绝")
     if action == "returning":
-        if atype not in ("退货退款", "改手围重串"):
+        if atype not in ("退货退款", "改手围重串") and not repair:
             raise ValueError("仅退款/补寄配件/拒收后退款没有退货环节")
         if current != "approved":
             raise ValueError("同意后才能记录退货物流")
         return "returning"
     if action == "receive":
-        if atype == "改手围重串":
+        if atype == "改手围重串" or repair:
             if current != "returning":
                 raise ValueError("改手围重串要先记录寄回物流")
             return "received"
@@ -1600,7 +1601,7 @@ def _after_sale_target(action, current, atype):
             raise ValueError("补寄配件类型没有退货收货环节")
         raise ValueError("真实退款服务尚未接入，不能确认退款收货")
     if action == "complete":
-        if atype == "改手围重串":
+        if atype == "改手围重串" or repair:
             raise ValueError("重串工单质检并发货后自动完成售后")
         if atype in REFUND_TYPES:
             raise ValueError("真实退款服务尚未接入，不能完成退款售后")
@@ -1627,7 +1628,11 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
         if not rec:
             raise KeyError("售后记录不存在")
         current = rec["status"]
-        target = _after_sale_target(action, current, rec["type"])
+        if action == "approve" and current == "reviewing" and rec["type"] == "补寄配件":
+            if result not in (None, "direct", "repair_return"):
+                raise ValueError("补寄配件处理方式不正确")
+            rec["handling"] = "repair_return" if result == "repair_return" else "direct"
+        target = _after_sale_target(action, current, rec["type"], rec.get("handling"))
         status.validate_transition("afterSaleStatus", current, target)
         # 支付域退款（paid → refunding → refunded/refund_failed）走 payments.handle_refund；
         # 当前未接真实微信退款，故此处只推进售后域状态，不伪造订单 paymentStatus 的退款流转。
@@ -1642,8 +1647,10 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
             rec["updatedAt"] = _now()
             if target in ("rejected", "closed"):
                 rec["reservedFen"] = 0
-            if result is not None:
+            if result is not None and result not in ("direct", "repair_return"):
                 rec["result"] = str(result)[:500]
+            if target == "approved" and rec.get("handling") == "repair_return":
+                rec["result"] = "我们收到手串后会尽快修好寄回"
             if return_logistics:
                 rl = {k: str(v or "").strip()[:100] for k, v in (return_logistics or {}).items()
                       if k in ("carrierCode", "carrierName", "trackingNo")}
@@ -1727,7 +1734,7 @@ def after_sale_allowed_actions(rec):
     actions = []
     for action in ("approve", "reject", "returning", "refund", "receive", "complete", "close"):
         try:
-            _after_sale_target(action, rec.get("status"), rec.get("type"))
+            _after_sale_target(action, rec.get("status"), rec.get("type"), rec.get("handling"))
             actions.append(action)
         except ValueError:
             pass
@@ -1754,14 +1761,14 @@ def create_rework_order(db, sale_no, actor=ACTOR):
         rec = w.lock_after_sale(sale_no)
         if not rec:
             raise KeyError("售后记录不存在")
-        if rec.get("type") != "改手围重串" or rec.get("status") != "received":
+        if not (rec.get("type") == "改手围重串" or (rec.get("type") == "补寄配件" and rec.get("handling") == "repair_return")) or rec.get("status") != "received":
             raise ValueError("只有已收到寄回的改手围重串售后才能生成工单")
         if rec.get("reworkOrder"):
             return rec["reworkOrder"]
         order = w.lock_order(rec["orderNo"])
         if not order:
             raise KeyError("原订单不存在")
-        wrist = rec.get("newWrist")
+        wrist = order.get("wrist") if rec.get("handling") == "repair_return" else rec.get("newWrist")
         if type(wrist) not in (int, float) or not 13 <= wrist <= 20:
             raise ValueError("新手围须在 13–20 cm 之间")
         if not original:
@@ -1774,9 +1781,10 @@ def create_rework_order(db, sale_no, actor=ACTOR):
         now = _now()
         wo = {"workOrderNo": "RWO-" + sale_no, "afterSaleNo": sale_no,
               "orderNo": rec["orderNo"], "orderName": order.get("name") or "我的手串",
-              "rework": True, "status": "pending", "step": "待领料", "assignee": "",
+              "rework": True, "repairReturn": rec.get("handling") == "repair_return", "status": "pending", "step": "待领料", "assignee": "",
               "progress": 0, "paymentStatus": status.derive_status(order)["paymentStatus"],
               "mockPayment": False, "customerNote": original.get("customerNote") or "",
+              "operatorNote": "运费和差价已线下沟通" if rec.get("handling") == "repair_return" else "",
               "wrist": wrist, "sequence": snapshot["sequence"],
               "materials": snapshot["materials"], "count": snapshot["count"],
               "lengthMm": snapshot["lengthMm"], "targetMm": snapshot["targetMm"],
@@ -1804,7 +1812,7 @@ def update_rework_order(db, sale_no, data, actor=ACTOR):
                 available[bid] = db.get("beads", bid)
     with _AtomicWriter(db) as w:
         rec = w.lock_after_sale(sale_no)
-        if not rec or rec.get("type") != "改手围重串" or not rec.get("reworkOrder"):
+        if not rec or not (rec.get("type") == "改手围重串" or (rec.get("type") == "补寄配件" and rec.get("handling") == "repair_return")) or not rec.get("reworkOrder"):
             raise KeyError("重串工单不存在")
         wo = dict(rec["reworkOrder"])
         if wo["status"] == "shipped":

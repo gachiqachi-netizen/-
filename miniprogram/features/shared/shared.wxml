@@ -1,5 +1,5 @@
 <view class="shared-page">
-  <view class="top" bindtap="home">首页</view>
+  <c-nav-bar title="好友的手串" home="{{true}}" />
   <view wx:if="{{loading}}" class="skeleton"><view></view><view></view><view></view></view>
   <view wx:elif="{{deleted}}" class="empty"><view class="empty-title">这条手串看不到了</view><view class="muted">可能已经被主人删除</view><button class="secondary" bindtap="start">我也串一条</button></view>
   <view wx:elif="{{error}}" class="empty"><view class="empty-title">没连上</view><view class="muted">{{error}}</view><button class="secondary" bindtap="retry">再试一次</button></view>

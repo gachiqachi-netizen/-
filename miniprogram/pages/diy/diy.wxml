@@ -1,6 +1,6 @@
 <view class="workbench">
+  <c-nav-bar title="自己串" />
   <view class="topbar">
-    <view class="topbar-back" bindtap="back">‹</view>
     <view class="topbar-title" bindtap="works">我的作品 <text class="save-dot" wx:if="{{saveDot}}">●</text> ›</view>
     <view class="topbar-more" bindtap="toggleMore">···</view>
   </view>

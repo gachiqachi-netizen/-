@@ -178,7 +178,7 @@ page {
 }
 
 .btn-primary {
-  background: var(--c-danger);
+  background: var(--c-text);
   border: 0;
   color: var(--c-bg);
 }
@@ -188,16 +188,14 @@ page {
 }
 
 .btn-secondary {
-  background: var(--c-bg);
+  background: var(--c-surface);
   border: 1rpx solid var(--c-line);
   color: var(--c-text);
 }
 
-.btn-sm {
-  line-height: 60rpx;
-  height: 60rpx;
-  padding: 0 32rpx;
-}
+
+.oc-actions button.c-btn { flex: none; }
+.oc-actions button.c-btn.busy { opacity: 0.5; }
 
 /* 空 / 错误 */
 .empty-card {

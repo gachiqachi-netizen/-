@@ -1,7 +1,7 @@
 <view class="mine-page">
  <view class="profile">
-  <button wx:if="{{loggedIn}}" class="avatar" open-type="chooseAvatar" bindchooseavatar="chooseAvatar"><image wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"/></button>
-  <view wx:else class="avatar" bindtap="goLogin"></view>
+  <button wx:if="{{loggedIn}}" class="avatar" open-type="chooseAvatar" bindchooseavatar="chooseAvatar"><image wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"/><image wx:else class="avatar-default" src="/assets/tab/me.png" mode="aspectFit"/></button>
+  <view wx:else class="avatar" bindtap="goLogin"><image class="avatar-default" src="/assets/tab/me.png" mode="aspectFit"/></view>
   <view class="profile-text" wx:if="{{loggedIn}}">
    <input type="nickname" placeholder="给自己起个名字 ›" value="{{name}}" bindblur="changeName"/>
    <view class="caption">{{orderError ? '没连上，下拉再试' : designCount ? '串过 '+designCount+' 条 · 下过 '+orderCount+' 单' : '还没串过，去串第一条'}}</view>

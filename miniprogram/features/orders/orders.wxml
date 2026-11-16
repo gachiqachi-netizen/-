@@ -35,13 +35,13 @@
     <view class="empty-sub">串好一条，下单后会出现在这里</view>
     <button class="btn-primary empty-btn" bindtap="goDiy">去串一条</button>
   </view>
-  <view class="card empty-card" wx:elif="{{!visibleRows().length}}">
+  <view class="card empty-card" wx:elif="{{!visible.length}}">
     <view class="empty-sub">这里没有订单</view>
   </view>
 
   <!-- 订单卡片：编号+状态 → 商品行 → 实付 → 按钮靠右 -->
   <view class="cards{{fade ? ' fade-on' : ''}}" wx:else>
-    <view class="card order-card" wx:for="{{visibleRows()}}" wx:key="no" data-no="{{item.no}}" bindtap="viewDetail">
+    <view class="card order-card" wx:for="{{visible}}" wx:key="no" data-no="{{item.no}}" bindtap="viewDetail">
       <view class="oc-head">
         <text class="oc-no">{{item.no}}</text>
         <text class="oc-status st-{{item.tone}}">{{item.statusLabel}}</text>
@@ -60,13 +60,13 @@
       <view class="oc-actions">
         <button
           wx:if="{{tab === 'after_sale' && item.afterSaleStatus === 'approved'}}"
-          class="btn-primary btn-sm"
+          class="c-btn c-btn--sec c-btn--s"
           data-no="{{item.no}}"
           catchtap="fillReturn"
         >查看售后</button>
         <button
           wx:if="{{item.action}}"
-          class="btn-primary btn-sm{{busyNo === item.no ? ' busy' : ''}}"
+          class="c-btn c-btn--s{{item.action.secondary ? ' c-btn--sec' : ''}}{{busyNo === item.no ? ' busy' : ''}}"
           data-no="{{item.no}}"
           data-code="{{item.action.code}}"
           catchtap="runAction"

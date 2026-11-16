@@ -24,7 +24,19 @@
 
 ## 3. 改了的文件
 
-`git diff --stat origin/integration/2026-11...HEAD` 在最终提交后核对：算法两份、共用用例、两端测试、报告与工作台截图。
+`git diff --stat origin/integration/2026-11...HEAD`：
+
+```text
+ admin-web/scripts/check-layout.cjs               |  15 ++++++-
+ admin-web/src/bracelet/layout.ts                 |  46 ++++++++++++++++----
+ docs/reports/V2b.md                              |  本报告
+ docs/reports/shots/V2b/after/workbench.png       | Bin 0 -> 118209 bytes
+ docs/reports/shots/V2b/before/workbench.png      | Bin 0 -> 118678 bytes
+ miniprogram/tests/bracelet-layout-shared.test.js |  24 ++++++++++-
+ miniprogram/utils/bracelet-layout.js             |  46 ++++++++++++++++----
+ server/tests/fixtures/bracelet_layout_cases.json |   5 ++-
+```
+
 
 ## 4. 测试
 
@@ -39,7 +51,7 @@
 ## 5. 自查（命令和输出）
 
 - `git diff --check`：无输出。
-- `git log --oneline origin/integration/2026-11..HEAD`：`V2b: 开工`、`V2b: 用弦长求同圆相切排布`、`V2b: 增加三组混排共用用例与几何断言`；报告与截图提交后再核对。
+- `git log --oneline origin/integration/2026-11..HEAD`：`V2b: 开工`、`V2b: 用弦长求同圆相切排布`、`V2b: 增加三组混排共用用例与几何断言`、`V2b: 提交工作台截图和交付报告`；全部以 `V2b:` 开头。
 - `npm run build`：`✓ built in 1.60s`。
 - `npm run check:layout`：`layout parity: 13 cases passed (max error 0.5px)`。
 - `rg 'new URL|URLSearchParams' miniprogram`：本卡未引入浏览器 URL 对象。

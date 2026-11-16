@@ -26,7 +26,8 @@ function buildRow(raw) {
     keywords,
     beads,
     afterSaleStatus: (order.state && order.state.afterSale ? order.state.afterSale.code : '') || order.afterSaleStatus || 'none',
-    action: actionCode ? { code: actionCode, label: (contract.actions || {})[actionCode] || actionCode } : null,
+    action: actionCode ? { code: actionCode, label: (contract.actions || {})[actionCode] || actionCode,
+      secondary: ['view_logistics', 'reorder', 'cancel_order', 'request_after_sale', 'edit_address', 'cancel_after_sale'].includes(actionCode) } : null,
   }
 }
 

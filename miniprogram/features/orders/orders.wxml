@@ -60,13 +60,13 @@
       <view class="oc-actions">
         <button
           wx:if="{{tab === 'after_sale' && item.afterSaleStatus === 'approved'}}"
-          class="btn-primary btn-sm"
+          class="c-btn c-btn--sec c-btn--s"
           data-no="{{item.no}}"
           catchtap="fillReturn"
         >查看售后</button>
         <button
           wx:if="{{item.action}}"
-          class="btn-primary btn-sm{{busyNo === item.no ? ' busy' : ''}}"
+          class="c-btn c-btn--s{{item.action.secondary ? ' c-btn--sec' : ''}}{{busyNo === item.no ? ' busy' : ''}}"
           data-no="{{item.no}}"
           data-code="{{item.action.code}}"
           catchtap="runAction"

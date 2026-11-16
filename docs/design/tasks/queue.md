@@ -123,6 +123,7 @@
 | V5 | agent/V5-bead-photo-upload | followups-visual.md | V2、V4 | 任何 |  |  |
 | U14 | agent/U14-button-size | followups-ui.md | U13 | 任何 |  |  |
 | U15 | agent/U15-skeleton | followups-ui.md | U14 | 任何 |  |  |
+| W1 | agent/W1-workbench-tray | followups-ui.md | U14、U15 | 任何 |  |  |
 | U11 | agent/U11-admin-aftersale-review-fix | followups-ui.md |  | 任何 |  |  |
 
 已完成（不用再领）：A1、A2、A4a、A4b、A4c、A5a、A5b、C0a、C0b、C0c、C0d、C0e、C0f、C0h、C0j、D0、D1。A12 不做（尺寸规则已统一）。A9b 是负责人在后台做的数据任务，不在队列里。

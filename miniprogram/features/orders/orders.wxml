@@ -42,7 +42,7 @@
       </view>
       <view class="oc-goods">
         <view class="oc-thumb">
-          <bracelet-thumb beads="{{item.beads}}" catalog="{{catalog}}" />
+          <bracelet-thumb beads="{{item.visual}}" />
         </view>
         <view class="oc-body">
           <view class="oc-name">{{item.name}}</view>

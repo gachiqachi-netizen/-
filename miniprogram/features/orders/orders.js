@@ -25,6 +25,7 @@ function buildRow(raw) {
     wrist: order.wrist,
     keywords,
     beads,
+    visual: (order.designSnapshot && order.designSnapshot.sequence) || [],
     afterSaleStatus: (order.state && order.state.afterSale ? order.state.afterSale.code : '') || order.afterSaleStatus || 'none',
     action: actionCode ? { code: actionCode, label: (contract.actions || {})[actionCode] || actionCode,
       secondary: ['view_logistics', 'reorder', 'cancel_order', 'request_after_sale', 'edit_address', 'cancel_after_sale'].includes(actionCode) } : null,

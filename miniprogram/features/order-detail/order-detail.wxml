@@ -13,7 +13,8 @@
         <c-card wx:if="{{order.tracking && order.tracking.length}}"><c-cell label="物流" value="{{order.tracking[0].text}}" arrow="{{true}}" data-code="view_logistics" bind:tap="runAction" /></c-card>
         <c-card><view slot="title">收货</view><view class="address">{{order.person}} · {{order.phone}}<view class="sub">{{order.addr}}</view></view></c-card>
         <c-card>
-          <view class="product" bindtap="viewProduct"><view class="thumb"><bracelet-thumb beads="{{order.beads}}" catalog="{{catalog}}" /></view><view class="product-text"><view class="product-name">{{order.name}}</view><view class="sub product-spec">{{order.beads.length}} 颗 · 手围 {{order.wrist}}cm</view></view></view>
+          <view class="product" bindtap="viewProduct"><view class="thumb"><bracelet-thumb beads="{{order.items}}" catalog="{{catalog}}" /></view><view class="product-text"><view class="product-name">{{order.name}}</view><view class="sub product-spec">{{order.beads.length}} 颗 · 手围 {{order.wrist}}cm</view></view></view>
+          <c-cell label="材料" value="{{items.length}} 种" arrow="{{true}}" bind:tap="openMaterials" />
           <c-cell label="珠子" value="{{order.goodsPrice}}" />
           <c-cell wx:if="{{order.handworkPrice}}" label="手工费" value="{{order.handworkPrice}}" />
           <c-cell wx:if="{{order.cordPrice}}" label="穿绳" value="{{order.cordPrice}}" />
@@ -33,5 +34,6 @@
   <c-bar wx:if="{{order && !paidLanding && primaryAction}}" layout="single"><button class="c-btn" data-code="{{primaryAction.code}}" bindtap="runAction">{{primaryAction.label}}</button></c-bar>
   <c-sheet show="{{sheet === 'payment'}}" title="模拟支付" bind:close="closePayment"><view class="center sub">体验版，不会真的扣款</view><view class="center payment-name">{{order.name}}</view><view class="center payment-amount">{{paymentAmount}}</view><view slot="footer" class="sheet-actions"><button class="c-btn c-btn--sec" data-result="fail" bindtap="finishPayment">支付失败</button><button class="c-btn" data-result="success" bindtap="finishPayment">支付成功</button></view></c-sheet>
   <c-sheet show="{{sheet === 'cancel'}}" title="为什么取消" bind:close="closePayment"><view wx:for="{{cancelReasons}}" wx:key="*this" class="reason" data-reason="{{item}}" bindtap="cancel">{{item}}</view></c-sheet>
+  <c-sheet show="{{sheet === 'materials'}}" title="材料" bind:close="closePayment"><view wx:for="{{items}}" wx:key="id" class="material-row"><view class="material-photo"><c-bead bead="{{item}}" size="s" /></view><view class="material-copy"><view>{{item.name}} · {{item.mm}}毫米 · ×{{item.qty}}</view><view class="sub">单价 ¥{{item.unit}}</view></view><text>¥{{item.subtotal}}</text></view></c-sheet>
 </c-page>
 <c-toast />

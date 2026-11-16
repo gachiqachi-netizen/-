@@ -30,10 +30,7 @@
 .ai-actions { display: flex; gap: 12rpx; margin-top: 24rpx; }
 .ai-actions .c-btn { flex: 1; }
 .ai-wait { margin: 24rpx 0; }
-.ai-skeleton { margin-top: 20rpx; width: 580rpx; border: 1rpx solid var(--c-line); }
-.ai-skeleton-art { height: 250rpx; background: var(--c-surface); }
-.ai-skeleton-line { width: 80%; height: 24rpx; background: var(--c-surface); margin: 20rpx; }
-.ai-skeleton-short { width: 50%; }
+.ai-loading { width: 580rpx; display: flex; flex-direction: column; gap: var(--sp-base); border: 1rpx solid var(--c-line); }
 .ai-error { color: var(--c-text-2); margin: 24rpx 0; }
 .ai-error text { color: var(--c-text); text-decoration: underline; }
 .ai-composer { flex: none; background: var(--c-bg); box-shadow: var(--shadow-float); padding-bottom: env(safe-area-inset-bottom); }

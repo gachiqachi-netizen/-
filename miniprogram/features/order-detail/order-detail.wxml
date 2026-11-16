@@ -1,6 +1,6 @@
 <c-page>
   <view class="detail-surface">
-    <c-card wx:if="{{loading}}"><view class="skeleton">正在读取订单…</view></c-card>
+    <c-card wx:if="{{loading}}"><view class="order-loading"><c-skeleton shape="line" width="40%" font="title"/><c-skeleton shape="line" width="70%" font="body"/><c-skeleton shape="block" width="100%" ratio="5/2"/><c-skeleton shape="pill" width="100%"/></view></c-card>
     <c-state wx:elif="{{error && !order}}" title="没找到这笔订单" action="重新加载" bind:action="load" />
     <block wx:elif="{{order}}">
       <c-card wx:if="{{paidLanding}}">

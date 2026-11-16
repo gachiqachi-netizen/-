@@ -1,0 +1,1 @@
+<view class="c-skeleton c-skeleton--{{shape}} c-skeleton--{{shape}}-{{shape === 'line' ? font : button}}" style="width:{{shape === 'circle' ? diameter + 'rpx' : width}};height:{{shape === 'circle' ? diameter + 'rpx' : ''}};aspect-ratio:{{shape === 'block' ? ratio : ''}};" aria-hidden="true" />

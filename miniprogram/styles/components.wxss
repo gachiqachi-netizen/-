@@ -250,11 +250,6 @@ button.c-btn--s {
   font-variant-numeric: tabular-nums;
 }
 
-/* 骨架块：浅灰、不闪动 */
-.c-skeleton {
-  background: var(--c-surface);
-}
-
 /* 分组之间的浅灰条 */
 .c-gap {
   height: 16rpx;

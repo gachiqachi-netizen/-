@@ -1,3 +1,4 @@
 {
-  "navigationBarTitleText": "全部评价"
+  "navigationBarTitleText": "全部评价",
+  "usingComponents": {"c-skeleton": "/components/skeleton/index"}
 }

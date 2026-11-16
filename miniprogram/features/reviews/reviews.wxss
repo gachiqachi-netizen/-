@@ -59,14 +59,7 @@
   padding: 120rpx 0;
 }
 
-.sk-wrap {
-  padding: 32rpx 40rpx;
-}
-.sk-line {
-  height: 32rpx;
-  border-radius: var(--r-panel);
-  margin-bottom: 24rpx;
-}
+.review-loading { display: flex; flex-direction: column; gap: var(--sp-base); padding: var(--sp-base) var(--sp-base); }
 
 .bar-price {
   color: var(--c-text);

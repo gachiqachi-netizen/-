@@ -2,4 +2,4 @@
 .snapshot-stage{position:fixed;left:-2000px;top:0;width:300px;height:230px;pointer-events:none}
 .permission{text-align:center;font-size:var(--fs-caption);color:var(--c-text-2);margin-bottom:var(--sp-tight)}
 .error{color:var(--c-danger);font-size:var(--fs-caption);text-align:center}
-.skeleton{min-height:900rpx;background:var(--c-surface);padding:var(--sp-base);font-size:var(--fs-caption)}
+.share-loading{width:100%}

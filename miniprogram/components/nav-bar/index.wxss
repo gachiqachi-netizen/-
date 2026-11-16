@@ -1,0 +1,4 @@
+.c-nav-bar { box-sizing: content-box; display: flex; align-items: center; background: var(--c-bg); }
+.c-nav-bar__back { width: var(--h-btn-s); height: 100%; display: flex; align-items: center; justify-content: center; }
+.c-nav-bar__back image { width: var(--fs-body); height: var(--fs-body); }
+.c-nav-bar__title { flex: 1; text-align: center; font-size: var(--fs-body); font-weight: var(--fw-bold); }

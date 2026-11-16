@@ -5,15 +5,24 @@ const { yuan } = require('../../utils/money')
 
 if (typeof Component === 'function') {
   Component({
-    options: { styleIsolation: 'apply-shared' },
+    options: { styleIsolation: 'apply-shared', multipleSlots: true },
     properties: {
       design: { type: Object, value: null }, // {name, line, beads, priceFen}
+      label: { type: String, value: '' },
+      value: { type: String, value: '' },
+      arrow: { type: Boolean, value: false },
+      switch: { type: Boolean, value: false },
+      checked: { type: Boolean, value: false },
     },
     data: { price: '' },
     observers: {
       design: function (design) {
         this.setData({ price: design && Number.isInteger(design.priceFen) ? yuan(design.priceFen) : '' })
       },
+    },
+    methods: {
+      onSwitch() { this.triggerEvent('change', { value: !this.data.checked }) },
+      onTap() { this.triggerEvent('tap') },
     },
   })
 }

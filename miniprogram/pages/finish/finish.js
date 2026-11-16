@@ -47,17 +47,17 @@ Page({
   load() {
     const design = store.current()
     if (!design || !design.beads || !design.beads.length) {
-      this.setData({ loading: false, down: true, design: design || null })
+      this.setData({ loading: false, ready: true, down: true, design: design || null })
       return
     }
     this.wristBefore = design.wrist
-    this.setData({ design, loading: true, error: '', down: false })
+    this.setData({ design, loading: true, ready: false, error: '', down: false })
     api.catalog().then(c => {
       this.catalog = (c && c.beads) || []
       this.pricing = (c && c.pricing) || {}
       this.loaded = true
       this.render(store.current() || design)
-      this.setData({ loading: false })
+      this.setData({ loading: false, ready: true })
     }).catch(e => {
       this.setData({ loading: false, error: e.message || '加载失败，请稍后重试' })
     })

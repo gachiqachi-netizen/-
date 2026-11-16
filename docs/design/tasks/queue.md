@@ -132,6 +132,9 @@
 | R1 | agent/R1-repair-return | followups-perf.md |  | Codex |  |  |
 | T3 | agent/T3-all-states-shots | followups-ui.md | T2 | 任何 |  |  |
 | U16 | agent/U16-states-address | followups-ui.md | U15、T3 | 任何 |  |  |
+| U17 | agent/U17-icon-buttons | followups-ui.md | U16 | 任何 |  |  |
+| U18 | agent/U18-home-title | followups-ui.md | U16 | 任何 |  |  |
+| U19 | agent/U19-ai-input | followups-ui.md | U16 | 任何 |  |  |
 | V7a | agent/V7a-bracelet-tiers | followups-visual.md | U16 | 任何 |  |  |
 | V7b | agent/V7b-admin-bracelet-style | followups-visual.md | V7a | 任何 |  |  |
 | U11 | agent/U11-admin-aftersale-review-fix | followups-ui.md |  | 任何 |  |  |

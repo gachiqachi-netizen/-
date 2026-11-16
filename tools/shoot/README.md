@@ -30,4 +30,8 @@ SHOOT_ADMIN_TOKEN=local-dev-only node tools/shoot/shoot.js --out docs/reports/sh
 
 `--only order-detail` 会截所有订单详情状态。页面清单、路径、参数和前置操作见 [pages.json](pages.json)。脚本先通过开发接口登录测试用户，用现有接口建立模板作品、未支付订单、运输中订单、已签收订单、售后和评价，再交给 `miniprogram-automator` 导航和截图。模拟付款不会扣款。图片输出为 390×844 PNG；`result.json` 记录各页成功与失败及总耗时，任一页失败时进程返回非零退出码。每张图片超过 300KB 时视为失败。
 
+## T3 全状态截图
+
+服务仍按上面的临时数据目录启动；`SHOOT_BASE_URL` 指定造数接口和小程序请求的上游地址，避免占用的 8801 指向另一套数据。运行 `SHOOT_ADMIN_TOKEN=local-dev-only node tools/shoot/states.js --out docs/reports/shots/T3`。`--only home,my-orders` 可选页，`--state error` 可只重试一个状态；重试结果会合并进同目录 `result.json`。状态清单在 `pages.json` 的 `states` 字段。脚本用开发版接口造正常数据，同时启动独立的临时空数据服务；工作台和手串详情的空态清掉本地作品，其他页面使用空数据服务并清空用于渲染的数据。错误状态由临时本地代理返回 HTTP 500，未登录状态删本地会话，加载中状态由代理延迟 15 秒后返回错误。脚本按正常、空、错误、未登录、加载中的顺序截图，避免慢网请求拖住后续正常态。每次截图前重新打开目标页；结束时关闭代理和空数据服务。每张图小于 300KB，结果写在同目录 `result.json`。请按 `result.json` 的路径核对截图；页面不存在独立状态时在交付表写原因，不能用另一页代替。
+
 开发者工具的设备型号由本机模拟器选择决定。运行前在模拟器底部的机型菜单选 **iPhone 12/13 (Pro)（390×844）**；脚本会核对型号与逻辑尺寸，再输出 390×844 PNG。打开脚本前如有别的自动化会话正在使用开发者工具，请先结束那次会话。

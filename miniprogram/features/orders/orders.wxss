@@ -244,50 +244,11 @@ page {
 }
 .error-actions button { flex: 1; }
 
-/* 骨架 */
-.skeleton-card {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-}
-
-.sk {
-  border-radius: var(--r-panel);
-  background: linear-gradient(90deg, var(--c-surface) 25%, var(--c-surface) 50%, var(--c-surface) 75%);
-  background-size: 200% 100%;
-  animation: sk-sweep 1.2s infinite;
-}
-
-@keyframes sk-sweep {
-  from { background-position: 200% 0; }
-  to { background-position: -200% 0; }
-}
-
-.sk-line { height: 28rpx; }
-.sk-line.w80 { width: 80%; }
-.sk-line.w50 { width: 50%; }
-.sk-line.w40 { width: 40%; }
-.sk-line.w30 { width: 30%; }
-.sk-line.right { align-self: flex-end; }
-
-.sk-row {
-  display: flex;
-  gap: 24rpx;
-  align-items: center;
-}
-
-.sk-thumb {
-  width: 128rpx;
-  height: 128rpx;
-  flex: none;
-  border-radius: var(--r-panel);
-}
-
-.sk-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
+/* 订单加载占位与真实卡片位置一致 */
+.order-loading { display: flex; flex-direction: column; gap: var(--sp-base); }
+.order-loading-row { display: flex; align-items: center; gap: var(--sp-base); }
+.order-loading-thumb { width: 128rpx; height: 128rpx; flex: none; }
+.order-loading-copy { flex: 1; display: flex; flex-direction: column; gap: var(--sp-tight); }
+.order-loading-action { display: flex; justify-content: flex-end; }
 
 .confirm-actions { display: flex; width: 100%; gap: var(--sp-tight); }

@@ -35,7 +35,7 @@
         </view>
       </view>
     </view>
-    <view wx:if="{{busy}}" class="ai-wait"><view>{{waitText}}</view><view class="ai-skeleton"><view class="ai-skeleton-art"/><view class="ai-skeleton-line"/><view class="ai-skeleton-line ai-skeleton-short"/></view></view>
+    <view wx:if="{{busy}}" class="ai-wait"><view class="ai-loading"><c-skeleton shape="block" width="100%" ratio="2/1"/><c-skeleton shape="line" width="80%" font="body"/><c-skeleton shape="line" width="50%" font="caption"/></view></view>
     <view wx:if="{{error}}" class="ai-error">{{error}} <text bindtap="retry" data-index="{{messages.length - 1}}">再试一次</text></view>
     <view id="chat-end" />
   </scroll-view>

@@ -1,6 +1,6 @@
 <c-page>
   <c-cell wx:if="{{shareId}}" label="更多" arrow bind:tap="more" />
-  <c-card wx:if="{{loading}}"><view class="skeleton">正在生成分享海报…</view></c-card>
+  <c-card wx:if="{{loading}}"><view class="share-loading"><c-skeleton shape="block" width="100%" ratio="3/5"/></view></c-card>
   <c-card wx:if="{{design}}">
     <view class="snapshot-stage"><bracelet3d id="share3d" beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}" bind:rendered="snapshotReady" bind:unavailable="snapshotUnavailable"/></view>
     <canvas canvas-id="shareCard" class="share-card" style="width:{{width}}px;height:{{height}}px" />

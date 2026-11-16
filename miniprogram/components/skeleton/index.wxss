@@ -1,0 +1,9 @@
+:host { display: block; }
+.c-skeleton { box-sizing: border-box; background: var(--c-surface); }
+.c-skeleton--block, .c-skeleton--line { border-radius: var(--r-panel); }
+.c-skeleton--line-body { height: var(--fs-body); }
+.c-skeleton--line-title { height: var(--fs-title); }
+.c-skeleton--line-caption { height: var(--fs-caption); }
+.c-skeleton--circle { border-radius: var(--r-pill); }
+.c-skeleton--pill { height: var(--h-btn); border-radius: var(--r-pill); }
+.c-skeleton--pill-small { height: var(--h-btn-s); }

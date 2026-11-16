@@ -5,18 +5,12 @@
     </view>
   </scroll-view>
 
-  <!-- 加载中：行骨架 -->
-  <view class="cards{{fade ? ' fade-on' : ''}}" wx:if="{{loading && !rows.length && !error}}">
-    <view class="card skeleton-card" wx:for="{{[1, 2, 3]}}" wx:key="*this">
-      <view class="sk sk-line w40"></view>
-      <view class="sk-row">
-        <view class="sk sk-thumb"></view>
-        <view class="sk-col">
-          <view class="sk sk-line w80"></view>
-          <view class="sk sk-line w50"></view>
-        </view>
-      </view>
-      <view class="sk sk-line w30 right"></view>
+  <!-- 加载中：订单卡片的编号、手串图、文字与操作 -->
+  <view class="cards" wx:if="{{loading && !rows.length && !error}}">
+    <view class="card order-loading" wx:for="{{[1, 2, 3]}}" wx:key="*this">
+      <c-skeleton shape="line" width="40%" font="caption"/>
+      <view class="order-loading-row"><view class="order-loading-thumb"><c-skeleton shape="block" width="100%" ratio="1/1"/></view><view class="order-loading-copy"><c-skeleton shape="line" width="80%" font="body"/><c-skeleton shape="line" width="50%" font="caption"/></view></view>
+      <view class="order-loading-action"><c-skeleton shape="pill" button="small" width="40%"/></view>
     </view>
   </view>
 

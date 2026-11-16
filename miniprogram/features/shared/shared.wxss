@@ -5,4 +5,4 @@
 .muted{color:var(--c-text-2);font-size:var(--fs-caption);line-height:var(--lh-body)}.note-name{font-size:var(--fs-body);font-weight:var(--fw-bold)}
 .brand{text-align:center;padding:var(--sp-base) 0;font-family:serif;letter-spacing:8rpx}
 .empty{text-align:center;padding:var(--sp-section) var(--sp-base)}.empty-title{font-size:var(--fs-title);margin-bottom:var(--sp-tight)}.empty button{margin-top:var(--sp-base)}
-.skeleton{padding:var(--sp-base)}.skeleton view{height:50rpx;margin-bottom:var(--sp-tight);background:var(--c-surface)}.skeleton view:first-child{height:600rpx}
+.shared-loading{display:flex;flex-direction:column;gap:var(--sp-base)}

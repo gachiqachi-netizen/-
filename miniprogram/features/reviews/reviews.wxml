@@ -30,11 +30,7 @@
   </view>
 
   <!-- 加载 / 失败 -->
-  <view wx:if="{{loading}}" class="sk-wrap">
-    <view class="sk-line c-skeleton"></view>
-    <view class="sk-line c-skeleton"></view>
-    <view class="sk-line c-skeleton"></view>
-  </view>
+  <view wx:if="{{loading}}" class="review-loading"><c-skeleton shape="line" width="80%" font="body"/><c-skeleton shape="line" width="60%" font="body"/><c-skeleton shape="line" width="40%" font="caption"/></view>
   <view class="state-wrap" wx:if="{{error && !loading}}">
     <c-state title="加载失败" desc="{{error}}" action="再试一次" bind:action="retry" />
   </view>

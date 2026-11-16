@@ -96,15 +96,11 @@
   <c-toast />
 </view>
 
-<!-- 加载中：骨架块 -->
+<!-- 加载中：手串图、标题、说明和列表行 -->
 <view class="page" wx:if="{{loading}}">
-  <view class="stage c-skeleton"></view>
-  <view class="ocard">
-    <view class="sk-line c-skeleton" style="width:50%"></view>
-    <view class="sk-line c-skeleton"></view>
-    <view class="sk-line c-skeleton" style="width:70%"></view>
-  </view>
-  <view class="ocard"><view class="sk-line c-skeleton"></view><view class="sk-line c-skeleton"></view><view class="sk-line c-skeleton"></view></view>
+  <c-skeleton shape="block" width="100%" ratio="1/1"/>
+  <view class="ocard finish-loading"><c-skeleton shape="line" width="50%" font="title"/><c-skeleton shape="line" width="80%" font="body"/><c-skeleton shape="line" width="70%" font="caption"/></view>
+  <view class="ocard finish-loading"><c-skeleton shape="line" width="80%" font="body"/><c-skeleton shape="line" width="60%" font="body"/></view>
 </view>
 
 <!-- 失败 -->

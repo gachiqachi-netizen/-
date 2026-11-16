@@ -1,6 +1,6 @@
 """Stable, public visual fields for one bead in an order or share snapshot."""
 
-VISUAL_KEYS = ("id", "name", "mm", "spacer", "mat", "colors", "photo")
+VISUAL_KEYS = ("id", "name", "mm", "spacer", "mat", "colors", "photo", "photoMd", "photoSm")
 PLACEHOLDER_COLORS = ("#b8b8b8", "#e3e3e3")
 
 
@@ -17,6 +17,8 @@ def visual_of(bead):
         "mat": bead.get("mat"),
         "colors": colors,
         "photo": bead.get("photo") or None,
+        "photoMd": bead.get("photoMd") or None,
+        "photoSm": bead.get("photoSm") or None,
     }
 
 

@@ -24,7 +24,26 @@ class BeadVisualTest(unittest.TestCase):
         self.assertEqual(visual_of({'id': 'old'}), {
             'id': 'old', 'name': None, 'mm': None, 'spacer': None,
             'mat': None, 'colors': [None, None], 'photo': None,
+            'photoMd': None, 'photoSm': None,
         })
+
+    def test_visual_sizes_are_frozen_in_order_snapshot(self):
+        bead = dict(self.bead, photo='/480.png', photoMd='/240.png', photoSm='/96.png')
+        self.db.put('beads', bead['id'], bead)
+        unit = user_api.bead_price_fen(bead)
+        goods = unit * 6
+        total = goods + 1500 + (0 if goods + 1500 >= 9900 else 800)
+        order = user_api.make_order(self.db, {
+            'requestId': 'visual-sizes-00001', 'beads': [bead['id']] * 6,
+            'wrist': 15, 'person': '测试', 'phone': '10000000000', 'addr': '测试地址',
+            'gift': False, 'confirmedQuote': {'totalFen': total, 'items': [
+                {'id': bead['id'], 'unitPriceFen': unit, 'mm': bead['mm']}]},
+        }, 'owner')
+        frozen = self.db.get('orders', order['no'])['designSnapshot']['sequence'][0]
+        self.assertEqual([frozen[k] for k in ('photo', 'photoMd', 'photoSm')],
+                         ['/480.png', '/240.png', '/96.png'])
+        self.db.put('beads', bead['id'], dict(bead, photo='/new.png', photoMd='/new-md.png'))
+        self.assertEqual(commerce.build_design_snapshot(self.db, self.db.get('orders', order['no']))['sequence'][0]['photoMd'], '/240.png')
 
     def test_order_snapshot_keeps_colors_after_product_changes(self):
         bead = self.bead

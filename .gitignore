@@ -5,6 +5,8 @@ __pycache__/
 _preview.html
 .DS_Store
 node_modules/
+tools/shoot/node_modules/
+docs/reports/shots/**/result.json
 .env
 .env.*
 !.env.example

@@ -155,24 +155,6 @@
   color: var(--c-text-2);
 }
 
-/* 底部栏按钮：详情页没有价格，两个按钮铺满整行 */
-.c-bar__left {
-  display: none;
-}
-.c-bar__btn {
-  flex: 1;
-  min-width: 0;
-}
-.bar-btns {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-tight);
-  width: 100%;
-}
-.bar-sec {
-  flex: 0 0 240rpx;
-}
-
 /* 尺寸弹层 */
 .sheet-row {
   display: flex;
@@ -213,12 +195,10 @@
   padding: 16rpx 0 32rpx;
 }
 .wrist-btns {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: var(--sp-tight);
-}
-.wrist-measure {
-  flex: 0 0 240rpx;
 }
 
 /* 骨架块 */

@@ -16,8 +16,8 @@
     <view class="result-content"><view class="name-row"><input value="{{name}}" bindinput="rename"/><text>改名</text></view><view class="meaning">{{result.meaning || '清澈又开阔，像一阵海风'}}</view><view class="hint">{{beadCount}} 颗 · {{length}}mm · 手围 {{wrist}}cm 合适</view><view class="section-title">认出来的珠子</view>
     <view class="bead-row" wx:for="{{roles}}" wx:key="key" wx:for-item="role"><view class="bead-info"><text>{{role.name}}</text><text class="hint">{{role.meaning}}</text><view wx:if="{{role.lowConfidence}}" class="hint">可能不准 <button class="small" data-role="{{role.key}}" bindtap="showAlternatives">换一颗</button></view></view><text>×{{role.count}}</text></view>
     <view wx:if="{{picking}}" class="alternatives"><view class="section-title">换一颗</view><view wx:for="{{alternativeOptions}}" wx:key="id" class="alternative" data-role="{{picking}}" data-id="{{item.id}}" bindtap="chooseRole">{{item.name}} · {{item.mm}}mm</view></view>
-    <view class="text-action" bindtap="retake">不太像？重拍一张 ›</view></view>
-    <view class="bottom result-bottom"><view class="price">¥{{price}}</view><button bindtap="edit">放到工作台改</button><button class="primary" bindtap="order">就要这条</button></view>
+    <view class="text-action" bindtap="retake">不太像？重拍一张 ›</view><view class="text-action" bindtap="edit">放到工作台改 ›</view></view>
+    <view class="bottom result-bottom"><view class="price">¥{{price}}</view><button class="c-btn primary" bindtap="order">就要这条</button></view>
   </block>
 </view>
 <privacy-popup scene="拍照或选择手串照片" bind:reject="privacyRejected"/>

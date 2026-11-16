@@ -12,7 +12,7 @@
   <view class="design-row"><text>戴的是 <text class="design-name">{{designName}}</text></text><text bindtap="openDesigns">换一条 ›</text></view>
   <view class="hint">示意效果，以实物为准</view>
   <view wx:if="{{error}}" class="error" bindtap="openSettings">{{error}}</view>
-  <c-bar wx:if="{{!fromOrder}}"><view slot="left" class="price">¥{{price}}</view><button bindtap="order">去下单</button></c-bar>
+  <c-bar wx:if="{{!fromOrder}}" layout="price"><view slot="left" class="price">¥{{price}}</view><button class="c-btn" bindtap="order">去下单</button></c-bar>
   <c-sheet show="{{showDesigns}}" title="换一条" bind:close="closeDesigns"><view wx:for="{{designChoices}}" wx:key="index" class="sheet-row" data-index="{{item.index}}" bindtap="selectDesign"><text>{{item.name}}</text><text>{{item.group}}</text></view></c-sheet>
   <c-sheet show="{{showModes}}" title="换一种方式" bind:close="closeModes"><view class="sheet-row" data-mode="photo" bindtap="selectMode">用照片</view><view class="sheet-row" data-mode="model" bindtap="selectMode">用模型手</view><view class="sheet-row" data-mode="ar" bindtap="selectMode">实时试戴</view></c-sheet>
 </view>

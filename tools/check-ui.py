@@ -13,6 +13,14 @@ COMMENT = re.compile(r'/\*.*?\*/', re.S)
 RULE = re.compile(r'([^{}]+)\{([^{}]*)\}')
 IMAGE_SELECTOR = re.compile(r'image|img|photo|banner|cover|thumb|grid|swiper', re.I)
 SHAPE_EXCEPTION = re.compile(r'add-photo|photo-add|ai-recommend', re.I)
+BUTTON_SELECTOR = re.compile(r'btn|button|action', re.I)
+LEGACY_BUTTON_EXCEPTIONS = {
+    'miniprogram/ar-hand/index.wxss': ('.actions>view',),
+    'miniprogram/components/state/index.wxss': ('.c-state__action',),
+    'miniprogram/styles/components.wxss': ('.c-stepper__btn',),
+    'miniprogram/pages/diy/diy.wxss': ('.side-action',),
+    'miniprogram/pages/photo/photo.wxss': ('.camera-actions text',),
+}
 
 def violations(path):
     content = COMMENT.sub('', path.read_text())
@@ -31,6 +39,18 @@ def violations(path):
             radius = match.group(1).strip()
             if radius != 'var(--r-panel)':
                 found.append(f'{path.relative_to(ROOT)}:shape:{selector.strip()}:{radius}')
+    for rule in RULE.finditer(content):
+        selector, body = rule.groups()
+        if not BUTTON_SELECTOR.search(selector):
+            continue
+        if selector.strip() in LEGACY_BUTTON_EXCEPTIONS.get(str(path.relative_to(ROOT)), ()):
+            continue
+        for prop, value in re.findall(r'(?<![-\w])(height|width)\s*:\s*([^;{}]+)', body, re.I):
+            value = value.strip()
+            if prop.lower() == 'height' and value not in ('var(--h-btn)', 'var(--h-btn-s)'):
+                found.append(f'{path.relative_to(ROOT)}:button-height:{selector.strip()}:{value}')
+            if prop.lower() == 'width' and re.fullmatch(r'\d+(?:\.\d+)?(?:r?px|vw|vh|%)?', value) and value not in ('50%', '100%'):
+                found.append(f'{path.relative_to(ROOT)}:button-width:{selector.strip()}:{value}')
     return found
 
 def main():

@@ -3,7 +3,7 @@
 // 带底部安全区；组件在原位置留一个同高占位，页面内容不会被盖住。
 Component({
   options: { styleIsolation: 'apply-shared', multipleSlots: true },
-  properties: { layout: { type: String, value: 'price' } },
+  properties: { layout: { type: String, value: 'single' } },
   data: { holderHeight: 0 },
   lifetimes: {
     ready() {

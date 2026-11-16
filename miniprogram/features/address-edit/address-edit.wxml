@@ -16,6 +16,6 @@
     <c-card wx:if="{{orderNo}}"><c-cell label="从我的地址里选" arrow="{{true}}" bind:tap="openAddressBook"/><c-cell label="用微信地址" arrow="{{true}}" bind:tap="importWechat"/><view class="hint">发货后不能修改地址</view></c-card>
     <c-card wx:if="{{error && (person || !id)}}"><view class="error">{{error}}</view></c-card>
   </view>
-  <c-bar layout="price"><button class="c-btn" disabled="{{saving||deleting||loading}}" bindtap="save">{{saving?'正在保存……':'保存'}}</button></c-bar>
+  <c-bar layout="single"><button class="c-btn" disabled="{{saving||deleting||loading}}" bindtap="save">{{saving?'正在保存……':'保存'}}</button></c-bar>
 </c-page>
 <c-toast />

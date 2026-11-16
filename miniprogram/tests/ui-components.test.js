@@ -28,6 +28,37 @@ test('bar exposes three layouts and token button height', () => {
   assert.match(wxml, /layout === 'dual'/)
   assert.match(read('miniprogram/components/bar/index.wxss'), /var\(--h-btn\)/)
 })
+test('bottom bar fills one action and splits two actions evenly', () => {
+  const wxml = read('miniprogram/components/bar/index.wxml')
+  const wxss = read('miniprogram/components/bar/index.wxss')
+  assert.match(wxml, /layout === 'price' \|\| layout === 'agreement'/)
+  assert.match(wxss, /\.c-bar__main--single \.c-bar__btn,[\s\S]*\.c-bar__main--dual \.c-bar__btn \{ width: 100%; \}/)
+  assert.match(wxss, /\.c-bar__btn \{[\s\S]*width: 50%;/)
+  assert.match(read('miniprogram/pages/finish/finish.wxml'), /<c-bar layout="dual">[\s\S]*slot="secondary"/)
+  for (const page of ['features/order-detail/order-detail', 'features/review/review', 'features/after-sale/detail']) {
+    assert.match(read(`miniprogram/${page}.wxml`), /<c-bar[^>]*layout="single"/)
+  }
+})
+test('sheet footer uses full width token buttons', () => {
+  const wxss = read('miniprogram/components/sheet/index.wxss')
+  assert.match(wxss, /\.c-sheet__footer \{ display: flex; width: 100%; \}/)
+  assert.match(wxss, /\.c-sheet__footer button \{[^}]*height: var\(--h-btn\)/)
+  assert.match(read('miniprogram/pages/order/order.wxml'), /slot="footer" class="gift-footer"/)
+})
+test('UI checker rejects numeric button size and fixed width', () => {
+  const dir = fs.mkdtempSync(path.join(root, 'miniprogram', 'ui-button-'))
+  const file = path.join(dir, 'button.wxss')
+  try {
+    fs.writeFileSync(file, '.submit-btn { height: 90rpx; width: 260rpx; }\n')
+    let result = spawnSync('python3', ['tools/check-ui.py', file], { cwd: root, encoding: 'utf8' })
+    assert.equal(result.status, 1)
+    assert.match(result.stdout, /button-height/)
+    assert.match(result.stdout, /button-width/)
+    fs.writeFileSync(file, '.submit-btn { height: var(--h-btn); width: 50%; }\n')
+    result = spawnSync('python3', ['tools/check-ui.py', file], { cwd: root, encoding: 'utf8' })
+    assert.equal(result.status, 0)
+  } finally { fs.rmSync(dir, { recursive: true, force: true }) }
+})
 test('navigation aligns title with capsule measurements', () => {
   assert.match(read('miniprogram/components/nav-bar/index.js'), /getMenuButtonBoundingClientRect/)
   assert.match(read('miniprogram/components/nav-bar/index.wxml'), /navHeight/)

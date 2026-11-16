@@ -3,10 +3,10 @@
   <block wx:else>
     <c-card><view class="address-row {{addressShake ? 'shake' : ''}}" bindtap="manualAddress">
       <view wx:if="{{person}}"><view class="address-name">{{person}}　{{phone}}</view><view class="address-detail">{{addr}}</view></view>
-      <view wx:else>收货地址</view>
+      <view wx:else class="address-label">收货地址</view>
       <view class="address-actions" wx:if="{{!person}}">
         <button class="c-btn c-btn--sec small" catchtap="chooseAddress">用微信地址</button>
-        <text catchtap="manualAddress">手动填写 ›</text>
+        <text class="address-manual" catchtap="manualAddress">手动填写 ›</text>
       </view>
       <text wx:else class="link">修改 ›</text>
     </view></c-card>
@@ -46,7 +46,7 @@
     <input placeholder="收货人" value="{{person}}" data-key="person" bindinput="input" />
     <input type="number" maxlength="11" placeholder="手机号" value="{{phone}}" data-key="phone" bindinput="input" />
     <input placeholder="详细地址" value="{{addr}}" data-key="addr" bindinput="input" />
-    <button class="c-btn" bindtap="closeSheet">好了</button>
+    <button slot="footer" class="c-btn" bindtap="closeSheet">好了</button>
   </c-sheet>
   <c-sheet show="{{sheet === 'materials'}}" title="材料" bind:close="closeSheet">
     <view wx:for="{{items}}" wx:key="id" class="sheet-row"><view><view>{{item.name}} {{item.mm}}mm ×{{item.qty}}</view><view class="hint">{{item.explanation}}</view><view wx:if="{{item.safety}}" class="hint">{{item.safety}}</view></view><text>¥{{item.subtotal}}</text></view>
@@ -69,13 +69,13 @@
   <c-sheet show="{{sheet === 'price'}}" title="价格有变化" maskClose="{{false}}">
     <view>你挑的时候到现在，有材料调了价。</view>
     <view wx:for="{{quoteChanges}}" wx:key="*this" class="sheet-row">{{item}}</view>
-    <view class="sheet-actions"><button class="c-btn c-btn--sec" bindtap="declinePrice">先不下单</button><button class="c-btn" bindtap="acceptPrice">按新价格提交</button></view>
+    <view slot="footer" class="sheet-actions"><button class="c-btn c-btn--sec" bindtap="declinePrice">先不下单</button><button class="c-btn" bindtap="acceptPrice">按新价格提交</button></view>
   </c-sheet>
   <c-sheet show="{{sheet === 'payment'}}" title="模拟支付" bind:close="paymentClose">
     <view class="payment-copy">体验版，不会真的扣款</view>
     <view class="payment-name">{{design.name}}</view>
     <view class="payment-amount">¥{{paymentAmount}}</view>
-    <view class="sheet-actions"><button class="c-btn c-btn--sec" data-result="fail" bindtap="finishPayment">支付失败</button><button class="c-btn" data-result="success" bindtap="finishPayment">支付成功</button></view>
+    <view slot="footer" class="sheet-actions"><button class="c-btn c-btn--sec" data-result="fail" bindtap="finishPayment">支付失败</button><button class="c-btn" data-result="success" bindtap="finishPayment">支付成功</button></view>
   </c-sheet>
 </c-page>
 

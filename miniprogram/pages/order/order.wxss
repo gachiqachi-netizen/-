@@ -2,8 +2,9 @@
 .address-row { min-height: 136rpx; padding: 16rpx 32rpx; box-sizing: border-box; }
 .address-name, .name { font-weight: var(--fw-bold); }
 .address-detail { margin-top: 8rpx; font-size: var(--fs-caption); color: var(--c-text-2); }
-.address-actions { display: flex; align-items: center; gap: 16rpx; font-size: var(--fs-caption); }
-.small { height: 64rpx; padding: 0 18rpx; font-size: var(--fs-caption); flex: none; }
+.address-label, .address-manual { flex: none; white-space: nowrap; }
+.address-actions { display: flex; flex: 1; min-width: 0; align-items: center; justify-content: flex-end; gap: 16rpx; font-size: var(--fs-caption); }
+.small { height: var(--h-btn-s); padding: 0 18rpx; font-size: var(--fs-caption); flex: 1; min-width: 0; white-space: nowrap; }
 .summary { display: flex; align-items: center; gap: 24rpx; padding: 28rpx 32rpx; }
 .bracelet { width: 144rpx; height: 144rpx; flex: none; background: var(--c-surface); display: flex; align-items: center; justify-content: center; }
 .summary-text { flex: 1; min-width: 0; }
@@ -27,7 +28,7 @@
 .safety-copy { white-space: pre-line; line-height: 1.6; }
 .sheet-row { min-height: 88rpx; padding: 16rpx 0; border-bottom: 1rpx solid var(--c-line); }
 .sheet-label { margin-top: 20rpx; font-size: var(--fs-caption); }
-.sheet-actions { display: flex; gap: 16rpx; margin-top: 32rpx; }
+.sheet-actions { display: flex; width: 100%; gap: var(--sp-tight); margin-top: var(--sp-tight); }
 .counter { text-align: right; font-size: var(--fs-caption); color: var(--c-text-2); }
 .payment-copy, .payment-name, .payment-amount { text-align: center; }
 .payment-copy { color: var(--c-text-2); font-size: var(--fs-caption); }

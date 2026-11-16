@@ -36,10 +36,13 @@
 }
 
 .c-bar__btn {
-  flex: none;
   display: flex;
   align-items: center;
-  min-width: 320rpx;
+  min-width: 0;
+  width: 50%;
 }
-.c-bar__main--dual .c-bar__btn { flex: 1; min-width: 0; gap: var(--sp-tight); }
+.c-bar__main--single .c-bar__btn,
+.c-bar__main--dual .c-bar__btn { width: 100%; }
+.c-bar__main--dual .c-bar__btn { gap: var(--sp-tight); }
+.c-bar__btn .c-btn { min-width: 0; }
 .c-bar__btn .c-btn { height: var(--h-btn); border-radius: var(--r-pill); }

@@ -3,8 +3,8 @@
     <view class="c-bar__top" wx:if="{{layout === 'agreement'}}">
       <slot name="top" />
     </view>
-    <view class="c-bar__main {{layout === 'dual' ? 'c-bar__main--dual' : ''}}">
-      <view class="c-bar__left" wx:if="{{layout !== 'dual'}}">
+    <view class="c-bar__main c-bar__main--{{layout}}">
+      <view class="c-bar__left" wx:if="{{layout === 'price' || layout === 'agreement'}}">
         <slot name="left" />
       </view>
       <view class="c-bar__btn"><slot name="secondary" wx:if="{{layout === 'dual'}}" />

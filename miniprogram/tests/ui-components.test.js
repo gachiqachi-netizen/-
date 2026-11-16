@@ -46,7 +46,7 @@ test('sheet footer uses full width token buttons', () => {
   assert.match(read('miniprogram/pages/order/order.wxml'), /slot="footer" class="gift-footer"/)
 })
 test('UI checker rejects numeric button size and fixed width', () => {
-  const dir = fs.mkdtempSync(path.join(root, 'miniprogram', 'ui-button-'))
+  const dir = fs.mkdtempSync(path.join(root, 'miniprogram', 'tests', 'ui-button-'))
   const file = path.join(dir, 'button.wxss')
   try {
     fs.writeFileSync(file, '.submit-btn { height: 90rpx; width: 260rpx; }\n')

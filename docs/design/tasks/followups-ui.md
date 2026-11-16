@@ -79,7 +79,7 @@
 
 - **只能改**：`miniprogram/features/orders/*`、`miniprogram/pages/mine/*`
 - 现象和要求：
-  1. 我的订单列表为空的问题已由 e04a7e0 修好（`orders-flow.test.js`）；本卡只确认它在开发者工具里正常，并按稿调整列表卡片样式。
+  1. **我的订单列表仍然是空的**（T1 截图 `docs/reports/shots/T1/my-orders.png`：分栏“全部 5”，列表“这里没有订单”）。原因：`orders.wxml` 里写了 `wx:elif="{{!visibleRows().length}}"`，WXML 不能调用页面方法，表达式永远为空，所以总是显示空态，列表也没渲染。改法：在 `orders.js` 里算好当前分栏的数组放进 data（比如 `visible`），加载、切分栏、确认收货后都更新它，wxml 只读 `visible`。补测试：5 笔订单，切每个分栏后 `data.visible` 的条数和分栏数字一致。e04a7e0 的测试只测了 rows，没覆盖到这里。
   2. “我的”页头像位置是灰色大椭圆，改成圆形头像（没头像用 C0b 的默认图标）。
 
 ## U9 售后页面（等状态修复）

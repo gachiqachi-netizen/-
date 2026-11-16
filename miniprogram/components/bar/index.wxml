@@ -4,7 +4,7 @@
       <slot name="top" />
     </view>
     <view class="c-bar__main {{layout === 'dual' ? 'c-bar__main--dual' : ''}}">
-      <view class="c-bar__left">
+      <view class="c-bar__left" wx:if="{{layout !== 'dual'}}">
         <slot name="left" />
       </view>
       <view class="c-bar__btn"><slot name="secondary" wx:if="{{layout === 'dual'}}" />

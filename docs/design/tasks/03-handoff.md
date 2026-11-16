@@ -12,6 +12,7 @@
 
 | 文件 | 用途 |
 |---|---|
+| `docs/design/tasks/board.md` | **任务看板**（自动生成）：在做、能派（带提示词）、等前面的卡、等负责人、已完成。每次合并后跑 `python3 tools/board.py` 重新生成并推送 |
 | `docs/design/tasks/queue.md` | 总队列：每张卡的分支、卡片文件、依赖、谁做、不能同时做、等负责人 |
 | `docs/design/tasks/02-prompts.md` | Codex、Kimi、DeepSeek 三段总提示词（执行者自己领卡） |
 | `docs/design/tasks/00-dispatch.md` 第 5、6 节 | 交付报告格式、不许做的事、**审核清单** |

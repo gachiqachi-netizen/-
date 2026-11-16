@@ -38,7 +38,6 @@
   "miniprogram/pages/order/order.wxss:font-size:60rpx",
   "miniprogram/pages/photo/photo.wxss:border-radius:50%",
   "miniprogram/pages/wrist/wrist.wxss:border-radius:50%",
-  "miniprogram/pages/wrist/wrist.wxss:border-radius:999rpx",
   "miniprogram/pages/wrist/wrist.wxss:font-size:24rpx",
   "miniprogram/pages/wrist/wrist.wxss:font-size:28rpx",
   "miniprogram/pages/wrist/wrist.wxss:font-size:96rpx",

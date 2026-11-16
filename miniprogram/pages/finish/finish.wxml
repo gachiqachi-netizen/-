@@ -63,11 +63,9 @@
   </view>
 
   <!-- 底部栏：改一改 / 立即下单（缺货时换一颗再下单） -->
-  <c-bar>
-    <view class="bar-btns">
-      <button class="c-btn c-btn--sec bar-sec" bindtap="edit">改一改</button>
+  <c-bar layout="dual">
+      <button slot="secondary" class="c-btn c-btn--sec" bindtap="edit">改一改</button>
       <button class="c-btn" bindtap="order">{{outOfStock ? '换一颗再下单' : '立即下单'}}</button>
-    </view>
   </c-bar>
 
   <!-- 尺寸和价格弹层 -->
@@ -89,8 +87,8 @@
   <!-- 手围确认弹层 -->
   <c-sheet show="{{showWrist}}" title="先确认手围" bind:close="closeWrist">
     <view class="wrist-desc">现在按常见的 15cm</view>
-    <view class="wrist-btns">
-      <button class="c-btn c-btn--sec wrist-measure" bindtap="measureWrist">量一下</button>
+    <view slot="footer" class="wrist-btns">
+      <button class="c-btn c-btn--sec" bindtap="measureWrist">量一下</button>
       <button class="c-btn" bindtap="confirmWrist">就按 15cm</button>
     </view>
   </c-sheet>

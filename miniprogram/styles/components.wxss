@@ -4,7 +4,7 @@
  * 样子照 docs/design/mockups-final.html 里同义的类（.btn/.rowi/.tabs/.chip/.chk/.sw/.step/.state）。
  */
 
-/* 主按钮：黑底白字、高 100rpx、胶囊 */
+/* 主按钮：黑底白字、高 104rpx、胶囊 */
 .c-btn {
   display: flex;
   align-items: center;
@@ -38,7 +38,7 @@ button.c-btn::after {
   font-weight: var(--fw-regular);
 }
 
-/* 小号按钮：高 60rpx */
+/* 小号按钮：高 64rpx */
 .c-btn--s {
   flex: none;
   height: var(--h-btn-s);

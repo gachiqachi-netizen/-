@@ -63,3 +63,5 @@
   flex: 1;
   min-height: 0;
 }
+.c-sheet__footer { display: flex; width: 100%; }
+.c-sheet__footer button { box-sizing: border-box; flex: 1; height: var(--h-btn); border-radius: var(--r-pill); }

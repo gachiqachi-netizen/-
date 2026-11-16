@@ -40,7 +40,7 @@
   </view>
 
   <!-- 底部栏：到手价 + 立即下单 -->
-  <c-bar>
+  <c-bar layout="price">
     <view slot="left" class="bar-price">{{price}}</view>
     <button class="c-btn" bindtap="order">立即下单</button>
   </c-bar>

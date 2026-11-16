@@ -172,8 +172,8 @@ page {
   margin: 0;
   border-radius: var(--r-pill);
   font-size: 26rpx;
-  line-height: 64rpx;
-  height: 64rpx;
+  line-height: var(--h-btn);
+  height: var(--h-btn);
   padding: 0 36rpx;
 }
 
@@ -240,8 +240,9 @@ page {
 
 .error-actions {
   display: flex;
-  gap: 16rpx;
+  gap: var(--sp-tight);
 }
+.error-actions button { flex: 1; }
 
 /* 骨架 */
 .skeleton-card {
@@ -288,3 +289,5 @@ page {
   flex-direction: column;
   gap: 16rpx;
 }
+
+.confirm-actions { display: flex; width: 100%; gap: var(--sp-tight); }

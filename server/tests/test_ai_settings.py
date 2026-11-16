@@ -45,6 +45,16 @@ class AISettingsTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, '未配置密钥'):
                 ai_settings.validate({'provider': 'claude'}, self.db)
 
+    def test_saved_provider_and_model_override_environment_default(self):
+        self.db.put('settings', 'ai', {'provider': 'openai', 'model': 'chosen-text',
+                                      'visionModel': 'chosen-vision'})
+        with mock.patch.dict(os.environ, {'AI_API_KEY': 'test-key', 'AI_BASE_URL': 'https://example.test',
+                                          'AI_PROVIDER': 'claude'}, clear=True):
+            selected = ai.provider()
+        self.assertEqual(selected.name, 'openai-compat')
+        self.assertEqual(selected.model, 'chosen-text')
+        self.assertEqual(selected.vision_model, 'chosen-vision')
+
     def test_get_never_exposes_full_key_and_put_audits(self):
         with mock.patch.dict(os.environ, {'AI_API_KEY': 'secret-1234', 'AI_BASE_URL': 'https://example.test'}, clear=True):
             status, body = route.get_settings(self.ctx, None, None)

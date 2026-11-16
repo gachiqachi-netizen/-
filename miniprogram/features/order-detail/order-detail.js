@@ -20,6 +20,7 @@ Page({
     paymentAmount: '', sheet: '', paidLanding: false, cancelReasons: ['不想要了', '想改一改再下单', '地址填错了', '其他'] },
   onLoad(q) { this.no = q.no; this.paidIntent = q.paid === '1'; this.catalogPromise = api.catalog().then(c => { this.setData({ catalog: c.beads || [] }); return c }).catch(() => ({})); return this.load() },
   onPullDownRefresh() { return this.load().finally(() => wx.stopPullDownRefresh()) },
+  openMaterials() { this.setData({ sheet: 'materials' }) },
   async load() {
     this.setData({ loading: true, ready: false, error: '' })
     try {

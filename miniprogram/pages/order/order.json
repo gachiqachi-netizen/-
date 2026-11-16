@@ -6,6 +6,7 @@
     "c-cell": "/components/cell/index",
     "c-bar": "/components/bar/index",
     "c-bracelet": "/components/bracelet/index",
+    "c-bead": "/components/bead/index",
     "c-sheet": "/components/sheet/index",
     "c-state": "/components/state/index"
   }

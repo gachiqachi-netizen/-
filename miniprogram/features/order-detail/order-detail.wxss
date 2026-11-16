@@ -16,3 +16,6 @@
 .reason { padding: var(--sp-base) 0; border-bottom: 1rpx solid var(--c-line); }
 .error { color: var(--c-danger); margin: var(--sp-base); }
 .order-loading { display: flex; flex-direction: column; gap: var(--sp-base); }
+.material-row{display:flex;align-items:center;gap:var(--sp-base);min-height:88rpx;border-bottom:1rpx solid var(--c-line)}
+.material-photo{width:48rpx;height:48rpx;flex:none}
+.material-copy{flex:1;min-width:0}

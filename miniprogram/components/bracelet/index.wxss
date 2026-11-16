@@ -1,5 +1,6 @@
 .c-bracelet {
   position: relative;
+  overflow: hidden;
 }
 
 .c-bracelet__ring {
@@ -29,13 +30,12 @@
   flex: none;
 }
 
-.c-bracelet__wm {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.c-bracelet__sphere,
+.c-bracelet__metal {
+  border-radius: var(--r-pill);
+  box-sizing: border-box;
+}
+
+.c-bracelet__metal {
+  border: 1rpx solid var(--c-text-2);
 }

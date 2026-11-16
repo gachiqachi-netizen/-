@@ -1,16 +1,18 @@
-.page { min-height: 100vh; background: var(--c-bg); padding: 16rpx 16rpx 180rpx; box-sizing: border-box; color: var(--c-text); }
-.card { background: var(--c-surface); padding: 32rpx; margin-bottom: 16rpx; }
+.detail-surface { min-height: 100vh; background: var(--c-surface); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base); box-sizing: border-box; }
+.state-card, .success-card { padding: var(--sp-base) 0; }
 .state-title { font-size: var(--fs-title); font-weight: var(--fw-bold); }
-.section-title, .product-name { font-weight: var(--fw-bold); }
-.sub { font-size: var(--fs-caption); color: var(--c-text-2); margin-top: 10rpx; }
-.product { display: flex; align-items: center; gap: 20rpx; }
-.amount-row { display: flex; justify-content: space-between; padding-top: 24rpx; }
-.amount-row:last-child { font-weight: var(--fw-bold); }
-.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: flex-end; gap: 12rpx; padding: 16rpx 24rpx; background: var(--c-surface); }
-.action-bar button { margin: 0; }
+.sub { font-size: var(--fs-caption); color: var(--c-text-2); margin-top: var(--sp-tight); }
+.address { padding: var(--sp-tight) 0 var(--sp-base); }
+.product { display: flex; align-items: center; gap: var(--sp-base); padding: var(--sp-base) 0; }
+.thumb { width: 160rpx; height: 160rpx; flex: none; }
+.product-text { min-width: 0; flex: 1; text-align: left; }
+.product-name { font-weight: var(--fw-bold); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.product-spec { white-space: nowrap; }
+.order-time { padding: var(--sp-tight) 0 var(--sp-base); color: var(--c-text-2); font-size: var(--fs-caption); }
 .center { text-align: center; }
-.payment-name { margin-top: 36rpx; }
-.payment-amount { font-size: 56rpx; font-weight: var(--fw-bold); margin-top: 8rpx; }
-.sheet-actions, .success-actions { display: flex; gap: 16rpx; margin-top: 36rpx; }
-.reason { padding: 24rpx 0; border-bottom: 1rpx solid var(--c-line); }
-.error { color: var(--c-danger); margin: 16rpx; }
+.payment-name { margin-top: var(--sp-base); }
+.payment-amount { font-size: var(--fs-display); font-weight: var(--fw-bold); margin-top: var(--sp-tight); }
+.sheet-actions, .success-actions { display: flex; gap: var(--sp-tight); margin-top: var(--sp-base); }
+.reason { padding: var(--sp-base) 0; border-bottom: 1rpx solid var(--c-line); }
+.error { color: var(--c-danger); margin: var(--sp-base); }
+.skeleton { padding: var(--sp-base) 0; }

@@ -3,6 +3,26 @@ const api=require('../../utils/api'),store=require('../../utils/design'),auth=re
 const { layout } = require('../../utils/bracelet-layout')
 const keyOf=d=>d&&JSON.stringify([d.name,d.wrist,d.beads])
 function wrap(text,maxChars,maxLines){const chars=Array.from(String(text||''));const lines=[];let i=0;while(i<chars.length&&lines.length<maxLines){const line=chars.slice(i,i+maxChars);i+=line.length;while(i<chars.length&&/^[，。！？、；：,.!?;:]$/.test(chars[i]))line.push(chars[i++]);lines.push(line.join(''))}if(i<chars.length&&lines.length)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';return lines}
+function drawBead(ctx,point,path,x,y){
+ const r=point.r,colors=point.colors||[],light=colors[0]||'#f4f4f4',dark=colors[1]||'#c9c9c9'
+ ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip()
+ if(path){ctx.translate(x,y);ctx.rotate(point.rotate*Math.PI/180);ctx.drawImage(path,-r,-r,2*r,2*r)}
+ else{
+  const base=ctx.createCircularGradient(x-r*.28,y-r*.4,r*1.8)
+  base.addColorStop(0,light);base.addColorStop(.45,light);base.addColorStop(1,dark)
+  ctx.setFillStyle(base);ctx.fillRect(x-r,y-r,2*r,2*r)
+  const shine=ctx.createCircularGradient(x-r*.36,y-r*.45,r*.95)
+  shine.addColorStop(0,'rgba(255,255,255,0.9)');shine.addColorStop(.26,'rgba(255,255,255,0)');shine.addColorStop(1,'rgba(255,255,255,0)')
+  ctx.setFillStyle(shine);ctx.fillRect(x-r,y-r,2*r,2*r)
+  const glow=ctx.createCircularGradient(x+r*.28,y+r*.48,r*.8)
+  glow.addColorStop(0,'rgba(255,255,255,0.35)');glow.addColorStop(.42,'rgba(255,255,255,0)');glow.addColorStop(1,'rgba(255,255,255,0)')
+  ctx.setFillStyle(glow);ctx.fillRect(x-r,y-r,2*r,2*r)
+  const shade=ctx.createCircularGradient(x,y,r)
+  shade.addColorStop(.65,'rgba(0,0,0,0)');shade.addColorStop(1,'rgba(0,0,0,0.16)')
+  ctx.setFillStyle(shade);ctx.fillRect(x-r,y-r,2*r,2*r)
+ }
+ ctx.restore()
+}
 Page({
  data:{design:null,width:343,height:505,loading:true,ready:false,preview:false,missing:0,error:'',saveBusy:false,shareBusy:false,shareId:'',shareError:'',items:[],catalog:[],snapshot:"",snapshotFailed:false,tags:[],meaning:'',qrPath:'',qrFallback:true,albumDenied:false,moreOpen:false},
  onLoad(){const w=Math.max(200,Math.min(430,wx.getSystemInfoSync().windowWidth-32));this.setData({width:w,height:Math.round(w*1060/720)})},
@@ -30,12 +50,12 @@ Page({
   const ctx=wx.createCanvasContext('shareCard',this)
   ctx.setFillStyle('#fff');ctx.fillRect(0,0,w,h);ctx.setFillStyle('#f5f4f2');ctx.fillRect(16*s,16*s,688*s,620*s)
   const left=110*s,top=82*s
+  const centerX=left+250*s,centerY=top+250*s
+  const inner=points.length?Math.min(...points.map(point=>Math.hypot(point.x-250*s,point.y-250*s)-point.r)):0
+  const markWidth=Math.min(200*s,Math.max(0,inner*2-20*s))
+  if(markWidth>0)ctx.drawImage('/pages/share/wordmark-line.png',centerX-markWidth/2,centerY-markWidth*128/259/2,markWidth,markWidth*128/259)
   points.forEach((point,i)=>{
-    const x=left+point.x,y=top+point.y,r=point.r
-    ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip()
-    if(paths[i]){ctx.translate(x,y);ctx.rotate(point.rotate*Math.PI/180);ctx.drawImage(paths[i],-r,-r,2*r,2*r)}
-    else{ctx.setFillStyle((point.colors||[])[0]||'#bcb6b1');ctx.fillRect(x-r,y-r,2*r,2*r)}
-    ctx.restore()
+    drawBead(ctx,point,paths[i],left+point.x,top+point.y)
   })
   ctx.setFillStyle('#111');ctx.setFontSize(28*s);ctx.fillText('珠养养',56*s,74*s)
   ctx.setFontSize(42*s);ctx.fillText(String(d.name||'我的手串').slice(0,12),56*s,715*s)
@@ -60,4 +80,4 @@ Page({
  buySame(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });const original=this.data.design;const next={...store.create(),name:original.name,wrist:original.wrist,beads:original.beads.slice(),meaning:original.meaning,source:'shared'};store.selected(next);wx.navigateTo({url:'/pages/order/order'})},
  order(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });wx.navigateTo({url:'/pages/order/order'})}
 })
-module.exports = { wrap }
+module.exports = { wrap, drawBead }

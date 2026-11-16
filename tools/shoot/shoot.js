@@ -15,7 +15,7 @@ const cli = process.env.WECHAT_DEVTOOLS_CLI || '/Applications/wechatwebdevtools.
 function options() {
   const args = process.argv.slice(2)
   const get = name => { const i = args.indexOf(name); return i < 0 ? '' : args[i + 1] || '' }
-  if (!get('--out')) throw new Error('用法：node tools/shoot/shoot.js --out docs/reports/shots/<卡号>/<before|after> [--only order-confirm,order-detail]')
+  if (!get('--out')) throw new Error('用法：node tools/shoot/shoot.js --out docs/reports/shots/<卡号> [--only order-confirm,order-detail] [--timing]')
   const only = get('--only').split(',').map(x => x.trim()).filter(Boolean)
   const unknown = only.filter(x => !pages.some(p => p.name === x || p.name.startsWith(x + '-')))
   if (unknown.length) throw new Error('未知页面：' + unknown.join(', '))
@@ -50,7 +50,9 @@ async function screenWarnings(page) {
   const data = await page.data()
   const hasFreeProduct = (data.catalog || data.items || []).some(item =>
     item && (item.priceFen === 0 || item.price === 0))
-  const nodes = [...await page.$$('text'), ...await page.$$('button')]
+  // Text can be a bare child of <view>; scanning only <text> misses price summaries.
+  const nodes = [...(await page.$$('text') || []), ...(await page.$$('button') || []),
+    ...(await page.$$('view') || [])]
   const visible = (await Promise.all(nodes.map(node => node.text().catch(() => '')))).join(' ')
   const warnings = []
   for (const value of ['NaN', 'undefined', '0 种']) {
@@ -242,6 +244,7 @@ async function main() {
         const url = item.path.replace(/\{(\w+)\}/g, (_, key) => data[key])
         const page = await openPage(mini, url)
         if (!page) throw new Error('页面没有打开')
+        const ready = await waitReady(page)
         if (item.name === 'ai-match') {
           const newChat = await page.$('.ai-new')
           if (newChat) { await newChat.tap(); await page.waitFor(300) }
@@ -260,11 +263,8 @@ async function main() {
           if (!complete) throw new Error('AI 配 30 秒内没有返回完整方案')
         }
         if (item.name === 'order-confirm') {
-          const gift = (await page.$$('.rows .row'))[2]
-          if (!gift) throw new Error('送礼入口不存在')
-          await gift.tap()
+          await page.setData({ sheet: 'gift' })
         }
-        const ready = await waitReady(page)
         const state = await page.data()
         if (state.error || state.configError) throw new Error(state.error || state.configError)
         const warnings = await screenWarnings(page)

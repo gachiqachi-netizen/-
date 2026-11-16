@@ -15,7 +15,7 @@ import payments
 import plans
 import pricing
 import status
-from bead_visual import VISUAL_KEYS, current_visual, visual_of
+from bead_visual import VISUAL_KEYS, current_visual, placeholder_of, visual_of
 
 ACTOR = "admin"
 
@@ -818,6 +818,10 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
 
     若订单已存有 designSnapshot，则直接返回已冻结的快照，绝不用当前商品目录覆写。
     """
+    can_read_catalog = db is not None and not db.lock.locked()
+    def visual_for(bead_id):
+        return current_visual(db, bead_id) if can_read_catalog else placeholder_of(bead_id)
+
     existing = (order_or_data or {}).get("designSnapshot")
     if isinstance(existing, dict) and existing.get("sequence"):
         sequence = existing["sequence"]
@@ -825,7 +829,7 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
             return existing
         restored = []
         for bead in sequence:
-            visual = current_visual(db, bead.get("id"))
+            visual = visual_for(bead.get("id"))
             restored.append({**visual, **bead, **{key: visual[key] for key in VISUAL_KEYS if key not in bead}})
         return {**existing, "sequence": restored}
     d = dict(order_or_data or {})
@@ -848,13 +852,13 @@ def build_design_snapshot(db, order_or_data, frozen_items=None):
             raw_b = db.get("beads", bid)
             snap_item = kb.enrich(raw_b) if raw_b else {"id": bid, "name": bid, "mm": 8, "priceFen": 0}
         snap_item = snap_item or {"id": bid, "name": bid, "mm": 8, "priceFen": 0}
-        current = db.get("beads", bid) if db is not None else None
+        current = db.get("beads", bid) if can_read_catalog else None
         visual_source = {**(current or {}), **snap_item}
         if "colors" not in snap_item and "c" not in snap_item and current:
             visual_source["c"] = current.get("c")
         if not snap_item.get("photo") and current:
             visual_source["photo"] = current.get("photo")
-        visual = visual_of(visual_source) if current or snap_item.get("c") or snap_item.get("colors") else current_visual(db, bid)
+        visual = visual_of(visual_source) if current or snap_item.get("c") or snap_item.get("colors") else visual_for(bid)
         mm = float(snap_item.get("mm") or 0)
         ufen = _bead_unit_fen(snap_item) if ("priceFen" in snap_item or "price" in snap_item) else int(snap_item.get("unitPriceFen") or 0)
         is_spacer = bool(snap_item.get("spacer") or snap_item.get("type") == "spacer")

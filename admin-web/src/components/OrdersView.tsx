@@ -6,6 +6,7 @@ import { Table } from '../ui/Table';
 import { StatusText } from '../ui/StatusText';
 import OrdersOpsPanel from '../pages/orders/orderOps';
 import { Can } from '../permissions';
+import Bracelet from '../bracelet/Bracelet';
 
 interface OrdersViewProps {
   orders: any[];
@@ -390,7 +391,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
         const opsMeta = ops.code ? (CONTRACT.opsStatus as Record<string, { label: string; danger: boolean }>)[ops.code] : null;
         const wo = detail.workOrder || {};
         const snap = detail.designSnapshot || {};
-        const snapBeads = snap.beads || snap.sequence || [];
+        const snapBeads = snap.sequence || [];
         const snapMaterials = snap.materials || [];
         const transitions = detail.allowedTransitions || {};
         const allActions = (['orderStatus', 'fulfillmentStatus', 'logisticsStatus'] as const).flatMap((g) =>
@@ -536,6 +537,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                 <div className="zy-card" style={{ marginBottom: 16 }}>
                   <div className="zy-card-title">手串</div>
                   <div style={{ padding: '14px 16px' }}>
+                    {snapBeads.length > 0 ? <Bracelet sequence={snapBeads} size={152} label={`${detail.name || '定制手串'} 手串图`} /> : null}
                     <div>
                       <div style={{ fontWeight: 600 }}>{detail.name || '定制手串'}</div>
                       {metaLine && <div className="zy-table-aux">{metaLine}</div>}

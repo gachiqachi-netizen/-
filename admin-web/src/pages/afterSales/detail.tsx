@@ -4,6 +4,7 @@ import { Button } from '../../ui/Button';
 import { apiRequest, fenToYuan, fmtTime } from '../../api';
 import { CONTRACT } from '../../contract';
 import { Can, can } from '../../permissions';
+import Bracelet, { type VisualBead } from '../../bracelet/Bracelet';
 
 const STATUS_LABELS: Record<string, string> = { ...(CONTRACT.statusLabels.afterSaleStatus || {}) };
 
@@ -46,6 +47,7 @@ const AfterSaleDrawer: React.FC<{
   onViewOrder: (orderNo: string) => void;
 }> = ({ afterSaleNo, onClose, onChanged, notify, onViewOrder }) => {
   const [rec, setRec] = React.useState<AfterSaleDetail | null>(null);
+  const [orderVisual, setOrderVisual] = React.useState<VisualBead[]>([]);
   const [error, setError] = React.useState('');
   const [userNote, setUserNote] = React.useState('');
   const [busy, setBusy] = React.useState('');
@@ -54,8 +56,14 @@ const AfterSaleDrawer: React.FC<{
 
   const load = () => {
     setError('');
+    setOrderVisual([]);
     apiRequest<AfterSaleDetail>(`/api/admin/after-sales/${encodeURIComponent(afterSaleNo)}`)
-      .then(setRec)
+      .then((sale) => {
+        setRec(sale);
+        return apiRequest<{ designSnapshot?: { sequence?: VisualBead[] } }>(`/api/admin/orders/${encodeURIComponent(sale.orderNo)}`)
+          .then((order) => setOrderVisual(order.designSnapshot?.sequence || []))
+          .catch(() => setOrderVisual([]));
+      })
       .catch((e) => setError(e.message));
   };
   React.useEffect(load, [afterSaleNo]);
@@ -212,6 +220,7 @@ const AfterSaleDrawer: React.FC<{
           <div className="zy-card">
             <div className="zy-card-title">订单</div>
             <div style={{ padding: '12px 16px', fontSize: 13 }}>
+              {orderVisual.length > 0 ? <Bracelet sequence={orderVisual} size={152} label="售后订单手串图" /> : null}
               {rec.orderNo}{' '}
               <span
                 className="zy-table-aux"

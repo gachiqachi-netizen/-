@@ -7,6 +7,7 @@ import { Skeleton } from '../../ui/Skeleton';
 import { ErrorState } from '../../ui/ErrorState';
 import { EmptyState } from '../../ui/EmptyState';
 import './templates.css';
+import Bracelet, { BeadGlyph } from '../../bracelet/Bracelet';
 
 interface TemplatesWorkbenchProps {
   templates: any[];
@@ -336,10 +337,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
                 title={offSale ? `${bid} 已下架` : bid}
               >
                 <GripVertical className="tpl-grip" size={12} />
-                <span
-                  className="tpl-dot"
-                  style={{ background: bead?.color || '#94a3b8' }}
-                />
+                {bead ? <BeadGlyph bead={bead} size={20} /> : null}
                 {bead?.name || bid}
                 {offSale && <em className="tpl-off-tag">下架</em>}
                 <button
@@ -378,6 +376,8 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
   };
 
   const allLoading = previews.some((p) => p.loading);
+  const selectedPreview = previews.find((p) => p.wrist === Number(form?.wrist) && p.data)?.data;
+  const previewBeads = (selectedPreview?.beads || []).map((id: string) => beadById.get(id)).filter(Boolean);
   const warnings = (previews.find((p) => p.data && p.data.warnings && p.data.warnings.length) || {}).data?.warnings;
 
   return (
@@ -509,6 +509,8 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
               ) : previews.some((p) => p.error) && previews.every((p) => p.error) ? (
                 <ErrorState reason={previews[0].error || '展开失败'} onRetry={() => setForm({ ...form })} />
               ) : (
+                <>
+                {previewBeads.length > 0 ? <Bracelet sequence={previewBeads} size={240} label="模板手串预览" /> : null}
                 <table className="zy-table tpl-preview-table">
                   <thead>
                     <tr>
@@ -545,6 +547,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
                     ))}
                   </tbody>
                 </table>
+                </>
               )}
               {warnings && warnings.length > 0 && (
                 <div className="tpl-banner tpl-banner-warn">{warnings.join('；')}</div>

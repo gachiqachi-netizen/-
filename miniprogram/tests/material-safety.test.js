@@ -22,7 +22,7 @@ test('safety notice stays visible and unchecked agreement blocks submission',asy
   p.calculate();p.data.catalogReady=true
   assert.equal(p.data.fit,'长度基本合适');assert.equal(p.data.safety,'测试材料：不可入口');assert.equal(p.data.hasSafety,true)
   const markup=require('fs').readFileSync(require('path').join(__dirname,'../pages/order/order.wxml'),'utf8')
-  assert.match(markup,/\{\{item\.safety\}\}/);assert.match(markup,/wx:if="\{\{hasSafety\}\}"[^>]*>材料安全提示/)
+  assert.match(markup,/\{\{item\.safety\}\}/);assert.match(markup,/<text class="under" data-type="材料安全说明" bindtap="openRule">材料安全提示/)
   await p.submit();assert.equal(posts,0);assert.equal(p.data.agreeError,true)
   p.toggleAgreed();await p.submit();assert.equal(posts,1)
  }finally{api.catalog=oldCatalog;auth.authorized=oldAuth;auth.hasSession=oldSession}

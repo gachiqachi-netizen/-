@@ -1,7 +1,7 @@
-<view class="page">
+<c-page><c-nav-bar title="确认订单" />
   <c-state wx:if="{{!design}}" title="没找到要下单的手串" action="去首页看看" bind:action="home" />
   <block wx:else>
-    <view class="address-row {{addressShake ? 'shake' : ''}}" bindtap="manualAddress">
+    <c-card><view class="address-row {{addressShake ? 'shake' : ''}}" bindtap="manualAddress">
       <view wx:if="{{person}}"><view class="address-name">{{person}}　{{phone}}</view><view class="address-detail">{{addr}}</view></view>
       <view wx:else>收货地址</view>
       <view class="address-actions" wx:if="{{!person}}">
@@ -9,32 +9,32 @@
         <text catchtap="manualAddress">手动填写 ›</text>
       </view>
       <text wx:else class="link">修改 ›</text>
-    </view>
+    </view></c-card>
 
-    <view class="summary">
+    <c-card><view class="summary">
       <view class="bracelet"><c-bracelet beads="{{beads}}" size="144" /></view>
       <view class="summary-text"><view class="name">{{design.name}}</view><view class="meaning">{{design.meaning}}</view><view class="hint">{{design.beads.length}} 颗 · 手围 {{design.wrist}}cm 合适</view></view>
-    </view>
-    <view class="rows">
-      <view class="row" bindtap="openMaterials"><text>材料</text><text class="link">{{items.length}} 种 ›</text></view>
-      <view class="row" bindtap="openCord"><text>穿绳</text><text>{{cord === 1 ? '编织绳' : '弹力线'}} ›</text></view>
-      <view class="row" bindtap="openGift"><text>送礼</text><text>{{gift ? '礼盒和贺卡' : '礼盒和贺卡'}} ›</text></view>
-    </view>
-    <view class="rows prices">
-      <view class="row"><text>珠子</text><text>¥{{goods}}</text></view>
-      <view wx:if="{{handwork !== '0.00'}}" class="row"><text>手工费</text><text>¥{{handwork}}</text></view>
-      <view wx:if="{{cord === 1}}" class="row"><text>穿绳</text><text>¥{{cordPrice}}</text></view>
-      <view wx:if="{{gift}}" class="row"><text>礼盒</text><text>¥{{giftPrice}}</text></view>
-      <view class="row"><view>运费<view wx:if="{{shipNote}}" class="hint">{{shipNote}}</view></view><text>{{ship === '0.00' ? '包邮' : '¥' + ship}}</text></view>
-    </view>
+    </view></c-card>
+    <c-card><view class="rows">
+      <c-cell label="材料" value="{{items.length}} 种" arrow="{{true}}" bind:tap="openMaterials" />
+      <c-cell label="穿绳" value="{{cord === 1 ? '编织绳' : '弹力线'}}" arrow="{{true}}" bind:tap="openCord" />
+      <c-cell label="送礼" value="礼盒和贺卡" arrow="{{true}}" bind:tap="openGift" />
+    </view></c-card>
+    <c-card><view class="rows prices">
+      <c-cell label="珠子" value="¥{{goods}}" />
+      <c-cell wx:if="{{handwork !== '0.00'}}" label="手工费" value="¥{{handwork}}" />
+      <c-cell wx:if="{{cord === 1}}" label="穿绳" value="¥{{cordPrice}}" />
+      <c-cell wx:if="{{gift}}" label="礼盒" value="¥{{giftPrice}}" />
+      <c-cell label="运费" value="{{ship === '0.00' ? '包邮' : '¥' + ship}}"><view slot="label" wx:if="{{shipNote}}" class="hint">{{shipNote}}</view></c-cell>
+    </view></c-card>
     <view class="payment-note">提交订单后进入付款，付款前可以再次核对金额。</view>
     <view wx:if="{{error}}" class="error">{{error}}</view>
-    <c-bar>
+    <c-bar layout="agreement">
       <view slot="top" class="bar-top">
         <view wx:if="{{fit && fit !== '长度基本合适'}}" class="length-note">{{fit}}，确定这样下单？<text class="link" bindtap="edit">回去调整 ›</text></view>
         <view class="agreement {{agreeError ? 'agreement-error' : ''}} {{agreeShake ? 'shake' : ''}}">
           <view class="check {{agreed ? 'checked' : ''}}" bindtap="toggleAgreed">{{agreed ? '✓' : ''}}</view>
-          <view class="agreement-text"><text bindtap="toggleAgreed">{{agreeError ? '请先勾选：' : '我已阅读 '}}</text><text wx:if="{{hasSafety}}" class="under" data-type="材料安全说明" bindtap="openRule">材料安全提示</text><text wx:if="{{hasSafety}}"> 和 </text><text class="under" data-type="定制商品说明" bindtap="openRule">定制商品退换说明</text></view>
+          <view class="agreement-text"><text bindtap="toggleAgreed">{{agreeError ? '请先勾选：' : '我已阅读 '}}</text><text class="under" data-type="材料安全说明" bindtap="openRule">材料安全提示</text><text> 和 </text><text class="under" data-type="定制商品说明" bindtap="openRule">定制商品退换说明</text></view>
         </view>
       </view>
       <view slot="left" class="total">¥{{total}}</view>
@@ -59,12 +59,12 @@
     <view class="sheet-row" data-cord="1" bindtap="setCord">编织绳 +¥{{pricing.cordFen / 100}} <text>{{cord === 1 ? '✓' : ''}}</text></view>
   </c-sheet>
   <c-sheet show="{{sheet === 'gift'}}" title="送礼" bind:close="closeSheet">
-    <view class="sheet-row" bindtap="toggleGift">礼盒 +¥{{pricing.giftFen / 100}} <text>{{gift ? '✓' : ''}}</text></view>
+    <c-cell label="礼盒" value="+¥{{pricing.giftFen / 100}}" switch="{{true}}" checked="{{gift}}" bind:change="setGift" />
     <view class="sheet-label">贺卡留言（选填，最多 50 字）</view>
     <textarea maxlength="50" placeholder="写一句想说的话" value="{{giftNote}}" data-key="giftNote" bindinput="input" />
     <view class="counter">{{giftNote.length}}/50</view>
-    <view class="sheet-row" bindtap="toggleHidePrice">隐藏价格：包裹里不放带价格的单据 <text>{{hidePrice ? '✓' : ''}}</text></view>
-    <button class="c-btn" bindtap="finishGift">好了</button>
+    <c-cell label="隐藏价格：包裹里不放带价格的单据" switch="{{true}}" checked="{{hidePrice}}" bind:change="toggleHidePrice" />
+    <view slot="footer" class="gift-footer"><button class="c-btn" bindtap="finishGift">好了</button></view>
   </c-sheet>
   <c-sheet show="{{sheet === 'price'}}" title="价格有变化" maskClose="{{false}}">
     <view>你挑的时候到现在，有材料调了价。</view>
@@ -77,6 +77,6 @@
     <view class="payment-amount">¥{{paymentAmount}}</view>
     <view class="sheet-actions"><button class="c-btn c-btn--sec" data-result="fail" bindtap="finishPayment">支付失败</button><button class="c-btn" data-result="success" bindtap="finishPayment">支付成功</button></view>
   </c-sheet>
-</view>
+</c-page>
 
 <c-toast />

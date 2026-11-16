@@ -1,31 +1,28 @@
-.page { min-height: 100vh; background: var(--c-bg); padding-bottom: 240rpx; color: var(--c-text); font-size: var(--fs-body); }
-.address-row, .row, .sheet-row { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
+.address-row, .sheet-row { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
 .address-row { min-height: 136rpx; padding: 16rpx 32rpx; box-sizing: border-box; }
 .address-name, .name { font-weight: var(--fw-bold); }
 .address-detail { margin-top: 8rpx; font-size: var(--fs-caption); color: var(--c-text-2); }
 .address-actions { display: flex; align-items: center; gap: 16rpx; font-size: var(--fs-caption); }
 .small { height: 64rpx; padding: 0 18rpx; font-size: var(--fs-caption); flex: none; }
-.summary { display: flex; align-items: center; gap: 24rpx; padding: 28rpx 32rpx; border-top: 1rpx solid var(--c-line); }
+.summary { display: flex; align-items: center; gap: 24rpx; padding: 28rpx 32rpx; }
 .bracelet { width: 144rpx; height: 144rpx; flex: none; background: var(--c-surface); display: flex; align-items: center; justify-content: center; }
 .summary-text { flex: 1; min-width: 0; }
 .name { font-size: var(--fs-title); }
 .meaning { margin-top: 8rpx; }
 .hint { margin-top: 8rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
-.rows { margin-top: 16rpx; border-top: 1rpx solid var(--c-line); }
-.row { min-height: 88rpx; padding: 0 32rpx; border-bottom: 1rpx solid var(--c-line); }
-.prices { margin-top: 28rpx; }
 .link { color: var(--c-text-2); }
 .payment-note { padding: 24rpx 32rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
 .error { padding: 12rpx 32rpx; color: var(--c-danger); font-size: var(--fs-caption); }
 .bar-top { padding-bottom: 16rpx; }
 .length-note { margin-bottom: 12rpx; font-size: var(--fs-caption); color: var(--c-text-2); }
-.agreement { display: flex; align-items: center; gap: 8rpx; white-space: nowrap; }
+.agreement { display: flex; align-items: flex-start; gap: 8rpx; }
 .check { width: 32rpx; height: 32rpx; flex: none; border: 2rpx solid var(--c-text); border-radius: 50%; text-align: center; line-height: 32rpx; font-size: 24rpx; }
 .checked { background: var(--c-text); color: var(--c-bg); }
-.agreement-text { font-size: 22rpx; white-space: nowrap; }
+.agreement-text { flex: 1; min-width: 0; font-size: 22rpx; line-height: 1.5; }
 .under { text-decoration: underline; }
 .agreement-error { color: var(--c-danger); }
 .agreement-error .check { border-color: var(--c-danger); }
+.gift-footer { display: flex; width: 100%; margin-top: 24rpx; }
 .total { font-size: var(--fs-title); font-weight: var(--fw-bold); white-space: nowrap; }
 .safety-copy { white-space: pre-line; line-height: 1.6; }
 .sheet-row { min-height: 88rpx; padding: 16rpx 0; border-bottom: 1rpx solid var(--c-line); }

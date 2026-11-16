@@ -57,7 +57,8 @@ Component({
   },
   methods: {
     photoUrl(bead) {
-      const p = bead && bead.photo;
+      const size = this.data.size;
+      const p = bead && ((size === 's' ? bead.photoSm : size === 'm' ? bead.photoMd : bead.photo) || bead.photo);
       if (!p) return '';
       if (/^(https?:|data:)/.test(p)) return p;
       const app = typeof getApp === 'function' ? getApp() : null;
@@ -70,7 +71,7 @@ Component({
         return;
       }
       const bead = this.data.bead || {};
-      this.setData({ paintStyle: paint(bead.c) });
+      this.setData({ paintStyle: paint(bead.colors || bead.c) });
       const url = this.photoUrl(bead);
       if (!url) {
         this.setData({ photoPath: '' });

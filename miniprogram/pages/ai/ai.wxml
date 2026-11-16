@@ -1,8 +1,5 @@
 <view class="ai-page">
-  <view class="ai-nav" style="padding-top:{{navTop}}rpx;height:{{navHeight}}rpx">
-    <view wx:if="{{messages.length}}" class="ai-new" style="height:{{navHeight}}rpx" bindtap="clear">新对话</view>
-    <text>AI 配</text>
-  </view>
+  <view wx:if="{{messages.length}}" class="ai-chat-tools"><text class="ai-new" bindtap="clear">新对话</text></view>
   <scroll-view class="ai-chat" scroll-y enhanced show-scrollbar="{{false}}" scroll-into-view="{{scrollTo}}" scroll-with-animation>
     <view wx:if="{{!messages.length}}" class="ai-welcome">
       <view class="ai-welcome-title">想要什么感觉，直接说</view>

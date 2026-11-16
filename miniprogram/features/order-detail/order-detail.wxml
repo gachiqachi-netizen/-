@@ -1,5 +1,4 @@
 <c-page>
-  <c-nav-bar title="订单详情" home="{{true}}" />
   <view class="detail-surface">
     <c-card wx:if="{{loading}}"><view class="skeleton">正在读取订单…</view></c-card>
     <c-state wx:elif="{{error && !order}}" title="没找到这笔订单" action="重新加载" bind:action="load" />

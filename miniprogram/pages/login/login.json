@@ -1,7 +1,7 @@
 {
-  "navigationStyle": "custom",
   "usingComponents": {
     "c-sheet": "/components/sheet/index",
     "c-wordmark": "/components/wordmark/index"
-  }
+  },
+  "navigationBarTitleText": "登录"
 }

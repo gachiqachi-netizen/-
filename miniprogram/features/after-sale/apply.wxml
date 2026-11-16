@@ -1,5 +1,4 @@
 <c-page>
-  <c-nav-bar title="申请售后" home="{{true}}" />
   <view class="surface">
     <c-card wx:if="{{loading}}"><view class="hint">正在读取申请选项…</view></c-card>
     <c-card wx:if="{{error}}"><view class="error">{{error}}</view><button wx:if="{{!option}}" class="c-btn c-btn--sec" bindtap="load">重试</button></c-card>

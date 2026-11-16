@@ -1,5 +1,4 @@
 <c-page>
-  <c-nav-bar title="售后详情" home="{{true}}" />
   <view class="surface">
     <c-state wx:if="{{error && !sale}}" title="售后记录暂时无法读取" desc="{{error}}" action="重试" bind:action="load" />
     <block wx:if="{{sale}}">

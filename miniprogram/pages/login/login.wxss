@@ -1,5 +1,4 @@
 .login-page { min-height: 100vh; background: var(--c-bg); color: var(--c-text); position: relative; box-sizing: border-box; padding: 0 32rpx; }
-.login-nav { height: 88rpx; padding-top: env(safe-area-inset-top); display: flex; align-items: center; font-size: 56rpx; }
 .login-main { display: flex; flex-direction: column; align-items: center; padding-top: 120rpx; }
 .login-sub { margin-top: 44rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
 .login-action { width: 100%; position: relative; margin-top: 192rpx; }

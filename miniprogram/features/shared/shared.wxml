@@ -1,5 +1,4 @@
 <c-page>
-  <c-nav-bar title="好友的手串" home="{{true}}" />
   <c-card wx:if="{{loading}}"><view class="skeleton"><view></view><view></view><view></view></view></c-card>
   <c-card wx:elif="{{deleted}}"><view class="empty"><view class="empty-title">这条手串看不到了</view><view class="muted">可能已经被主人删除</view><button class="c-btn c-btn--sec" bindtap="start">我也串一条</button></view></c-card>
   <c-card wx:elif="{{error}}"><view class="empty"><view class="empty-title">没连上</view><view class="muted">{{error}}</view><button class="c-btn c-btn--sec" bindtap="retry">再试一次</button></view></c-card>

@@ -1,6 +1,5 @@
 {
   "navigationBarTitleText": "AI 配",
-  "navigationStyle": "custom",
   "usingComponents": {
     "c-bracelet": "/components/bracelet/index",
     "c-composer": "/components/composer/index",

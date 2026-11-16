@@ -34,6 +34,24 @@ test('navigation aligns title with capsule measurements', () => {
   assert.match(read('miniprogram/components/nav-bar/index.wxml'), /statusHeight \+ navHeight/)
   assert.match(read('miniprogram/components/nav-bar/index.wxss'), /position:\s*fixed/)
 })
+test('only the DIY workbench keeps custom navigation', () => {
+  const pages = ['pages/home/home', 'pages/ai/ai', 'pages/order/order', 'pages/login/login', 'pages/share/share',
+    'features/order-detail/order-detail', 'features/shared/shared', 'features/after-sale/type',
+    'features/after-sale/apply', 'features/after-sale/detail']
+  for (const page of pages) {
+    const config = JSON.parse(read(`miniprogram/${page}.json`))
+    assert.notEqual(config.navigationStyle, 'custom', page)
+    assert.ok(config.navigationBarTitleText, page)
+    assert.doesNotMatch(read(`miniprogram/${page}.wxml`), /<c-nav-bar\b/, page)
+  }
+  assert.equal(JSON.parse(read('miniprogram/pages/diy/diy.json')).navigationStyle, 'custom')
+  assert.match(read('miniprogram/pages/diy/diy.wxml'), /<c-nav-bar\b/)
+  assert.match(read('miniprogram/pages/ai/ai.wxml'), /class="ai-chat-tools"[\s\S]*class="ai-new" bindtap="clear"/)
+})
+test('home thumbnails fit inside the two-column tiles', () => {
+  assert.match(read('miniprogram/pages/home/home.wxml'), /class="traybox"[\s\S]*<bracelet-thumb\b/)
+  assert.match(read('miniprogram/pages/home/home.wxss'), /\.traybox bracelet-thumb\{[^}]*width:220rpx;height:220rpx/)
+})
 test('UI checker enforces square image areas but allows circular add-photo', () => {
   const dir = fs.mkdtempSync(path.join(root, 'miniprogram', 'ui-shape-'))
   const file = path.join(dir, 'shape.wxss')

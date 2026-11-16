@@ -32,7 +32,6 @@
   "miniprogram/pages/finish/finish.wxss:font-size:22rpx",
   "miniprogram/pages/finish/finish.wxss:font-size:36rpx",
   "miniprogram/pages/finish/finish.wxss:font-size:48rpx",
-  "miniprogram/pages/login/login.wxss:font-size:56rpx",
   "miniprogram/pages/order/order.wxss:border-radius:50%",
   "miniprogram/pages/order/order.wxss:font-size:22rpx",
   "miniprogram/pages/order/order.wxss:font-size:24rpx",

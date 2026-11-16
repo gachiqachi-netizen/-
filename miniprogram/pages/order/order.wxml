@@ -1,4 +1,4 @@
-<c-page><c-nav-bar title="确认订单" />
+<c-page>
   <c-state wx:if="{{!design}}" title="没找到要下单的手串" action="去首页看看" bind:action="home" />
   <block wx:else>
     <c-card><view class="address-row {{addressShake ? 'shake' : ''}}" bindtap="manualAddress">

@@ -1,5 +1,4 @@
 <c-page>
-  <c-nav-bar title="选择售后类型" home="{{true}}" />
   <view class="surface">
     <c-card wx:if="{{loading}}"><view class="hint">正在读取订单…</view></c-card>
     <c-card wx:if="{{error}}"><view class="error">{{error}}</view><button class="c-btn c-btn--sec" bindtap="load">重试</button></c-card>

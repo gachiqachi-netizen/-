@@ -1,5 +1,4 @@
 <c-page>
-  <c-nav-bar title="分享" />
   <c-cell wx:if="{{shareId}}" label="更多" arrow bind:tap="more" />
   <c-card wx:if="{{loading}}"><view class="skeleton">正在生成分享海报…</view></c-card>
   <c-card wx:if="{{design}}">

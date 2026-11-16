@@ -1,5 +1,4 @@
 <view class="login-page">
-  <view class="login-nav" bindtap="back">‹</view>
   <view class="login-main">
     <c-wordmark size="block" />
     <view class="login-sub">登录后，订单和作品换手机也在</view>

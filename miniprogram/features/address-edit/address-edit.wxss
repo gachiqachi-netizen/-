@@ -1,5 +1,5 @@
 .edit-surface { min-height: 100vh; background: var(--c-surface); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base); box-sizing: border-box; }
-.form-card { padding: 0 var(--sp-base); }
+.form-card { padding: 0; }
 .form-row { min-height: var(--h-row); display: flex; align-items: center; border-bottom: 1rpx solid var(--c-line); gap: var(--sp-tight); font-size: var(--fs-body); }
 .form-row:last-child { border-bottom: 0; }
 .label { width: 152rpx; flex: none; }

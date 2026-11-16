@@ -1,4 +1,5 @@
-.c-nav-bar { box-sizing: content-box; display: flex; align-items: center; background: var(--c-bg); }
+.c-nav-bar__holder { width: 100%; }
+.c-nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-sizing: content-box; display: flex; align-items: center; background: var(--c-bg); }
 .c-nav-bar__back { width: var(--h-btn-s); height: 100%; display: flex; align-items: center; justify-content: center; }
 .c-nav-bar__back image { width: var(--fs-body); height: var(--fs-body); }
 .c-nav-bar__title { flex: 1; text-align: center; font-size: var(--fs-body); font-weight: var(--fw-bold); }

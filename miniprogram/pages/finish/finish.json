@@ -1,4 +1,4 @@
 {
-  "navigationBarTitleText": "",
+  "navigationBarTitleText": "手串详情",
   "usingComponents": {"c-skeleton": "/components/skeleton/index"}
 }

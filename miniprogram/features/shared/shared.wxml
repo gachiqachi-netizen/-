@@ -1,7 +1,7 @@
 <c-page>
   <c-card wx:if="{{loading}}"><view class="shared-loading"><c-skeleton shape="block" width="100%" ratio="1/1"/><c-skeleton shape="line" width="80%" font="title"/><c-skeleton shape="line" width="60%" font="body"/></view></c-card>
-  <c-card wx:elif="{{deleted}}"><view class="empty"><view class="empty-title">这条手串看不到了</view><view class="muted">可能已经被主人删除</view><button class="c-btn c-btn--sec" bindtap="start">我也串一条</button></view></c-card>
-  <c-card wx:elif="{{error}}"><view class="empty"><view class="empty-title">没连上</view><view class="muted">{{error}}</view><button class="c-btn c-btn--sec" bindtap="retry">再试一次</button></view></c-card>
+  <c-state wx:elif="{{deleted}}" title="这条手串看不到了" desc="可能已经被主人删除" action="我也串一条" bind:action="start" />
+  <c-state wx:elif="{{error}}" title="没连上" desc="{{error}}" action="再试一次" bind:action="retry" />
   <block wx:elif="{{design}}">
     <c-card><view class="stage"><c-bracelet wx:if="{{!rotating}}" beads="{{visual}}" size="560"/><bracelet3d wx:else beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}"/><button class="rotate-btn c-btn c-btn--sec" bindtap="toggleRotate">{{rotating ? '看手串图' : '转一转'}}</button></view></c-card>
     <c-card><view class="intro"><view class="muted">{{authorLabel}}<text wx:if="{{dateLabel}}"> · {{dateLabel}}</text></view><view class="name">{{design.name}}</view><view wx:if="{{meaning}}" class="meaning">{{meaning}}</view></view></c-card>

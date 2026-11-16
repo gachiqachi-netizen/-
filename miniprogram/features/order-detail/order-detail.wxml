@@ -1,7 +1,8 @@
 <c-page>
   <view class="detail-surface">
     <c-card wx:if="{{loading}}"><view class="order-loading"><c-skeleton shape="line" width="40%" font="title"/><c-skeleton shape="line" width="70%" font="body"/><c-skeleton shape="block" width="100%" ratio="5/2"/><c-skeleton shape="pill" width="100%"/></view></c-card>
-    <c-state wx:elif="{{error && !order}}" title="没找到这笔订单" action="重新加载" bind:action="load" />
+    <c-state wx:elif="{{loginRequired}}" title="登录后查看订单" desc="登录后就能看到这笔订单" action="去登录" bind:action="goLogin" />
+    <c-state wx:elif="{{error && !order}}" title="暂时看不到订单" desc="{{error}}" action="再试一次" bind:action="load" />
     <block wx:elif="{{order}}">
       <c-card wx:if="{{paidLanding}}">
         <view class="success-card"><view class="state-title">订单已提交</view><view class="sub">师傅会尽快开始串你的手串，做好后发货。</view><view class="sub">模拟付款，没有扣款</view>

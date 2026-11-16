@@ -61,7 +61,7 @@ Page({
       this.setData({ design, catalog, visual: shared.visual || [], rotating: false, notes, missing, measured: wrist.measured, loading: false,
         authorLabel: shared.authorLabel || '来自珠养养的一位用户', dateLabel: dateLabel(shared.createdAt),
         meaning: meaningFor({ beads: shared.beads }, catalog), tags: '' })
-    }).catch(e => this.setData({ loading: false, deleted: e.status === 404, error: e.status === 404 ? '' : '暂时没连上，请再试一次' }))
+    }).catch(e => this.setData({ loading: false, deleted: e.status === 404, error: e.status === 404 ? '' : api.userMessage(e) }))
   },
   home() { wx.switchTab({ url: '/pages/home/home' }) },
   toggleRotate() { this.setData({ rotating: !this.data.rotating }) },

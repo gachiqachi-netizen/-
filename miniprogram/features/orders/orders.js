@@ -65,12 +65,16 @@ Page({
 
   loadOrders(withSkeleton) {
     if (withSkeleton) this.setData({ loading: true, error: '' })
+    if (typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && !auth.hasSession()) {
+      this.setData({ loggedIn: false, rows: [], visible: [], error: '登录后查看订单', loading: false })
+      return Promise.resolve()
+    }
     return auth.authorized('/my/orders')
       .then(rows => {
         const orders = (Array.isArray(rows) ? rows : []).map(buildRow)
         this.setData({ loggedIn: auth.hasSession(), rows: orders, visible: group.rowsInTab(orders, this.data.tab), counts: group.countsOf(orders), error: '', loadedOnce: true })
       })
-      .catch(e => this.setData({ loggedIn: auth.hasSession(), error: e.message || '读取失败' }))
+      .catch(e => this.setData({ loggedIn: auth.hasSession(), error: api.userMessage(e) }))
       .finally(() => this.setData({ loading: false }))
   },
 
@@ -79,7 +83,7 @@ Page({
   },
 
   goLogin() {
-    wx.navigateTo({ url: '/pages/login/login' })
+    auth.goLogin({ type: 'navigate', url: '/' + (this.route || 'features/orders/orders') })
   },
 
   goDiy() {

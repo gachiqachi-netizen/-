@@ -6,14 +6,10 @@ Component({
     title: { type: String, value: '' },
     desc: { type: String, value: '' },
     action: { type: String, value: '' },
-    link: { type: String, value: '' },
   },
   methods: {
     onAction() {
       this.triggerEvent('action')
-    },
-    onLink() {
-      this.triggerEvent('link')
     },
   },
 })

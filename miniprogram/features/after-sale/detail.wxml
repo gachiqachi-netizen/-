@@ -1,6 +1,7 @@
 <c-page>
   <view class="surface">
-    <c-state wx:if="{{error && !sale}}" title="售后记录暂时无法读取" desc="{{error}}" action="重试" bind:action="load" />
+    <c-state wx:if="{{loginRequired}}" title="登录后查看售后" desc="登录后就能看到售后进度" action="去登录" bind:action="goLogin" />
+    <c-state wx:elif="{{error && !sale}}" title="售后记录暂时无法读取" desc="{{error}}" action="再试一次" bind:action="load" />
     <block wx:if="{{sale}}">
       <c-card><view class="status"><view class="status-label">{{view.label}}</view><view class="hint">{{view.description}}</view>
         <view wx:if="{{view.returning && sale.returnAddress}}" class="address"><text>寄到：{{sale.returnAddress.person}}　{{sale.returnAddress.phone}}　{{sale.returnAddress.address}}</text><text bindtap="copyAddress">复制地址</text></view><view wx:elif="{{view.returning}}" class="hint">寄回地址稍后由客服告知</view>

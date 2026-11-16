@@ -1,6 +1,6 @@
 <view class="mine-page">
  <view class="profile">
-  <button wx:if="{{loggedIn}}" class="avatar" open-type="chooseAvatar" bindchooseavatar="chooseAvatar"><image wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"/><image wx:else class="avatar-default" src="/assets/tab/me.png" mode="aspectFit"/></button>
+  <button wx:if="{{loggedIn}}" class="c-btn avatar" open-type="chooseAvatar" bindchooseavatar="chooseAvatar"><image wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"/><image wx:else class="avatar-default" src="/assets/tab/me.png" mode="aspectFit"/></button>
   <view wx:else class="avatar" bindtap="goLogin"><image class="avatar-default" src="/assets/tab/me.png" mode="aspectFit"/></view>
   <view class="profile-text" wx:if="{{loggedIn}}">
    <input type="nickname" placeholder="给自己起个名字 ›" value="{{name}}" bindblur="changeName"/>

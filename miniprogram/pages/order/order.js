@@ -61,9 +61,10 @@ Page({
       this.setData({ catalogReady: !changes.length && !this.data.missing.length,
         sheet: changes.length ? 'price' : '' })
     } catch (error) {
-      if (!generation || generation === this.quoteGeneration) this.setData({ loading: false, catalogReady: false, error: '材料信息加载失败，点提交再试一次' })
+      if (!generation || generation === this.quoteGeneration) this.setData({ loading: false, catalogReady: false, error: api.userMessage(error) })
     }
   },
+  retryCatalog() { this.loadPromise = this.loadCatalog(++this.quoteGeneration); return this.loadPromise },
   async loadAddress() {
     if (typeof wx.getStorageSync !== 'function' || !auth.hasSession || !auth.hasSession() || this.data.person) return
     try {
@@ -86,6 +87,13 @@ Page({
           region: [address.provinceName, address.cityName, address.countyName].filter(Boolean),
           detail: address.detailInfo, isDefault: true }, 'POST').catch(() => {})
       }
+    } })
+  },
+  addressEntry() {
+    if (this.data.person && this.data.phone && this.data.addr) return this.manualAddress()
+    wx.showActionSheet({ itemList: ['用微信收货地址', '手动填写'], success: result => {
+      if (result.tapIndex === 0) this.chooseAddress()
+      else if (result.tapIndex === 1) this.manualAddress()
     } })
   },
   manualAddress() { this.setData({ sheet: 'address' }) },

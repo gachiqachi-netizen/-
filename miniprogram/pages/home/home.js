@@ -29,11 +29,11 @@ Page({
       const banners = (c.banners || []).filter(b => !b.tpl || byId[b.tpl]).map(b => ({ ...b, keywords: Array.isArray(b.tags) ? b.tags.join(' · ') : (b.sub || ''), coverUrl: b.cover && /^https?:/.test(b.cover) ? b.cover : b.cover && b.cover[0] === '/' ? getApp().globalData.apiBase + b.cover : '', card: byId[b.tpl] || cards[0] }))
       const articles = Array.isArray(c.homeArticles) ? c.homeArticles.map(a => ({ ...a, image: a.cover && /^https?:/.test(a.cover) ? a.cover : a.cover && a.cover[0] === '/' ? getApp().globalData.apiBase + a.cover : '/assets/icons/bead.svg', summary: a.summary || a.excerpt || (Array.isArray(a.body) ? a.body[0] : '') })) : []
       this.setData({ offline: !!getApp().globalData.catalogOffline, templates: cards, catalog: c.beads || [], banners, homeArticles: articles, wrist: ui.wrist(), loading: false, ready: true, error: '' })
-    }).catch(() => {
+    }).catch(error => {
       const fallback = getApp().globalData.catalog || require('../../utils/catalog-preview')
       const cards = ui.catalogCards(fallback), byId = Object.fromEntries(cards.map(t => [t.id, t]))
       const banners = (fallback.banners || []).filter(b => !b.tpl || byId[b.tpl]).map(b => ({ ...b, keywords: Array.isArray(b.tags) ? b.tags.join(' · ') : (b.sub || ''), card: byId[b.tpl] || cards[0] }))
-      this.setData({ banners, catalog: fallback.beads || [], templates: [], homeArticles: [], loading: false, error: '款式没加载出来，检查一下网络' })
+      this.setData({ banners, catalog: fallback.beads || [], templates: [], homeArticles: [], loading: false, error: api.userMessage(error) })
     })
   },
   start() { nav.openEditor() },

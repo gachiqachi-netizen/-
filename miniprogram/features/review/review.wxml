@@ -1,9 +1,13 @@
 <c-page>
+  <c-state wx:if="{{loginRequired}}" title="登录后写评价" desc="登录后就能查看这笔订单" action="去登录" bind:action="goLogin" />
+  <c-state wx:elif="{{loadError}}" title="暂时看不到订单" desc="{{loadError}}" action="再试一次" bind:action="retryLoad" />
+  <block wx:else>
   <c-card><view class="product"><view class="thumb"><bracelet-thumb beads="{{beads}}" catalog="{{catalog}}" /></view><view class="product-text"><view class="name">{{name}}</view><view class="hint">{{spec}}</view></view></view></c-card>
   <c-card><view class="rating"><text>满意度</text><view class="stars"><text wx:for="{{stars}}" wx:key="*this" class="star {{item <= rating ? 'selected' : ''}}" data-rating="{{item}}" bindtap="rate">★</text></view><text class="hint">{{label}}</text></view></c-card>
   <c-card><view class="input-card"><textarea value="{{content}}" disabled="{{readOnly}}" maxlength="300" placeholder="戴上是什么感觉？说说颜色、大小合不合适" bindinput="input"/><view class="photos"><view wx:for="{{photos}}" wx:key="index" class="photo" data-index="{{index}}" bindtap="retryPhoto"><image wx:if="{{item.status === 'done' && item.url}}" src="{{item.url}}" mode="aspectFill"/><text wx:elif="{{item.status === 'done'}}">已选</text><text wx:elif="{{item.status === 'failed'}}">没传上，点一下重试</text><text wx:else>上传中</text><text wx:if="{{!readOnly}}" class="remove" data-index="{{index}}" catchtap="removePhoto">×</text></view><view wx:if="{{!readOnly && photos.length < 6}}" class="add-photo" bindtap="addPhoto"><text>＋</text><text>加照片</text></view></view></view><view class="photo-hint">最多 6 张照片 · 加张上手照，别人更好挑</view></c-card>
   <c-card><c-cell wx:if="{{!readOnly}}" label="匿名评价" switch="{{true}}" checked="{{anonymous}}" bind:change="toggleAnonymous"><view slot="label" class="hint">昵称显示成“X*”</view></c-cell><c-cell wx:else label="匿名评价" value="{{anonymous ? '是' : '否'}}"><view slot="label" class="hint">昵称显示成“X*”</view></c-cell></c-card>
   <c-card wx:if="{{error}}"><view class="error">{{error}}</view></c-card>
   <c-bar wx:if="{{!readOnly}}" layout="single"><button class="c-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="publish">发布</button></c-bar>
+  </block>
 </c-page>
 <c-toast />

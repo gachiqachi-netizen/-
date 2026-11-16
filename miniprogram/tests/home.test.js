@@ -36,7 +36,7 @@ test('home catalog failure keeps banner and entrances while replacing only templ
     await new Promise(resolve => setImmediate(resolve))
     assert.equal(page.data.banners.length, 1)
     assert.equal(page.data.templates.length, 0)
-    assert.equal(page.data.error, '款式没加载出来，检查一下网络')
+    assert.equal(page.data.error, '网络不太好，检查一下网络再试')
   } finally { api.catalog = old }
 })
 

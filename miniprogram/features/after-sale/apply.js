@@ -1,14 +1,16 @@
 const auth = require('../../utils/auth')
+const api = require('../../utils/api')
 
 function yuan(fen) { return (Number(fen || 0) / 100).toFixed(2) }
 function needsPhoto(reason) { return /裂纹|瑕疵|图片|掉珠|断线|少件|漏发/.test(reason || '') }
 
 Page({
   data: { option: null, reasons: [], reason: '', note: '', phone: '', newWrist: '', photos: [],
-    amount: '0.00', loading: true, submitting: false, error: '', photoError: '', reasonOpen: false },
+    amount: '0.00', loading: true, submitting: false, error: '', photoError: '', reasonOpen: false, loginRequired: false },
   onLoad(query) { this.no = query.no; this.type = decodeURIComponent(query.type || ''); return this.load() },
   async load() {
     this.setData({ loading: true, error: '' })
+    if (typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && !auth.hasSession()) return this.setData({ loading: false, loginRequired: true, option: null })
     try {
       const no = encodeURIComponent(this.no)
       const [order, result] = await Promise.all([
@@ -18,9 +20,10 @@ Page({
       const option = (result.types || []).find(item => item.type === this.type)
       if (!option) throw new Error('这笔订单现在不能申请这种售后')
       this.setData({ option, reasons: option.reasons, amount: yuan(option.refundFen), phone: order.phone || '' })
-    } catch (error) { this.setData({ error: error.message || '读取失败，请重试' }) }
+    } catch (error) { this.setData({ error: api.userMessage(error) }) }
     finally { this.setData({ loading: false }) }
   },
+  goLogin() { auth.goLogin({ type: 'navigate', url: '/features/after-sale/apply?no=' + encodeURIComponent(this.no) + '&type=' + encodeURIComponent(this.type) }) },
   toggleReasons() { this.setData({ reasonOpen: !this.data.reasonOpen }) },
   chooseReason(e) { this.setData({ reason: e.currentTarget.dataset.reason, reasonOpen: false, photoError: '' }) },
   inputNote(e) { this.setData({ note: e.detail.value }) },

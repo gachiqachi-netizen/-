@@ -105,11 +105,11 @@
 | U2 | agent/U2-nav-bar | followups-ui.md |  | 任何 |  |  |
 | U3 | agent/U3-home-fix | followups-ui.md |  | 任何 |  |  |
 | U4 | agent/U4-order-confirm-fix | followups-ui.md |  | 任何 |  |  |
-| U5 | agent/U5-order-detail-fix | followups-ui.md | U1、U2 | 任何 |  | 等状态修复合并 |
+| U5 | agent/U5-order-detail-fix | followups-ui.md | U1、U2 | 任何 |  |  |
 | U6 | agent/U6-ai-fix | followups-ui.md |  | 任何 |  |  |
 | U7 | agent/U7-share-fix | followups-ui.md |  | 任何 |  |  |
-| U8 | agent/U8-orders-list-fix | followups-ui.md |  | 任何 |  | 等状态修复合并 |
-| U9 | agent/U9-after-sale-fix | followups-ui.md | U1 | 任何 |  | 等状态修复合并 |
+| U8 | agent/U8-orders-list-fix | followups-ui.md |  | 任何 |  |  |
+| U9 | agent/U9-after-sale-fix | followups-ui.md | U1 | 任何 |  |  |
 | U10 | agent/U10-review-address-fix | followups-ui.md | U1、U2 | 任何 |  |  |
 | U11 | agent/U11-admin-aftersale-review-fix | followups-ui.md |  | 任何 |  |  |
 

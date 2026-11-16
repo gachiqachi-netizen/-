@@ -19,7 +19,7 @@ test('进入下单强制刷新，改价列明并确认，取消保持禁用',asy
 })
 test('材料下架不可确认，目录失联不可下单',async()=>{
  setup();wx.request=o=>o.success({statusCode:200,data:{beads:[]}});const p=page();await p.onShow();assert.match(p.data.quoteChanges[0],/下架/);p.confirmQuote();assert.equal(p.data.catalogReady,false)
- wx.request=o=>o.fail({errMsg:'offline'});await p.onShow();assert.equal(p.data.catalogReady,false);assert.match(p.data.error,/加载失败/);p.setGift({detail:{value:true}});assert.equal(p.data.quotePending,true)
+ wx.request=o=>o.fail({errMsg:'offline'});await p.onShow();assert.equal(p.data.catalogReady,false);assert.match(p.data.error,/网络不太好/);p.setGift({detail:{value:true}});assert.equal(p.data.quotePending,true)
 })
 test('改价待确认时切换礼盒仍不能提交',async()=>{
  setup();wx.request=o=>o.success({statusCode:200,data:{beads:[{id:'a',name:'材料',mm:8,price:5}]}})

@@ -12,8 +12,9 @@ function responseError(response) {
   return error
 }
 function userMessage(error) {
-  if (error && error.code === 'NETWORK') return '网络不太好，检查一下网络再试'
+  if (error && (error.code === 'NETWORK' || /连接失败|offline|network|timeout/i.test(error.message || ''))) return '网络不太好，检查一下网络再试'
   if (error && error.status >= 400 && error.status < 500) return error.message || '请求没有完成，请再试一次'
+  if (error && /^(未找到|找不到|订单不存在)/.test(error.message || '')) return error.message
   return '系统开小差了，稍后再试'
 }
 function request(path, data, method, options) {

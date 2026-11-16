@@ -12,6 +12,7 @@ test('状态组件只有标题、说明与一个居中次按钮', () => {
   assert.equal((markup.match(/<button\b/g) || []).length, 1)
   assert.doesNotMatch(markup, /c-state__link/)
   assert.match(style, /padding:\s*160rpx/)
+  assert.match(style, /font-size:\s*var\(--fs-display\)/)
   assert.match(style, /--state-action-width:\s*320rpx/)
   assert.match(style, /margin:\s*40rpx auto 0/)
 })
@@ -38,6 +39,8 @@ test('接口错误转换区分断网与服务器故障', () => {
 })
 
 test('订单未登录与评价读取失败隐藏表单', () => {
+  assert.match(read('components/bead-sheet/index.wxml'), /c-btn c-btn--block submit/)
+  assert.match(read('pages/login/login.js'), /agreed: false/)
   assert.match(read('features/order-detail/order-detail.wxml'), /loginRequired[^>]*title="登录后查看订单"[^>]*action="去登录"/)
   const review = read('features/review/review.wxml')
   assert.match(review, /<c-state wx:if="\{\{loadError\}\}"/)

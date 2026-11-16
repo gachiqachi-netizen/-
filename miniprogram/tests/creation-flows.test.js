@@ -19,7 +19,7 @@ async function run() {
   api.request=async(path,data,method,options)=>{aiCall={path,data,method,options};return {plans:[{name:'AI 方案',beads:Array(18).fill('main'),count:18,lengthMm:180,payableFen:5400}],message:'按你的要求配好了'}}
   await p.submit();assert.strictEqual(aiCall.path,'/ai/design');assert.strictEqual(aiCall.data.wrist,16);assert.strictEqual(aiCall.method,'POST');assert.strictEqual(aiCall.options.timeout,180000);assert.strictEqual(p.data.messages[1].source,'AI 生成');assert.strictEqual(p.data.messages[1].results[0].price,54);p.use({currentTarget:{dataset:{message:1,index:0}}});assert.strictEqual(current.beads.length,18);assert.strictEqual(current.wrist,16);assert.strictEqual(navigated,'/pages/diy/diy')
   p=page();p.data.text='送爸妈';let calls=[];api.request=async(path)=>{calls.push(path);if(path==='/ai/design')throw new Error('AI 暂时不可用');return {by:'rules',results:[{name:'兜底方案',pattern:['main'],count:17}]}};await p.submit();assert.deepStrictEqual(calls,['/ai/design','/plans/match']);assert.strictEqual(p.data.messages[1].source,'方案库兜底');assert.match(p.data.messages[1].text,/AI 暂时未响应/)
-  p=page();p.data.text='送朋友';api.request=async()=>{throw new Error('连接失败')};await p.submit();assert.strictEqual(p.data.text,'送朋友');assert.match(p.data.error,/连接失败/)
+  p=page();p.data.text='送朋友';api.request=async()=>{throw new Error('连接失败')};await p.submit();assert.strictEqual(p.data.text,'送朋友');assert.match(p.data.error,/网络不太好，检查一下网络再试/)
   p=page();p.data.text='原始需求';api.request=async()=>{p.data.text='新的输入';throw new Error('连接失败')};await p.submit();assert.strictEqual(p.data.text,'新的输入');assert.match(p.data.error,/原始需求/)
   console.log('照片同款尺寸与 AI 方案、失败状态检查通过')
 }

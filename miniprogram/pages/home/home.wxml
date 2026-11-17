@@ -3,7 +3,7 @@
     <swiper-item wx:for="{{banners}}" wx:key="id">
       <view class="slide" data-i="{{index}}" bindtap="bannerTap">
         <view class="slide-copy"><text class="slide-title">{{item.title}}</text><text class="slide-sub">{{item.keywords}}</text><text class="slide-go">去看看 ›</text></view>
-        <view class="slide-art" wx:if="{{item.card}}"><image class="thumb-image" wx:if="{{item.coverUrl || item.card.coverUrl}}" src="{{item.coverUrl || item.card.coverUrl}}" mode="aspectFit"/><bracelet-thumb wx:else beads="{{item.card.beads}}" catalog="{{catalog}}" /></view>
+        <view class="slide-art" wx:if="{{item.card}}"><image class="thumb-image" wx:if="{{!item.coverFailed && (item.coverUrl || item.card.coverLgUrl)}}" src="{{item.coverUrl || item.card.coverLgUrl}}" mode="aspectFill" data-i="{{index}}" binderror="bannerCoverError"/><bracelet-thumb wx:else beads="{{item.card.beads}}" catalog="{{catalog}}" /></view>
       </view>
     </swiper-item>
   </swiper>
@@ -17,7 +17,7 @@
   <c-state wx:if="{{error}}" title="热门款暂时看不到" desc="{{error}}" action="再试一次" bind:action="load" />
   <view class="template-grid" wx:elif="{{templates.length}}">
     <c-card class="tpl" wx:for="{{templates}}" wx:key="id" data-i="{{index}}" bindtap="use">
-      <view class="traybox"><image class="thumb-image" wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" mode="aspectFill"/><bracelet-thumb wx:else beads="{{item.beads}}" catalog="{{catalog}}" /></view>
+      <view class="traybox"><image class="thumb-image" wx:if="{{item.coverUrl && !item.coverFailed}}" src="{{item.coverUrl}}" mode="aspectFill" data-i="{{index}}" binderror="coverError"/><bracelet-thumb wx:else beads="{{item.beads}}" catalog="{{catalog}}" /></view>
       <view class="tpl-body"><text class="nm">{{item.name}}</text><text class="meaning">{{item.meaning}}</text><text class="price">¥{{item.price}}</text></view>
     </c-card>
   </view>

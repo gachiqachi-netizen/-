@@ -100,7 +100,11 @@ sudo docker compose --env-file app.env exec app python tools/check_deploy.py --p
 
 ### 首次导入初始数据
 
-服务可用后，在服务器的 `deploy/` 目录先预览珠子、模板、宣传位和草稿条款的缺失数量：
+更新代码后，先在服务器的 `deploy/` 目录执行 `sudo docker compose --env-file app.env up -d`，让新增的只读脚本挂载生效。服务可用后，再预览珠子、模板、宣传位和草稿条款的缺失数量：
+
+```bash
+sudo docker compose --env-file app.env up -d
+```
 
 ```bash
 sudo docker compose --env-file app.env exec app python tools/load_seed.py

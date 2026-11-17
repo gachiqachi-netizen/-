@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+umask 077
 
 if [[ ${DRY_RUN:-0} != 1 && $EUID -ne 0 ]]; then
   echo '请使用 sudo bash deploy/setup.sh' >&2

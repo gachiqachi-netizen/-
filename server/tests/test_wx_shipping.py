@@ -31,6 +31,13 @@ def order():
             'logistics': {'carrierName': '顺丰速运', 'trackingNo': 'test-waybill'}}
 
 
+DELIVERY_LIST = [
+    {'delivery_name': name, 'delivery_id': 'test-' + str(index)}
+    for index, name in enumerate(('顺丰速运', '中通快递', '圆通速递', '韵达速递', '申通快递',
+                                  '中国邮政速递物流', '邮政快递包裹', '京东快递', '极兔速递', '德邦快递'))
+]
+
+
 class ShippingTest(unittest.TestCase):
     def test_internal_sync_state_not_sent_to_customer(self):
         rec = order()
@@ -57,9 +64,17 @@ class ShippingTest(unittest.TestCase):
             urlopen.assert_called_once()
 
     def test_express_code_mapping(self):
-        self.assertEqual(wx_shipping.express_code('顺丰'), 'SF')
-        self.assertEqual(wx_shipping.express_code('顺丰速运'), 'SF')
-        self.assertIsNone(wx_shipping.express_code('未知快递'))
+        variants = (('顺丰', '顺丰速运', 'sF'), ('中通', '中通快递', 'zTo'),
+                    ('圆通', '圆通快递', 'yTo'), ('韵达', '韵达快递', 'yD'),
+                    ('申通', '申通快递', 'sTo'), ('EMS', 'ems', '中国邮政速递物流'),
+                    ('邮政', '邮政快递包裹', 'yZpY'), ('京东', '京东快递', 'jD'),
+                    ('极兔', '极兔速递', 'jTsD'), ('德邦', '德邦快递', 'dB'))
+        for index, names in enumerate(variants):
+            for name in names:
+                with self.subTest(name=name):
+                    self.assertEqual(wx_shipping.express_code(name, DELIVERY_LIST), 'test-' + str(index))
+        self.assertIsNone(wx_shipping.express_code('未知快递', DELIVERY_LIST))
+        self.assertIsNone(wx_shipping.express_code('京东', DELIVERY_LIST[:5]))
 
     def test_success_payload_and_no_duplicate(self):
         rec = order()
@@ -68,14 +83,16 @@ class ShippingTest(unittest.TestCase):
                    'payer': {'openid': 'test-openid'}}
         with mock.patch.object(wx_shipping.payments, 'provider', return_value='wechat'), \
              mock.patch.object(wx_shipping.wechat_pay, 'query_order', return_value=queried), \
+             mock.patch.object(wx_shipping, '_get_delivery_list', return_value=DELIVERY_LIST), \
              mock.patch.object(wx_shipping, '_post', return_value={'errcode': 0}) as post, \
              mock.patch.dict(os.environ, {'WXPAY_MCHID': 'test-merchant'}):
             saved = wx_shipping.sync(db, rec['no'], rec)
             payload = post.call_args.args[0]
             self.assertEqual(payload['order_key'], {'order_number_type': 1,
                                                      'mchid': 'test-merchant', 'out_trade_no': rec['no']})
-            self.assertEqual(payload['shipping_list'][0]['express_company'], 'SF')
-            self.assertEqual(payload['shipping_list'][0]['contact']['receiver_contact'], rec['phone'])
+            self.assertEqual(payload['shipping_list'][0]['express_company'], 'test-0')
+            self.assertEqual(payload['shipping_list'][0]['contact']['receiver_contact'], '139****0000')
+            self.assertNotIn(rec['phone'], json.dumps(payload, ensure_ascii=False))
             self.assertEqual(payload['payer']['openid'], 'test-openid')
             self.assertEqual(saved['wxShipping']['status'], 'synced')
             wx_shipping.sync(db, rec['no'], rec)
@@ -90,7 +107,28 @@ class ShippingTest(unittest.TestCase):
             failed = wx_shipping.sync(db, rec['no'], rec)
             self.assertEqual(failed['fulfillmentStatus'], 'shipped')
             self.assertEqual(failed['wxShipping']['message'], wx_shipping.UNSYNCED)
+            self.assertEqual(failed['wxShipping']['reason'], 'api')
             self.assertEqual(wx_shipping.sync(db, rec['no'], failed)['wxShipping']['status'], 'synced')
+
+    def test_carrier_failure_is_not_retriable_until_name_changes(self):
+        rec = order()
+        rec['logistics']['carrierName'] = '未知快递'
+        db = FakeDB(rec)
+        with mock.patch.object(wx_shipping.payments, 'provider', return_value='wechat'), \
+             mock.patch.object(wx_shipping.wechat_pay, 'query_order') as query:
+            result = wx_shipping.sync(db, rec['no'], rec)
+            self.assertEqual(result['wxShipping']['reason'], 'carrier')
+            self.assertEqual(result['wxShipping']['message'], wx_shipping.CARRIER_UNSYNCED)
+            query.assert_not_called()
+
+    def test_payment_failure_reason(self):
+        rec = order()
+        db = FakeDB(rec)
+        with mock.patch.object(wx_shipping.payments, 'provider', return_value='wechat'), \
+             mock.patch.object(wx_shipping, '_get_delivery_list', return_value=DELIVERY_LIST), \
+             mock.patch.object(wx_shipping.wechat_pay, 'query_order', return_value={'trade_state': 'NOTPAY'}), \
+             mock.patch.dict(os.environ, {'WXPAY_MCHID': 'test-merchant'}):
+            self.assertEqual(wx_shipping.sync(db, rec['no'], rec)['wxShipping']['reason'], 'payment')
 
     def test_mock_channel_never_calls_wechat(self):
         rec = order()

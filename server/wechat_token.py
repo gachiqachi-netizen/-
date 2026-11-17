@@ -22,7 +22,7 @@ def access_token():
         with urllib.request.urlopen('https://api.weixin.qq.com/cgi-bin/token?' + query, timeout=8) as response:
             result = json.loads(response.read())
         if not result.get('access_token'):
-            raise RuntimeError('微信内容安全凭证获取失败')
+            raise RuntimeError('微信接口凭证获取失败')
         _token = result['access_token']
         _expires_at = time.time() + int(result.get('expires_in', 7200))
         return _token

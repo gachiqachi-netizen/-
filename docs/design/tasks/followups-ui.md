@@ -280,3 +280,16 @@
   4. 测试：每个 `kind` 渲染出对应标题；未知 `kind` 回到 camera；扩展 `privacy-pages.test.js` 断言非相机页面都写了 `kind`。
 - **截图**：开发者工具“清除授权数据”后截 login（phone）和 share（album）两张；截不到就在报告里说明，负责人真机复测。
 - **不做**：改 `utils/privacy.js`、`app.json`、页面业务逻辑。
+
+## U23 登录页协议弹层“同意并继续”点了没反应（2026-11-18 负责人真机 + vConsole）
+
+- **依赖**：U22（已合并）　**大小**：S　**只能改**：`miniprogram/pages/login/login.{wxml,js,wxss}`、`miniprogram/tests/` 里登录相关测试
+- **现象**：没勾底部协议直接点“手机号快捷登录”→ 弹出“请先阅读并同意”→ 点黑色“同意并继续”，什么都不发生。vConsole 里 `onReady` 之后没有任何日志，说明这个按钮的 `getPhoneNumber` 事件根本没触发（按钮在 `c-sheet` 的 footer 插槽里，面板带 `catchtouchmove`，开放能力按钮在这里不可靠）。
+- **改法**（不要再在弹层里放 `open-type="getPhoneNumber"`）：
+  1. 弹层“同意并继续”改成普通按钮 `bindtap="agreeOnly"`：`setData({agreed:true, sheet:false})`，并提示“已同意，点「手机号快捷登录」继续”。
+  2. 删掉 `agreeAndPhone`；“不同意”保持关闭弹层。
+  3. 底部小圆圈同步显示为已勾选（`agreed` 驱动，现有逻辑应已支持，确认一下）。
+  4. 主按钮“手机号快捷登录”逻辑不变。
+- **测试**：模拟页面：未同意时点主按钮 → `sheet` 为 true；调 `agreeOnly` → `agreed` true、`sheet` false；再触发 `onPhone`（带 code）→ 调 `auth.bindPhone`。wxml 断言 `c-sheet` 里不再有 `open-type="getPhoneNumber"`。
+- **截图**：开发者工具里弹层和点“同意并继续”后的登录页各一张。真机由负责人复测。
+- **不做**：改 `c-sheet` 组件、`privacy-popup`、`utils/auth.js`。

@@ -26,7 +26,7 @@ Page({
     this.setData({ loading: true, ready: false, error: '' })
     api.catalog().then(c => {
       const cards = ui.catalogCards(c), byId = Object.fromEntries(cards.map(t => [t.id, t]))
-      const banners = (c.banners || []).filter(b => !b.tpl || byId[b.tpl]).map(b => ({ ...b, keywords: Array.isArray(b.tags) ? b.tags.join(' · ') : (b.sub || ''), coverUrl: b.cover && /^https?:/.test(b.cover) ? b.cover : b.cover && b.cover[0] === '/' ? getApp().globalData.apiBase + b.cover : '', card: byId[b.tpl] || cards[0] }))
+      const banners = (c.banners || []).filter(b => !b.tpl || byId[b.tpl]).map(b => ({ ...b, keywords: Array.isArray(b.tags) ? b.tags.join(' · ') : (b.sub || ''), coverUrl: b.cover && /^https?:/.test(b.cover) ? b.cover : b.cover && b.cover[0] === '/' ? getApp().globalData.apiBase + b.cover : '', card: byId[b.tpl] || cards[0], coverFailed: false }))
       const articles = Array.isArray(c.homeArticles) ? c.homeArticles.map(a => ({ ...a, image: a.cover && /^https?:/.test(a.cover) ? a.cover : a.cover && a.cover[0] === '/' ? getApp().globalData.apiBase + a.cover : '/assets/icons/bead.svg', summary: a.summary || a.excerpt || (Array.isArray(a.body) ? a.body[0] : '') })) : []
       this.setData({ offline: !!getApp().globalData.catalogOffline, templates: cards, catalog: c.beads || [], banners, homeArticles: articles, wrist: ui.wrist(), loading: false, ready: true, error: '' })
     }).catch(error => {
@@ -48,6 +48,14 @@ Page({
   use(e) {
     const t = this.data.templates[e.currentTarget.dataset.i]
     if (t) { ui.selectCard(t); wx.navigateTo({ url: '/pages/finish/finish' }) }
+  },
+  coverError(e) {
+    const i = Number(e.currentTarget.dataset.i)
+    if (Number.isInteger(i) && this.data.templates[i]) this.setData({ [`templates[${i}].coverFailed`]: true })
+  },
+  bannerCoverError(e) {
+    const i = Number(e.currentTarget.dataset.i)
+    if (Number.isInteger(i) && this.data.banners[i]) this.setData({ [`banners[${i}].coverFailed`]: true })
   },
   articleTap(e) {
     const a = this.data.homeArticles[e.currentTarget.dataset.i]

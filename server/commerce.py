@@ -377,6 +377,10 @@ def normalize_template(db, data, existing=None):
         return None, "寓意里有不能用的词：" + "、".join(bad_words) + "。只写寓意，不写功效"
     images = clean_images(d.get("images"))
     out = dict(d)
+    cover = d.get("cover", (existing or {}).get("cover", ""))
+    if cover not in ("", None) and (not isinstance(cover, dict) or set(cover) != {"lg", "md", "sm"}
+            or any(not isinstance(cover[key], str) or not cover[key].startswith("/uploads/") for key in cover)):
+        return None, "模板封面格式不正确"
     out.update({
         "name": name,
         "meaning": meaning,
@@ -388,7 +392,7 @@ def normalize_template(db, data, existing=None):
         "status": pstatus,
         "images": images,
         "onSale": status.product_on_sale({"status": pstatus}),
-        "cover": images[0] if images else d.get("cover", ""),
+        "cover": cover or "",
     })
     out.pop("id", None)
     return out, None
@@ -453,6 +457,8 @@ def update_template(db, rid, data, actor=ACTOR):
         raise ValueError(err)
     saved = db.put("templates", rid, doc)
     audit(db, actor, "update", "template", rid, doc.get("name"))
+    if doc.get("cover") != existing.get("cover"):
+        audit(db, actor, "update_cover", "template", rid, str(doc.get("cover") or "已删除"))
     return _enrich_template_for_admin(db, saved)
 
 

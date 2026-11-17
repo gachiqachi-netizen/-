@@ -32,6 +32,7 @@ Page({
     showWrist: false,
     current: 0,
     slides: [{ kind: 'bracelet' }],
+    coverFailed: false,
   },
 
   onLoad() {
@@ -54,6 +55,7 @@ Page({
     this.setData({ design, loading: true, ready: false, error: '', down: false })
     api.catalog().then(c => {
       this.catalog = (c && c.beads) || []
+      this.templates = (c && c.templates) || []
       this.pricing = (c && c.pricing) || {}
       this.loaded = true
       this.render(store.current() || design)
@@ -73,6 +75,11 @@ Page({
   },
 
   render(design) {
+    const template = design.tplId && (this.templates || []).find(t => t.id === design.tplId)
+    const cover = (template && template.cover) || design.cover
+    const coverPath = cover && typeof cover === 'object' && cover.lg
+    const coverUrl = coverPath ? (/^https?:/.test(coverPath) ? coverPath : getApp().globalData.apiBase + coverPath) : ''
+    const slides = coverUrl && !this.data.coverFailed ? [{ kind: 'cover', url: coverUrl }, { kind: 'bracelet' }] : [{ kind: 'bracelet' }]
     const map = Object.fromEntries(this.catalog.map(b => [b.id, b]))
     const items = design.beads.map(id => map[id]).filter(Boolean)
     const missingCount = design.beads.length - items.length
@@ -107,7 +114,7 @@ Page({
     const fitText = st.fit === '长度基本合适' ? '合适' : st.fit
 
     this.setData({
-      design, items, counts,
+      design, items, counts, slides, current: Math.min(this.data.current, slides.length - 1),
       beadsCount: design.beads.length,
       lengthText: st.length + 'mm',
       fitText,
@@ -125,6 +132,7 @@ Page({
   onSwiperChange(e) {
     this.setData({ current: e.detail.current })
   },
+  coverError() { this.setData({ coverFailed: true, slides: [{ kind: 'bracelet' }], current: 0 }) },
 
   openSize() {
     this.setData({ showSize: true })

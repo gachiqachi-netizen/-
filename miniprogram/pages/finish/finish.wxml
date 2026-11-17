@@ -4,7 +4,9 @@
     <swiper class="swiper" current="{{current}}" bindchange="onSwiperChange">
       <swiper-item wx:for="{{slides}}" wx:key="index">
         <view class="stage-ring">
-          <c-bracelet beads="{{items}}" size="520" wordmark="{{true}}" />
+          <image wx:if="{{item.kind === 'cover'}}" class="cover-image" src="{{item.url}}" mode="aspectFill" binderror="coverError" />
+          <c-bracelet wx:else beads="{{items}}" size="520" wordmark="{{true}}" />
+          <text wx:if="{{item.kind === 'bracelet' && slides.length > 1}}" class="layout-label">珠子排布</text>
         </view>
       </swiper-item>
     </swiper>

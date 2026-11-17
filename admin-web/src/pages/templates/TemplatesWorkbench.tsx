@@ -7,7 +7,9 @@ import { Skeleton } from '../../ui/Skeleton';
 import { ErrorState } from '../../ui/ErrorState';
 import { EmptyState } from '../../ui/EmptyState';
 import './templates.css';
-import Bracelet, { BeadGlyph } from '../../bracelet/Bracelet';
+import { BeadGlyph } from '../../bracelet/Bracelet';
+import TemplateCover, { type Cover } from './TemplateCover';
+import TemplatePreview from './TemplatePreview';
 
 interface TemplatesWorkbenchProps {
   templates: any[];
@@ -32,6 +34,7 @@ interface RecipeForm {
   tagsText: string;
   meaningKeywords: string[];
   meaningLegacy: string;
+  cover: Cover | '';
 }
 
 const PREVIEW_WRISTS: number[] = [13, 14, 15, 16, 17, 18, 19];
@@ -57,6 +60,7 @@ const emptyForm = (defaults: Partial<RecipeForm> = {}): RecipeForm => ({
   tagsText: '',
   meaningKeywords: [],
   meaningLegacy: '',
+  cover: '',
   ...defaults,
 });
 
@@ -115,6 +119,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
       // 老的手写寓意句子按词拆开，只在它本来就是知识库关键词时才预勾选
       meaningKeywords: splitMeaning(found.meaning),
       meaningLegacy: String(found.meaning || ''),
+      cover: found.cover && typeof found.cover === 'object' ? found.cover : '',
     });
   }, [selectedId, templates]);
 
@@ -256,6 +261,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
           .map((s) => s.trim())
           .filter(Boolean),
         recipe: recipeOf(form),
+        cover: form.cover,
       };
       if (form._isNew) {
         const created = await apiRequest<any>('/api/admin/templates', { method: 'POST', body: payload });
@@ -423,6 +429,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
               </div>
             )}
 
+            <TemplateCover cover={form.cover} onChange={(cover) => setForm({ ...form, cover })} />
             <section className="zy-card tpl-section">
               <div className="tpl-sec-head">
                 <h3>{form._isNew ? '新建模板' : `编辑模板 · ${form.name}`}</h3>
@@ -510,7 +517,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
                 <ErrorState reason={previews[0].error || '展开失败'} onRetry={() => setForm({ ...form })} />
               ) : (
                 <>
-                {previewBeads.length > 0 ? <Bracelet sequence={previewBeads} size={240} label="模板手串预览" /> : null}
+                {previewBeads.length > 0 ? <TemplatePreview beads={previewBeads} /> : null}
                 <table className="zy-table tpl-preview-table">
                   <thead>
                     <tr>

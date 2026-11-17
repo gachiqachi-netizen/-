@@ -1,6 +1,6 @@
 <view class="c-drow" wx:if="{{design}}">
   <view class="c-drow__th">
-    <bracelet-thumb beads="{{design.beads}}" catalog="{{catalog}}" />
+    <c-bracelet beads="{{visual}}" tier="s" />
   </view>
   <view class="c-drow__main">
     <view class="c-drow__name">{{design.name}}</view>

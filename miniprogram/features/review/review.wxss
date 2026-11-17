@@ -1,5 +1,5 @@
 .product { display: flex; align-items: center; gap: var(--sp-base); padding: var(--sp-base) 0; }
-.thumb { width: 160rpx; height: 160rpx; flex: none; }
+.thumb { width: 144rpx; height: 144rpx; flex: none; }
 .product-text { flex: 1; min-width: 0; text-align: left; }
 .name { font-size: var(--fs-body); font-weight: var(--fw-bold); }
 .hint, .photo-hint { font-size: var(--fs-caption); color: var(--c-text-2); }

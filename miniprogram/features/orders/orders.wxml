@@ -31,7 +31,7 @@
       </view>
       <view class="oc-goods">
         <view class="oc-thumb">
-          <bracelet-thumb beads="{{item.visual}}" />
+          <c-bracelet beads="{{item.visual}}" tier="s" />
         </view>
         <view class="oc-body">
           <view class="oc-name">{{item.name}}</view>

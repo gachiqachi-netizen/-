@@ -3,6 +3,6 @@
   "enablePullDownRefresh": true,
   "usingComponents": {
     "c-skeleton": "/components/skeleton/index",
-    "bracelet-thumb": "/components/bracelet-thumb/index"
+    "c-bracelet": "/components/bracelet/index"
   }
 }

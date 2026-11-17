@@ -4,7 +4,7 @@
 </view>
 <view class="c-cell" wx:if="{{design}}">
   <view class="c-cell__img">
-    <bracelet beads="{{design.beads}}" size="320" />
+    <c-bracelet beads="{{design.beads}}" tier="m" />
   </view>
   <view class="c-cell__tx">
     <view class="c-cell__name">{{design.name}}</view>

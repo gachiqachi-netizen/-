@@ -5,7 +5,7 @@
 .address { display: flex; justify-content: space-between; gap: var(--sp-tight); margin-top: var(--sp-base); font-size: var(--fs-caption); }
 .address text:last-child { white-space: nowrap; }
 .product { display: flex; align-items: center; gap: var(--sp-base); padding: var(--sp-base) 0; }
-.thumb { width: 160rpx; height: 160rpx; flex: none; }
+.thumb { width: 144rpx; height: 144rpx; flex: none; }
 .product-text { flex: 1; min-width: 0; text-align: left; }
 .product-name { font-weight: var(--fw-bold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .history { border-left: 2rpx solid var(--c-line); padding: 0 0 var(--sp-base) var(--sp-base); }

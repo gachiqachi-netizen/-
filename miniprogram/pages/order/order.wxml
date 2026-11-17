@@ -9,7 +9,7 @@
     </view></c-card>
 
     <c-card><view class="summary">
-      <view class="bracelet"><c-bracelet beads="{{beads}}" size="144" /></view>
+      <view class="bracelet"><c-bracelet beads="{{beads}}" tier="s" /></view>
       <view class="summary-text"><view class="name">{{design.name}}</view><view class="meaning">{{design.meaning}}</view><view class="hint">{{design.beads.length}} 颗 · 手围 {{design.wrist}}cm 合适</view></view>
     </view></c-card>
     <c-card><view class="rows">

@@ -9,7 +9,6 @@
 .c-drow__th {
   width: 144rpx;
   height: 144rpx;
-  background: var(--c-surface);
   display: flex;
   align-items: center;
   justify-content: center;

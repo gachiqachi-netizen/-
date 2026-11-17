@@ -4,7 +4,7 @@
 .sub { font-size: var(--fs-caption); color: var(--c-text-2); margin-top: var(--sp-tight); }
 .address { padding: var(--sp-tight) 0 var(--sp-base); }
 .product { display: flex; align-items: center; gap: var(--sp-base); padding: var(--sp-base) 0; }
-.thumb { width: 160rpx; height: 160rpx; flex: none; }
+.thumb { width: 144rpx; height: 144rpx; flex: none; }
 .product-text { min-width: 0; flex: 1; text-align: left; }
 .product-name { font-weight: var(--fw-bold); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .product-spec { white-space: nowrap; }

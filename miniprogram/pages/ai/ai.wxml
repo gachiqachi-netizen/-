@@ -21,7 +21,7 @@
           <scroll-view class="ai-cards" scroll-x enhanced show-scrollbar="{{false}}" scroll-into-view="{{message.scrollId}}" data-message="{{mi}}" bindscroll="cardScroll">
             <view class="ai-cards-inner">
               <view wx:for="{{message.results}}" wx:key="index" wx:for-item="result" wx:for-index="ri" id="rec-{{mi}}-{{ri}}" class="ai-card">
-                <view class="ai-card-open" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail"><view class="ai-art"><c-bracelet beads="{{result.beadObjects}}" size="240" /></view></view>
+                <view class="ai-card-open" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail"><view class="ai-art"><c-bracelet beads="{{result.beadObjects}}" tier="m" /></view></view>
                 <view class="ai-card-body">
                   <view class="ai-card-heading" data-message="{{mi}}" data-index="{{ri}}" bindtap="openDetail"><text class="ai-card-name">{{result.name}}</text><text class="ai-price" wx:if="{{result.priceText}}">{{result.priceText}}</text></view>
                   <view class="ai-size" wx:if="{{result.count > 0}}">{{result.count}} 颗<text wx:if="{{result.lengthCm}}"> · {{result.lengthCm}}cm</text></view>

@@ -6,7 +6,6 @@
 
 .c-cell__img {
   aspect-ratio: 1;
-  background: var(--c-surface);
   display: flex;
   align-items: center;
   justify-content: center;

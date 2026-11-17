@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "bracelet": "../bracelet/index"
+    "c-bracelet": "../bracelet/index"
   }
 }

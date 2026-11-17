@@ -9,5 +9,12 @@ if (typeof Component === 'function') {
       catalog: { type: Array, value: [] },     // bracelet-thumb 需要
       sub: { type: String, value: '' },        // 一行小字（颗数等），调用方传
     },
+    data: { visual: [] },
+    observers: {
+      'design,catalog': function (design, catalog) {
+        const byId = Object.fromEntries((catalog || []).map(bead => [bead.id, bead]))
+        this.setData({ visual: ((design && design.beads) || []).map(value => typeof value === 'object' && value ? value : byId[value]).filter(Boolean) })
+      }
+    },
   })
 }

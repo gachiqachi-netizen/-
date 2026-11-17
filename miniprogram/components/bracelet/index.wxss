@@ -3,5 +3,7 @@
 .c-bracelet__ring{position:absolute;left:0;top:50%}
 .c-bracelet__pos{position:absolute;box-sizing:border-box;border-radius:var(--r-pill)}
 .c-bracelet__pos bead{display:block;width:100%;height:100%}
+.c-bracelet__bead{width:100%;height:100%;border-radius:var(--r-pill);overflow:hidden}
+.c-bracelet__bead image{width:100%;height:100%;display:block}
 .c-bracelet__pos.is-sel{outline:3rpx solid var(--c-text)}
 .c-bracelet__pos.is-dim{opacity:0.35}

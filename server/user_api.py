@@ -41,7 +41,7 @@ def token_hash(token):
     return hashlib.sha256(token.encode()).hexdigest()
 
 
-def login(db, code):
+def exchange_wechat_code(code):
     appid = os.environ.get('WECHAT_APP_ID', '').strip()
     secret = os.environ.get('WECHAT_APP_SECRET', '').strip()
     if not appid or not secret:
@@ -57,6 +57,14 @@ def login(db, code):
     openid = result.get('openid')
     if not isinstance(openid, str) or not openid:
         return 401, {'error': '微信登录凭证无效或已过期'}
+    return 200, {'openid': openid, 'appid': appid}
+
+
+def login(db, code):
+    code_status, result = exchange_wechat_code(code)
+    if code_status != 200:
+        return code_status, result
+    openid, appid = result['openid'], result['appid']
     uid = hashlib.sha256((appid + ':' + openid).encode()).hexdigest()
     user = db.get('users', uid) or {'createdAt': int(time.time() * 1000)}
     db.put('users', uid, user)
@@ -195,7 +203,7 @@ def order_allowed_actions(order):
 
 
 # 只给后台看的订单字段：生产工单（负责人、作业备注）和质检记录（质检员、原因）。用户接口一律不返回。
-INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate', 'addressHistory', 'internalNotes')
+INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate', 'addressHistory', 'internalNotes', 'lastWechatQueryAt')
 # 状态和物流记录只给用户看“什么时候、从什么变成什么”，不带操作人和内部备注。
 _PUBLIC_STATUS_KEYS = ('at', 'group', 'from', 'to')
 _PUBLIC_LOGISTICS_KEYS = ('at', 'action', 'detail')
@@ -228,6 +236,8 @@ def get_my_order(db, no, uid):
     order = db.get('orders', no)
     if not order or order.get('userId') != uid:
         raise KeyError('订单不存在')
+    import commerce
+    order = commerce.refresh_payment_if_due(db, no, uid)
     result = public_order(order)
     fulfillment = status.derive_status(order)['fulfillmentStatus']
     photo = (order.get('workOrder') or {}).get('finishedPhoto')
@@ -297,9 +307,19 @@ def perform_order_action(db, no, uid, action, reason=None):
     return public_order(commerce.customer_order_action(db, no, uid, action, reason=reason))
 
 
-def start_payment(db, no, uid):
-    import commerce
-    order, params = commerce.start_payment(db, no, uid)
+def start_payment(db, no, uid, code=None):
+    import commerce, payments
+    openid = None
+    if payments.provider() == 'wechat':
+        if not code:
+            raise ValueError('需要微信付款凭证')
+        code_status, result = exchange_wechat_code(code)
+        if code_status != 200:
+            raise ValueError(result['error'])
+        openid = result['openid']
+        if hashlib.sha256((result['appid'] + ':' + openid).encode()).hexdigest() != uid:
+            raise PermissionError('微信登录用户不一致')
+    order, params = commerce.start_payment(db, no, uid, openid=openid)
     return {'payment': params, 'order': public_order(order)}
 
 

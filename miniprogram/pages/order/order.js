@@ -227,12 +227,30 @@ Page({
   },
   async startPayment(no) {
     try {
-      const started = await auth.authorized('/my/orders/' + encodeURIComponent(no) + '/pay', {}, 'POST')
+      let started
+      try { started = await auth.authorized('/my/orders/' + encodeURIComponent(no) + '/pay', {}, 'POST') }
+      catch (first) {
+        if (first.message !== '需要微信付款凭证') throw first
+        const code = await new Promise((resolve, reject) => wx.login({ success: r => r.code ? resolve(r.code) : reject(new Error('微信登录失败')), fail: reject }))
+        started = await auth.authorized('/my/orders/' + encodeURIComponent(no) + '/pay', { code }, 'POST')
+      }
       const payment = started.payment
-      if (!payment || !payment.mock || !Number.isInteger(payment.amountFen)) throw new Error('模拟支付暂不可用')
+      if (!payment || !Number.isInteger(payment.amountFen)) throw new Error('付款暂不可用')
+      if (!payment.mock) {
+        await new Promise((resolve, reject) => wx.requestPayment({ timeStamp: payment.timeStamp, nonceStr: payment.nonceStr, package: payment.package, signType: payment.signType, paySign: payment.paySign, success: resolve, fail: reject }))
+        this.setData({ error: '支付确认中' })
+        for (let i = 0; i < 5; i++) {
+          const fresh = await auth.authorized('/my/orders/' + encodeURIComponent(no), null, 'GET')
+          if (fresh.paymentStatus === 'paid') { wx.reLaunch({ url: '/features/order-detail/order-detail?no=' + encodeURIComponent(no) + '&paid=1' }); return }
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+        nav.orderComplete(no); return
+      }
       this.setData({ payment, paymentAmount: price(payment.amountFen), sheet: 'payment' })
     } catch (error) {
-      this.setData({ error: error.message || '付款暂不可用' })
+      const cancelled = /cancel/i.test(error.errMsg || '')
+      this.setData({ error: cancelled ? '已取消支付' : (error.message || '付款暂不可用') })
+      if (cancelled) toast.show({ text: '已取消支付' })
       nav.orderComplete(no)
     }
   },

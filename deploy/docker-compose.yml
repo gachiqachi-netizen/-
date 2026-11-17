@@ -10,6 +10,7 @@ services:
       - ./data/app:/data
       - ./secrets:/secrets:ro
       - ../tools/check_deploy.py:/app/tools/check_deploy.py:ro
+      - ../tools/load_seed.py:/app/tools/load_seed.py:ro
     depends_on:
       postgres:
         condition: service_healthy

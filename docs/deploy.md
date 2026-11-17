@@ -98,6 +98,26 @@ sudo docker compose --env-file app.env exec app python tools/check_deploy.py --p
 
 离线自检各项必须通过，`--ping` 必须得到 HTTP 400。失败时检查域名解析、安全组、证书及 8800 本地监听；不要展示 `app.env` 或密钥。把不含凭据的自检输出截图交审核。
 
+### 首次导入初始数据
+
+更新代码后，先在服务器的 `deploy/` 目录执行 `sudo docker compose --env-file app.env up -d`，让新增的只读脚本挂载生效。服务可用后，再预览珠子、模板、宣传位和草稿条款的缺失数量：
+
+```bash
+sudo docker compose --env-file app.env up -d
+```
+
+```bash
+sudo docker compose --env-file app.env exec app python tools/load_seed.py
+```
+
+核对每张表的“将新增 / 已存在跳过”数量后，再明确执行写入：
+
+```bash
+sudo docker compose --env-file app.env exec app python tools/load_seed.py --apply
+```
+
+只需补某些表时加 `--only beads,templates`（可选 `beads,templates,banners,terms`）。命令只按 ID 补缺，不删除、不覆盖已有记录，可重复运行；条款保持草稿状态。模板封面需负责人之后在后台上传，前台没有封面时使用生成图。导入之后在后台修改价格、封面、上下架状态，不要用此命令覆盖人工修改。
+
 ## 7. 微信后台：域名和支付通知
 
 在 **微信公众平台 → 小程序后台 → 开发管理 → 服务器域名**，把 `https://<API域名>` 加入 **request 合法域名**（菜单以实际后台为准）。**商户平台不需要单独填支付回调地址**：本项目用 APIv3，下单和退款请求都由服务器带上 `app.env` 里的 `WXPAY_NOTIFY_URL`（`https://<API域名>/api/payments/notify`），只要它正确且 `--ping` 返回 400 即可。商户平台只需在 **产品中心 → AppID 账号管理** 核对小程序 AppID 已关联。

@@ -380,7 +380,7 @@
   2. `deploy/docker-compose.yml`：后端服务（用现有 Dockerfile）、`env_file: app.env`、密钥目录只读挂载到 `/secrets`、数据目录挂载到 `/data`；如项目用 Postgres 就带上，并写清楚数据卷。
   3. `deploy/nginx.conf.example`：https 反向代理到 8800，含 `/api/payments/notify`；证书路径用占位符。
   4. `tools/check_deploy.py`：在服务器上运行，读当前环境变量和密钥文件，逐项打印“通过 / 缺少 / 不对”，**绝不打印任何值**（最多打印长度和文件是否存在、权限是否 600）；检查项：变量齐全、APIv3 密钥 32 位、私钥和公钥文件能被 cryptography 读取、回调地址是 https 且路径对、`WXPAY_APPID` 等于 `WECHAT_APP_ID`、`PAYMENT_PROVIDER=wechat` 时以上必须全部通过。加 `--ping` 选项时，向回调地址发一个不带签名的请求，期望得到 400（说明回调能从公网访问到、且拒绝无签名请求）。
-  5. `docs/deploy.md` 重写成负责人照做的分步说明：A. 云服务器 + Docker（从商户平台拿五样材料 → 上传 pem 到 `deploy/secrets/` 并设权限 → 复制 `app.env.example` 为 `app.env` 填值 → `docker compose up -d` → 跑 `check_deploy.py` → 配 nginx 和 https → 小程序后台加 request 合法域名 → 商户平台关联 AppID → 0.01 元付款和退款验证）；B. 微信云托管（同样材料，环境变量在控制台填，pem 用挂载）。每步写在哪个后台、点哪里；拿不准的界面写“以实际后台为准”。
+  5. `docs/deploy.md` 重写成负责人照做的分步说明，**按负责人实际环境：腾讯云云服务器（CVM，国内同事租的），Linux + Docker**：① 腾讯云控制台：安全组放行 80、443（8800 不对公网开放）；域名解析到服务器公网 IP；域名完成 ICP 备案；在“SSL 证书”申请免费证书并下载 Nginx 格式。② 服务器上装 Docker 和 compose 插件（给出 Ubuntu/OpenCloudOS 的命令）。③ 从微信商户平台拿五样材料（商户号、APIv3 密钥、商户证书私钥和序列号、微信支付公钥和 ID）并在“AppID 账号管理”关联小程序。④ pem 上传到 `deploy/secrets/` 并 `chmod 600`。⑤ `cp deploy/app.env.example deploy/app.env` 填值。⑥ `docker compose up -d`，再 `docker compose exec` 跑 `check_deploy.py`，全部“通过”后把输出截图给审核。⑦ 配 nginx 和证书，`check_deploy.py --ping` 通过。⑧ 小程序后台“开发管理 → 服务器域名”加 request 合法域名；商户平台填回调地址。⑨ 真机 0.01 元付款、后台退款，核对状态。⑩ 更新代码：`git pull` 后 `docker compose up -d --build`，数据目录不受影响；写清楚备份数据目录的命令。每步写在哪个后台、点哪里；拿不准的界面写“以实际后台为准”。不写云托管。
 - **测试**：`check_deploy.py` 用临时生成的假密钥和假环境变量测：全对时全部通过；缺变量、密钥长度不对、文件不可读、回调不是 https 各报对应错误；输出里不出现任何变量的值。
 - **不做**：真实部署、真实付款。
 

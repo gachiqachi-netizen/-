@@ -14,6 +14,9 @@ RULE = re.compile(r'([^{}]+)\{([^{}]*)\}')
 IMAGE_SELECTOR = re.compile(r'image|img|photo|banner|cover|thumb|grid|swiper', re.I)
 SHAPE_EXCEPTION = re.compile(r'add-photo|photo-add|ai-recommend', re.I)
 BUTTON_SELECTOR = re.compile(r'btn|button|action', re.I)
+BUTTON_TAG = re.compile(r'<button\b[^>]*>', re.S)
+CLASS_ATTR = re.compile(r'\bclass="([^"]*)"')
+ICON_BUTTONS = {'miniprogram/pages/photo/photo.wxml': {'shutter'}, 'miniprogram/ar-hand/index.wxml': {'shutter'}, 'miniprogram/pages/wrist/wrist.wxml': {'step'}}
 LEGACY_BUTTON_EXCEPTIONS = {
     'miniprogram/ar-hand/index.wxss': ('.actions>view',),
     'miniprogram/components/state/index.wxss': ('.c-state__action',),
@@ -53,10 +56,37 @@ def violations(path):
                 found.append(f'{path.relative_to(ROOT)}:button-width:{selector.strip()}:{value}')
     return found
 
+def markup_violations(path):
+    relative = str(path.relative_to(ROOT))
+    content = path.read_text()
+    found = []
+    for tag in BUTTON_TAG.finditer(content):
+        classes = set((CLASS_ATTR.search(tag.group()) or ['', ''])[1].split())
+        if 'c-btn' not in classes and not classes.intersection(ICON_BUTTONS.get(relative, set())):
+            found.append(f'{relative}:button-class:{tag.start()}')
+    stylesheet = path.with_suffix('.wxss')
+    if not stylesheet.exists():
+        return found
+    css = COMMENT.sub('', stylesheet.read_text())
+    vertical = set()
+    flexible = set()
+    for selector, body in RULE.findall(css):
+        selectors = re.findall(r'\.([a-zA-Z][\w-]*)', selector)
+        if re.search(r'flex-direction\s*:\s*column\b', body):
+            vertical.update(selectors)
+        if re.search(r'\bflex\s*:\s*none\b', body):
+            flexible.update(selectors)
+    for parent in re.finditer(r'<view\b([^>]*)>\s*(<button\b[^>]*>)', content, re.S):
+        parent_classes = set((CLASS_ATTR.search(parent.group(1)) or ['', ''])[1].split())
+        button_classes = set((CLASS_ATTR.search(parent.group(2)) or ['', ''])[1].split())
+        if parent_classes.intersection(vertical) and not button_classes.intersection(flexible):
+            found.append(f'{relative}:vertical-button:{parent.start()}')
+    return found
+
 def main():
-    paths = [Path(arg).resolve() for arg in sys.argv[1:]] if len(sys.argv) > 1 else list((ROOT / 'miniprogram').rglob('*.wxss'))
+    paths = [Path(arg).resolve() for arg in sys.argv[1:]] if len(sys.argv) > 1 else list((ROOT / 'miniprogram').rglob('*.wxss')) + list((ROOT / 'miniprogram').rglob('*.wxml'))
     old = set(json.loads(BASELINE.read_text())) if BASELINE.exists() else set()
-    current = {item for path in paths if path.name != 'tokens.wxss' for item in violations(path)}
+    current = {item for path in paths if path.name != 'tokens.wxss' for item in (markup_violations(path) if path.suffix == '.wxml' else violations(path))}
     added = sorted(current - old)
     for item in added: print(item)
     print(f'UI check: {len(current)} violations, {len(added)} new')

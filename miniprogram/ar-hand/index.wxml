@@ -10,14 +10,7 @@
   <progress percent="{{modelProgress}}" show-info="{{false}}" stroke-width="4" activeColor="#111111" backgroundColor="#eeeeee"/>
   <view class="state-link" bindtap="photoTryon">不等了，用照片试 ›</view>
  </view>
- <view wx:if="{{error}}" class="state">
-  <view class="state-title">{{errorKind==='download' ? '没下载下来' : errorKind==='permission' ? '用不了相机' : errorKind==='unsupported' ? '这台手机用不了实时试戴' : '实时试戴暂时用不了'}}</view>
-  <view class="state-copy">{{errorKind==='download' ? '网络不太好，手部识别模型没下完' : errorKind==='permission' ? '去设置里打开相机，或者用照片试' : '可以用照片试'}}</view>
-  <button wx:if="{{errorKind==='download'}}" class="c-btn primary" bindtap="retry">再试一次</button>
-  <button wx:else class="c-btn primary" bindtap="photoTryon">用照片试</button>
-  <button wx:if="{{errorKind==='permission'}}" class="c-btn state-link" open-type="openSetting">去设置打开相机 ›</button>
-  <view wx:else class="state-link" bindtap="photoTryon">用照片试 ›</view>
- </view>
+ <c-state wx:if="{{error}}" title="{{errorKind==='download' ? '没下载下来' : errorKind==='permission' ? '用不了相机' : errorKind==='unsupported' ? '这台手机用不了实时试戴' : '实时试戴暂时用不了'}}" desc="{{errorKind==='download' ? '网络不太好，手部识别模型没下完' : errorKind==='permission' ? '去设置里打开相机，或者用照片试' : '可以用照片试'}}" action="{{errorKind==='download' ? '再试一次' : '用照片试'}}" bind:action="stateAction"/>
  <view wx:if="{{!modelLoading && !error}}" class="bottom">
   <view wx:if="{{frozen}}" class="again" bindtap="toggleFreeze">再来一次</view>
   <view class="status">{{status}}</view>

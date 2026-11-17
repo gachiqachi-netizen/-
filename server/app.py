@@ -563,7 +563,7 @@ class Handler(BaseHTTPRequestHandler):
                     if size < 1 or size > 65536:
                         raise ValueError("回调长度不正确")
                     event_id, event = wechat_pay.decode_notify(self.headers, self.rfile.read(size))
-                    if event.get("mchid") and event["mchid"] != os.environ["WXPAY_MCHID"]:
+                    if event.get("mchid") != os.environ["WXPAY_MCHID"]:
                         raise ValueError("商户号不符")
                     if event.get("out_refund_no"):
                         commerce.refund_callback(db, event_id, event)

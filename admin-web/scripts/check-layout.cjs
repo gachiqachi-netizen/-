@@ -50,3 +50,4 @@ for (const item of cases) {
 }
 
 console.log(`layout parity: ${cases.length} cases passed (max error 0.5px)`)
+require('./check-bracelet-style.cjs')

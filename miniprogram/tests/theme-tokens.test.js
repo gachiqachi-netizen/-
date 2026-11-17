@@ -19,8 +19,8 @@ function parseColors(src) {
   return out;
 }
 
-test('theme.js 与 tokens.wxss 的 --c-* 逐项相等', () => {
-  assert.deepStrictEqual(theme, parseColors(tokens));
+test('theme.js 与 tokens.wxss 的 --c-* 逐项相等，海报暖白单独配置', () => {
+  assert.deepStrictEqual({ ...theme, warm: '#f8f3e9' }, parseColors(tokens));
 });
 
 test('颜色变量总数不超过 30', () => {

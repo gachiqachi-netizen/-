@@ -16,7 +16,7 @@ export type VisualBead = {
   c?: Array<string | null> | null;
 };
 export type Tier = 's' | 'm' | 'l';
-type Props = { sequence: VisualBead[]; tier: Tier; numbered?: boolean; label?: string };
+type Props = { sequence: VisualBead[]; tier?: Tier; size?: number; numbered?: boolean; label?: string };
 const pixels = { s: 72, m: 160, l: 320 } as const;
 const normalized = (bead: VisualBead) => ({
   mm: Number(bead.mm) > 0 ? Number(bead.mm) : 8,
@@ -95,21 +95,22 @@ export function BeadGlyph({ bead, size = 32 }: { bead: VisualBead; size?: number
   </svg>;
 }
 
-export default function Bracelet({ sequence, tier, numbered = false, label = '手串图' }: Props) {
+export default function Bracelet({ sequence, tier, size: legacySize, numbered = false, label = '手串图' }: Props) {
   const prefix = useId().replace(/:/g, '');
   const beads = Array.isArray(sequence) ? sequence : [];
   if (!beads.length) return null;
   if (beads.length > 80) return <span role="note">超过 80 颗，暂不支持手串图预览</span>;
-  const size = pixels[tier];
-  const drawSize = size * style.fillRatio;
+  const renderTier = tier || 'm';
+  const size = tier ? pixels[tier] : legacySize || pixels.m;
+  const drawSize = tier ? size * style.fillRatio : size;
   const offset = (size - drawSize) / 2;
-  const params = tier === 's' ? style.small : style.regular;
+  const params = renderTier === 's' ? style.small : style.regular;
   const positions = layout(beads.map(normalized), drawSize);
-  const background = tier === 'l' ? style.background.poster : style.background[tier];
+  const background = tier === 'l' ? style.background.poster : tier ? style.background[tier] : 'transparent';
   return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={label}
     style={{ display: 'block', maxWidth: '100%', height: 'auto', background }}>
     {positions.map((spot, i) => <BeadShape key={`${i}-${beads[i].id || ''}`} bead={beads[i]}
       x={spot.x + offset} y={spot.y + offset} r={spot.r * params.beadScale} rotate={spot.rotate}
-      prefix={prefix} index={spot.index} tier={tier} numbered={numbered} />)}
+      prefix={prefix} index={spot.index} tier={renderTier} numbered={numbered} />)}
   </svg>;
 }

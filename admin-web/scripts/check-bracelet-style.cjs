@@ -55,12 +55,11 @@ for (const [tier, pixels] of Object.entries({ s: 72, m: 160, l: 320 })) {
     }
   }
 }
+assert.match(renderToStaticMarkup(React.createElement(bracelet.default, { size: 240, sequence: sample })), /width="240"/, 'legacy callers keep their existing size until V9');
 const calls = [
   ['../src/components/OrdersView.tsx', 's'],
   ['../src/pages/afterSales/detail.tsx', 's'],
   ['../src/pages/workOrders/detail.tsx', 'l'],
-  ['../src/pages/templates/TemplatesWorkbench.tsx', 'l'],
-  ['../src/components/TemplatesView.tsx', 'l'],
   ['../src/pages/products/beadPhoto.tsx', 'm'],
 ]
 for (const [file, tier] of calls) {

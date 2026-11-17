@@ -47,4 +47,5 @@ Page({
       fail: () => { this.setData({ importing: false }); queue.show({ text: '没拿到微信地址，可以手动加一个' }) },
     })
   },
+  privacyRejected() { this.setData({ importing: false, error: '没拿到微信地址，可以手动加一个' }) },
 })

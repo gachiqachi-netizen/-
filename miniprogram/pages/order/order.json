@@ -8,6 +8,7 @@
     "c-bracelet": "/components/bracelet/index",
     "c-bead": "/components/bead/index",
     "c-sheet": "/components/sheet/index",
-    "c-state": "/components/state/index"
+    "c-state": "/components/state/index",
+    "privacy-popup": "/components/privacy-popup/index"
   }
 }

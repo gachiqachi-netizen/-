@@ -96,4 +96,5 @@ Page({
     } catch (error) { this.setData({ error: error.message || '删除失败，请再试一次' }) }
     finally { this.setData({ deleting: false }) }
   },
+  privacyRejected() { this.setData({ saving: false, error: '没拿到微信地址，可以手动填写' }) },
 })

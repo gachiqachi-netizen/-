@@ -19,3 +19,4 @@
   <c-bar layout="single"><button class="c-btn" disabled="{{saving||deleting||loading}}" bindtap="save">{{saving?'正在保存……':'保存'}}</button></c-bar>
 </c-page>
 <c-toast />
+<privacy-popup scene="选择微信收货地址" bind:reject="privacyRejected"/>

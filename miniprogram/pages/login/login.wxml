@@ -32,3 +32,4 @@
 </view>
 
 <c-toast />
+<privacy-popup scene="用手机号登录" bind:reject="privacyRejected"/>

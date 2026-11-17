@@ -11,3 +11,4 @@
   </block>
 </c-page>
 <c-toast />
+<privacy-popup scene="上传照片" bind:reject="privacyRejected"/>

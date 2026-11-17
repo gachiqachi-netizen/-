@@ -274,4 +274,5 @@ Page({
     if (no) nav.orderComplete(no)
   },
   home() { wx.switchTab({ url: '/pages/home/home' }) },
+  privacyRejected() { this.setData({ busy: false, error: '没拿到微信地址，可以手动填写' }) },
 })

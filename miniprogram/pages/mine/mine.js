@@ -36,4 +36,5 @@ Page({
   this.setData({designs:local.concat(extra)})
  },
  viewOrder(e){const order=this.data.orders&&this.data.orders[e.currentTarget.dataset.i];if(order)wx.navigateTo({url:'/features/order-detail/order-detail?no='+encodeURIComponent(order.no)})},
+ privacyRejected(){toast.show({ text: '已取消，头像保持默认' })},
 })

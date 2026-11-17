@@ -72,5 +72,6 @@ Page({
       wx.redirectTo({ url: '/features/after-sale/detail?no=' + encodeURIComponent(result.afterSale.no) })
     } catch (error) { this.setData({ error: error.message || '提交失败，请再试一次' }) }
     finally { this.setData({ submitting: false }) }
-  }
+  },
+  privacyRejected() { this.setData({ submitting: false, photoError: '没拿到照片，可以再试一次' }) },
 })

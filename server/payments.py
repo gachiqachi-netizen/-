@@ -25,7 +25,7 @@ import env
 import status
 
 PAYMENT_NOT_INTEGRATED = True   # 真实微信支付还没接
-PROVIDERS = ("none", "mock")
+PROVIDERS = ("none", "mock", "wechat")
 
 
 def mock_allowed():
@@ -37,7 +37,9 @@ def mock_allowed():
 
 def provider():
     """当前可用的支付通道。配置了不可用的通道时按 none 处理。"""
-    p = (os.environ.get("PAYMENT_PROVIDER") or "none").strip().lower()
+    p = (os.environ.get("PAY_CHANNEL") or os.environ.get("PAYMENT_PROVIDER") or "mock").strip().lower()
+    if p == "wechat":
+        return "wechat"
     if p == "mock" and mock_allowed():
         return "mock"
     return "none"
@@ -83,7 +85,7 @@ def assert_amount_matches(order, callback):
     return True
 
 
-def create_payment(order):
+def create_payment(order, openid=None):
     """发起一次付款，返回 (付款记录, 给前端的参数)。调用方负责加锁和落库。
 
     付款失败不改订单状态（仍是待支付），用户可以再付一次；所以这里不进入 paying。
@@ -96,6 +98,16 @@ def create_payment(order):
         raise ValueError("这笔订单不能付款")
     if groups["paymentStatus"] != "unpaid":
         raise ValueError("这笔订单不在待支付状态")
+    if channel == "wechat":
+        import wechat_pay
+        if not openid:
+            raise ValueError("缺少微信登录信息，请重新登录")
+        now = int(time.time() * 1000)
+        for old in reversed(order.get("paymentAttempts") or []):
+            if (old.get("provider") == "wechat" and old.get("prepayId") and
+                    old.get("result") is None and now - old.get("createdAt", 0) < 110 * 60000):
+                return old, {"provider": "wechat", "paymentId": old["id"],
+                             "amountFen": old["amountFen"], **wechat_pay.payment_params(old["prepayId"])}
     attempt = {
         "id": "pay_" + secrets.token_hex(12),
         "provider": channel,
@@ -107,6 +119,10 @@ def create_payment(order):
     params = {"provider": channel, "paymentId": attempt["id"], "amountFen": attempt["amountFen"]}
     if channel == "mock":
         params["mock"] = True   # 前端据此弹出“模拟支付”，不调 wx.requestPayment
+    elif channel == "wechat":
+        import wechat_pay
+        attempt["prepayId"] = wechat_pay.jsapi(order["no"], attempt["amountFen"], openid)
+        params.update(wechat_pay.payment_params(attempt["prepayId"]))
     return attempt, params
 
 
@@ -170,7 +186,7 @@ def validate_refund_amount(order, refund_fen):
     """校验退款金额：非负整数分，且不超过订单应付金额。"""
     if isinstance(refund_fen, bool) or not isinstance(refund_fen, int) or refund_fen < 0:
         raise ValueError("退款金额必须是不小于 0 的整数分")
-    if refund_fen > payable_fen(order):
+    if refund_fen > (order.get("paidFen") if order.get("paymentChannel") == "wechat" else payable_fen(order)):
         raise ValueError("退款金额不能超过订单金额")
     return True
 
@@ -189,6 +205,14 @@ def handle_refund(order, refund_fen):
     # 模拟支付付的钱，模拟退款直接成功；只改返回值，不改订单（订单在 commerce 的同一事务里改）。
     if order.get("paymentChannel") == "mock" and provider() == "mock":
         return "refunded"
+    if order.get("paymentChannel") == "wechat" and provider() == "wechat":
+        import wechat_pay
+        result = wechat_pay.refund(order["no"], "refund_" + order["no"], order["paidFen"], refund_fen)
+        if result.get("status") in ("SUCCESS",):
+            return "refunded"
+        if result.get("status") in ("PROCESSING",):
+            return "refunding"
+        raise RuntimeError("微信退款未受理")
     if PAYMENT_NOT_INTEGRATED:
         raise RuntimeError("未接真实退款，禁止标记已退款")
     raise NotImplementedError("真实退款尚未接入")

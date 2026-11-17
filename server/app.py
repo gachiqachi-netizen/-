@@ -20,6 +20,7 @@ import uuid
 import user_api
 import pricing
 import content_security
+import wx_shipping
 import env
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
@@ -831,6 +832,8 @@ class Handler(BaseHTTPRequestHandler):
                     result = commerce.update_work_order(db, rid, data, actor=self.admin_user["name"])
                 else:
                     result = commerce.record_quality_gate(db, rid, data, actor=self.admin_user["name"])
+                if action in ('status', 'logistics'):
+                    result = wx_shipping.sync(db, rid, result)
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
             m = re.match(r"^/api/admin/orders/([\w-]+)/(address|note)$", path)

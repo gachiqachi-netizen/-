@@ -3,8 +3,8 @@
     <c-wordmark size="block" />
     <view class="login-sub">登录后，订单和作品换手机也在</view>
     <view class="login-action">
-      <button class="c-btn c-btn--block login-button" open-type="getPhoneNumber" bindgetphonenumber="onPhone" loading="{{busy}}" disabled="{{busy}}">{{busy ? '正在登录……' : '手机号快捷登录'}}</button>
-      <view wx:if="{{!agreed}}" class="login-agreement-overlay" bindtap="showAgreement" />
+      <button wx:if="{{!agreed}}" class="c-btn c-btn--block login-button" bindtap="showAgreement">手机号快捷登录</button>
+      <button wx:else class="c-btn c-btn--block login-button" open-type="getPhoneNumber" bindgetphonenumber="onPhone" loading="{{busy}}" disabled="{{busy}}">{{busy ? '正在登录……' : '手机号快捷登录'}}</button>
     </view>
     <view class="login-note" wx:if="{{error}}">{{error}}</view>
     <view class="login-cancel" bindtap="back">暂不登录</view>

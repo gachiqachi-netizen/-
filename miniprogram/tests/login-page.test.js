@@ -17,9 +17,11 @@ function page() {
   return instance
 }
 
-test('both consent paths use the WeChat phone button and page starts unchecked', () => {
+test('unchecked entry opens consent before showing the WeChat phone button', () => {
   const wxml = fs.readFileSync(path.join(__dirname, '../pages/login/login.wxml'), 'utf8')
-  assert.equal((wxml.match(/open-type="getPhoneNumber"/g) || []).length, 2)
+  assert.match(wxml, /wx:if="\{\{!agreed\}\}"[^>]*bindtap="showAgreement"/)
+  assert.match(wxml, /wx:else[^>]*open-type="getPhoneNumber"[^>]*bindgetphonenumber="onPhone"/)
+  assert.doesNotMatch(wxml, /login-agreement-overlay/)
   assert.match(wxml, /bindgetphonenumber="onPhone"/)
   assert.match(wxml, /bindgetphonenumber="agreeAndPhone"/)
   assert.equal(page().data.agreed, false)
@@ -40,7 +42,7 @@ test('denial stays on page and shows retry text', async () => {
   assert.equal(instance.data.sheet, false)
   const wxml = fs.readFileSync(path.join(__dirname, '../pages/login/login.wxml'), 'utf8')
   const wxss = fs.readFileSync(path.join(__dirname, '../pages/login/login.wxss'), 'utf8')
-  assert.ok(wxml.indexOf('class="login-note"') > wxml.indexOf('class="c-btn login-button"'))
+  assert.ok(wxml.indexOf('class="login-note"') > wxml.indexOf('login-button'))
   assert.match(wxss, /\.login-note\s*\{[^}]*color:\s*var\(--c-text-2\)/)
 })
 

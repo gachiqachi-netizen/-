@@ -3,7 +3,6 @@
 .login-sub { margin-top: 44rpx; color: var(--c-text-2); font-size: var(--fs-caption); }
 .login-action { width: 100%; position: relative; margin-top: 192rpx; }
 .login-button { width: 100%; }
-.login-agreement-overlay { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
 .login-cancel { margin-top: 36rpx; color: var(--c-text-2); font-size: var(--fs-body); }
 .login-note { margin-top: 20rpx; color: var(--c-text-2); font-size: var(--fs-caption); text-align: center; }
 .login-dev { margin-top: 28rpx; color: var(--c-text-2); font-size: var(--fs-caption); }

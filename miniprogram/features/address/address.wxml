@@ -17,4 +17,4 @@
   <c-bar><button class="c-btn" bindtap="add">加一个地址</button></c-bar>
   <c-toast />
 </view>
-<privacy-popup scene="选择微信收货地址" bind:reject="privacyRejected"/>
+<privacy-popup kind="address" scene="选择微信收货地址" bind:reject="privacyRejected"/>

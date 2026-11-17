@@ -60,6 +60,12 @@
 .c-privacy__actions .c-btn {
   flex: 1;
   height: var(--h-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: var(--h-btn);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-body);
 }
 
 .c-privacy__actions button.c-btn {
@@ -70,4 +76,14 @@
 
 .c-privacy__actions button.c-btn::after {
   border: 0;
+}
+
+.c-privacy__actions button.c-btn {
+  background: var(--c-text);
+  color: var(--c-bg);
+}
+
+.c-privacy__actions button.c-btn--sec {
+  background: var(--c-surface);
+  color: var(--c-text);
 }

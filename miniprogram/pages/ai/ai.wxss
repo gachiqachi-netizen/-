@@ -19,7 +19,7 @@
 .ai-cards { width: calc(100% + var(--sp-base)); white-space: nowrap; }
 .ai-cards-inner { display: inline-flex; gap: 20rpx; padding-right: var(--sp-base); }
 .ai-card { width: 580rpx; background: var(--c-bg); border: 1rpx solid var(--c-line); white-space: normal; box-sizing: border-box; }
-.ai-art { height: 250rpx; display: flex; align-items: center; justify-content: center; background: var(--c-surface); }
+.ai-art { height: 320rpx; display: flex; align-items: center; justify-content: center; }
 .ai-card-body { padding: 24rpx; }
 .ai-card-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12rpx; }
 .ai-card-name { font-size: var(--fs-title); font-weight: var(--fw-bold); }

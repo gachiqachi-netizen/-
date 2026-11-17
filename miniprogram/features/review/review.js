@@ -16,7 +16,7 @@ Page({
     auth.authorized(path, null, 'GET').then(order => {
       const beads = Array.isArray(order.beads) ? order.beads.length : ''
       const wrist = order.wrist || ''
-      this.setData({ name: order.name || '手串', beads: order.beads || [], catalog: order.items || [],
+      this.setData({ name: order.name || '手串', beads: (order.designSnapshot && order.designSnapshot.sequence) || [], catalog: order.items || [],
         spec: [beads ? beads + ' 颗' : '', wrist ? '手围 ' + wrist + 'cm' : ''].filter(Boolean).join(' · ') })
     }).catch(error => this.setData({ loadError: api.userMessage(error) }))
     if (typeof getApp === 'function') api.catalog().then(result => this.setData({ catalog: result.beads || [] })).catch(() => {})

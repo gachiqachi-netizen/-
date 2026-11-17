@@ -3,7 +3,7 @@
   <c-state wx:elif="{{deleted}}" title="这条手串看不到了" desc="可能已经被主人删除" action="我也串一条" bind:action="start" />
   <c-state wx:elif="{{error}}" title="没连上" desc="{{error}}" action="再试一次" bind:action="retry" />
   <block wx:elif="{{design}}">
-    <c-card><view class="stage"><c-bracelet wx:if="{{!rotating}}" beads="{{visual}}" size="560"/><bracelet3d wx:else beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}"/><button class="rotate-btn c-btn c-btn--sec" bindtap="toggleRotate">{{rotating ? '看手串图' : '转一转'}}</button></view></c-card>
+    <c-card><view class="stage"><c-bracelet wx:if="{{!rotating}}" beads="{{visual}}" tier="l"/><bracelet3d wx:else beads="{{design.beads}}" catalog="{{catalog}}" selected="{{-1}}"/><button class="rotate-btn c-btn c-btn--sec" bindtap="toggleRotate">{{rotating ? '看手串图' : '转一转'}}</button></view></c-card>
     <c-card><view class="intro"><view class="muted">{{authorLabel}}<text wx:if="{{dateLabel}}"> · {{dateLabel}}</text></view><view class="name">{{design.name}}</view><view wx:if="{{meaning}}" class="meaning">{{meaning}}</view></view></c-card>
     <c-card><view slot="title">每一颗的寓意</view><c-cell wx:for="{{notes}}" wx:key="id"><view slot="label"><view class="note-name">{{item.name}}</view><view class="muted">{{item.meaning}}</view></view><text slot="value">×{{item.count}}</text></c-cell></c-card>
     <c-card><view class="brand">珠养养<text>ZHU YANG YANG</text></view></c-card>

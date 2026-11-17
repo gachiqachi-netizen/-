@@ -108,11 +108,9 @@ page {
 }
 
 .oc-thumb {
-  width: 128rpx;
-  height: 128rpx;
+  width: 144rpx;
+  height: 144rpx;
   flex: none;
-  border-radius: var(--r-panel);
-  background: radial-gradient(circle at 50% 42%, var(--c-surface), var(--c-line));
   overflow: hidden;
 }
 

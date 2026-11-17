@@ -1,0 +1,30 @@
+{
+  "tiers": { "s": 144, "m": 320, "l": 560 },
+  "fillRatio": 0.88,
+  "background": "var(--c-surface)",
+  "canvasBackground": "#f4f4f4",
+  "small": {
+    "beadScale": 1.12,
+    "highlightX": 34,
+    "highlightY": 28,
+    "highlightStop": 28,
+    "highlightAlpha": 0.82,
+    "glowAlpha": 0.3,
+    "glowStop": 44,
+    "colorStop": 46,
+    "outlineWidth": 0,
+    "shadeAlpha": 0
+  },
+  "regular": {
+    "beadScale": 1,
+    "highlightX": 34,
+    "highlightY": 28,
+    "highlightStop": 26,
+    "highlightAlpha": 0.9,
+    "glowAlpha": 0.35,
+    "glowStop": 42,
+    "colorStop": 45,
+    "outlineWidth": 1,
+    "shadeAlpha": 0.16
+  }
+}

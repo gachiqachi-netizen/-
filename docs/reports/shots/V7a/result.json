@@ -1,0 +1,79 @@
+{
+  "elapsedSeconds": 61,
+  "results": [
+    {
+      "page": "workbench",
+      "ok": true,
+      "readyMs": 34,
+      "readySource": "ready",
+      "warnings": [],
+      "bytes": 115271
+    },
+    {
+      "page": "ai-match",
+      "ok": true,
+      "readyMs": 859,
+      "readySource": "no-skeleton",
+      "warnings": [],
+      "bytes": 81264
+    },
+    {
+      "page": "order-confirm",
+      "ok": true,
+      "readyMs": 846,
+      "readySource": "no-skeleton",
+      "warnings": [
+        "¥0.00"
+      ],
+      "bytes": 62922
+    },
+    {
+      "page": "order-detail-pending",
+      "ok": true,
+      "readyMs": 24,
+      "readySource": "ready",
+      "warnings": [],
+      "bytes": 47680
+    },
+    {
+      "page": "my-orders",
+      "ok": true,
+      "readyMs": 1165,
+      "readySource": "no-skeleton",
+      "warnings": [],
+      "bytes": 77955
+    },
+    {
+      "page": "write-review",
+      "ok": true,
+      "readyMs": 843,
+      "readySource": "no-skeleton",
+      "warnings": [],
+      "bytes": 48583
+    },
+    {
+      "page": "after-sale-detail",
+      "ok": true,
+      "readyMs": 863,
+      "readySource": "no-skeleton",
+      "warnings": [],
+      "bytes": 46001
+    },
+    {
+      "page": "friend-landing",
+      "ok": true,
+      "readyMs": 850,
+      "readySource": "no-skeleton",
+      "warnings": [],
+      "bytes": 77447
+    },
+    {
+      "page": "share-poster",
+      "ok": true,
+      "readyMs": 21,
+      "readySource": "ready",
+      "warnings": [],
+      "bytes": 77351
+    }
+  ]
+}

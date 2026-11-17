@@ -1,34 +1,93 @@
-const test=require('node:test')
-const assert=require('node:assert/strict')
-const fs=require('node:fs')
-const path=require('node:path')
-global.Page=()=>{}
-const {drawBead}=require('../pages/share/share')
-function context(){
- const calls=[]
- const ctx={save(){calls.push('save')},restore(){calls.push('restore')},beginPath(){},arc(){},clip(){calls.push('clip')},translate(){},rotate(){calls.push('rotate')},drawImage(){calls.push('photo')},setFillStyle(){},fillRect(){calls.push('fill')},createCircularGradient(){const stops=[];calls.push(stops);return {addColorStop(position,color){stops.push([position,color])}}}}
- return {ctx,calls}
+const test = require('node:test')
+const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
+global.Page = () => {}
+const { drawBead, drawPoster, posterLayout, posterSize, posterTop } = require('../pages/share/share')
+const { materialOf, materialParams, cssPaint } = require('../components/bracelet/fallback')
+const { layout: componentLayout } = require('../components/bracelet/index')
+const style = require('../components/bracelet/style')
+function context() {
+  const calls = []
+  const gradient = () => { const stops = []; calls.push(stops); return { addColorStop(position, color) { stops.push([position, color]) } } }
+  const ctx = { save() { calls.push('save') }, restore() { calls.push('restore') }, beginPath() {}, arc() {}, clip() { calls.push('clip') },
+    translate() {}, rotate() { calls.push('rotate') }, scale() {}, fill() { calls.push('circle') }, setShadow() { calls.push('shadow') },
+    drawImage(path) { calls.push(['image', path]) }, setFillStyle() {}, fillRect() { calls.push('fill') },
+    setFontSize() {}, fillText(text, x, y) { calls.push(['text', text, x, y]) }, createCircularGradient: gradient, createLinearGradient: gradient }
+  return { ctx, calls }
 }
-test('海报无照片的珠子使用渐变、高光和边缘阴影',()=>{
- const {ctx,calls}=context()
- drawBead(ctx,{r:12,colors:['#ffe2a0','#9c6d22']},'',40,40)
- const gradients=calls.filter(Array.isArray)
- assert.equal(gradients.length,4)
- assert.deepEqual(gradients[0][0],[0,'#ffe2a0'])
- assert.deepEqual(gradients[0].at(-1),[1,'#9c6d22'])
- assert.ok(gradients[1].some(stop=>stop[1]==='rgba(255,255,255,0.9)'))
- assert.ok(gradients[3].some(stop=>stop[1]==='rgba(0,0,0,0.16)'))
- assert.equal(calls.filter(call=>call==='fill').length,4)
+
+test('三类材质使用同一份不同参数，蜜蜡按通透类', () => {
+  assert.equal(materialOf({ mat: 'crystal' }), 'translucent')
+  assert.equal(materialOf({ mat: 'stone', name: '蜜蜡' }), 'translucent')
+  assert.equal(materialOf({ mat: 'wood' }), 'matte')
+  assert.equal(materialOf({ mat: 'metal', spacer: true }), 'metal')
+  assert.equal(materialOf({}), 'matte')
+  for (const mat of ['crystal', 'wood', 'metal']) {
+    const bead = { mat, colors: ['#ffe2a0', '#9c6d22'] }
+    const params = materialParams(bead, 'l')
+    assert.equal(params.highlightAlpha, style.materials[materialOf(bead)].highlightAlpha)
+    assert.match(cssPaint(bead.colors, params), /#ffe2a0/)
+    const { ctx, calls } = context()
+    drawBead(ctx, { r: 12, colors: bead.colors, bead }, '', 40, 40, params)
+    assert.equal(calls.filter(call => call === 'fill').length, 4)
+    assert.ok(calls.includes('shadow'))
+  }
+  assert.notEqual(style.materials.translucent.highlightAlpha, style.materials.matte.highlightAlpha)
+  assert.ok(style.materials.metal.highlightAlpha > style.materials.translucent.highlightAlpha)
+  assert.equal(materialParams({ mat: 'metal' }, 's').shadowAlpha, 0)
+  const ring = componentLayout(Array.from({ length: 8 }, (_, i) => ({ mm: 8, mat: i % 2 ? 'crystal' : 'metal', colors: ['#ffe2a0', '#9c6d22'] })), 320, 'm')
+  assert.match(ring[0].paintStyle, new RegExp(String(style.materials.metal.highlightAlpha)))
+  assert.match(ring[1].paintStyle, new RegExp(String(style.materials.translucent.highlightAlpha)))
 })
-test('海报照片在圆形裁切后旋转绘制',()=>{
- const {ctx,calls}=context()
- drawBead(ctx,{r:12,colors:['#fff','#000'],rotate:23},'/local/photo.png',40,40)
- assert.ok(calls.indexOf('clip')<calls.indexOf('rotate'))
- assert.ok(calls.indexOf('rotate')<calls.indexOf('photo'))
- assert.equal(calls.filter(Array.isArray).length,0)
+
+test('海报照片在圆形裁切后旋转绘制', () => {
+  const { ctx, calls } = context()
+  drawBead(ctx, { r: 12, colors: ['#fff', '#000'], rotate: 23 }, '/local/photo.png', 40, 40)
+  assert.ok(calls.indexOf('clip') < calls.indexOf('rotate'))
+  assert.ok(calls.indexOf('rotate') < calls.findIndex(call => Array.isArray(call) && call[0] === 'image'))
+  assert.equal(calls.filter(call => call === 'fill').length, 0)
 })
-test('海报中央字标使用本地浅色图',()=>{
- const source=fs.readFileSync(path.join(__dirname,'../pages/share/share.js'),'utf8')
- assert.match(source,/drawImage\('\/pages\/share\/wordmark-line\.png'/)
- assert.ok(fs.statSync(path.join(__dirname,'../pages/share/wordmark-line.png')).size>0)
+
+test('海报没有中央字标，有码和没码分别显示对应内容', () => {
+  const base = { width: 350, height: 467, items: [], paths: [], design: { name: '好运连连' }, meaning: '好运常伴', day: new Date(2026, 10, 17) }
+  const absent = context()
+  drawPoster(absent.ctx, { ...base, qrPath: '' })
+  const texts = absent.calls.filter(call => Array.isArray(call) && call[0] === 'text').map(call => call[1])
+  assert.equal(absent.calls.filter(call => Array.isArray(call) && call[0] === 'text' && call[1] === '珠养养' && call[2] < 50).length, 1)
+  assert.ok(texts.includes('微信搜索') && texts.includes('珠养养'))
+  const qr = posterLayout(base.width, base.height).qr
+  const search = absent.calls.find(call => Array.isArray(call) && call[1] === '微信搜索')
+  const fallbackName = absent.calls.find(call => Array.isArray(call) && call[1] === '珠养养' && call[2] > qr.x)
+  assert.ok(Math.abs(search[2] + 4 * 29 * base.width / 750 / 2 - (qr.x + qr.width / 2)) < 0.001)
+  assert.ok(Math.abs(fallbackName[2] + 3 * 29 * base.width / 750 / 2 - (qr.x + qr.width / 2)) < 0.001)
+  assert.ok(!texts.some(text => text.includes('你也来串一条')))
+  assert.equal(absent.calls.filter(call => Array.isArray(call) && call[0] === 'image').length, 0)
+  const present = context()
+  drawPoster(present.ctx, { ...base, qrPath: '/local/code.png' })
+  assert.ok(present.calls.some(call => Array.isArray(call) && call[0] === 'image' && call[1] === '/local/code.png'))
+  assert.ok(present.calls.some(call => Array.isArray(call) && call[1] === '长按识别 串一条你的'))
+  assert.ok(!present.calls.some(call => Array.isArray(call) && call[1] === '微信搜索'))
+  const source = fs.readFileSync(path.join(__dirname, '../pages/share/share.js'), 'utf8')
+  assert.doesNotMatch(source, /wordmark-line\.png/)
+  assert.match(source, /destHeight:h\*2/)
+})
+
+test('海报严格三比四，标题寓意落款文字块不贴边且间距足够', () => {
+  for (const screenWidth of [320, 375, 390, 430]) {
+    const { width, height } = posterSize(screenWidth)
+    assert.equal(width * 4, height * 3)
+    assert.ok(width <= screenWidth - 40)
+    const { unit, topH, title, meaning, footer, qr } = posterLayout(width, height)
+    assert.ok(title.y >= topH && title.height > 0)
+    assert.ok(meaning.y - (title.y + title.height) >= 16 * unit - 0.001)
+    assert.ok(footer.y - (meaning.y + meaning.height) >= 32 * unit - 0.001)
+    assert.ok(footer.y + footer.height <= height)
+    assert.equal(qr.width, qr.height)
+    assert.ok(Math.abs(qr.y + qr.height - (footer.y + footer.height)) < 0.001)
+    assert.ok(qr.x > 0 && qr.x + qr.width < width)
+    assert.equal(posterTop(height + 120, height), 0)
+    assert.equal(posterTop(height + 170, height), 50)
+    assert.equal(posterTop(height + 400, height), 90)
+  }
 })

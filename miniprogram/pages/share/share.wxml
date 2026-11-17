@@ -4,10 +4,9 @@
   <c-state wx:elif="{{!design && error}}" title="还不能生成海报" desc="{{error}}" action="再试一次" bind:action="retry" />
   <c-state wx:elif="{{!design}}" title="先串好一条手串" desc="完成设计后再来生成海报" />
   <c-state wx:if="{{design && error && !ready}}" title="还不能生成海报" desc="{{error}}" action="再试一次" bind:action="retry" />
-  <c-card wx:if="{{design && (ready || !error)}}">
-
+  <view class="share-preview" wx:if="{{design && (ready || !error)}}" style="padding-top:{{previewTop}}px">
     <canvas canvas-id="shareCard" class="share-card" style="width:{{width}}px;height:{{height}}px" />
-  </c-card>
+  </view>
   <c-card wx:if="{{albumDenied}}"><view class="permission">没有相册权限，去设置里打开</view><button class="c-btn c-btn--sec" bindtap="openAlbumSettings">去设置</button></c-card>
   <c-card wx:if="{{shareError}}"><view class="error">{{shareError}}</view></c-card>
   <c-card wx:if="{{error && ready && !albumDenied}}"><view class="error">{{error}}</view></c-card>

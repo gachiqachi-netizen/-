@@ -17,8 +17,11 @@ test('三档尺寸和参数来自同一份样式文件', () => {
   assert.equal(style.small.outlineWidth, 0)
   assert.ok(style.small.beadScale > style.regular.beadScale)
   assert.match(paint(['#987654', '#123456'], style.small), /#987654/)
-  assert.match(read('pages/share/share.js'), /braceletStyle\.regular/)
+  assert.match(read('pages/share/share.js'), /materialParams\(items\[i\],'l'\)/)
   assert.match(read('pages/share/share.js'), /braceletStyle\.fillRatio/)
+  assert.deepEqual(style.background, { s: 'transparent', m: 'transparent', l: 'var(--c-warm)', poster: '#f8f3e9', paper: '#ffffff' })
+  assert.match(read('components/bracelet/index.js'), /style\.background\[p\.tier\]/)
+  assert.match(read('styles/tokens.wxss'), /--c-warm: #f8f3e9/)
 })
 
 test('中大档仍走相切排布，居中落在容器 88% 区域', () => {

@@ -29,6 +29,7 @@ async function waitReady(page) {
   let legacyWaited = false
   while (Date.now() - started < 10000) {
     const data = await page.data()
+    if (data && data.error && data.loading === false) throw new Error(data.error)
     if (Object.prototype.hasOwnProperty.call(data || {}, 'ready')) {
       if (data.ready === true) return { ms: Date.now() - started, source: 'ready' }
     } else {
@@ -223,6 +224,9 @@ async function main() {
     if (device.screenWidth !== 390 || device.screenHeight !== 844 || !/^iPhone 12\/13/.test(device.model)) {
       throw new Error(`请在开发者工具模拟器选 iPhone 12/13 (Pro)（390×844）；当前是 ${device.model} ${device.screenWidth}×${device.screenHeight}`)
     }
+    // The mini app defaults to port 8801 in devtools; keep its requests on the same
+    // temporary backend that this script uses to seed orders and after-sales.
+    await mini.evaluate(apiBase => { getApp().globalData.apiBase = apiBase }, base)
     const data = await seed()
     if (timing) {
       await runTiming(mini, data, selected, out)
@@ -262,7 +266,7 @@ async function main() {
           }
           if (!complete) throw new Error('AI 配 30 秒内没有返回完整方案')
         }
-        if (item.name === 'order-confirm') {
+        if (item.name === 'order-confirm' && process.env.SHOOT_NO_SHEETS !== '1') {
           await page.setData({ sheet: 'gift' })
         }
         const state = await page.data()

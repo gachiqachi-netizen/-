@@ -79,7 +79,7 @@
 
 ## V8 分享海报重做、无照片时珠子画法升级（2026-11-17 负责人截图：“真丑，特别是珠子”）
 
-- **依赖**：V7a（它建 `bracelet_style.json` 和三档组件）　**只能改**：`miniprogram/pages/share/*`、`miniprogram/components/bracelet/*` 里画珠子的部分、`server/tests/fixtures/bracelet_style.json` 里无照片兜底那组参数、`miniprogram/tests/` 对应测试；后台 SVG 的同步留给 V7b（V7b 读同一份 json，自动跟上）
+- **依赖**：V7a（它建 `bracelet_style.json` 和三档组件）　**只能改**：`miniprogram/pages/share/*`、`miniprogram/components/bracelet/style.js`、`miniprogram/styles/tokens.wxss`（只加暖白 token）、`miniprogram/components/bracelet/*` 里画珠子的部分、`server/tests/fixtures/bracelet_style.json` 里无照片兜底那组参数、`miniprogram/tests/` 对应测试；后台 SVG 的同步留给 V7b（V7b 读同一份 json，自动跟上）
 - **负责人已定（2026-11-17）**：海报上**去掉圈中间的水印字标**（工作台托盘里照旧保留）；珠子照片还没传，先把**没照片时的兜底画法**做好，有照片时自动用照片。
 - **海报版式**（canvas 画，3:4，整张是一块卡片，不再是灰方块加散字）：
   1. 上 2/3：手串，底色暖白或浅米色（新增 token，写进 tokens.wxss 并说明用途，不用冷灰）；手串占这块宽度 80%，居中；珠子下面一圈很淡的贴地阴影。
@@ -87,6 +87,7 @@
   3. 品牌只在左上角出现一次（`c-wordmark` 小号）；去掉“你也来串一条”和“微信搜索「珠养养」小程序”这两行——**只有小程序码拿不到时**，在码的位置显示“微信搜索 珠养养”作为兜底。
   4. 文字左边线和手串区域左边线对齐，统一用 `--sp-base` 内边距。
   5. 页面上预览的就是导出的那张图，所见即所得；海报下方不留大片空白，预览图按屏宽缩放。
+- **去掉手串图的灰底（V7a 合并后负责人仍嫌像灰框）**：V7a 按卡用了卡面色 `--c-surface` 当手串图底色，在白页面上看还是一个灰方块。改成：小、中两档底色透明（跟随所在页面或卡片的底色），大档和海报用上面新增的暖白 token；`bracelet_style.json` 里加 `background` 字段按档配置，测试比对。改后订单列表、确认订单、订单详情、售后、评价各截一张。
 - **无照片兜底画法**（参数写进 `bracelet_style.json`，组件、海报都读它）：
   - 高光调弱调小，位置左上 30% 左右，不再是一样的白亮斑；
   - 按材质分三类：通透类（水晶、蜜蜡、琉璃）带一点透光（内部渐亮、边缘稍暗）；哑光类（木质、菩提、玉石）几乎无高光、颜色有细微明暗；金属类（转运珠、隔珠）用金属的强对比渐变；材质分类从珠子已有的分类字段来，没有就按哑光；

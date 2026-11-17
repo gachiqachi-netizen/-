@@ -231,7 +231,7 @@ const AfterSaleDrawer: React.FC<{
           <div className="zy-card">
             <div className="zy-card-title">订单</div>
             <div style={{ padding: '12px 16px', fontSize: 13 }}>
-              {orderVisual.length > 0 ? <Bracelet sequence={orderVisual} size={152} label="售后订单手串图" /> : null}
+              {orderVisual.length > 0 ? <Bracelet sequence={orderVisual} tier="s" label="售后订单手串图" /> : null}
               {orderFinishedPhoto && <div style={{ margin: '8px 0' }}><div className="zy-table-aux">原订单质检成品实拍图</div><img src={orderFinishedPhoto} alt="原订单质检成品实拍图" style={{ width: 152, height: 152, objectFit: 'cover', borderRadius: 8 }} /></div>}
               {reworkFinishedPhoto && <div style={{ margin: '8px 0' }}><div className="zy-table-aux">重串质检成品实拍图</div><img src={reworkFinishedPhoto} alt="重串质检成品实拍图" style={{ width: 152, height: 152, objectFit: 'cover', borderRadius: 8 }} /></div>}
               {rec.orderNo}{' '}

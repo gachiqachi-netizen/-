@@ -55,8 +55,8 @@ export default function BeadPhoto({ bead, compare, onUploaded }: {
     </label> : <p className="zy-field-hint">先保存商品，再上传照片。</p>}
     {error && <p className="zy-field-error">{error}</p>}
     {photo && <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 16 }}>
-      <div><div className="zy-field-label">这款照片 · 16 颗预览</div><Bracelet sequence={sequence} size={210} /></div>
-      {compare && <div><div className="zy-field-label">其他料照片 · 光线对比</div><Bracelet sequence={other} size={210} /></div>}
+      <div><div className="zy-field-label">这款照片 · 16 颗预览</div><Bracelet sequence={sequence} tier="m" /></div>
+      {compare && <div><div className="zy-field-label">其他料照片 · 光线对比</div><Bracelet sequence={other} tier="m" /></div>}
     </div>}
   </div>;
 }

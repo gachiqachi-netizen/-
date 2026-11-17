@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Plus, Copy, Trash2, Save, Sparkles, RefreshCw } from 'lucide-react';
 import { apiRequest, fenToYuan } from '../api';
-import { BraceletRingPreview } from './BraceletRingPreview';
+import Bracelet from '../bracelet/Bracelet';
 
 interface TemplatesWorkbenchProps {
   templates: any[];
@@ -282,12 +282,9 @@ export const TemplatesWorkbenchView: React.FC<TemplatesWorkbenchProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-5 items-center">
                 <div className="md:col-span-5 flex flex-col items-center justify-center bg-zinc-50/70 rounded-xl p-4 border border-zinc-200/60">
-                  <BraceletRingPreview
-                    beads={expBeads}
-                    wristCm={previewWrist}
-                    size={210}
-                    subtitle={`${form.name || '模板预览'}`}
-                  />
+                  <Bracelet tier="l" label={`${form.name || '模板预览'} · 手围 ${previewWrist}cm`}
+                    sequence={expBeads.map((b: any) => ({ ...beadOptions.find((item: any) => item.id === b.id),
+                      ...b, mm: b.sizeMm || b.mm, colors: b.colors || [b.color, b.hi] }))} />
                 </div>
 
                 <div className="md:col-span-7 space-y-4">

@@ -510,7 +510,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
                 <ErrorState reason={previews[0].error || '展开失败'} onRetry={() => setForm({ ...form })} />
               ) : (
                 <>
-                {previewBeads.length > 0 ? <Bracelet sequence={previewBeads} size={240} label="模板手串预览" /> : null}
+                {previewBeads.length > 0 ? <Bracelet sequence={previewBeads} tier="l" label="模板手串预览" /> : null}
                 <table className="zy-table tpl-preview-table">
                   <thead>
                     <tr>

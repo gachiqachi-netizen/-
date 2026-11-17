@@ -77,3 +77,4 @@
 </c-page>
 
 <c-toast />
+<privacy-popup scene="选择收货地址" bind:reject="privacyRejected"/>

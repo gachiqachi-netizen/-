@@ -1,7 +1,8 @@
 {
   "usingComponents": {
     "c-sheet": "/components/sheet/index",
-    "c-wordmark": "/components/wordmark/index"
+    "c-wordmark": "/components/wordmark/index",
+    "privacy-popup": "/components/privacy-popup/index"
   },
   "navigationBarTitleText": "登录"
 }

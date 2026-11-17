@@ -93,4 +93,5 @@ Page({
       await this.load()
     } finally { this.setData({ saving: false }) }
   },
+  privacyRejected() { this.setData({ saving: false, error: '没拿到微信地址，可以手动填写' }) },
 })

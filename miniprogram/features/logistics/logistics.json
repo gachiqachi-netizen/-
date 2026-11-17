@@ -3,6 +3,7 @@
   "enablePullDownRefresh": true,
   "usingComponents": {
     "c-state": "/components/state/index",
-    "c-sheet": "/components/sheet/index"
+    "c-sheet": "/components/sheet/index",
+    "privacy-popup": "/components/privacy-popup/index"
   }
 }

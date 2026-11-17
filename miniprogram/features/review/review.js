@@ -104,5 +104,6 @@ Page({
         toast.show({ text: message })
       })
       .then(() => this.setData({ submitting: false }))
-  }
+  },
+  privacyRejected() { this.setData({ submitting: false, error: '没拿到照片，可以再试一次' }) },
 })

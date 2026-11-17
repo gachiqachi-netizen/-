@@ -48,4 +48,5 @@ Page({
     this.setData({ agreed: true })
     await this.onPhone(event)
   },
+  privacyRejected() { this.setData({ busy: false, error: '没拿到手机号，可以再点一次，或先逛逛' }) },
 })

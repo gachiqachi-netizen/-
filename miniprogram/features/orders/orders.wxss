@@ -1,6 +1,6 @@
 /* C8b 我的订单。版式按 04 第 0.2 节：浅灰底 + 白色卡片 */
 page {
-  background: var(--c-surface);
+  background: var(--c-bg);
 }
 
 .orders-page {
@@ -14,7 +14,7 @@ page {
   top: 0;
   z-index: 3;
   white-space: nowrap;
-  background: var(--c-surface);
+  background: var(--c-bg);
   padding: 20rpx 24rpx 12rpx;
   box-sizing: border-box;
 }

@@ -6,7 +6,7 @@ const { saleView, copyOrderDesign } = require('./detail-model')
 const { queue } = require('../../utils/toast')
 function beijingTime(value){const date=new Date(Number(value));if(!Number.isFinite(date.getTime()))return '';const local=new Date(date.getTime()+8*60*60*1000);const pad=n=>String(n).padStart(2,'0');return `${local.getUTCFullYear()}-${pad(local.getUTCMonth()+1)}-${pad(local.getUTCDate())} ${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}`}
 Page({
-  data:{sale:null,view:null,order:null,product:null,productSub:'',catalog:[],error:'',loading:false,historyOpen:false,cancelOpen:false,applicationTime:'',loginRequired:false,
+  data:{sale:null,view:null,order:null,product:null,productSub:'',catalog:[],error:'',loading:false,cancelOpen:false,applicationTime:'',loginRequired:false,
     cancelLabel:contract.actions.cancel_after_sale,returnLabel:contract.actions.submit_return,reapplyLabel:contract.actions.request_after_sale},
   onLoad(query){this.no=query&&query.no||'';return this.load()},
   onShow(){if(this.no&&this.data.sale)this.load()},
@@ -29,7 +29,6 @@ Page({
   onPullDownRefresh(){this.load()},
   showRecord(sale,order){this.setData({sale,view:saleView(sale),applicationTime:beijingTime(sale.createdAt),error:''});if(order)this.setOrder(order)},
   setOrder(order){this.setData({order,product:{name:order.name||'手串',line:order.meaning||'',beads:(order.designSnapshot&&order.designSnapshot.sequence)||[]},productSub:`${(order.beads||[]).length} 颗 · 手围 ${order.wrist||15}cm`})},
-  openHistory(){this.setData({historyOpen:true})},closeHistory(){this.setData({historyOpen:false})},
   openCancel(){this.setData({cancelOpen:true})},closeCancel(){this.setData({cancelOpen:false})},
   async confirmCancel(){
     if(!this.data.view||!this.data.view.canCancel)return

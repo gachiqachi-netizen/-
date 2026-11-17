@@ -2,31 +2,59 @@ const { queue: toast } = require('../../utils/toast')
 const api=require('../../utils/api'),store=require('../../utils/design'),auth=require('../../utils/auth')
 const { layout } = require('../../utils/bracelet-layout')
 const braceletStyle = require('../../components/bracelet/style.js')
+const { materialParams } = require('../../components/bracelet/fallback.js')
 const keyOf=d=>d&&JSON.stringify([d.name,d.wrist,d.beads])
 function wrap(text,maxChars,maxLines){const chars=Array.from(String(text||''));const lines=[];let i=0;while(i<chars.length&&lines.length<maxLines){const line=chars.slice(i,i+maxChars);i+=line.length;while(i<chars.length&&/^[，。！？、；：,.!?;:]$/.test(chars[i]))line.push(chars[i++]);lines.push(line.join(''))}if(i<chars.length&&lines.length)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';return lines}
-function drawBead(ctx,point,path,x,y,params=braceletStyle.regular){
- const r=point.r,colors=point.colors||[],light=colors[0]||'#f4f4f4',dark=colors[1]||'#c9c9c9'
- ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip()
+function drawBead(ctx,point,path,x,y,params=materialParams(point.bead||point,'l')){
+ const r=point.r,colors=point.colors||[],light=colors[0]||braceletStyle.fallbackColors[0],dark=colors[1]||braceletStyle.fallbackColors[1]
+ ctx.save()
+ if(!path&&params.shadowAlpha&&ctx.setShadow&&ctx.fill){ctx.setShadow(0,r*.12,r*.28,`rgba(0,0,0,${params.shadowAlpha})`);ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.setFillStyle(dark);ctx.fill();ctx.setShadow(0,0,0,'transparent')}
+ ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip()
  if(path){ctx.translate(x,y);ctx.rotate(point.rotate*Math.PI/180);ctx.drawImage(path,-r,-r,2*r,2*r)}
  else{
-  const base=ctx.createCircularGradient(x-r*.28,y-r*.4,r*1.8)
-  base.addColorStop(0,light);base.addColorStop(params.colorStop/100,light);base.addColorStop(1,dark)
+  const base=params.kind==='metal'&&ctx.createLinearGradient?ctx.createLinearGradient(x-r,y-r,x+r,y+r):ctx.createCircularGradient(x-r*.25,y-r*.25,r*1.65)
+  if(params.kind==='metal'&&ctx.createLinearGradient){[[0,dark],[.31,light],[.55,dark],[.72,light],[1,dark]].forEach(stop=>base.addColorStop(...stop))}
+  else{base.addColorStop(0,light);base.addColorStop(params.colorStop/100,light);base.addColorStop(1,dark)}
   ctx.setFillStyle(base);ctx.fillRect(x-r,y-r,2*r,2*r)
-  const shine=ctx.createCircularGradient(x-r*.36,y-r*.45,r*.95)
+  const shine=ctx.createCircularGradient(x-r*.4,y-r*.4,r*.72)
   shine.addColorStop(0,`rgba(255,255,255,${params.highlightAlpha})`);shine.addColorStop(params.highlightStop/100,'rgba(255,255,255,0)');shine.addColorStop(1,'rgba(255,255,255,0)')
   ctx.setFillStyle(shine);ctx.fillRect(x-r,y-r,2*r,2*r)
-  const glow=ctx.createCircularGradient(x+r*.28,y+r*.48,r*.8)
+  const glow=ctx.createCircularGradient(x+r*.16,y+r*.25,r*.8)
   glow.addColorStop(0,`rgba(255,255,255,${params.glowAlpha})`);glow.addColorStop(params.glowStop/100,'rgba(255,255,255,0)');glow.addColorStop(1,'rgba(255,255,255,0)')
   ctx.setFillStyle(glow);ctx.fillRect(x-r,y-r,2*r,2*r)
   const shade=ctx.createCircularGradient(x,y,r)
-  shade.addColorStop(.65,'rgba(0,0,0,0)');shade.addColorStop(1,`rgba(0,0,0,${params.shadeAlpha})`)
+  shade.addColorStop(.66,'rgba(0,0,0,0)');shade.addColorStop(1,`rgba(0,0,0,${params.shadeAlpha})`)
   ctx.setFillStyle(shade);ctx.fillRect(x-r,y-r,2*r,2*r)
  }
  ctx.restore()
 }
+
+function drawPoster(ctx,{width:w,height:h,items,paths,design,meaning,qrPath,day}){
+ const style=braceletStyle, pad=w*40/750, topH=h*2/3
+ ctx.setFillStyle(style.background.poster);ctx.fillRect(0,0,w,h)
+ ctx.setFillStyle(style.background.paper);ctx.fillRect(0,topH,w,h-topH)
+ // 画布与 c-wordmark 小号一致的位置；只出现这一次品牌字样。
+ ctx.setFillStyle('#111111');ctx.setFontSize(w*32/750);ctx.fillText('珠养养',pad,pad+w*19/750)
+ const artwork=w*.8,drawSize=artwork*style.fillRatio,points=layout(items,drawSize)
+ const left=(w-drawSize)/2,top=(topH-drawSize)/2
+ points.forEach((point,i)=>drawBead(ctx,{...point,bead:items[i]},paths[i],left+point.x,top+point.y,materialParams(items[i],'l')))
+ const titleY=topH+pad+w*43/750
+ ctx.setFillStyle('#111111');ctx.setFontSize(w*56/750)
+ const title=String(design.name||'我的手串').slice(0,12)
+ ctx.fillText(title,pad,titleY);ctx.fillText(title,pad+.35,titleY)
+ const qrSide=w*160/750,qrX=w-pad-qrSide,qrY=topH+pad+w*13/750
+ const meaningSize=w*30/750,maxChars=Math.max(5,Math.floor((qrX-pad-w*18/750)/meaningSize))
+ ctx.setFillStyle('#6e6e6e');ctx.setFontSize(meaningSize)
+ wrap(meaning,maxChars,2).forEach((line,i)=>ctx.fillText(line,pad,titleY+w*(34+i*35)/750))
+ const date=day||new Date();const label=`我自己串的 · ${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}`
+ ctx.setFontSize(w*25/750);ctx.fillText(label,pad,h-pad)
+ if(qrPath){ctx.drawImage(qrPath,qrX,qrY,qrSide,qrSide);ctx.setFontSize(w*22/750);ctx.fillText('长按识别 串一条你的',qrX-w*24/750,h-pad)}
+ else{ctx.setFillStyle(style.background.poster);ctx.fillRect(qrX,qrY,qrSide,qrSide);ctx.setFillStyle('#111111');ctx.setFontSize(w*29/750);ctx.fillText('微信搜索',qrX+w*12/750,qrY+qrSide*.43);ctx.fillText('珠养养',qrX+w*18/750,qrY+qrSide*.68)}
+ return points
+}
 Page({
- data:{design:null,width:343,height:505,loading:true,ready:false,preview:false,missing:0,error:'',saveBusy:false,shareBusy:false,shareId:'',shareError:'',items:[],catalog:[],snapshot:"",snapshotFailed:false,tags:[],meaning:'',qrPath:'',qrFallback:true,albumDenied:false,moreOpen:false},
- onLoad(){const w=Math.max(200,Math.min(430,wx.getSystemInfoSync().windowWidth-32));this.setData({width:w,height:Math.round(w*1060/720)})},
+ data:{design:null,width:350,height:467,loading:true,ready:false,preview:false,missing:0,error:'',saveBusy:false,shareBusy:false,shareId:'',shareError:'',items:[],catalog:[],snapshot:"",snapshotFailed:false,tags:[],meaning:'',qrPath:'',qrFallback:true,albumDenied:false,moreOpen:false},
+ onLoad(){const w=Math.max(200,Math.min(430,wx.getSystemInfoSync().windowWidth-40));this.setData({width:w,height:Math.round(w*4/3)})},
  onReady(){this.canvasReady=true;this.renderCard()},
  onShow(){const d=store.current(),key=keyOf(d);if(!d||!Array.isArray(d.beads)||!d.beads.length){this.setData({design:null,loading:false,error:'',ready:false});return}if(key!==this.shareKey)this.setData({shareId:'',shareError:''});this.designKey=key;this.setData({design:d,loading:true,error:'',ready:false,snapshot:'',snapshotFailed:false});api.catalog().then(c=>{if(keyOf(store.current())!==key)return;this.catalog=c.beads||[];this.calculate(d);this.setData({catalog:this.catalog,loading:false},()=>this.renderCard())}).catch(e=>this.setData({loading:false,error:api.userMessage(e),ready:false}))},
  retry(){this.onShow()},
@@ -45,29 +73,14 @@ Page({
  async renderCard(){
   if(!this.canvasReady||this.data.loading||!this.data.design||!this.map||this.data.preview||!this.data.items.length)return
   const revision=this.renderRevision=(this.renderRevision||0)+1
-  const d=this.data.design,items=this.data.items,w=this.data.width,h=this.data.height,s=w/720
-  const artwork=500*s, drawSize=artwork*braceletStyle.fillRatio
+  const d=this.data.design,items=this.data.items,w=this.data.width,h=this.data.height
+  const drawSize=w*.8*braceletStyle.fillRatio
   const points=layout(items,drawSize)
   const paths=await Promise.all(items.map((b,i)=>this.localPhoto((points[i].r*2<=96?b.photoSm:points[i].r*2<=240?b.photoMd:b.photo)||b.photo)))
   if(revision!==this.renderRevision||keyOf(store.current())!==this.designKey)return
   const ctx=wx.createCanvasContext('shareCard',this)
-  ctx.setFillStyle('#fff');ctx.fillRect(0,0,w,h);ctx.setFillStyle(braceletStyle.canvasBackground);ctx.fillRect(16*s,16*s,688*s,620*s)
-  const left=110*s+(artwork-drawSize)/2,top=82*s+(artwork-drawSize)/2
-  const centerX=left+drawSize/2,centerY=top+drawSize/2
-  const inner=points.length?Math.min(...points.map(point=>Math.hypot(point.x-drawSize/2,point.y-drawSize/2)-point.r)):0
-  const markWidth=Math.min(200*s,Math.max(0,inner*2-20*s))
-  if(markWidth>0)ctx.drawImage('/pages/share/wordmark-line.png',centerX-markWidth/2,centerY-markWidth*128/259/2,markWidth,markWidth*128/259)
-  points.forEach((point,i)=>{
-    drawBead(ctx,point,paths[i],left+point.x,top+point.y,braceletStyle.regular)
-  })
-  ctx.setFillStyle('#111');ctx.setFontSize(28*s);ctx.fillText('珠养养',56*s,74*s)
-  ctx.setFontSize(42*s);ctx.fillText(String(d.name||'我的手串').slice(0,12),56*s,715*s)
-  ctx.setFontSize(26*s);wrap(this.data.meaning,20,2).forEach((line,i)=>ctx.fillText(line,56*s,(795+i*40)*s))
-  const day=new Date();ctx.setFontSize(22*s);ctx.fillText(`我自己串的 · ${day.getFullYear()}.${day.getMonth()+1}.${day.getDate()}`,56*s,935*s)
-  ctx.fillText('你也来串一条',56*s,980*s)
-  if(this.data.qrPath)ctx.drawImage(this.data.qrPath,540*s,870*s,120*s,120*s)
-  else{ctx.setFontSize(20*s);ctx.fillText('微信搜索「珠养养」小程序',350*s,1010*s)}
-  ctx.draw(false,()=>{if(revision===this.renderRevision&&keyOf(store.current())===this.designKey){this.setData({ready:true});wx.canvasToTempFilePath({canvasId:'shareCard',x:0,y:0,width:w,height:w*4/5,destWidth:w*2,destHeight:Math.round(w*8/5),success:r=>this.setData({shareImage:r.tempFilePath})},this)}})
+  drawPoster(ctx,{width:w,height:h,items,paths,design:d,meaning:this.data.meaning,qrPath:this.data.qrPath})
+  ctx.draw(false,()=>{if(revision===this.renderRevision&&keyOf(store.current())===this.designKey){this.setData({ready:true});wx.canvasToTempFilePath({canvasId:'shareCard',x:0,y:0,width:w,height:h,destWidth:w*2,destHeight:h*2,success:r=>this.setData({shareImage:r.tempFilePath})},this)}})
  },
  saveCard(){if(!this.data.ready||this.data.saveBusy)return;this.setData({saveBusy:true,error:'',albumDenied:false});wx.canvasToTempFilePath({canvasId:'shareCard',destWidth:this.data.width*2,destHeight:this.data.height*2,success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>toast.show({ text: '已保存到相册' }),fail:e=>{const denied=/auth|authorize|deny|permission|scope/i.test(e.errMsg||'');this.setData({albumDenied:denied,error:denied?'没有相册权限，去设置里打开':'保存失败，请稍后重试。'})},complete:()=>this.setData({saveBusy:false})}),fail:()=>this.setData({saveBusy:false,error:'图片生成失败，请重试。'})},this)},
  openAlbumSettings(){wx.openSetting({success:r=>{if(r.authSetting&&r.authSetting['scope.writePhotosAlbum'])this.setData({albumDenied:false,error:''})}})},
@@ -83,4 +96,4 @@ Page({
  buySame(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });const original=this.data.design;const next={...store.create(),name:original.name,wrist:original.wrist,beads:original.beads.slice(),meaning:original.meaning,source:'shared'};store.selected(next);wx.navigateTo({url:'/pages/order/order'})},
  order(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });wx.navigateTo({url:'/pages/order/order'})}
 })
-module.exports = { wrap, drawBead }
+module.exports = { wrap, drawBead, drawPoster }

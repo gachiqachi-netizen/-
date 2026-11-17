@@ -8,7 +8,7 @@ const OrdersOpsPanel: React.FC<{
   shipped: boolean;
   canEditLogistics: boolean;
   logistics?: { carrierName?: string; carrierCode?: string; trackingNo?: string } | null;
-  wxShipping?: { status?: string; message?: string } | null;
+  wxShipping?: { status?: string; reason?: 'carrier' | 'payment' | 'api'; message?: string } | null;
   onChanged: () => void;
   notify: (msg: string, type?: 'success' | 'error') => void;
 }> = ({ orderNo, internalNotes, shipped, canEditLogistics, logistics, wxShipping, onChanged, notify }) => {
@@ -176,9 +176,11 @@ const OrdersOpsPanel: React.FC<{
         <div className="zy-card-title">后台操作</div>
         <div style={{ padding: '12px 16px', display: 'grid', rowGap: 12 }}>
           {wxShipping?.status === 'failed' && <div className="zy-table-aux" style={{ fontSize: 13 }}>
-            微信发货信息未同步 · <button type="button" className="zy-btn zy-btn-secondary" disabled={retrying} onClick={retryShipping}>
-              {retrying ? '重试中…' : '重试'}
-            </button>
+            {wxShipping.reason === 'carrier'
+              ? '微信发货信息未同步：快递公司不在微信支持列表，请改成标准名称后重新保存物流'
+              : <>微信发货信息未同步 · <button type="button" className="zy-btn zy-btn-secondary" disabled={retrying} onClick={retryShipping}>
+                  {retrying ? '重试中…' : '重试'}
+                </button></>}
           </div>}
           {!shipped && !addrOpen && (
             <button type="button" className="zy-btn zy-btn-secondary" style={{ justifySelf: 'start' }} onClick={openAddr}>

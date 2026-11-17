@@ -1,0 +1,27 @@
+[
+  {
+    "name": "photo",
+    "state": "normal",
+    "ok": true
+  },
+  {
+    "name": "ar-hand",
+    "state": "normal",
+    "ok": true
+  },
+  {
+    "name": "ar-hand",
+    "state": "error",
+    "ok": true
+  },
+  {
+    "name": "tryon",
+    "state": "normal",
+    "ok": true
+  },
+  {
+    "name": "wrist",
+    "state": "normal",
+    "ok": true
+  }
+]

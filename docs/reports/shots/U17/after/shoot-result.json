@@ -1,0 +1,13 @@
+{
+  "elapsedSeconds": 23,
+  "results": [
+    {
+      "page": "workbench",
+      "ok": true,
+      "readyMs": 27,
+      "readySource": "ready",
+      "warnings": [],
+      "bytes": 115296
+    }
+  ]
+}

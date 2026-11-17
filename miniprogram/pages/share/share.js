@@ -5,6 +5,8 @@ const braceletStyle = require('../../components/bracelet/style.js')
 const { materialParams } = require('../../components/bracelet/fallback.js')
 const keyOf=d=>d&&JSON.stringify([d.name,d.wrist,d.beads])
 function wrap(text,maxChars,maxLines){const chars=Array.from(String(text||''));const lines=[];let i=0;while(i<chars.length&&lines.length<maxLines){const line=chars.slice(i,i+maxChars);i+=line.length;while(i<chars.length&&/^[，。！？、；：,.!?;:]$/.test(chars[i]))line.push(chars[i++]);lines.push(line.join(''))}if(i<chars.length&&lines.length)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';return lines}
+function posterSize(windowWidth){const width=Math.floor(Math.max(201,Math.min(430,windowWidth-40))/3)*3;return {width,height:width*4/3}}
+function posterTop(windowHeight,height){return Math.max(0,Math.min(90,windowHeight-height-120))}
 function drawBead(ctx,point,path,x,y,params=materialParams(point.bead||point,'l')){
  const r=point.r,colors=point.colors||[],light=colors[0]||braceletStyle.fallbackColors[0],dark=colors[1]||braceletStyle.fallbackColors[1]
  ctx.save()
@@ -29,8 +31,16 @@ function drawBead(ctx,point,path,x,y,params=materialParams(point.bead||point,'l'
  ctx.restore()
 }
 
+function posterLayout(w,h){
+ const unit=w/750,pad=40*unit,topH=h*2/3
+ const title={y:topH+pad*.5,height:64*unit}
+ const meaning={y:title.y+title.height+16*unit,height:72*unit,lineHeight:36*unit}
+ const footer={y:h-pad*.5-25*unit,height:25*unit}
+ const qrSide=168*unit,qr={x:w-pad-qrSide,y:footer.y+footer.height-qrSide,width:qrSide,height:qrSide}
+ return {unit,pad,topH,title,meaning,footer,qr}
+}
 function drawPoster(ctx,{width:w,height:h,items,paths,design,meaning,qrPath,day}){
- const style=braceletStyle, pad=w*40/750, topH=h*2/3
+ const style=braceletStyle,{unit,pad,topH,title,meaning:meaningBox,footer,qr}=posterLayout(w,h)
  ctx.setFillStyle(style.background.poster);ctx.fillRect(0,0,w,h)
  ctx.setFillStyle(style.background.paper);ctx.fillRect(0,topH,w,h-topH)
  // 画布与 c-wordmark 小号一致的位置；只出现这一次品牌字样。
@@ -38,23 +48,22 @@ function drawPoster(ctx,{width:w,height:h,items,paths,design,meaning,qrPath,day}
  const artwork=w*.8,drawSize=artwork*style.fillRatio,points=layout(items,drawSize)
  const left=(w-drawSize)/2,top=(topH-drawSize)/2
  points.forEach((point,i)=>drawBead(ctx,{...point,bead:items[i]},paths[i],left+point.x,top+point.y,materialParams(items[i],'l')))
- const titleY=topH+pad+w*43/750
- ctx.setFillStyle('#111111');ctx.setFontSize(w*56/750)
- const title=String(design.name||'我的手串').slice(0,12)
- ctx.fillText(title,pad,titleY);ctx.fillText(title,pad+.35,titleY)
- const qrSide=w*160/750,qrX=w-pad-qrSide,qrY=topH+pad+w*13/750
- const meaningSize=w*30/750,maxChars=Math.max(5,Math.floor((qrX-pad-w*18/750)/meaningSize))
+ ctx.setFillStyle('#111111');ctx.setFontSize(56*unit)
+ const titleText=String(design.name||'我的手串').slice(0,12)
+ const titleBaseline=title.y+56*unit
+ ctx.fillText(titleText,pad,titleBaseline);ctx.fillText(titleText,pad+.35,titleBaseline)
+ const meaningSize=28*unit,maxChars=Math.max(5,Math.floor((qr.x-pad-18*unit)/meaningSize))
  ctx.setFillStyle('#6e6e6e');ctx.setFontSize(meaningSize)
- wrap(meaning,maxChars,2).forEach((line,i)=>ctx.fillText(line,pad,titleY+w*(34+i*35)/750))
+ wrap(meaning,maxChars,2).forEach((line,i)=>ctx.fillText(line,pad,meaningBox.y+(i+1)*meaningBox.lineHeight-5*unit))
  const date=day||new Date();const label=`我自己串的 · ${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}`
- ctx.setFontSize(w*25/750);ctx.fillText(label,pad,h-pad)
- if(qrPath){ctx.drawImage(qrPath,qrX,qrY,qrSide,qrSide);ctx.setFontSize(w*22/750);ctx.fillText('长按识别 串一条你的',qrX-w*24/750,h-pad)}
- else{ctx.setFillStyle(style.background.poster);ctx.fillRect(qrX,qrY,qrSide,qrSide);ctx.setFillStyle('#111111');ctx.setFontSize(w*29/750);ctx.fillText('微信搜索',qrX+w*12/750,qrY+qrSide*.43);ctx.fillText('珠养养',qrX+w*18/750,qrY+qrSide*.68)}
+ ctx.setFontSize(25*unit);ctx.fillText(label,pad,footer.y+footer.height)
+ if(qrPath){const imageSide=qr.width-24*unit;ctx.drawImage(qrPath,qr.x+12*unit,qr.y,imageSide,imageSide);ctx.setFillStyle('#111111');ctx.setFontSize(18*unit);ctx.fillText('长按识别 串一条你的',qr.x+3*unit,qr.y+qr.height-4*unit)}
+ else{ctx.setFillStyle(style.background.poster);ctx.fillRect(qr.x,qr.y,qr.width,qr.height);ctx.setFillStyle('#111111');ctx.setFontSize(29*unit);ctx.fillText('微信搜索',qr.x+(qr.width-4*29*unit)/2,qr.y+qr.height*.45);ctx.fillText('珠养养',qr.x+(qr.width-3*29*unit)/2,qr.y+qr.height*.7)}
  return points
 }
 Page({
- data:{design:null,width:350,height:467,loading:true,ready:false,preview:false,missing:0,error:'',saveBusy:false,shareBusy:false,shareId:'',shareError:'',items:[],catalog:[],snapshot:"",snapshotFailed:false,tags:[],meaning:'',qrPath:'',qrFallback:true,albumDenied:false,moreOpen:false},
- onLoad(){const w=Math.max(200,Math.min(430,wx.getSystemInfoSync().windowWidth-40));this.setData({width:w,height:Math.round(w*4/3)})},
+ data:{design:null,width:348,height:464,previewTop:0,loading:true,ready:false,preview:false,missing:0,error:'',saveBusy:false,shareBusy:false,shareId:'',shareError:'',items:[],catalog:[],snapshot:"",snapshotFailed:false,tags:[],meaning:'',qrPath:'',qrFallback:true,albumDenied:false,moreOpen:false},
+ onLoad(){const info=wx.getSystemInfoSync(),{width,height}=posterSize(info.windowWidth);this.setData({width,height,previewTop:posterTop(info.windowHeight,height)})},
  onReady(){this.canvasReady=true;this.renderCard()},
  onShow(){const d=store.current(),key=keyOf(d);if(!d||!Array.isArray(d.beads)||!d.beads.length){this.setData({design:null,loading:false,error:'',ready:false});return}if(key!==this.shareKey)this.setData({shareId:'',shareError:''});this.designKey=key;this.setData({design:d,loading:true,error:'',ready:false,snapshot:'',snapshotFailed:false});api.catalog().then(c=>{if(keyOf(store.current())!==key)return;this.catalog=c.beads||[];this.calculate(d);this.setData({catalog:this.catalog,loading:false},()=>this.renderCard())}).catch(e=>this.setData({loading:false,error:api.userMessage(e),ready:false}))},
  retry(){this.onShow()},
@@ -96,4 +105,4 @@ Page({
  buySame(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });const original=this.data.design;const next={...store.create(),name:original.name,wrist:original.wrist,beads:original.beads.slice(),meaning:original.meaning,source:'shared'};store.selected(next);wx.navigateTo({url:'/pages/order/order'})},
  order(){if(this.data.missing)return toast.show({ text: '请先替换下架材料' });wx.navigateTo({url:'/pages/order/order'})}
 })
-module.exports = { wrap, drawBead, drawPoster }
+module.exports = { wrap, drawBead, drawPoster, posterLayout, posterSize, posterTop }

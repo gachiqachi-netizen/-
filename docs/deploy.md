@@ -1,5 +1,11 @@
 # 腾讯云 CVM 部署串个珠后端与微信支付
 
+## 微信发货信息录入（B-15）
+
+小程序后台「订单管理 → 发货信息录入」已由负责人截图确认可见。当前业务只用顺丰快递，一单一包裹；发货模式按统一发货上报。服务器需保留现有 `WECHAT_APP_ID`、`WECHAT_APP_SECRET` 与微信支付环境变量，发货接口不新增密钥。`PAYMENT_PROVIDER=wechat` 且订单由微信支付时，后台发货后自动调用[微信官方发货信息录入接口](https://developers.weixin.qq.com/miniprogram/dev/server/API/order_shipping/api_uploadshippinginfo.html) `POST /wxa/sec/order/upload_shipping_info`。请求使用 `order_key`（商户号与支付商户单号）、`logistics_type=1`、`delivery_mode=1`、`shipping_list`（运单号、顺丰编码 `SF`、商品描述和收件人电话）、`upload_time`、`payer.openid`。顺丰要求联系方式；仅随该请求发送，不写入同步日志。
+
+微信接口失败不撤销发货；订单 `wxShipping.status=failed`，后台订单响应带 `wxShipping.message=微信发货信息未同步 · 重试`。在同步失败后再次提交该订单的物流信息可重试；已成功同步且运单号未变时不会重复上报。上线前用一笔真实小额订单验证微信小程序后台能看到运单，且用户能收到发货提醒。真实验证由负责人执行。
+
 适用环境：国内同事租用的腾讯云云服务器（CVM），Linux、Docker Compose、宿主机 Nginx。以下命令由负责人或运维**在自己的服务器**执行；本仓库只提供模板，不含商户凭据。控制台名称可能调整，找不到时以实际后台为准。部署时全程不要把 `app.env`、pem、数据库备份发到聊天或提交到 Git。
 
 ## 1. 腾讯云控制台：网络、备案与证书

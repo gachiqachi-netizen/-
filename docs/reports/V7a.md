@@ -1,74 +1,126 @@
 # V7a 交付报告
 
-分支：agent/V7a-bracelet-tiers　功能提交：6b57785
+分支：`agent/V7a-bracelet-tiers`　功能提交：`80db4a7`
 
 ## 1. 步骤
 
-| 卡上的步骤 | 结果 | 位置 |
+| 卡上的步骤 | 做了 / 没做 | 位置 |
 |---|---|---|
-| 1. 组件只接受 tier="s\|m\|l" | 记录页改用三档；工作台托盘保留既有 size/mode 交互 | `miniprogram/components/bracelet/index.js`；4e62612 |
-| 2. 手串占边长 88%，背景由组件自己画 | 已做，记录页灰底容器已去掉 | `miniprogram/components/bracelet/index.js`；778db02 |
-| 3. 渐变、高光、描边参数写进 JSON | 已做；运行时从组件目录的副本读取，并用测试与共用 fixture 逐字段校验 | `miniprogram/components/bracelet/style.json`、`server/tests/fixtures/bracelet_style.json`；6b57785 |
-| 4. bracelet-thumb 只调 c-bracelet tier="s"；cell、design-row 换成 c-bracelet | 已做 | `miniprogram/components/bracelet-thumb/index.wxml`、`components/cell/index.wxml`、`components/design-row/index.wxml` |
-| 5. 工作台托盘照旧 | 保留原尺寸、字标、交互 | `miniprogram/components/bracelet/index.js` |
-| 确认订单约 200rpx、对齐与 32rpx 间距、修正珠子缝隙 | 已设置 200rpx 容器及等比放大小档；相切布局有测试，实际画面仍需复核 | `miniprogram/pages/order/order.wxss`；`miniprogram/tests/bracelet-tiers.test.js` |
+| 1. 组件只接受 `tier="s|m|l"` | 记录页完成；工作台托盘保留原 `size/mode` | `miniprogram/components/bracelet/index.js` |
+| 2. 手串占边长 88%，组件画直角卡面色背景 | 做了；页面灰框去掉 | `components/bracelet/index.js`、相关页面 WXML/WXSS |
+| 3. 渐变、高光、描边参数写入 JSON，小档单独一组 | 做了。微信运行时不能直接 require JSON，组件目录 JS 模块由同一 JSON 内容生成并由测试逐字段比对 | `server/tests/fixtures/bracelet_style.json`、`miniprogram/components/bracelet/style.js` |
+| 4. `bracelet-thumb` 只调用 `c-bracelet tier="s"`，`cell`、`design-row` 改用组件 | 做了 | 对应组件 WXML |
+| 5. 工作台托盘照旧，珠子画法读中大档参数 | 做了 | `components/bracelet/index.js` |
+| 确认订单约 200rpx、顶端对齐、间距 32rpx；修复珠子缝隙 | 做了；复用 V2b 相切布局 | `pages/order/order.wxss`；`bracelet-tiers.test.js` |
+| 冻结快照来源 | 做了；订单详情、售后详情、评价页均传 `designSnapshot.sequence`，不现查目录 | `features/order-detail/order-detail.wxml`、`features/after-sale/detail.js`、`features/review/review.js` |
 
 ## 2. 验收
 
 | 验收项 | 结果 | 证据 |
 |---|---|---|
-| 记录页手串图只使用 c-bracelet 和 tier | 代码通过 | `miniprogram/tests/bracelet-tiers.test.js::记录页只传 tier` |
-| 组件和海报共用参数 | 代码通过 | `miniprogram/tests/bracelet-tiers.test.js::三档尺寸和参数来自同一份样式文件` |
-| 中大档珠子相切，无缝隙 | 算法通过，实机待验 | `miniprogram/tests/bracelet-tiers.test.js::中大档仍走相切排布` |
-| 九页同一条“好运连连”对照截图 | **未完成** | `tools/shoot` 5/9 页有文件，但有空态、弹层遮挡，无法证明同一条手串；见下表 |
+| 三档尺寸、88% 占比、小档去描边且珠子放大 | 通过 | `miniprogram/tests/bracelet-tiers.test.js::三档尺寸和参数来自同一份样式文件` |
+| 记录页只传 tier | 通过 | `bracelet-tiers.test.js::记录页只传 tier` |
+| 中大档相切、无缝隙 | 通过 | `bracelet-tiers.test.js::中大档仍走相切排布` |
+| 订单详情、售后详情、评价页冻结珠序及外观字段 | 通过 | `snapshot-thumbnails.test.js::订单详情、售后详情和评价都用冻结珠序，三处手串均有照片和颜色` |
+| 微信组件实际加载、订单详情有手串 | 通过 | `shots/V7a/order-detail-pending.png`；修复前微信日志报 `style.json.js is not defined`，改为 JS 模块后截图显示珠子 |
+| 九页截图 | 已截 9/9；视觉一致性仅对同一作品的页面确认 | `shots/V7a/result.json` 与下表。AI 配展示独立推荐方案，售后商品行在首屏下方，已补滚动截图；AI 配为独立推荐，不能据此说九张图完全一致。 |
 
 ### 截图对照表
 
-| 页面 | 文件或结果 | 可用于手串图验收 |
+| 页面 | 截图 | 核对结果 |
 |---|---|---|
-| 工作台 | `tools/shoot`: `page node not found` | 否 |
-| 确认订单 | [order-confirm.png](shots/V7a/order-confirm.png)：送礼弹层遮挡，警告 `¥0.00` | 否 |
-| 订单详情 | `tools/shoot`: 10 秒内未完成加载 | 否 |
-| 我的订单 | [my-orders.png](shots/V7a/my-orders.png)：空态 | 否 |
-| 售后详情 | `tools/shoot`: 售后记录不存在 | 否 |
-| 写评价 | [write-review.png](shots/V7a/write-review.png)：已截，尚未核实同一条手串 | 否 |
-| AI 配 | [ai-match.png](shots/V7a/ai-match.png)：手串区域空白 | 否 |
-| 好友落地页 | [friend-landing.png](shots/V7a/friend-landing.png)：已截，尚未核实同一条手串 | 否 |
-| 分享海报 | `tools/shoot`: `page node not found` | 否 |
-
-截图原始结果：`docs/reports/shots/V7a/result.json`。需要负责人在微信开发者工具看以上九页，以“好运连连”同一珠序逐页核对；当前不能声称视觉完全一致。
+| 工作台 | [workbench](shots/V7a/workbench.png) | 好运连连，19 颗 |
+| 确认订单 | [order-confirm](shots/V7a/order-confirm.png)、[无弹层补图](shots/V7a/order-confirm-visible.png) | 好运连连；补图可见整行和 32rpx 间距 |
+| 订单详情 | [order-detail-pending](shots/V7a/order-detail-pending.png) | 好运连连；手串已显示 |
+| 我的订单 | [my-orders](shots/V7a/my-orders.png) | 好运连连；同一圈珠序 |
+| 售后详情 | [after-sale-detail](shots/V7a/after-sale-detail.png)、[滚动补图](shots/V7a/after-sale-detail-product.png) | 好运连连；补图可见商品行 |
+| 写评价 | [write-review](shots/V7a/write-review.png) | 好运连连；同一圈珠序 |
+| AI 配 | [ai-match](shots/V7a/ai-match.png) | 推荐方案「薰衣草梦」，珠序不同；需在开发者工具核对同一作品场景 |
+| 好友落地页 | [friend-landing](shots/V7a/friend-landing.png) | 好运连连；同一圈珠序 |
+| 分享海报 | [share-poster](shots/V7a/share-poster.png) | 好运连连；同一圈珠序 |
 
 ## 3. 改了的文件
 
 ```text
-miniprogram/components/bracelet*、bracelet-thumb*、design-row*、cell*；
-miniprogram/pages/order、mine、ai、share 的手串行；
-miniprogram/features/order-detail、orders、after-sale/detail、review、shared 的手串行；
-server/tests/fixtures/bracelet_style.json；miniprogram/tests/bracelet-tiers.test.js、snapshot-thumbnails.test.js；
-docs/reports/V7a.md、docs/reports/shots/V7a/*。
+ docs/reports/V7a.md                                |  74 +++++++++++++++++++
+ docs/reports/shots/V7a/after-sale-detail.png       | Bin 0 -> 46001 bytes
+ docs/reports/shots/V7a/ai-match.png                | Bin 0 -> 81264 bytes
+ docs/reports/shots/V7a/friend-landing.png          | Bin 0 -> 77447 bytes
+ docs/reports/shots/V7a/my-orders.png               | Bin 0 -> 77955 bytes
+ docs/reports/shots/V7a/order-confirm.png           | Bin 0 -> 62922 bytes
+ docs/reports/shots/V7a/order-detail-pending.png    | Bin 0 -> 47680 bytes
+ docs/reports/shots/V7a/result.json                 |  79 +++++++++++++++++++++
+ docs/reports/shots/V7a/share-poster.png            | Bin 0 -> 77351 bytes
+ docs/reports/shots/V7a/workbench.png               | Bin 0 -> 115271 bytes
+ docs/reports/shots/V7a/write-review.png            | Bin 0 -> 48583 bytes
+ miniprogram/components/bracelet-thumb/index.wxml   |   5 +-
+ miniprogram/components/bracelet-thumb/index.wxss   |   5 +-
+ miniprogram/components/bracelet/index.js           |  47 ++++++++----
+ miniprogram/components/bracelet/index.wxml         |   7 +-
+ miniprogram/components/bracelet/index.wxss         |   2 +
+ miniprogram/components/bracelet/style.js           |  31 ++++++++
+ miniprogram/components/cell/index.json             |   2 +-
+ miniprogram/components/cell/index.wxml             |   2 +-
+ miniprogram/components/cell/index.wxss             |   1 -
+ miniprogram/components/design-row/index.js         |   7 ++
+ miniprogram/components/design-row/index.json       |   2 +-
+ miniprogram/components/design-row/index.wxml       |   2 +-
+ miniprogram/components/design-row/index.wxss       |   1 -
+ miniprogram/features/after-sale/detail.json        |   2 +-
+ miniprogram/features/after-sale/detail.wxml        |   2 +-
+ miniprogram/features/after-sale/detail.wxss        |   2 +-
+ .../features/order-detail/order-detail.json        |   2 +-
+ .../features/order-detail/order-detail.wxml        |   2 +-
+ .../features/order-detail/order-detail.wxss        |   2 +-
+ miniprogram/features/orders/orders.json            |   2 +-
+ miniprogram/features/orders/orders.wxml            |   2 +-
+ miniprogram/features/orders/orders.wxss            |   6 +-
+ miniprogram/features/review/review.js              |   2 +-
+ miniprogram/features/review/review.json            |   2 +-
+ miniprogram/features/review/review.wxml            |   2 +-
+ miniprogram/features/review/review.wxss            |   2 +-
+ miniprogram/features/shared/shared.wxml            |   2 +-
+ miniprogram/features/shared/shared.wxss            |   2 +-
+ miniprogram/pages/ai/ai.wxml                       |   2 +-
+ miniprogram/pages/ai/ai.wxss                       |   2 +-
+ miniprogram/pages/mine/mine.wxml                   |   2 +-
+ miniprogram/pages/order/order.wxml                 |   2 +-
+ miniprogram/pages/order/order.wxss                 |   5 +-
+ miniprogram/pages/share/share.js                   |  24 ++++---
+ miniprogram/tests/bracelet-tiers.test.js           |  58 +++++++++++++++
+ miniprogram/tests/snapshot-thumbnails.test.js      |  45 +++++++++++-
+ server/tests/fixtures/bracelet_style.json          |  30 ++++++++
+ 48 files changed, 404 insertions(+), 67 deletions(-)
 ```
-`git diff --stat origin/integration/2026-11...HEAD`：功能提交 37 个文件，209 行新增、67 行删除；报告及截图另计。
+
+除报告与截图，均在卡片允许范围；`features/review/review.js` 的一行扩展经负责人本次明确同意。
 
 ## 4. 测试
 
-- `python3 -m unittest discover -s server/tests`：`Ran 633 tests in 99.350s`，`OK (skipped=7)`。
-- `node --test miniprogram/tests/*.test.js`：`tests 319`，`pass 319`，`fail 0`。
-- `python3 kb/validate.py`：`已填 200/200 种，有问题 0 条，缺 0 种`。
-- 测试数：后端开工前 633 → 633；小程序开工前 316 → 319。
-- 新增测试：`bracelet-tiers.test.js` 三项，分别校验尺寸与共用参数、相切布局、页面 tier 调用。
-- 旧测试期望值：`snapshot-thumbnails.test.js` 两处 WXML 标签从 `bracelet-thumb` 改为 `c-bracelet tier="s"`；冻结快照来源及颜色、照片断言未改。
+- 后端：`python3 -m unittest discover -s server/tests` → `Ran 633 tests in 104.523s`，`OK (skipped=7)`。
+- 小程序：`node --test miniprogram/tests/*.test.js` → `tests 320`，`pass 320`，`fail 0`。
+- 知识库：`python3 kb/validate.py` → `已填 200/200 种，有问题 0 条，缺 0 种`。
+- 测试数：后端 633 → 633；小程序 316 → 320。
+- 新增快照测试检查三页都取冻结珠序、外观字段含照片和颜色、组件布局非空。原快照测试两处 WXML 标签期望从 `bracelet-thumb` 更新为 `c-bracelet tier="s"`，冻结字段断言未放宽。
+- 初次小程序全量曾遇不相关的 AR 模型计时测试偶发失败；重跑全量 320/320 通过。
 
 ## 5. 自查
 
-- `git log --oneline origin/integration/2026-11..HEAD`：`6b57785 V7a: 海报共用参数并补充尺寸与快照测试`、`778db02 V7a: 记录页面统一手串图并去掉灰框`、`4e62612 V7a: 统一手串组件三档尺寸和样式参数`、`ac8f801 V7a: 开工`。
-- 改动的 `.wxss` 执行 `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\("`：无输出。
-- `grep -rnE "new URL|URLSearchParams" miniprogram --include='*.js'`：无输出。
-- `python3 tools/check-ui.py`：`UI check: 42 violations, 0 new`。
+- `git log --oneline origin/integration/2026-11..HEAD`：提交均以 `V7a:` 开头。
+- 改动的 WXSS 执行 `grep -nE "#[0-9a-fA-F]{3,8}\\b|rgba?\\("`：无输出。
+- `grep -rnE "new URL|URLSearchParams" miniprogram --include=*.js`：无输出。
+- `python3 tools/check-ui.py` → `UI check: 42 violations, 0 new`。
 - `git diff --check`：无输出。
 
 ## 6. 没做 / 没验证 / 偏离卡片
 
-- 九页同一条“好运连连”对照截图未完成。`tools/shoot` 已运行两次，5 页有原始截图，但部分为空态或受弹层遮挡；4 页失败。未在开发者工具完成视觉核对。
-- 小档 144rpx 与确认订单约 200rpx 的冲突，以 `tier="s"` 配合外层等比放大解决；实际显示效果需复核。
-- 运行时 JSON 放在小程序组件目录，server fixture 为同内容副本，测试校验相等；小程序无法直接打包 `server/tests` 路径。
-- 工作台托盘保留旧 `size`、`mode`、`selected` 属性，避免改卡外的 `pages/diy`，记录页只传 `tier`。
+- 九页已用 `tools/shoot` 截图，但 AI 配脚本展示独立推荐方案，售后商品行已补滚动截图，但 AI 配仍为独立推荐方案，尚不能证明九页是同一条手串。需要负责人在开发者工具补核这两处；没有声称九页视觉完全一致。
+- 确认订单的默认自动截图打开送礼弹层，另用同一脚本关闭弹层补图；截图脚本警告 `¥0.00`，这是送礼弹层的关闭礼盒价格显示，不影响手串图。
+- 微信小程序运行时不支持直接 `require('./style.json')`：用 `style.js` 承载与 `bracelet_style.json` 完全一致的参数，由测试防漂移。此处为实际运行必要的实现偏离。
+- 工作台托盘保留原 `size/mode/selected`；记录页只传 `tier`，未改变首页封面图和详情主图。
+
+## 7. 审核修改
+
+| 意见 | 修改 | 提交 |
+|---|---|---|
+| 负责人同意评价页一行改用冻结快照；并要求订单详情同源、三处非空 | 评价与订单详情均用 `designSnapshot.sequence`，加三处非空测试；修复微信 JSON 模块加载错误并重截九页 | `80db4a7` |

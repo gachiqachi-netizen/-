@@ -5,6 +5,7 @@ import os
 import secrets
 import time
 import urllib.request
+from urllib.parse import quote
 
 
 def validate_config():
@@ -39,13 +40,13 @@ def _sign(message):
 
 
 def _request(method, path, body):
-    raw = json.dumps(body, separators=(",", ":"), ensure_ascii=False)
+    raw = "" if body is None else json.dumps(body, separators=(",", ":"), ensure_ascii=False)
     stamp, nonce = str(int(time.time())), secrets.token_hex(16)
     signature = _sign("\n".join((method, path, stamp, nonce, raw, "")))
     authorization = ('WECHATPAY2-SHA256-RSA2048 mchid="%s",nonce_str="%s",timestamp="%s",'
                      'serial_no="%s",signature="%s"' %
                      (os.environ["WXPAY_MCHID"], nonce, stamp, os.environ["WXPAY_CERT_SERIAL"], signature))
-    request = urllib.request.Request("https://api.mch.weixin.qq.com" + path, raw.encode(),
+    request = urllib.request.Request("https://api.mch.weixin.qq.com" + path, None if body is None else raw.encode(),
                                      {"Authorization": authorization, "Content-Type": "application/json",
                                       "Accept": "application/json"}, method=method)
     with urllib.request.urlopen(request, timeout=10) as response:
@@ -111,3 +112,13 @@ def refund(order_no, refund_id, total_fen, refund_fen):
         "out_trade_no": order_no, "out_refund_no": refund_id, "reason": "售后退款",
         "notify_url": os.environ["WXPAY_NOTIFY_URL"],
         "amount": {"refund": refund_fen, "total": total_fen, "currency": "CNY"}})
+
+
+def query_order(order_no):
+    path = "/v3/pay/transactions/out-trade-no/" + quote(order_no, safe="")
+    path += "?mchid=" + quote(os.environ["WXPAY_MCHID"], safe="")
+    return _request("GET", path, None)
+
+
+def query_refund(refund_id):
+    return _request("GET", "/v3/refund/domestic/refunds/" + quote(refund_id, safe=""), None)

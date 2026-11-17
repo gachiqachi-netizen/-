@@ -464,6 +464,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(200, user_api.get_my_order(db, order_detail.group(1), uid))
                 except KeyError:
                     return self.send(404, {"error": "订单不存在"})
+                except ValueError:
+                    return self.send(502, {"error": "微信查单结果未通过核对，请稍后重试"})
             if path in ("/api/designs", "/api/my/orders"):
                 uid = self.user()
                 if not uid:
@@ -542,6 +544,10 @@ class Handler(BaseHTTPRequestHandler):
             if m:
                 if not self.admin_can():
                     return
+                try:
+                    commerce.refresh_refund_if_due(db, m.group(1))
+                except ValueError:
+                    return self.send(502, {"error": "微信退款查单结果未通过核对，请稍后重试"})
                 rec = commerce.after_sale_detail(db, m.group(1))
                 return self.send(200, rec) if rec else self.send(404, {"error": "售后记录不存在"})
             if self._route_dispatch("GET", path):

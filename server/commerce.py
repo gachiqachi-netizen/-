@@ -1441,6 +1441,62 @@ def payment_callback(db, no, callback, user_id=None):
     return meta.get("result"), saved
 
 
+def refresh_payment_if_due(db, no, user_id):
+    """用户查单时最多每 10 秒向微信核实一次未完成付款。"""
+    if payments.provider() != "wechat":
+        return db.get("orders", no)
+    import os
+    import wechat_pay
+    claim = {}
+    now = _now()
+    initial = db.get("orders", no)
+    if not initial or initial.get("userId") != user_id:
+        raise KeyError("订单不存在")
+    if (status.derive_status(initial)["paymentStatus"] != "unpaid" or
+            not any(a.get("provider") == "wechat" and a.get("result") is None
+                    for a in initial.get("paymentAttempts") or []) or
+            now - int(initial.get("lastWechatQueryAt") or 0) < 10000):
+        return initial
+
+    def reserve(order):
+        if order.get("userId") != user_id:
+            raise KeyError("订单不存在")
+        pending = next((a for a in reversed(order.get("paymentAttempts") or [])
+                        if a.get("provider") == "wechat" and a.get("result") is None), None)
+        if (status.derive_status(order)["paymentStatus"] == "unpaid" and pending and
+                now - int(order.get("lastWechatQueryAt") or 0) >= 10000):
+            order["lastWechatQueryAt"] = now
+            claim["attemptId"] = pending["id"]
+    order = _atomic_order_transition(db, no, reserve)
+    if not claim:
+        return order
+    try:
+        queried = wechat_pay.query_order(no)
+    except Exception:
+        return db.get("orders", no)
+    if queried.get("trade_state") != "SUCCESS":
+        return db.get("orders", no)
+    amount = queried.get("amount", {}).get("total")
+    if (queried.get("out_trade_no") != no or queried.get("mchid") != os.environ["WXPAY_MCHID"] or
+            queried.get("appid") != os.environ["WXPAY_APPID"] or
+            type(amount) is not int or amount != payments.payable_fen(order)):
+        raise ValueError("微信查单的商户、应用或金额不符")
+    transaction_id = queried.get("transaction_id")
+    if not transaction_id:
+        raise ValueError("微信查单缺少交易号")
+    callback = {"id": "query:" + transaction_id, "paymentId": claim["attemptId"],
+                "provider": "wechat", "amountFen": amount, "result": "success"}
+    if status.derive_status(db.get("orders", no))["paymentStatus"] == "paid":
+        return db.get("orders", no)
+    try:
+        return payment_callback(db, no, callback)[1]
+    except ValueError:
+        current = db.get("orders", no)
+        if status.derive_status(current)["paymentStatus"] == "paid":
+            return current
+        raise
+
+
 def update_order_logistics(db, no, logistics, actor=ACTOR):
     order = db.get("orders", no)
     if not order:
@@ -1774,6 +1830,45 @@ def refund_callback(db, event_id, event):
         w.put_order(order["no"], order)
         w.put_audit(_audit_record("payment", "refund_callback", "after_sale", sale_no, target))
     return target
+
+
+def refresh_refund_if_due(db, sale_no):
+    """退款待处理超过五分钟时，后台查看售后单触发一次微信查单。"""
+    if payments.provider() != "wechat":
+        return db.get("after_sales", sale_no)
+    import os
+    import wechat_pay
+    now = _now()
+    initial = db.get("after_sales", sale_no)
+    if not initial or initial.get("status") != "refunding" or initial.get("refundState") != "refunding":
+        return initial
+    if (now - int(initial.get("updatedAt") or 0) < 5 * 60000 or
+            now - int(initial.get("lastRefundQueryAt") or 0) < 10000 or not initial.get("refundAttempts")):
+        return initial
+    claim = {}
+    with _AtomicWriter(db) as w:
+        rec = w.lock_after_sale(sale_no)
+        if not rec:
+            return None
+        if (rec.get("status") == "refunding" and rec.get("refundState") == "refunding" and
+                now - int(rec.get("updatedAt") or 0) >= 5 * 60000 and
+                now - int(rec.get("lastRefundQueryAt") or 0) >= 10000 and rec.get("refundAttempts")):
+            rec["lastRefundQueryAt"] = now
+            claim["refundId"] = rec["refundAttempts"][-1]["id"]
+            w.put_after_sale(sale_no, rec)
+    if not claim:
+        return db.get("after_sales", sale_no)
+    try:
+        queried = wechat_pay.query_refund(claim["refundId"])
+    except Exception:
+        return db.get("after_sales", sale_no)
+    if queried.get("status") not in ("SUCCESS", "ABNORMAL", "CLOSED"):
+        return db.get("after_sales", sale_no)
+    if queried.get("mchid") not in (None, os.environ["WXPAY_MCHID"]):
+        raise ValueError("微信退款查单商户号不符")
+    event = dict(queried, refund_status=queried["status"])
+    refund_callback(db, "query:" + claim["refundId"] + ":" + queried["status"], event)
+    return db.get("after_sales", sale_no)
 
 
 def list_after_sales(db, q="", pstatus=""):

@@ -92,13 +92,13 @@ class CryptoTest(unittest.TestCase):
         self.env.stop()
         self.temp.cleanup()
 
-    def _notify(self, event):
+    def _notify(self, event, stamp=None):
         from cryptography.hazmat.primitives.ciphers.aead import AESGCM
         nonce, associated = b"123456789012", b"test"
         ciphertext = AESGCM(b"a" * 32).encrypt(nonce, json.dumps(event).encode(), associated)
         raw = json.dumps({"id": "callback-test", "resource": {"nonce": nonce.decode(),
                           "associated_data": associated.decode(), "ciphertext": base64.b64encode(ciphertext).decode()}}).encode()
-        stamp, header_nonce = str(int(time.time())), "header-nonce"
+        stamp, header_nonce = str(int(time.time()) if stamp is None else stamp), "header-nonce"
         signature = wechat_pay._sign(stamp + "\n" + header_nonce + "\n" + raw.decode() + "\n")
         headers = {"Wechatpay-Timestamp": stamp, "Wechatpay-Nonce": header_nonce,
                    "Wechatpay-Serial": "test-public", "Wechatpay-Signature": signature}
@@ -132,6 +132,11 @@ class CryptoTest(unittest.TestCase):
         self.assertEqual(event["amount"]["total"], 123)
         headers["Wechatpay-Signature"] = base64.b64encode(b"invalid").decode()
         with self.assertRaises(Exception):
+            wechat_pay.decode_notify(headers, raw)
+
+    def test_expired_notify_timestamp_is_rejected(self):
+        headers, raw = self._notify({"out_trade_no": "ORDER"}, stamp=int(time.time()) - 301)
+        with self.assertRaisesRegex(ValueError, "回调头无效"):
             wechat_pay.decode_notify(headers, raw)
 
     def test_amount_mismatch_and_duplicate_callback(self):
@@ -227,3 +232,60 @@ class RefundFlowTest(unittest.TestCase):
         threads[0].join(timeout=5)
         self.assertFalse(threads[0].is_alive())
         self.assertEqual(results, ["refunded"])
+
+    def test_stale_processing_refund_is_confirmed_by_query(self):
+        with mock.patch.object(payments, "handle_refund", return_value="refunding"):
+            commerce.transition_after_sale(self.db, self.sale, "refund")
+        rec = self.db.get("after_sales", self.sale)
+        rec["updatedAt"] -= 5 * 60000 + 1
+        self.db.put("after_sales", self.sale, rec)
+        result = {"out_trade_no": self.no, "out_refund_no": self._event("SUCCESS")["out_refund_no"],
+                  "amount": {"refund": self.amount}, "status": "SUCCESS"}
+        with mock.patch.dict(os.environ, {"PAYMENT_PROVIDER": "wechat", "WXPAY_MCHID": "test-merchant"}):
+            with mock.patch.object(wechat_pay, "query_refund", return_value=result) as query:
+                self.assertEqual(commerce.refresh_refund_if_due(self.db, self.sale)["status"], "completed")
+        query.assert_called_once()
+
+
+@unittest.skipUnless(HAS_CRYPTO, "cryptography 未安装")
+class PaymentRecoveryTest(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.db = DB(os.path.join(self.temp.name, "order.db"))
+        self.no = "ORDER-RECOVERY"
+        self.order = {"no": self.no, "userId": "test-user", "orderStatus": "pending_confirmation",
+                      "paymentStatus": "unpaid", "payableFen": 123,
+                      "paymentAttempts": [{"id": "attempt", "provider": "wechat", "amountFen": 123,
+                                           "createdAt": int(time.time() * 1000), "result": None}]}
+        self.db.put("orders", self.no, self.order)
+        self.env = mock.patch.dict(os.environ, {"PAYMENT_PROVIDER": "wechat", "WXPAY_MCHID": "test-merchant",
+                                                "WXPAY_APPID": "test-app"})
+        self.env.start()
+
+    def tearDown(self):
+        self.env.stop()
+        self.db.conn.close()
+        self.temp.cleanup()
+
+    def _success(self, amount=123):
+        return {"trade_state": "SUCCESS", "out_trade_no": self.no, "mchid": "test-merchant",
+                "appid": "test-app", "amount": {"total": amount}, "transaction_id": "tx-test"}
+
+    def test_missing_callback_is_recovered_by_query(self):
+        with mock.patch.object(wechat_pay, "query_order", return_value=self._success()) as query:
+            result = user_api.get_my_order(self.db, self.no, "test-user")
+        self.assertEqual(result["paymentStatus"], "paid")
+        self.assertEqual(self.db.get("orders", self.no)["orderStatus"], "confirmed")
+        query.assert_called_once_with(self.no)
+
+    def test_query_amount_mismatch_does_not_pay(self):
+        with mock.patch.object(wechat_pay, "query_order", return_value=self._success(amount=124)):
+            with self.assertRaisesRegex(ValueError, "金额不符"):
+                user_api.get_my_order(self.db, self.no, "test-user")
+        self.assertEqual(self.db.get("orders", self.no)["paymentStatus"], "unpaid")
+
+    def test_query_is_rate_limited_to_once_per_ten_seconds(self):
+        with mock.patch.object(wechat_pay, "query_order", return_value={"trade_state": "NOTPAY"}) as query:
+            user_api.get_my_order(self.db, self.no, "test-user")
+            user_api.get_my_order(self.db, self.no, "test-user")
+        query.assert_called_once_with(self.no)

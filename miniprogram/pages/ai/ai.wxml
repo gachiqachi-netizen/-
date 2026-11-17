@@ -39,6 +39,17 @@
     <c-state wx:if="{{error}}" title="搭配暂时没完成" desc="{{error}}" action="再试一次" bind:action="retryLast" />
     <view id="chat-end" />
   </scroll-view>
-  <view class="ai-composer"><c-composer value="{{text}}" placeholder="{{hasResults ? '还想怎么改，直接说' : '说说想要的感觉、送谁、预算…'}}" tag="手围 {{wrist}}cm" chips="{{chips}}" voice="{{false}}" photo="{{false}}" sending="{{busy}}" bind:input="input" bind:send="submit" bind:chip="onChip" bind:tag="onTag" /></view>
+  <view class="ai-composer">
+    <scroll-view class="ai-quick" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="ai-quick-inner">
+        <view class="c-chip ai-quick-item" bindtap="onTag">手围 {{wrist}}cm</view>
+        <view class="c-chip ai-quick-item" wx:for="{{chips}}" wx:key="index" data-text="{{item}}" bindtap="example">{{item}}</view>
+      </view>
+    </scroll-view>
+    <view class="ai-input-row">
+      <input class="ai-input" value="{{text}}" placeholder="{{hasResults ? '还想怎么改，直接说' : '说说想要的感觉、送谁、预算…'}}" confirm-type="send" adjust-position="{{true}}" cursor-spacing="16" bindinput="input" bindconfirm="submit" />
+      <view class="ai-send {{!text || busy ? 'ai-send--off' : ''}}" role="button" aria-label="发送" bindtap="submit"><image src="/assets/icons/up-on.svg" /></view>
+    </view>
+  </view>
   <c-toast />
 </view>

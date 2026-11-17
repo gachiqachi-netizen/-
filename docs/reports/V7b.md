@@ -17,7 +17,7 @@
 |---|---|---|
 | 与 V8 共用按档背景、三类材质参数和暖色兜底 | 通过代码校验 | `npm run check:layout`：`bracelet style parity: V8 fixture, 3 tiers, 3 materials and call sites passed` |
 | 1 号珠在正上方、顺时针且排布一致 | 通过 | `npm run check:layout`：`layout parity: 13 cases passed (max error 0.5px)` |
-| 后台构建可用 | 通过 | `npm run build`：`✓ built in 860ms` |
+| 后台构建可用 | 通过 | `npm run build`：`✓ built in 921ms` |
 | 浏览器视觉核对 | 待负责人 | 后台菜单：工单详情（编号大图及打印图）、订单详情手串区、售后详情订单区、商品列表珠子图与商品编辑照片比较预览。请用同一条大小珠混排手串核对小中大档及照片裁切。 |
 
 ## 3. 改了的文件
@@ -31,8 +31,8 @@
  admin-web/src/pages/afterSales/detail.tsx  |  2 +-
  admin-web/src/pages/products/beadPhoto.tsx |  4 +-
  admin-web/src/pages/workOrders/detail.tsx  |  4 +-
- docs/reports/V7b.md                        | 69 ++++++++++++++++++++++
- 9 files changed, 283 insertions(+), 32 deletions(-)
+ docs/reports/V7b.md                        | 67 +++++++++++++++++++++
+ 9 files changed, 281 insertions(+), 32 deletions(-)
 ```
 
 仅改 `admin-web/src/bracelet/*`、工单/订单/售后/商品相关的手串图调用行、`admin-web/scripts/` 和本报告；模板编辑文件已恢复为 integration 版本；构建生成的 `server/static/admin/shadcn-admin.*` 未提交。
@@ -49,7 +49,7 @@
 
 ## 5. 自查
 
-- `git log --oneline origin/integration/2026-11..HEAD`：`b0733da V7b: 审核 1 撤回模板页并保留旧调用兼容`、`df9f746 V7b: 校验样式参数及后台调用点一致`、`22cca0d V7b: 后台手串使用明确尺寸档位`、`6d5352c V7b: 后台手串 SVG 对齐 V8 三档材质画法`、`0582f9d V7b: 开工`。
+- `git log --oneline origin/integration/2026-11..HEAD`：`25c4bcc V7b: 审核 1 更新范围与交付报告`、`b0733da V7b: 审核 1 撤回模板页并保留旧调用兼容`、`df9f746 V7b: 校验样式参数及后台调用点一致`、`22cca0d V7b: 后台手串使用明确尺寸档位`、`6d5352c V7b: 后台手串 SVG 对齐 V8 三档材质画法`、`0582f9d V7b: 开工`。
 - `git diff --check`：无输出。
 - `npm run build`：通过，打包文件未提交。
 - `npm run check:layout`：通过。

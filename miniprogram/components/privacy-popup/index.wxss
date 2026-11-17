@@ -78,12 +78,12 @@
   border: 0;
 }
 
+.c-privacy__actions button.c-btn {
+  background: var(--c-text);
+  color: var(--c-bg);
+}
+
 .c-privacy__actions button.c-btn--sec {
   background: var(--c-surface);
   color: var(--c-text);
-}
-
-.c-privacy__actions button.c-btn:not(.c-btn--sec) {
-  background: var(--c-text);
-  color: var(--c-bg);
 }

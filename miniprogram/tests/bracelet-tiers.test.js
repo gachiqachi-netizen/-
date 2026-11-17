@@ -11,7 +11,7 @@ const sample = Array.from({ length: 18 }, (_, i) => ({ id: String(i), mm: i % 3 
 test('三档尺寸和参数来自同一份样式文件', () => {
   const fixture = require('../../server/tests/fixtures/bracelet_style.json')
   assert.deepEqual(style, fixture)
-  assert.match(read('pages/share/share.js'), /components\/bracelet\/style\.json/)
+  assert.match(read('pages/share/share.js'), /components\/bracelet\/style\.js/)
   assert.deepEqual(style.tiers, { s: 144, m: 320, l: 560 })
   assert.equal(style.fillRatio, 0.88)
   assert.equal(style.small.outlineWidth, 0)

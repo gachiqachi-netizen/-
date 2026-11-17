@@ -1,7 +1,7 @@
 const { queue: toast } = require('../../utils/toast')
 const api=require('../../utils/api'),store=require('../../utils/design'),auth=require('../../utils/auth')
 const { layout } = require('../../utils/bracelet-layout')
-const braceletStyle = require('../../components/bracelet/style.json')
+const braceletStyle = require('../../components/bracelet/style.js')
 const keyOf=d=>d&&JSON.stringify([d.name,d.wrist,d.beads])
 function wrap(text,maxChars,maxLines){const chars=Array.from(String(text||''));const lines=[];let i=0;while(i<chars.length&&lines.length<maxLines){const line=chars.slice(i,i+maxChars);i+=line.length;while(i<chars.length&&/^[，。！？、；：,.!?;:]$/.test(chars[i]))line.push(chars[i++]);lines.push(line.join(''))}if(i<chars.length&&lines.length)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';return lines}
 function drawBead(ctx,point,path,x,y,params=braceletStyle.regular){

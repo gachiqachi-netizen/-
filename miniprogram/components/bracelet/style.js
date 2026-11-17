@@ -1,4 +1,5 @@
-{
+// Generated from server/tests/fixtures/bracelet_style.json; tests verify exact equality.
+module.exports = {
   "tiers": { "s": 144, "m": 320, "l": 560 },
   "fillRatio": 0.88,
   "background": "var(--c-surface)",

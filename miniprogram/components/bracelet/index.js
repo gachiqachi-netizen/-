@@ -1,5 +1,5 @@
 const { layout } = require('../../utils/bracelet-layout')
-const style = require('./style.json')
+const style = require('./style.js')
 function normalize(beads) { return (beads || []).filter(b => b && Number(b.mm) > 0).map(b => ({ ...b, colors: b.colors || b.c || [] })) }
 function photoOf(bead, tier) {
   const photo = (tier === 's' ? bead.photoSm : bead.photoMd) || bead.photo

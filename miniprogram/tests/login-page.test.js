@@ -24,6 +24,7 @@ test('unchecked entry opens consent before showing the WeChat phone button', () 
   assert.doesNotMatch(wxml, /login-agreement-overlay/)
   assert.match(wxml, /bindgetphonenumber="onPhone"/)
   assert.match(wxml, /bindgetphonenumber="agreeAndPhone"/)
+  assert.match(wxml, /<c-sheet\s+wx:if="\{\{sheet\}\}"/)
   assert.equal(page().data.agreed, false)
 })
 

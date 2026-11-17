@@ -17,7 +17,7 @@
     <text>和</text>
     <text class="login-doc" data-type="隐私政策" bindtap="openTerms">《隐私政策》</text>
   </view>
-  <c-sheet show="{{sheet}}" title="请先阅读并同意" bind:close="closeAgreement">
+  <c-sheet wx:if="{{sheet}}" show="{{sheet}}" title="请先阅读并同意" bind:close="closeAgreement">
     <view class="login-sheet-docs">
       <text class="login-doc" data-type="用户协议" bindtap="openTerms">《用户协议》</text>
       <text>和</text>

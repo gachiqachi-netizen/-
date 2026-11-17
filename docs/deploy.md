@@ -53,45 +53,44 @@ sudo docker compose version
 
 负责人在 **微信商户平台 → 账户中心 / 商户信息、API 安全**（菜单以实际后台为准）准备五类材料：①商户号；②32 字节 APIv3 密钥；③商户 API 证书**私钥文件**及证书序列号；④微信支付公钥文件及公钥 ID（若使用平台证书则改为平台证书文件）；⑤已关联的小程序 AppID。进入 **AppID 账号管理**，确认该小程序 AppID 已与商户号关联。小程序 AppID 和 AppSecret 从 **微信公众平台 → 小程序后台 → 开发管理 / 开发设置**取得。**APIv3 密钥不是 pem 文件；商户私钥不是微信支付公钥，不能互换。**
 
-## 4. 服务器：文件、权限和环境变量
+## 4. 服务器：一键部署
 
-在服务器上取得本仓库的部署版本，进入仓库根目录。以下相对路径都以仓库根目录为准：
+先逐项完成 [部署前清单](../deploy/CHECKLIST.md)，在仓库根目录运行：
+
+```bash
+sudo bash deploy/setup.sh
+```
+
+脚本会检查系统、安装 Docker/Compose/Nginx、建立数据目录、逐项询问配置，生成 `deploy/app.env` 与 Nginx 配置，启动容器并运行离线自检和公网 `--ping`。AppSecret 与 APIv3 密钥输入不回显；所有凭据只保留在服务器。已有 `app.env` 默认保留，选择覆盖时会先备份。若部署失败，按脚本给出的步骤名排查，修正后可重复执行；不会删除数据卷。完成时 `--ping` 应返回 HTTP 400，证明公网回调可达且拒绝无签名请求。
+
+## 5. 手动配置备用
+
+无法使用脚本时，在仓库根目录执行：
 
 ```bash
 mkdir -p deploy/secrets deploy/data/app
-sudo chown -R 10001:10001 deploy/data/app deploy/secrets
-chmod 700 deploy/secrets
+sudo chown -R 10001:10001 deploy/secrets deploy/data/app
+sudo chmod 700 deploy/secrets
 cp deploy/app.env.example deploy/app.env
 chmod 600 deploy/app.env
 ```
 
-用服务器上的安全上传方式，把商户私钥和微信支付公钥（或平台证书）放入 `deploy/secrets/`，文件名与 `app.env` 的容器路径对应。应用容器以 UID 10001 运行，故执行 `sudo chown 10001:10001 deploy/secrets/*.pem`、`chmod 600 deploy/secrets/*.pem`。文件不得放进 Git 仓库提交区或可公开访问的 `/data/uploads`。
+把商户私钥与微信支付公钥放入 `deploy/secrets/`，分别命名为 `merchant_private.pem`、`wechatpay_public.pem`，属主设为 `10001:10001`，权限设为 `600`。在服务器上填写 `app.env`，使 PostgreSQL 变量与 `DATABASE_URL` 一致、`WECHAT_APP_ID` 与 `WXPAY_APPID` 一致，通知地址为 `https://<API域名>/api/payments/notify`。随机生成 `ADMIN_TOKEN`、`PHONE_SALT`、`MEDIA_LINK_SECRET`；不要把配置或密钥贴到聊天或提交到 Git。
 
-只在服务器用编辑器填写 `deploy/app.env`：数据库用户名、密码、库名与 `DATABASE_URL` 对应；`WECHAT_APP_ID` 与 `WXPAY_APPID` 完全一致；支付公钥模式须同时填写公钥路径和 ID，平台证书模式则清空这两项、填写证书路径；`WXPAY_NOTIFY_URL` 必须是 `https://<API域名>/api/payments/notify`。`PAYMENT_PROVIDER=wechat`，`ENV=production`。`ADMIN_TOKEN`、`PHONE_SALT`、`MEDIA_LINK_SECRET` 各自生成独立随机值。可选项不启用时保持空值。不要在终端执行会显示整份环境变量的命令。
+## 6. 手动启动与验证备用
 
-## 5. 服务器：启动并运行离线自检
-
-进入 `deploy/`，先用 `--env-file app.env` 让 Compose 读取 PostgreSQL 建库变量。`app.env` 也会由 `env_file` 注入应用容器。首次启动会按程序现有机制运行数据库迁移：
-
-```bash
-cd deploy
-sudo docker compose --env-file app.env up -d --build
-sudo docker compose --env-file app.env exec app python tools/check_deploy.py
-```
-
-脚本逐项只打印“通过 / 缺少 / 不对”，**不打印任何值**。必须全部“通过”；负责人将这一屏输出截图给审核，不要截图 `app.env`。`--ping` 此时暂不运行，因为 Nginx 和公网 HTTPS 还没配好。若有失败，先按项目名修正环境变量或 pem 文件的可读性、格式和 `600` 权限，再重复离线自检。不要把密钥值、完整数据库地址贴进报错记录。
-
-## 6. 服务器：Nginx 与 HTTPS 回调
-
-把已下载的 Nginx 证书和私钥上传到服务器 `/etc/nginx/certs/`，给证书私钥设仅管理员可读权限。将 `deploy/nginx.conf.example` 复制到 `/etc/nginx/conf.d/chuan.conf`，替换 `<API域名>`、证书和私钥路径；站点反代到 `127.0.0.1:8800`，`/api/payments/notify` 也必须转发。检查并重载：
+把 Nginx 格式证书与私钥放到 `/etc/nginx/certs/`，依据 `deploy/nginx.conf.example` 写 `/etc/nginx/conf.d/chuan.conf`，替换域名和两个证书路径。然后：
 
 ```bash
 sudo nginx -t
 sudo systemctl reload nginx
+cd deploy
+sudo docker compose --env-file app.env up -d --build
+sudo docker compose --env-file app.env exec app python tools/check_deploy.py
 sudo docker compose --env-file app.env exec app python tools/check_deploy.py --ping
 ```
 
-`--ping` 向配置的公网 HTTPS 回调发一条**无签名**的空 JSON POST，预期 **HTTP 400**；这只验证 HTTPS 可达且拒绝伪造通知，不验证真实支付。若网络失败，检查域名解析、安全组、证书、Nginx 与本机 8800；若返回 200，则必须先调查回调验签逻辑，不能上线。
+离线自检各项必须通过，`--ping` 必须得到 HTTP 400。失败时检查域名解析、安全组、证书及 8800 本地监听；不要展示 `app.env` 或密钥。把不含凭据的自检输出截图交审核。
 
 ## 7. 微信后台：域名和支付通知
 

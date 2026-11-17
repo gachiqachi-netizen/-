@@ -95,7 +95,7 @@ sudo docker compose --env-file app.env exec app python tools/check_deploy.py --p
 
 ## 7. 微信后台：域名和支付通知
 
-在 **微信公众平台 → 小程序后台 → 开发管理 → 服务器域名**，把 `https://<API域名>` 加入 **request 合法域名**（菜单以实际后台为准）。在 **微信商户平台 → 产品中心 / 开发配置** 配置付款与退款通知使用的 HTTPS 回调地址 `https://<API域名>/api/payments/notify`；若商户平台当前接口采用下单请求里的 `notify_url`，仍需核对该地址与 `app.env` 一致。核对商户 AppID 关联状态。
+在 **微信公众平台 → 小程序后台 → 开发管理 → 服务器域名**，把 `https://<API域名>` 加入 **request 合法域名**（菜单以实际后台为准）。**商户平台不需要单独填支付回调地址**：本项目用 APIv3，下单和退款请求都由服务器带上 `app.env` 里的 `WXPAY_NOTIFY_URL`（`https://<API域名>/api/payments/notify`），只要它正确且 `--ping` 返回 400 即可。商户平台只需在 **产品中心 → AppID 账号管理** 核对小程序 AppID 已关联。
 
 ## 8. 负责人验收真实交易
 

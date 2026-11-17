@@ -384,6 +384,25 @@
 - **测试**：`check_deploy.py` 用临时生成的假密钥和假环境变量测：全对时全部通过；缺变量、密钥长度不对、文件不可读、回调不是 https 各报对应错误；输出里不出现任何变量的值。
 - **不做**：真实部署、真实付款。
 
+## B-17 一键部署脚本 setup.sh（2026-11-17 负责人要）
+
+- **依赖**：B-16（已完成）　**大小**：M　**只能改**：新建 `deploy/setup.sh`、新建 `deploy/CHECKLIST.md`、`docs/deploy.md`（第 4–6 节改成“跑脚本”，手动步骤留作备用）、`server/tests/` 或 `tools/` 下对应测试
+- **目的**：国内同事登录腾讯云 CVM 后，在仓库根目录执行 `sudo bash deploy/setup.sh` 一条命令完成部署。执行 agent **不登录服务器、不接触任何真实密钥、不连商户平台**；脚本里一个真实值都不许出现。
+- **`deploy/CHECKLIST.md`**（同事跑脚本前在网页上点完的勾选清单，每项写在哪个控制台、点哪里，拿不准写“以实际后台为准”）：ICP 备案已完成；安全组入站只开 80、443（8800 不开）；域名 A 记录指向公网 IP；SSL 证书已申请并下载 Nginx 格式；证书两个文件和商户私钥、微信支付公钥 pem 已上传到服务器（写清楚放哪个目录，脚本会问路径）；商户平台“AppID 账号管理”已关联小程序；手边准备好：域名、商户号、APIv3 密钥、证书序列号、公钥 ID、小程序 AppID 和 AppSecret。
+- **`deploy/setup.sh` 要做的**（bash，`set -euo pipefail`，必须 root 运行，否则提示用 sudo）：
+  1. 读 `/etc/os-release`，Ubuntu/Debian 走 apt、OpenCloudOS/CentOS/TencentOS 走 dnf/yum，安装 Docker、compose 插件、Nginx（已装就跳过）；命令与 `docs/deploy.md` 第 2 节一致。不认识的系统直接退出并提示照 `docs/deploy.md` 手动装。
+  2. 建 `deploy/secrets`、`deploy/data/app`，属主 10001:10001，`secrets` 700。
+  3. 交互问答：域名；商户号；小程序 AppID（同时写入 `WECHAT_APP_ID` 和 `WXPAY_APPID`）；AppSecret、APIv3 密钥**用 `read -s` 不回显**；证书序列号；公钥 ID；商户私钥、微信支付公钥 pem 的服务器路径（脚本复制进 `deploy/secrets/`，`chown 10001:10001`、`chmod 600`）；Nginx 证书和私钥路径。每项做最小校验（APIv3 密钥 32 位、文件存在、域名不带 `http`），不对就重问，不打印输入的值。
+  4. 自动生成 `ADMIN_TOKEN`、`PHONE_SALT`、`MEDIA_LINK_SECRET`、数据库密码（`openssl rand -hex 32` 或 `/dev/urandom`）。`ADMIN_TOKEN` 只在最后提示“已写入 app.env，用 `sudo grep ADMIN_TOKEN deploy/app.env` 自己查看”，不打印。
+  5. 以 `deploy/app.env.example` 为模板生成 `deploy/app.env`（`chmod 600`），`PAYMENT_PROVIDER=wechat`、`ENV=production`、`WXPAY_NOTIFY_URL=https://<域名>/api/payments/notify`、`DATABASE_URL` 与数据库变量一致；以 example 里实际有的变量为准，不在脚本里另造变量名。**`app.env` 已存在时先问“覆盖 / 保留”，默认保留**，保留时跳过问答直接进下一步；覆盖前备份成 `app.env.bak.<时间>`。
+  6. 以 `deploy/nginx.conf.example` 生成 `/etc/nginx/conf.d/chuan.conf`，替换域名和证书路径；`nginx -t` 通过才 reload，失败就停下并说哪一步。
+  7. `docker compose --env-file app.env up -d --build`，然后 `exec app python tools/check_deploy.py`，再跑 `--ping`；最后汇总打印：每步“完成 / 失败”、自检是否全部通过、`--ping` 是否 400，以及下一步提示（小程序后台加 request 合法域名、真机 0.01 元付款和退款）。
+  8. 可以重复运行：已装的跳过、已有配置默认保留、不删数据目录、**绝不执行 `docker compose down -v`**。
+  9. 任何地方不得 `set -x`、不得 echo 密钥类变量、不写日志文件含密钥。
+- **测试**：`bash -n deploy/setup.sh` 语法检查；如本机有 `shellcheck` 跑一遍并在报告里贴结果；写一个测试（Python 或 bash）用假输入、`DRY_RUN=1` 和临时目录跑生成 `app.env` 和 nginx 配置那两段（脚本需支持 `DRY_RUN=1`：不装软件、不碰 `/etc`、不起容器，输出写到临时目录），断言：变量齐全且与 example 一致、通知地址正确、权限 600、终端输出里不出现输入的任何密钥值、已有 `app.env` 默认不被覆盖。
+- **报告**：贴 `DRY_RUN=1` 跑一遍的终端输出（用假值）。说明在哪些系统上**没有**真机验证过。
+- **不做**：真实部署、真实付款、申请证书或备案、改 `check_deploy.py` 的检查逻辑（发现它有问题写进报告，不要改）。
+
 ## B-15 微信发货信息录入（接了微信支付必须做）
 
 - **依赖**：B-14；**负责人确认小程序后台“发货信息管理”已开通**　**大小**：S　**只能改**：新建 `server/wx_shipping.py`、后台发货路由里调用它的那一行、`server/tests/`、`docs/deploy.md`

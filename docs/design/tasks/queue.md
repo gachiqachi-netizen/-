@@ -45,6 +45,7 @@
 | B-11c | agent/B-11c-design-delete | backend-wave2.md | A11 | 任何 | B-3 |  |
 | B-12 | agent/B-12-ai-logs | backend-wave2.md | A8b、A11m | 任何 |  |  |
 | B-16 | agent/B-16-deploy-kit | backend-wave2.md | B-14 | Codex |  |  |
+| B-17 | agent/B-17-setup-script | backend-wave2.md | B-16 | Codex |  |  |
 | B-15 | agent/B-15-wx-shipping | backend-wave2.md | B-14 | Codex |  | 确认发货信息管理已开通 |
 | B-13 | agent/B-13-tracking | backend-wave2.md | A11 V7a | 任何 |  | 确认微信物流服务和物流查询插件已开通 |
 | B-14 | agent/B-14-wechat-pay | backend-wave2.md | A5b | Codex |  |  |

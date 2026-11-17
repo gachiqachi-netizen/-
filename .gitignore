@@ -21,3 +21,6 @@ output/
 *.jsonl
 
 miniprogram/config.local.js
+deploy/app.env
+deploy/secrets/
+*.pem

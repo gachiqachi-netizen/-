@@ -1,5 +1,6 @@
 const { layout } = require('../../utils/bracelet-layout')
 const style = require('./style.js')
+const { materialParams, cssPaint } = require('./fallback.js')
 function normalize(beads) { return (beads || []).filter(b => b && Number(b.mm) > 0).map(b => ({ ...b, colors: b.colors || b.c || [] })) }
 function photoOf(bead, tier) {
   const photo = (tier === 's' ? bead.photoSm : bead.photoMd) || bead.photo
@@ -10,8 +11,7 @@ function photoOf(bead, tier) {
   return base ? base + photo : ''
 }
 function paint(colors, params) {
-  const light = colors[0] || '#f4f4f4', dark = colors[1] || '#c9c9c9'
-  return `background:radial-gradient(circle at ${params.highlightX}% ${params.highlightY}%, rgba(255,255,255,${params.highlightAlpha}) 0%, rgba(255,255,255,0) ${params.highlightStop}%),radial-gradient(circle at 64% 74%, rgba(255,255,255,${params.glowAlpha}) 0%, rgba(255,255,255,0) ${params.glowStop}%),radial-gradient(circle at 36% 30%, ${light} 0%, ${light} ${params.colorStop}%, ${dark} 100%);box-shadow:inset 0 0 ${params.outlineWidth}rpx rgba(0,0,0,${params.shadeAlpha});`
+  return cssPaint(colors, params)
 }
 function positions(beads, size, tier) {
   const sequence = normalize(beads)
@@ -25,7 +25,7 @@ function positions(beads, size, tier) {
     const left = point.x + offset - d / 2, top = point.y + offset - d / 2
     return { ...point, bead, index, zeroIndex: index, d, diameter: d, box: d, x: left, y: top,
       left, top, metal: !!bead.spacer || /metal|silver|gold|steel|银|金属|隔/i.test(String(bead.mat || '')),
-      face: (bead.colors || [])[0] || 'var(--c-line)', photoPath: photoOf(bead, tier), paintStyle: paint(bead.colors || [], params) }
+      face: (bead.colors || [])[0] || 'var(--c-line)', photoPath: photoOf(bead, tier), paintStyle: paint(bead.colors || [], materialParams(bead, tier)) }
   })
 }
 function wordmarkSize(ring, size) {
@@ -52,7 +52,7 @@ if (typeof Component === 'function') Component({
       ] })
     } else {
       const ring = positions(p.beads, size, record ? p.tier : '')
-      this.setData({ side: size, height: size, record, background: record ? style.background : 'transparent', wordmarkSize: wordmarkSize(ring, size), rings: [{ idx: 0, ty: 0, opacity: 1, items: ring }] })
+      this.setData({ side: size, height: size, record, background: record ? style.background[p.tier] : 'transparent', wordmarkSize: wordmarkSize(ring, size), rings: [{ idx: 0, ty: 0, opacity: 1, items: ring }] })
     }
   } },
 })

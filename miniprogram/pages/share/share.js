@@ -1,24 +1,25 @@
 const { queue: toast } = require('../../utils/toast')
 const api=require('../../utils/api'),store=require('../../utils/design'),auth=require('../../utils/auth')
 const { layout } = require('../../utils/bracelet-layout')
+const braceletStyle = require('../../components/bracelet/style.json')
 const keyOf=d=>d&&JSON.stringify([d.name,d.wrist,d.beads])
 function wrap(text,maxChars,maxLines){const chars=Array.from(String(text||''));const lines=[];let i=0;while(i<chars.length&&lines.length<maxLines){const line=chars.slice(i,i+maxChars);i+=line.length;while(i<chars.length&&/^[，。！？、；：,.!?;:]$/.test(chars[i]))line.push(chars[i++]);lines.push(line.join(''))}if(i<chars.length&&lines.length)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';return lines}
-function drawBead(ctx,point,path,x,y){
+function drawBead(ctx,point,path,x,y,params=braceletStyle.regular){
  const r=point.r,colors=point.colors||[],light=colors[0]||'#f4f4f4',dark=colors[1]||'#c9c9c9'
  ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip()
  if(path){ctx.translate(x,y);ctx.rotate(point.rotate*Math.PI/180);ctx.drawImage(path,-r,-r,2*r,2*r)}
  else{
   const base=ctx.createCircularGradient(x-r*.28,y-r*.4,r*1.8)
-  base.addColorStop(0,light);base.addColorStop(.45,light);base.addColorStop(1,dark)
+  base.addColorStop(0,light);base.addColorStop(params.colorStop/100,light);base.addColorStop(1,dark)
   ctx.setFillStyle(base);ctx.fillRect(x-r,y-r,2*r,2*r)
   const shine=ctx.createCircularGradient(x-r*.36,y-r*.45,r*.95)
-  shine.addColorStop(0,'rgba(255,255,255,0.9)');shine.addColorStop(.26,'rgba(255,255,255,0)');shine.addColorStop(1,'rgba(255,255,255,0)')
+  shine.addColorStop(0,`rgba(255,255,255,${params.highlightAlpha})`);shine.addColorStop(params.highlightStop/100,'rgba(255,255,255,0)');shine.addColorStop(1,'rgba(255,255,255,0)')
   ctx.setFillStyle(shine);ctx.fillRect(x-r,y-r,2*r,2*r)
   const glow=ctx.createCircularGradient(x+r*.28,y+r*.48,r*.8)
-  glow.addColorStop(0,'rgba(255,255,255,0.35)');glow.addColorStop(.42,'rgba(255,255,255,0)');glow.addColorStop(1,'rgba(255,255,255,0)')
+  glow.addColorStop(0,`rgba(255,255,255,${params.glowAlpha})`);glow.addColorStop(params.glowStop/100,'rgba(255,255,255,0)');glow.addColorStop(1,'rgba(255,255,255,0)')
   ctx.setFillStyle(glow);ctx.fillRect(x-r,y-r,2*r,2*r)
   const shade=ctx.createCircularGradient(x,y,r)
-  shade.addColorStop(.65,'rgba(0,0,0,0)');shade.addColorStop(1,'rgba(0,0,0,0.16)')
+  shade.addColorStop(.65,'rgba(0,0,0,0)');shade.addColorStop(1,`rgba(0,0,0,${params.shadeAlpha})`)
   ctx.setFillStyle(shade);ctx.fillRect(x-r,y-r,2*r,2*r)
  }
  ctx.restore()
@@ -45,18 +46,19 @@ Page({
   if(!this.canvasReady||this.data.loading||!this.data.design||!this.map||this.data.preview||!this.data.items.length)return
   const revision=this.renderRevision=(this.renderRevision||0)+1
   const d=this.data.design,items=this.data.items,w=this.data.width,h=this.data.height,s=w/720
-  const points=layout(items,500*s)
+  const artwork=500*s, drawSize=artwork*braceletStyle.fillRatio
+  const points=layout(items,drawSize)
   const paths=await Promise.all(items.map((b,i)=>this.localPhoto((points[i].r*2<=96?b.photoSm:points[i].r*2<=240?b.photoMd:b.photo)||b.photo)))
   if(revision!==this.renderRevision||keyOf(store.current())!==this.designKey)return
   const ctx=wx.createCanvasContext('shareCard',this)
-  ctx.setFillStyle('#fff');ctx.fillRect(0,0,w,h);ctx.setFillStyle('#f5f4f2');ctx.fillRect(16*s,16*s,688*s,620*s)
-  const left=110*s,top=82*s
-  const centerX=left+250*s,centerY=top+250*s
-  const inner=points.length?Math.min(...points.map(point=>Math.hypot(point.x-250*s,point.y-250*s)-point.r)):0
+  ctx.setFillStyle('#fff');ctx.fillRect(0,0,w,h);ctx.setFillStyle(braceletStyle.canvasBackground);ctx.fillRect(16*s,16*s,688*s,620*s)
+  const left=110*s+(artwork-drawSize)/2,top=82*s+(artwork-drawSize)/2
+  const centerX=left+drawSize/2,centerY=top+drawSize/2
+  const inner=points.length?Math.min(...points.map(point=>Math.hypot(point.x-drawSize/2,point.y-drawSize/2)-point.r)):0
   const markWidth=Math.min(200*s,Math.max(0,inner*2-20*s))
   if(markWidth>0)ctx.drawImage('/pages/share/wordmark-line.png',centerX-markWidth/2,centerY-markWidth*128/259/2,markWidth,markWidth*128/259)
   points.forEach((point,i)=>{
-    drawBead(ctx,point,paths[i],left+point.x,top+point.y)
+    drawBead(ctx,point,paths[i],left+point.x,top+point.y,braceletStyle.regular)
   })
   ctx.setFillStyle('#111');ctx.setFontSize(28*s);ctx.fillText('珠养养',56*s,74*s)
   ctx.setFontSize(42*s);ctx.fillText(String(d.name||'我的手串').slice(0,12),56*s,715*s)

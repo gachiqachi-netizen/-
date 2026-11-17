@@ -21,7 +21,7 @@ test('我的订单缩略图直接使用冻结珠序，商品改色后不变', as
     await page.loadOrders(false)
     assert.deepEqual(page.data.rows[0].visual, [original])
     assert.equal(page.data.rows[0].visual[0].colors[0], '#112233')
-    assert.match(fs.readFileSync(path.resolve(__dirname, '../features/orders/orders.wxml'), 'utf8'), /bracelet-thumb beads="{{item.visual}}"/)
+    assert.match(fs.readFileSync(path.resolve(__dirname, '../features/orders/orders.wxml'), 'utf8'), /c-bracelet beads="{{item.visual}}" tier="s"/)
   } finally {
     global.Page = oldPage
     if (oldAuth) require.cache[authPath] = oldAuth; else delete require.cache[authPath]
@@ -41,7 +41,7 @@ test('售后详情缩略图直接使用冻结珠序，商品改色后不变', ()
     page.setOrder(order)
     assert.deepEqual(page.data.product.beads, [original])
     assert.equal(page.data.product.beads[0].photoSm, '/old-sm.png')
-    assert.match(fs.readFileSync(path.resolve(__dirname, '../features/after-sale/detail.wxml'), 'utf8'), /bracelet-thumb beads="{{product.beads}}"\s*\/>/)
+    assert.match(fs.readFileSync(path.resolve(__dirname, '../features/after-sale/detail.wxml'), 'utf8'), /c-bracelet beads="{{product.beads}}" tier="s"\s*\/>/)
   } finally {
     global.Page = oldPage
     if (oldDefinition) require.cache[pagePath] = oldDefinition; else delete require.cache[pagePath]

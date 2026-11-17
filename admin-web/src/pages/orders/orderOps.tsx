@@ -8,9 +8,10 @@ const OrdersOpsPanel: React.FC<{
   shipped: boolean;
   canEditLogistics: boolean;
   logistics?: { carrierName?: string; carrierCode?: string; trackingNo?: string } | null;
+  wxShipping?: { status?: string; reason?: 'carrier' | 'payment' | 'api'; message?: string } | null;
   onChanged: () => void;
   notify: (msg: string, type?: 'success' | 'error') => void;
-}> = ({ orderNo, internalNotes, shipped, canEditLogistics, logistics, onChanged, notify }) => {
+}> = ({ orderNo, internalNotes, shipped, canEditLogistics, logistics, wxShipping, onChanged, notify }) => {
   const [noteText, setNoteText] = useState('');
   const [savingNote, setSavingNote] = useState(false);
   const [addrOpen, setAddrOpen] = useState(false);
@@ -21,6 +22,7 @@ const OrdersOpsPanel: React.FC<{
   const [lg, setLg] = useState({ carrierName: '', trackingNo: '' });
   const [lgError, setLgError] = useState('');
   const [savingLg, setSavingLg] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     setAddrOpen(false);
@@ -111,6 +113,23 @@ const OrdersOpsPanel: React.FC<{
     }
   };
 
+  const retryShipping = async () => {
+    if (retrying) return;
+    setRetrying(true);
+    try {
+      const result = await apiRequest<{ wxShipping?: { status?: string } }>(
+        `/api/admin/orders/${encodeURIComponent(orderNo)}/wx-shipping/retry`, { method: 'PUT', body: {} }
+      );
+      if (result.wxShipping?.status === 'synced') notify('微信发货信息已同步');
+      else notify('微信发货信息仍未同步，请稍后重试', 'error');
+      onChanged();
+    } catch (err: any) {
+      notify(err.message || '重试失败', 'error');
+    } finally {
+      setRetrying(false);
+    }
+  };
+
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '6px 10px',
@@ -156,6 +175,13 @@ const OrdersOpsPanel: React.FC<{
       <div className="zy-card" style={{ marginBottom: 16 }}>
         <div className="zy-card-title">后台操作</div>
         <div style={{ padding: '12px 16px', display: 'grid', rowGap: 12 }}>
+          {wxShipping?.status === 'failed' && <div className="zy-table-aux" style={{ fontSize: 13 }}>
+            {wxShipping.reason === 'carrier'
+              ? '微信发货信息未同步：快递公司不在微信支持列表，请改成标准名称后重新保存物流'
+              : <>微信发货信息未同步 · <button type="button" className="zy-btn zy-btn-secondary" disabled={retrying} onClick={retryShipping}>
+                  {retrying ? '重试中…' : '重试'}
+                </button></>}
+          </div>}
           {!shipped && !addrOpen && (
             <button type="button" className="zy-btn zy-btn-secondary" style={{ justifySelf: 'start' }} onClick={openAddr}>
               改地址（发货前）

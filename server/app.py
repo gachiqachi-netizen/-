@@ -20,6 +20,7 @@ import uuid
 import user_api
 import pricing
 import content_security
+import wx_shipping
 import env
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
@@ -815,6 +816,18 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(409, {"error": "设计已在其他设备修改，请重新获取后处理冲突", "code": "design_conflict"})
                 return self.send(200, user_api.public_design(saved))
             data = self.body()
+            m = re.fullmatch(r"/api/admin/orders/([\w-]+)/wx-shipping/retry", path)
+            if m:
+                if not self.admin_can('process_orders', data=data):
+                    return
+                current = db.get('orders', m.group(1))
+                if not current:
+                    return self.send(404, {"error": "订单不存在"})
+                if (current.get('wxShipping') or {}).get('status') != 'failed':
+                    return self.send(400, {"error": "这笔订单没有待重试的微信发货信息"})
+                result = wx_shipping.sync(db, m.group(1), current)
+                self.audit_admin_mutation(path)
+                return self.send(200, result)
             m = re.match(r"^/api/admin/orders/([\w-]+)/(status|logistics|work-order|quality-gate)$", path)
             if m:
                 if not self.admin_can(data=data):
@@ -831,6 +844,8 @@ class Handler(BaseHTTPRequestHandler):
                     result = commerce.update_work_order(db, rid, data, actor=self.admin_user["name"])
                 else:
                     result = commerce.record_quality_gate(db, rid, data, actor=self.admin_user["name"])
+                if action in ('status', 'logistics'):
+                    result = wx_shipping.sync(db, rid, result)
                 self.audit_admin_mutation(path)
                 return self.send(200, result)
             m = re.match(r"^/api/admin/orders/([\w-]+)/(address|note)$", path)

@@ -57,3 +57,37 @@ test('订单详情只读单笔接口和后端状态、按钮，付款后重新�
   assert.equal(p.data.paidLanding, true)
   assert.deepEqual(calls, ['/my/orders/N3', '/my/orders/N3/pay', '/payments/mock/notify', '/my/orders/N3'])
 })
+
+test('微信付款临时获取 code，成功后等待服务端确认', async () => {
+  delete require.cache[require.resolve('../pages/order/order')]
+  require('../pages/order/order')
+  const p = page(definition)
+  p.data.order = { no: 'WX1' }
+  const calls = []
+  wx.login = o => o.success({ code: 'one-use-code' })
+  wx.requestPayment = o => { calls.push('requestPayment'); o.success({}) }
+  auth.authorized = async (path, data) => {
+    calls.push(path)
+    if (path.endsWith('/pay') && !data.code) throw new Error('需要微信付款凭证')
+    if (path.endsWith('/pay')) return { payment: { amountFen: 100, timeStamp: '1', nonceStr: 'n', package: 'prepay_id=x', signType: 'RSA', paySign: 's' } }
+    return { paymentStatus: 'paid' }
+  }
+  await p.startPayment('WX1')
+  assert.deepEqual(calls, ['/my/orders/WX1/pay', '/my/orders/WX1/pay', 'requestPayment', '/my/orders/WX1'])
+  assert.match(route, /paid=1$/)
+})
+
+test('微信付款取消后仍可再付', async () => {
+  delete require.cache[require.resolve('../pages/order/order')]
+  require('../pages/order/order')
+  const p = page(definition)
+  p.data.order = { no: 'WX2' }
+  wx.login = o => o.success({ code: 'one-use-code' })
+  wx.requestPayment = o => o.fail({ errMsg: 'requestPayment:fail cancel' })
+  auth.authorized = async (path, data) => {
+    if (!data.code) throw new Error('需要微信付款凭证')
+    return { payment: { amountFen: 100, timeStamp: '1', nonceStr: 'n', package: 'prepay_id=x', signType: 'RSA', paySign: 's' } }
+  }
+  await p.startPayment('WX2')
+  assert.equal(p.data.error, '已取消支付')
+})

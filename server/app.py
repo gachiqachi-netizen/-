@@ -555,8 +555,40 @@ class Handler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         try:
             if path == "/api/payments/notify":
-                # 支付回调边界：未接真实微信支付，任何回调一律 501，不解析回调报文。
-                return self.send(501, {"error": "未接真实支付"})
+                import payments, wechat_pay
+                if payments.provider() != "wechat":
+                    return self.send(404, {"error": "not_found"})
+                try:
+                    size = int(self.headers.get("Content-Length") or "0")
+                    if size < 1 or size > 65536:
+                        raise ValueError("回调长度不正确")
+                    event_id, event = wechat_pay.decode_notify(self.headers, self.rfile.read(size))
+                    if event.get("mchid") and event["mchid"] != os.environ["WXPAY_MCHID"]:
+                        raise ValueError("商户号不符")
+                    if event.get("out_refund_no"):
+                        commerce.refund_callback(db, event_id, event)
+                    else:
+                        no = event["out_trade_no"]
+                        order = db.get("orders", no)
+                        if not order or event.get("appid") != os.environ["WXPAY_APPID"]:
+                            raise ValueError("订单或应用不符")
+                        amount = event["amount"]["total"]
+                        if amount != payments.payable_fen(order):
+                            raise ValueError("支付金额不符")
+                        if event.get("trade_state") != "SUCCESS":
+                            return self.send(200, {"code": "SUCCESS"})
+                        attempt = next((a for a in order.get("paymentAttempts", [])
+                                        if a.get("provider") == "wechat" and a.get("result") is None), None)
+                        if not attempt:
+                            if event_id in order.get("paymentCallbacks", []):
+                                return self.send(200, {"code": "SUCCESS"})
+                            raise ValueError("付款记录不存在")
+                        callback = {"id": event_id, "paymentId": attempt["id"], "provider": "wechat",
+                                    "amountFen": amount, "result": "success"}
+                        commerce.payment_callback(db, no, callback)
+                    return self.send(200, {"code": "SUCCESS"})
+                except Exception:
+                    return self.send(400, {"code": "FAIL", "message": "回调校验失败"})
             data = self.body()
             if path == "/api/admin/session":
                 return self.admin_login(data)
@@ -595,7 +627,10 @@ class Handler(BaseHTTPRequestHandler):
                 uid = self.user()
                 if not uid:
                     return self.send(401, {"error": "请先登录"})
-                return self.send(200, user_api.start_payment(db, pay.group(1), uid))
+                try:
+                    return self.send(200, user_api.start_payment(db, pay.group(1), uid, data.get("code")))
+                except PermissionError:
+                    return self.send(403, {"error": "微信登录用户不一致"})
             if path == "/api/payments/mock/notify":
                 import payments
                 if payments.provider() != "mock":

@@ -102,7 +102,7 @@ def validate_startup():
     except ValueError as e:
         raise SystemExit(str(e))
     ensure_dev_login_local()
-    if (os.environ.get("PAY_CHANNEL") or "mock").strip().lower() == "wechat":
+    if (os.environ.get("PAYMENT_PROVIDER") or "none").strip().lower() == "wechat":
         import wechat_pay
         wechat_pay.validate_config()
     require_admin_token()

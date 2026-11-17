@@ -1,21 +1,7 @@
-"""支付领域唯一入口。
+"""支付领域入口：none（默认）、mock、wechat。
 
-当前未接真实微信支付（PAYMENT_NOT_INTEGRATED = True）。任何把订单标记为「已支付」
-的尝试都会在此被拒绝，绝不允许伪造支付成功。真实支付/退款回调的接入点集中于此文件，
-未来接入微信支付 v3 时只需改这里：
-
-1. 验签：用微信支付平台证书校验回调签名，失败即拒绝。
-2. 幂等：同一回调编号（微信支付回调 id）只处理一次，重复回调直接返回已处理结果。
-3. 金额核对：回调金额必须等于订单应付金额 payableFen，否则拒绝。
-
-本文件不写任何真实商户号 / APIv3 密钥 / 证书序列号。
-
-支付通道（环境变量 PAYMENT_PROVIDER）：
-- none（默认）：没有可用的支付，订单停在待支付，不返回 pay_order。
-- mock：模拟支付。和真实支付走同一套流程（发起付款 → 回调 → 幂等 → 金额核对 → 状态迁移），
-  只是不去微信收钱。只在 development 可用；trial 还要显式设置 MOCK_PAYMENT_IN_TRIAL=1；
-  production 配成 mock 时服务拒绝启动（env.validate_startup）。模拟付款的订单记 paymentChannel=mock。
-- 以后接微信支付时加 wechat：create_payment 换成统一下单，回调先验签，再调 apply_callback。
+微信回调先由路由验签解密，再进入 apply_callback；人工 mark_paid 仍一律拒绝。
+mock 仅在开发环境可用，体验环境需显式开启，正式环境禁止。
 """
 import os
 import secrets
@@ -24,7 +10,7 @@ import time
 import env
 import status
 
-PAYMENT_NOT_INTEGRATED = True   # 真实微信支付还没接
+PAYMENT_NOT_INTEGRATED = True   # 仅保留对旧人工 mark_paid 的禁止开关
 PROVIDERS = ("none", "mock", "wechat")
 
 
@@ -37,7 +23,7 @@ def mock_allowed():
 
 def provider():
     """当前可用的支付通道。配置了不可用的通道时按 none 处理。"""
-    p = (os.environ.get("PAY_CHANNEL") or os.environ.get("PAYMENT_PROVIDER") or "mock").strip().lower()
+    p = (os.environ.get("PAYMENT_PROVIDER") or "none").strip().lower()
     if p == "wechat":
         return "wechat"
     if p == "mock" and mock_allowed():
@@ -191,7 +177,7 @@ def validate_refund_amount(order, refund_fen):
     return True
 
 
-def handle_refund(order, refund_fen):
+def handle_refund(order, refund_fen, refund_id=None):
     """执行支付域退款：paid → refunding → refunded / refund_failed。
 
     本轮未接真实微信退款：不会伪造退款成功，一律抛错。
@@ -207,12 +193,12 @@ def handle_refund(order, refund_fen):
         return "refunded"
     if order.get("paymentChannel") == "wechat" and provider() == "wechat":
         import wechat_pay
-        result = wechat_pay.refund(order["no"], "refund_" + order["no"], order["paidFen"], refund_fen)
+        result = wechat_pay.refund(order["no"], refund_id or "refund_" + order["no"], order["paidFen"], refund_fen)
         if result.get("status") in ("SUCCESS",):
             return "refunded"
         if result.get("status") in ("PROCESSING",):
             return "refunding"
-        raise RuntimeError("微信退款未受理")
+        return "refund_failed"
     if PAYMENT_NOT_INTEGRATED:
         raise RuntimeError("未接真实退款，禁止标记已退款")
     raise NotImplementedError("真实退款尚未接入")

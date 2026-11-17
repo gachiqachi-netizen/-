@@ -1,7 +1,7 @@
 """后台电商业务：商品 / 模板 / 订单 / 售后 / 物流 / 条款 / 审计。
 
 金额一律整数分（fen）。所有后台写操作都写审计日志；订单与售后状态变更同时写状态历史。
-不接真实支付与退款，不写任何密钥；支付状态不可由后台手工修改。
+微信支付与退款只经支付域处理，不写任何密钥；支付状态不可由后台手工修改。
 """
 import json
 import re
@@ -1393,14 +1393,14 @@ def auto_complete_delivered(db, now_ms=None, days=AUTO_COMPLETE_DAYS):
     return done
 
 
-def start_payment(db, no, user_id):
+def start_payment(db, no, user_id, openid=None):
     """用户发起付款：校验订单归属和状态，记一条付款记录，返回给前端的付款参数。"""
     out = {}
 
     def apply(order):
         if order.get("userId") != user_id:
             raise KeyError("订单不存在")
-        attempt, params = payments.create_payment(order)
+        attempt, params = payments.create_payment(order, openid=openid)
         out["params"] = params
         order["updatedAt"] = _now()
         return order
@@ -1570,6 +1570,8 @@ def _after_sale_target(action, current, atype, handling=None):
     if action == "refund":
         if atype not in REFUND_TYPES:
             raise ValueError("这种售后不退款")
+        if current == "refunding":
+            return "refunding"
         if atype == "退货退款":
             if current != "returning":
                 raise ValueError("退货退款要先记录退货物流，再退款")
@@ -1636,7 +1638,8 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
         status.validate_transition("afterSaleStatus", current, target)
         # 支付域退款（paid → refunding → refunded/refund_failed）走 payments.handle_refund；
         # 当前未接真实微信退款，故此处只推进售后域状态，不伪造订单 paymentStatus 的退款流转。
-        if target == current:  # 幂等：同一状态重复转换不重复写历史
+        if target == current and not (action == "refund" and order and
+                                      status.derive_status(order)["paymentStatus"] == "refund_failed"):
             return rec
 
         if target == "refunding":
@@ -1665,7 +1668,7 @@ def transition_after_sale(db, no, action, note="", return_logistics=None, result
                 w.put_order(order_no, order)
             w.put_audit(_audit_record(actor, action, "after_sale", no, f"{rec['type']}: {current} → {target}"))
 
-    if refunded_order is not None:
+    if refunded_order is not None and status.derive_status(refunded_order)["paymentStatus"] == "refunded":
         notify.order_event(db, refunded_order, "refunded")
     return rec
 
@@ -1678,38 +1681,99 @@ def _refund_in_tx(w, order, rec, no, current, note, actor):
     if not order:
         raise KeyError("订单不存在")
     refund_fen = int(rec.get("refundFen") or 0)
+    refund_id = "refund_" + no + "_" + str(len(rec.get("refundAttempts") or []) + 1)
     try:
-        payments.handle_refund(order, refund_fen)
+        outcome = payments.handle_refund(order, refund_fen, refund_id)
     except RuntimeError:
         raise ValueError("真实退款服务尚未接入")
     mock = order.get("paymentChannel") == "mock"
     pay_note = "模拟退款" if mock else "退款"
     pay_from = status.derive_status(order)["paymentStatus"]
     status.validate_transition("paymentStatus", pay_from, "refunding")
-    status.validate_transition("paymentStatus", "refunding", "refunded")
-    status.validate_transition("afterSaleStatus", "refunding", "completed")
+    if outcome != "refunding":
+        status.validate_transition("paymentStatus", "refunding", outcome)
+    if outcome == "refunded":
+        status.validate_transition("afterSaleStatus", "refunding", "completed")
     now = _now()
 
-    rec["status"] = "completed"
-    rec["refundedFen"] = refund_fen
-    rec["reservedFen"] = 0
+    rec["status"] = "completed" if outcome == "refunded" else "refunding"
+    rec["refundState"] = outcome
+    rec.setdefault("refundAttempts", []).append({"id": refund_id, "amountFen": refund_fen})
+    if outcome == "refunded":
+        rec["refundedFen"] = refund_fen
+        rec["reservedFen"] = 0
     rec["updatedAt"] = now
     rec.setdefault("history", []).append(status.history_entry(actor, "afterSaleStatus", current, "refunding", note))
-    rec["history"].append(status.history_entry(actor, "afterSaleStatus", "refunding", "completed", pay_note))
+    if outcome == "refunded":
+        rec["history"].append(status.history_entry(actor, "afterSaleStatus", "refunding", "completed", pay_note))
     rec["history"] = rec["history"][-200:]
     w.put_after_sale(no, rec)
 
-    order["paymentStatus"] = "refunded"
-    order["refundFen"] = int(order.get("refundFen") or 0) + refund_fen
-    order["afterSaleStatus"] = "completed"
+    order["paymentStatus"] = "refunded" if outcome == "refunded" else outcome
+    if outcome == "refunded":
+        order["refundFen"] = int(order.get("refundFen") or 0) + refund_fen
+        order["afterSaleStatus"] = "completed"
     order["updatedAt"] = now
     append_history(order, actor, "afterSaleStatus", current, "refunding", note)
     append_history(order, actor, "paymentStatus", pay_from, "refunding", pay_note)
-    append_history(order, actor, "paymentStatus", "refunding", "refunded", pay_note)
-    append_history(order, actor, "afterSaleStatus", "refunding", "completed", pay_note)
+    if outcome != "refunding":
+        append_history(order, actor, "paymentStatus", "refunding", order["paymentStatus"], pay_note)
+    if outcome == "refunded":
+        append_history(order, actor, "afterSaleStatus", "refunding", "completed", pay_note)
     w.put_order(order["no"], order)
     w.put_audit(_audit_record(actor, "refund", "after_sale", no, f"{rec['type']}: {pay_note} {refund_fen} 分"))
     return rec
+
+
+def refund_callback(db, event_id, event):
+    """已验签、已解密的微信退款通知；按退款单号和金额推进现有状态。"""
+    refund_id = event.get("out_refund_no")
+    # 微信可能在退款 HTTP 响应前推送通知；短暂等待发起退款的事务提交。
+    candidates = []
+    for _ in range(30):
+        candidates = [r for r in db.list("after_sales")
+                      if any(a.get("id") == refund_id for a in r.get("refundAttempts", []))]
+        if candidates:
+            break
+        time.sleep(0.1)
+    if len(candidates) != 1:
+        raise ValueError("退款单号不符")
+    sale_no = candidates[0]["id"]
+    with _AtomicWriter(db) as w:
+        rec = w.lock_after_sale(sale_no)
+        order = w.lock_order(rec["orderNo"])
+        attempt = next(a for a in rec.get("refundAttempts", []) if a.get("id") == refund_id)
+        if event.get("out_trade_no") != order["no"] or event.get("amount", {}).get("refund") != attempt["amountFen"]:
+            raise ValueError("退款订单或金额不符")
+        if event_id in rec.get("refundCallbacks", []):
+            return "duplicate"
+        if refund_id != rec["refundAttempts"][-1]["id"]:
+            return "obsolete"
+        if order["paymentStatus"] != "refunding":
+            return "duplicate"
+        success = event.get("refund_status") == "SUCCESS"
+        if not success and event.get("refund_status") not in ("ABNORMAL", "CLOSED"):
+            return "pending"
+        target = "refunded" if success else "refund_failed"
+        status.validate_transition("paymentStatus", "refunding", target)
+        order["paymentStatus"] = target
+        rec["refundState"] = target
+        append_history(order, "payment", "paymentStatus", "refunding", target, "微信退款回调")
+        if success:
+            status.validate_transition("afterSaleStatus", "refunding", "completed")
+            rec["status"] = "completed"
+            rec["refundedFen"] = attempt["amountFen"]
+            rec["reservedFen"] = 0
+            order["refundFen"] = int(order.get("refundFen") or 0) + attempt["amountFen"]
+            order["afterSaleStatus"] = "completed"
+            rec.setdefault("history", []).append(status.history_entry("payment", "afterSaleStatus", "refunding", "completed", "微信退款回调"))
+            append_history(order, "payment", "afterSaleStatus", "refunding", "completed", "微信退款回调")
+        rec.setdefault("refundCallbacks", []).append(event_id)
+        rec["updatedAt"] = order["updatedAt"] = _now()
+        w.put_after_sale(sale_no, rec)
+        w.put_order(order["no"], order)
+        w.put_audit(_audit_record("payment", "refund_callback", "after_sale", sale_no, target))
+    return target
 
 
 def list_after_sales(db, q="", pstatus=""):
@@ -1733,6 +1797,8 @@ def after_sale_allowed_actions(rec):
     """售后记录当前可执行的操作（供前端渲染按钮），复用 _after_sale_target 作为唯一裁决源。"""
     actions = []
     for action in ("approve", "reject", "returning", "refund", "receive", "complete", "close"):
+        if action == "refund" and rec.get("status") == "refunding" and rec.get("refundState") != "refund_failed":
+            continue
         try:
             _after_sale_target(action, rec.get("status"), rec.get("type"), rec.get("handling"))
             actions.append(action)

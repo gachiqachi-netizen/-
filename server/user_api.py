@@ -41,7 +41,7 @@ def token_hash(token):
     return hashlib.sha256(token.encode()).hexdigest()
 
 
-def login(db, code):
+def exchange_wechat_code(code):
     appid = os.environ.get('WECHAT_APP_ID', '').strip()
     secret = os.environ.get('WECHAT_APP_SECRET', '').strip()
     if not appid or not secret:
@@ -57,6 +57,14 @@ def login(db, code):
     openid = result.get('openid')
     if not isinstance(openid, str) or not openid:
         return 401, {'error': '微信登录凭证无效或已过期'}
+    return 200, {'openid': openid, 'appid': appid}
+
+
+def login(db, code):
+    code_status, result = exchange_wechat_code(code)
+    if code_status != 200:
+        return code_status, result
+    openid, appid = result['openid'], result['appid']
     uid = hashlib.sha256((appid + ':' + openid).encode()).hexdigest()
     user = db.get('users', uid) or {'createdAt': int(time.time() * 1000)}
     db.put('users', uid, user)
@@ -297,9 +305,19 @@ def perform_order_action(db, no, uid, action, reason=None):
     return public_order(commerce.customer_order_action(db, no, uid, action, reason=reason))
 
 
-def start_payment(db, no, uid):
-    import commerce
-    order, params = commerce.start_payment(db, no, uid)
+def start_payment(db, no, uid, code=None):
+    import commerce, payments
+    openid = None
+    if payments.provider() == 'wechat':
+        if not code:
+            raise ValueError('需要微信付款凭证')
+        code_status, result = exchange_wechat_code(code)
+        if code_status != 200:
+            raise ValueError(result['error'])
+        openid = result['openid']
+        if hashlib.sha256((result['appid'] + ':' + openid).encode()).hexdigest() != uid:
+            raise PermissionError('微信登录用户不一致')
+    order, params = commerce.start_payment(db, no, uid, openid=openid)
     return {'payment': params, 'order': public_order(order)}
 
 

@@ -5,7 +5,6 @@ import os
 import secrets
 import time
 import urllib.request
-from datetime import datetime, timezone
 
 
 def validate_config():
@@ -19,6 +18,8 @@ def validate_config():
         raise SystemExit("微信支付缺少环境变量：" + ", ".join(missing))
     if not os.environ["WXPAY_NOTIFY_URL"].startswith("https://"):
         raise SystemExit("WXPAY_NOTIFY_URL 必须是 https 地址")
+    if os.environ.get("WECHAT_APP_ID") and os.environ["WECHAT_APP_ID"] != os.environ["WXPAY_APPID"]:
+        raise SystemExit("WXPAY_APPID 必须与微信登录的 WECHAT_APP_ID 一致")
     try:
         import cryptography  # noqa: F401
     except ImportError:

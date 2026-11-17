@@ -261,3 +261,22 @@
 - **测试** `miniprogram/tests/privacy-pages.test.js`：扫描 `miniprogram/` 下所有 `.js/.wxml`，凡调用上面这些接口（或 `open-type="getPhoneNumber"`、`open-type="chooseAvatar"`）的页面，其 `.json` 必须注册 `privacy-popup` 且 `.wxml` 里有 `<privacy-popup`；组件、utils、tests 目录除外。以后新页面漏放会直接测试失败。
 - **报告**：开发者工具里“清除授权数据”后，在登录页点手机号登录，截图弹出的隐私弹层；分享页保存海报同样截一张。说明真机没验证（负责人体验版复测）。
 - **不做**：改 `utils/privacy.js`、`components/privacy-popup/`、`app.json`；改后台隐私指引（负责人自己在小程序后台声明手机号、收货地址、相册、摄像头）。
+
+## U22 隐私弹层按用途写文案、按钮样式修好（2026-11-17 负责人体验版截图）
+
+- **依赖**：U21（已合并）　**大小**：S　**只能改**：`miniprogram/components/privacy-popup/`（index.js/json/wxml/wxss）、12 个页面 `.wxml` 里 `<privacy-popup>` 那一行（只加 `kind` 属性）、`miniprogram/tests/privacy*.test.js`
+- **现象**（真机截图）：登录页弹“用相机前，请先看一下 / 用手机号登录，需要用到你的相机或相册……照片仅在你确认后发送到识别服务”——登录跟相机无关，标题和正文是写死的相机文案；两个按钮都是灰底，“同意并继续”不是主按钮，文字贴在按钮顶上没有垂直居中、按钮被撑高。
+- **要做的**：
+  1. 组件加属性 `kind`，取值和文案（标题 / 正文）：
+     - `camera`（默认，保持现有文案）：用相机前，请先看一下 / {{scene}}，需要用到你的相机或相册。照片仅在你确认后发送到识别服务；实时手腕画面只在本机处理。
+     - `phone`：登录前，请先看一下 / 我们用你的手机号认出你，订单和作品跟着账号走，不会公开或用于营销短信。
+     - `address`：选地址前，请先看一下 / 读取你在微信里保存的收货地址，只用于这笔订单的发货。
+     - `photo`：上传照片前，请先看一下 / 从相册选照片或拍照，只用于这次售后或评价，提交后才会上传。
+     - `album`：保存图片前，请先看一下 / 把海报保存到你的相册，我们不会读取相册里的其他照片。
+     - `avatar`：选头像前，请先看一下 / 你选的头像只保存在这台手机上，用于“我的”页显示。
+     文案只讲用途，不出现功效词。
+  2. 各页 `kind`：login→phone；order、address、address-edit、logistics→address；after-sale/apply、review→photo；share→album；mine→avatar；photo、tryon、ar-hand→camera（不改）。
+  3. 按钮样式：组件里的 `c-btn` 没吃到全局样式。`index.js` 加 `options: { addGlobalClass: true }`（或 `styleIsolation: 'apply-shared'`），“先不用”是次按钮、“同意并继续”是黑底白字主按钮，两个等宽，高度用 `--h-btn`，文字垂直居中（`line-height: var(--h-btn)` 或 flex 居中）。和工作台、确认订单页底部按钮长得一样。
+  4. 测试：每个 `kind` 渲染出对应标题；未知 `kind` 回到 camera；扩展 `privacy-pages.test.js` 断言非相机页面都写了 `kind`。
+- **截图**：开发者工具“清除授权数据”后截 login（phone）和 share（album）两张；截不到就在报告里说明，负责人真机复测。
+- **不做**：改 `utils/privacy.js`、`app.json`、页面业务逻辑。

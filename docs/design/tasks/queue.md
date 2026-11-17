@@ -140,6 +140,7 @@
 | U19 | agent/U19-ai-input | followups-ui.md | U16 | 任何 |  |  |
 | U20 | agent/U20-white-pages | followups-ui.md | U19 | 任何 |  |  |
 | U21 | agent/U21-privacy-popup | followups-ui.md |  | 任何 |  |  |
+| U22 | agent/U22-privacy-copy | followups-ui.md | U21 | 任何 |  |  |
 | V7a | agent/V7a-bracelet-tiers | followups-visual.md | U16 | 任何 |  |  |
 | V8 | agent/V8-share-poster | followups-visual.md | V7a | 任何 |  |  |
 | V9 | agent/V9-template-cover | followups-visual.md |  | 任何 |  |  |

@@ -3,73 +3,30 @@
 > 自动生成，别手改。更新：`git fetch origin --prune && python3 tools/board.py`。审核每合并一次都会重新生成并推送。
 > 总共 120 张（第一波之外），已完成 110 张。
 
-## 在做或待审（0）
-
-无
-
-## 现在能派（5）
+## 在做或待审（4）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
-| B-14 | 接入微信支付 |  |
-| U17 | 圆形和图标按钮不套 c-btn、检查脚本补按钮规则 |  |
-| U18 | 首页导航只写“珠养养”、轮播圆点不溢出 |  |
+| B-14 | 接入微信支付 | 分支上有提交，交了就告诉审核 |
+| U17 | 圆形和图标按钮不套 c-btn、检查脚本补按钮规则 | 分支上有提交，交了就告诉审核 |
+| U18 | 首页导航只写“珠养养”、轮播圆点不溢出 | 分支上有提交，交了就告诉审核 |
+| V7a | 记录类手串图统一：三档尺寸、去灰框 | 分支上有提交，交了就告诉审核 |
+
+## 现在能派（1）
+
+| 卡 | 做什么 | 说明 |
+|---|---|---|
 | U19 | AI 配底部输入区重做 |  |
-| V7a | 记录类手串图统一：三档尺寸、去灰框 |  |
 
 ### 提示词（一张卡一个对话，整段复制）
-
-<details><summary>B-14 接入微信支付</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 B-14（接入微信支付，卡在 docs/design/tasks/backend-wave2.md，先读文件开头的共同规矩，再读 B-14 这一节）。开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ (A5b):"，A5b 都有提交才开工，否则停下等我。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-B-14，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/B-14-wechat-pay，不要直接推 integration。
-交付后回复“B-14 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
-
-<details><summary>U17 圆形和图标按钮不套 c-btn、检查脚本补按钮规则</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 U17（圆形和图标按钮不套 c-btn、检查脚本补按钮规则，卡在 docs/design/tasks/followups-ui.md，先读文件开头的共同规矩，再读 U17 这一节）。开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ (U16):"，U16 都有提交才开工，否则停下等我。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-U17，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/U17-icon-buttons，不要直接推 integration。页面只用 U0 的 c-page、c-card、c-cell、c-bar 组件拼；交付前跑 python3 tools/check-ui.py；用 tools/shoot 截改前改后的图（先登录、等数据加载完；空状态、出错状态也截），提交到 docs/reports/shots/U17/。
-交付后回复“U17 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
-
-<details><summary>U18 首页导航只写“珠养养”、轮播圆点不溢出</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 U18（首页导航只写“珠养养”、轮播圆点不溢出，卡在 docs/design/tasks/followups-ui.md，先读文件开头的共同规矩，再读 U18 这一节）。开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ (U16):"，U16 都有提交才开工，否则停下等我。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-U18，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/U18-home-title，不要直接推 integration。页面只用 U0 的 c-page、c-card、c-cell、c-bar 组件拼；交付前跑 python3 tools/check-ui.py；用 tools/shoot 截改前改后的图（先登录、等数据加载完；空状态、出错状态也截），提交到 docs/reports/shots/U18/。
-交付后回复“U18 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
 
 <details><summary>U19 AI 配底部输入区重做</summary>
 
 ```
 你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 U19（AI 配底部输入区重做，卡在 docs/design/tasks/followups-ui.md，先读文件开头的共同规矩，再读 U19 这一节）。开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ (U16):"，U16 都有提交才开工，否则停下等我。
+这次直接领 U19（AI 配底部输入区重做，卡在 docs/design/tasks/followups-ui.md，先读文件开头的共同规矩，再读 U19 这一节）。开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ (U16):" | grep -v "开工$"，U16 都有提交才开工，否则停下等我。
 从最新的 origin/integration/2026-11 开新目录 ~/chuan-U19，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/U19-ai-input，不要直接推 integration。页面只用 U0 的 c-page、c-card、c-cell、c-bar 组件拼；交付前跑 python3 tools/check-ui.py；用 tools/shoot 截改前改后的图（先登录、等数据加载完；空状态、出错状态也截），提交到 docs/reports/shots/U19/。
 交付后回复“U19 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
-
-<details><summary>V7a 记录类手串图统一：三档尺寸、去灰框</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 V7a（记录类手串图统一：三档尺寸、去灰框，卡在 docs/design/tasks/followups-visual.md，先读文件开头的共同规矩，再读 V7a 这一节）。开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ (U16):"，U16 都有提交才开工，否则停下等我。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-V7a，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/V7a-bracelet-tiers，不要直接推 integration。
-交付后回复“V7a 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
 ```
 
 </details>

@@ -58,7 +58,7 @@ def prompt(r, title):
     if kind in ADMIN_FILES or r['card'] in ('AI2', 'V4', 'V5', 'F1', 'F2', 'F3', 'U11', 'R1'):
         extra.append('改了后台就加跑 npm run build（第一次先 cd admin-web && npm ci），打包文件不提交。')
     deps = '、'.join(r['deps'])
-    gate = (f'开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ ({"|".join(r["deps"])}):"，'
+    gate = (f'开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ ({"|".join(r["deps"])}):" | grep -v "开工$"，'
             f'{deps} 都有提交才开工，否则停下等我。') if r['deps'] else ''
     return (
         '你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），'
@@ -73,7 +73,7 @@ def prompt(r, title):
 
 def main():
     log = git('log', '--format=%s', BASE)
-    merged = {m.group(1) for line in log.splitlines() for m in [re.match(r'([A-Za-z0-9-]+):', line)] if m}
+    merged = {m.group(1) for line in log.splitlines() for m in [re.match(r'([A-Za-z0-9-]+):', line)] if m and not line.rstrip().endswith('开工')}
     heads = git('branch', '-r')
     active = set()
     for line in heads.split():

@@ -2,10 +2,14 @@
 import os
 import sys
 import unittest
+import json
 from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import wx_shipping
+import content_security
+import wechat_token
+import user_api
 
 
 class FakeDB:
@@ -28,6 +32,30 @@ def order():
 
 
 class ShippingTest(unittest.TestCase):
+    def test_internal_sync_state_not_sent_to_customer(self):
+        rec = order()
+        rec['wxShipping'] = {'status': 'failed', 'message': wx_shipping.UNSYNCED}
+        self.assertNotIn('wxShipping', user_api.public_order(rec))
+
+    def test_content_security_and_shipping_share_token_cache(self):
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                return False
+
+            def read(self):
+                return json.dumps({'access_token': 'test-token', 'expires_in': 7200}).encode()
+
+        with mock.patch.object(wechat_token, '_token', None), \
+             mock.patch.object(wechat_token, '_expires_at', 0), \
+             mock.patch.object(wechat_token.urllib.request, 'urlopen', return_value=Response()) as urlopen, \
+             mock.patch.dict(os.environ, {'WECHAT_APP_ID': 'test-app', 'WECHAT_APP_SECRET': 'test-secret'}):
+            self.assertEqual(content_security._access_token(), 'test-token')
+            self.assertEqual(wechat_token.access_token(), 'test-token')
+            urlopen.assert_called_once()
+
     def test_express_code_mapping(self):
         self.assertEqual(wx_shipping.express_code('顺丰'), 'SF')
         self.assertEqual(wx_shipping.express_code('顺丰速运'), 'SF')

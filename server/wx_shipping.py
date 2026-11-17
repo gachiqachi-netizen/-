@@ -6,9 +6,9 @@ import os
 import urllib.parse
 import urllib.request
 
-import content_security
 import payments
 import wechat_pay
+import wechat_token
 
 
 EXPRESS_COMPANIES = {'顺丰': 'SF', '顺丰速运': 'SF', 'SF': 'SF'}
@@ -22,7 +22,7 @@ def express_code(name):
 
 
 def _post(payload):
-    token = content_security._access_token()
+    token = wechat_token.access_token()
     url = ('https://api.weixin.qq.com/wxa/sec/order/upload_shipping_info?access_token='
            + urllib.parse.quote(token, safe=''))
     request = urllib.request.Request(url, data=json.dumps(payload, ensure_ascii=False).encode('utf-8'),

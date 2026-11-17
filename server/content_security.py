@@ -2,16 +2,12 @@
 import json
 import os
 import sys
-import threading
-import time
 import urllib.parse
 import urllib.request
 
 import env
+import wechat_token
 
-_token = None
-_expires_at = 0
-_lock = threading.Lock()
 _checker = None
 _image_checker = None
 
@@ -40,20 +36,7 @@ def set_image_checker(checker):
 
 
 def _access_token():
-    global _token, _expires_at
-    if _token and _expires_at > time.time() + 60:
-        return _token
-    with _lock:
-        if _token and _expires_at > time.time() + 60:
-            return _token
-        query = urllib.parse.urlencode({'grant_type': 'client_credential', 'appid': os.environ['WECHAT_APP_ID'], 'secret': os.environ['WECHAT_APP_SECRET']})
-        with urllib.request.urlopen('https://api.weixin.qq.com/cgi-bin/token?' + query, timeout=8) as response:
-            result = json.loads(response.read())
-        if not result.get('access_token'):
-            raise RuntimeError('微信内容安全凭证获取失败')
-        _token = result['access_token']
-        _expires_at = time.time() + int(result.get('expires_in', 7200))
-        return _token
+    return wechat_token.access_token()
 
 
 def _wechat_check(text):

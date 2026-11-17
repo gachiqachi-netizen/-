@@ -203,7 +203,7 @@ def order_allowed_actions(order):
 
 
 # 只给后台看的订单字段：生产工单（负责人、作业备注）和质检记录（质检员、原因）。用户接口一律不返回。
-INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate', 'addressHistory', 'internalNotes', 'lastWechatQueryAt')
+INTERNAL_ORDER_FIELDS = ('workOrder', 'qualityGate', 'addressHistory', 'internalNotes', 'lastWechatQueryAt', 'wxShipping')
 # 状态和物流记录只给用户看“什么时候、从什么变成什么”，不带操作人和内部备注。
 _PUBLIC_STATUS_KEYS = ('at', 'group', 'from', 'to')
 _PUBLIC_LOGISTICS_KEYS = ('at', 'action', 'detail')

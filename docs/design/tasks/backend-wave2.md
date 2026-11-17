@@ -384,6 +384,24 @@
 - **测试**：`check_deploy.py` 用临时生成的假密钥和假环境变量测：全对时全部通过；缺变量、密钥长度不对、文件不可读、回调不是 https 各报对应错误；输出里不出现任何变量的值。
 - **不做**：真实部署、真实付款。
 
+## B-18 线上初始数据导入命令（2026-11-18 负责人：体验版首页是空的）
+
+- **依赖**：B-17（已完成）　**大小**：S　**只能改**：新建 `tools/load_seed.py`、`server/tests/` 对应测试、`docs/deploy.md`（加一节“首次导入初始数据”）
+- **原因**：`server/db.py` 的 `DB`（SQLite）在空库时会写入 `server/seed.py` 的珠子、模板、宣传位、条款；生产用的 `server/db_postgres.py` 的 `PostgresDB` 不写。服务器（`DATABASE_URL` 指向 Postgres）因此珠子、模板、横幅、条款全空，首页、工作台、AI 配都没法测。
+- **要做的**：`tools/load_seed.py`，在服务器上用 `sudo docker compose --env-file app.env exec app python tools/load_seed.py` 运行：
+  1. 按 `server/app.py` 现有逻辑选库（有 `DATABASE_URL` 用 `PostgresDB`，否则 `DB`），**复用现有 `put`/`list`/`get`，不写 SQL**。
+  2. 默认只预览：逐表打印“将新增 N 条 / 已存在跳过 M 条”，不写库；加 `--apply` 才写。
+  3. 只补缺：按 id 判断，**已存在的记录一律不覆盖**（负责人可能已在后台改过价格、上传过封面）。表：beads、templates、banners、terms（条款保持 seed 里的 `draft` 状态）。
+  4. 可重复运行：第二次 `--apply` 应全部“已存在跳过”。
+  5. 加 `--only beads,templates,...` 选表。
+  6. 不碰订单、用户、地址、售后等任何业务数据表；不删除任何记录。
+  7. 输出不打印 `DATABASE_URL` 或任何环境变量值。
+  - **不要**改 `PostgresDB` 让它启动时自动写（避免以后清空的表被自动塞回示例数据）。
+- **测试**：用 SQLite 临时库（和现有测试一样）覆盖：空库预览不写入；`--apply` 写入数量等于 seed；已有同 id 记录（改过价格）不被覆盖；第二次运行全跳过；`--only` 只写指定表；输出里没有环境变量值。
+- **`docs/deploy.md`**：在自检之后加一节“首次导入初始数据”：先跑预览，确认后加 `--apply`；说明之后在后台修改、上架或下架，不要再用此命令覆盖。
+- **报告**：贴本机对临时库跑预览和 `--apply` 两次的输出。
+- **不做**：图片上传（模板封面由负责人在后台传，前台没封面时用生成图兜底）；改 `seed.py` 内容。
+
 ## B-17 一键部署脚本 setup.sh（2026-11-17 负责人要）
 
 - **依赖**：B-16（已完成）　**大小**：M　**只能改**：新建 `deploy/setup.sh`、新建 `deploy/CHECKLIST.md`、`docs/deploy.md`（第 4–6 节改成“跑脚本”，手动步骤留作备用）、`server/tests/` 或 `tools/` 下对应测试

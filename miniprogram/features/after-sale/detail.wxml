@@ -1,4 +1,4 @@
-<c-page>
+<c-page bar="{{sale && (view.canCancel || view.canSubmitReturn)}}">
   <view class="surface">
     <c-state wx:if="{{loginRequired}}" title="登录后查看售后" desc="登录后就能看到售后进度" action="去登录" bind:action="goLogin" />
     <c-state wx:elif="{{error && !sale}}" title="售后记录暂时无法读取" desc="{{error}}" action="再试一次" bind:action="load" />
@@ -6,7 +6,6 @@
       <c-card><view class="status"><view class="status-label">{{view.label}}</view><view class="hint">{{view.description}}</view>
         <view wx:if="{{view.returning && sale.returnAddress}}" class="address"><text>寄到：{{sale.returnAddress.person}}　{{sale.returnAddress.phone}}　{{sale.returnAddress.address}}</text><text bindtap="copyAddress">复制地址</text></view><view wx:elif="{{view.returning}}" class="hint">寄回地址稍后由客服告知</view>
       </view></c-card>
-      <c-card><c-cell label="协商历史" arrow="{{true}}" bind:tap="openHistory" /></c-card>
       <c-card>
         <c-cell label="售后类型" value="{{sale.type}}" /><c-cell label="原因" value="{{sale.reason}}" />
         <c-cell wx:if="{{sale.refundFen}}" label="退款金额" value="¥{{view.refund}}" />
@@ -23,7 +22,6 @@
     </block>
   </view>
   <c-bar wx:if="{{sale && (view.canCancel || view.canSubmitReturn)}}" layout="single"><button wx:if="{{view.canSubmitReturn}}" class="c-btn" bindtap="goReturn">{{returnLabel}}</button><button wx:else class="c-btn" bindtap="openCancel">{{cancelLabel}}</button></c-bar>
-  <c-sheet show="{{historyOpen}}" title="协商历史" bind:close="closeHistory"><view class="history" wx:for="{{view.history}}" wx:key="at"><view>{{item.label}}</view><view class="hint">{{item.at}}</view></view></c-sheet>
   <c-sheet show="{{cancelOpen}}" title="撤销这次申请？" bind:close="closeCancel"><view class="hint">撤销后可以重新申请</view><view slot="footer" class="confirm-actions"><button class="c-btn c-btn--sec" bindtap="closeCancel">先不撤销</button><button class="c-btn" bindtap="confirmCancel">{{cancelLabel}}</button></view></c-sheet>
 </c-page>
 <c-toast />

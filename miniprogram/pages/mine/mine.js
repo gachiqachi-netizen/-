@@ -6,11 +6,12 @@ const api=require('../../utils/api')
 const ui=require('../home/data')
 
 Page({
- data:{loggedIn:false,name:'',avatar:'',designCount:0,orderCount:0,recent:null,recentBeads:[],catalog:[],orderError:false,wrist:15},
+ data:{loggedIn:false,name:'',nameIsDefault:false,avatar:'',designCount:0,orderCount:0,recent:null,recentBeads:[],catalog:[],orderError:false,wrist:15},
  onShow(){
   if(wx.showTabBar)wx.showTabBar({ fail() {} })
   const loggedIn=auth.hasSession()&&!!wx.getStorageSync('cgz_phone_masked'),works=store.list()
-  this.setData({loggedIn,name:wx.getStorageSync('cgz_display_name')||'',avatar:wx.getStorageSync('cgz_avatar')||'',designCount:works.length,wrist:ui.wrist(),orderCount:0,recent:null,recentBeads:[],orderError:false})
+  this.setData({loggedIn,name:wx.getStorageSync('cgz_display_name')||'',nameIsDefault:false,avatar:wx.getStorageSync('cgz_avatar')||'',designCount:works.length,wrist:ui.wrist(),orderCount:0,recent:null,recentBeads:[],orderError:false})
+  if(loggedIn)auth.authorized('/me').then(profile=>{const name=profile.nickname||'';wx.setStorageSync('cgz_display_name',name);this.setData({name,nameIsDefault:!!profile.nameIsDefault})}).catch(()=>{})
   api.catalog().then(c=>{this.setData({catalog:c.beads||[]});this.refreshRecentBeads()}).catch(()=>{})
   if(loggedIn)this.loadOrders()
  },
@@ -31,10 +32,11 @@ Page({
   if(!url)return
   wx.setStorageSync('cgz_avatar',url);this.setData({avatar:url});toast.show({ text: '已保存' })
  },
- changeName(e){
-  const name=String(e.detail.value||'').trim().slice(0,20)
-  if(!name)return
-  wx.setStorageSync('cgz_display_name',name);this.setData({name});toast.show({ text: '已保存' })
+ async changeName(e){
+  const name=String(e.detail.value||'').trim()
+  if(!name)return toast.show({text:'名字不能为空'})
+  try{const profile=await auth.authorized('/me/nickname',{nickname:name},'POST');wx.setStorageSync('cgz_display_name',profile.nickname);this.setData({name:profile.nickname,nameIsDefault:!!profile.nameIsDefault});toast.show({text:'已保存'})}
+  catch(error){toast.show({text:api.userMessage(error)})}
  },
  goLogin(){auth.goLogin()},
  goOrders(){if(!this.data.loggedIn)return auth.goLogin({type:'navigate',url:'/features/orders/orders'});wx.navigateTo({url:'/features/orders/orders'})},

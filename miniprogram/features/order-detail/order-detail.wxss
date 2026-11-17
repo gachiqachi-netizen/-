@@ -1,4 +1,4 @@
-.detail-surface { min-height: 100vh; background: var(--c-surface); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base); box-sizing: border-box; }
+.detail-surface { min-height: 100vh; background: var(--c-bg); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base); box-sizing: border-box; }
 .state-card, .success-card { padding: var(--sp-base) 0; }
 .state-title { font-size: var(--fs-title); font-weight: var(--fw-bold); }
 .sub { font-size: var(--fs-caption); color: var(--c-text-2); margin-top: var(--sp-tight); }

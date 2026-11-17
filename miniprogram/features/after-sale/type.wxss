@@ -1,4 +1,4 @@
-.surface { min-height: 100vh; background: var(--c-surface); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base); box-sizing: border-box; }
+.surface { min-height: 100vh; background: var(--c-bg); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base); box-sizing: border-box; }
 .summary { padding: var(--sp-base) 0; }
 .name { font-size: var(--fs-body); font-weight: var(--fw-bold); }
 .hint, .policy { font-size: var(--fs-caption); color: var(--c-text-2); }

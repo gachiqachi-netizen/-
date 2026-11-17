@@ -1,1 +1,4 @@
-Component({ options: { multipleSlots: true, styleIsolation: 'apply-shared' } })
+Component({
+  options: { multipleSlots: true, styleIsolation: 'apply-shared' },
+  properties: { bar: { type: Boolean, value: false } },
+})

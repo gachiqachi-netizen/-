@@ -1,1 +1,1 @@
-<view class="c-page"><slot /></view>
+<view class="c-page {{bar ? 'c-page--bar' : ''}}"><slot /></view>

@@ -1,4 +1,4 @@
-<c-page>
+<c-page bar="{{!readOnly}}">
   <c-state wx:if="{{loginRequired}}" title="登录后写评价" desc="登录后就能查看这笔订单" action="去登录" bind:action="goLogin" />
   <c-state wx:elif="{{loadError}}" title="暂时看不到订单" desc="{{loadError}}" action="再试一次" bind:action="retryLoad" />
   <block wx:else>

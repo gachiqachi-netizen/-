@@ -1,4 +1,4 @@
-<c-page>
+<c-page bar="{{order && !paidLanding && primaryAction}}">
   <view class="detail-surface">
     <c-card wx:if="{{loading}}"><view class="order-loading"><c-skeleton shape="line" width="40%" font="title"/><c-skeleton shape="line" width="70%" font="body"/><c-skeleton shape="block" width="100%" ratio="5/2"/><c-skeleton shape="pill" width="100%"/></view></c-card>
     <c-state wx:elif="{{loginRequired}}" title="登录后查看订单" desc="登录后就能看到这笔订单" action="去登录" bind:action="goLogin" />

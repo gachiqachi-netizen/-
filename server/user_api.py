@@ -21,7 +21,12 @@ SESSION_SECONDS = 30 * 24 * 3600
 
 def public_user(user):
     """Only expose the phone field intended for the signed-in user."""
-    return {'phoneMasked': user.get('phoneMasked')}
+    nickname = (user.get('nickname') or '').strip()
+    return {
+        'phoneMasked': user.get('phoneMasked'),
+        'nickname': nickname or '珠友 ' + str(user.get('id') or '')[-4:].upper(),
+        'nameIsDefault': not bool(nickname),
+    }
 
 class IdempotencyConflict(Exception):
     pass

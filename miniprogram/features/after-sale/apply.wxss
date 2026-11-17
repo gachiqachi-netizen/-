@@ -1,4 +1,4 @@
-.surface { min-height: 100vh; background: var(--c-surface); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base) var(--sp-base) calc(var(--h-btn) + var(--sp-section) + env(safe-area-inset-bottom)); box-sizing: border-box; }
+.surface { min-height: 100vh; background: var(--c-bg); margin: 0 calc(-1 * var(--sp-base)); padding: var(--sp-base) var(--sp-base) calc(var(--h-btn) + var(--sp-section) + env(safe-area-inset-bottom)); box-sizing: border-box; }
 .summary { font-weight: var(--fw-bold); padding: var(--sp-base) 0; }
 .field { padding: var(--sp-tight) 0; }
 .field input, .field textarea { margin-top: var(--sp-tight); background: var(--c-surface); padding: var(--sp-tight); border-radius: var(--r-pill); }

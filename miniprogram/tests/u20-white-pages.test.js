@@ -48,3 +48,14 @@ test('UI checker rejects gray page roots', () => {
     fs.unlinkSync(file)
   }
 })
+
+test('mine omits recent order card but keeps order and works entries', () => {
+  const wxml = read('miniprogram/pages/mine/mine.wxml')
+  const js = read('miniprogram/pages/mine/mine.js')
+  const css = read('miniprogram/pages/mine/mine.wxss')
+  assert.doesNotMatch(wxml, /class="recent"/)
+  assert.match(wxml, /我的订单/)
+  assert.match(wxml, /我的作品/)
+  assert.doesNotMatch(js, /recentBeads|refreshRecentBeads|viewRecent|api\.catalog\(|\/my\/orders/)
+  assert.doesNotMatch(css, /\.recent(?:-|\{)/)
+})

@@ -371,6 +371,19 @@
 
 ---
 
+## B-16 部署脚手架和支付配置自检（2026-11-17 负责人要）
+
+- **依赖**：B-14　**大小**：M　**只能改**：新建 `deploy/`（下面列的文件）、新建 `tools/check_deploy.py`、`docs/deploy.md`、`.gitignore`、`server/tests/` 对应测试
+- **目的**：负责人或运维照着做就能把后端连同微信支付配上线；执行 agent **不接触任何真实密钥、不登录任何服务器、不连商户平台**，只提供模板、脚本和说明。
+- **要做的**：
+  1. `deploy/app.env.example`：列出全部环境变量（微信登录、微信支付、数据库、`PAYMENT_PROVIDER` 等，以代码实际读取的为准，`grep -rn "os.environ" server` 核对），每项一行中文注释说明去哪拿；值全部是占位符。`.gitignore` 加上 `deploy/app.env`、`deploy/secrets/`、`*.pem`。
+  2. `deploy/docker-compose.yml`：后端服务（用现有 Dockerfile）、`env_file: app.env`、密钥目录只读挂载到 `/secrets`、数据目录挂载到 `/data`；如项目用 Postgres 就带上，并写清楚数据卷。
+  3. `deploy/nginx.conf.example`：https 反向代理到 8800，含 `/api/payments/notify`；证书路径用占位符。
+  4. `tools/check_deploy.py`：在服务器上运行，读当前环境变量和密钥文件，逐项打印“通过 / 缺少 / 不对”，**绝不打印任何值**（最多打印长度和文件是否存在、权限是否 600）；检查项：变量齐全、APIv3 密钥 32 位、私钥和公钥文件能被 cryptography 读取、回调地址是 https 且路径对、`WXPAY_APPID` 等于 `WECHAT_APP_ID`、`PAYMENT_PROVIDER=wechat` 时以上必须全部通过。加 `--ping` 选项时，向回调地址发一个不带签名的请求，期望得到 400（说明回调能从公网访问到、且拒绝无签名请求）。
+  5. `docs/deploy.md` 重写成负责人照做的分步说明：A. 云服务器 + Docker（从商户平台拿五样材料 → 上传 pem 到 `deploy/secrets/` 并设权限 → 复制 `app.env.example` 为 `app.env` 填值 → `docker compose up -d` → 跑 `check_deploy.py` → 配 nginx 和 https → 小程序后台加 request 合法域名 → 商户平台关联 AppID → 0.01 元付款和退款验证）；B. 微信云托管（同样材料，环境变量在控制台填，pem 用挂载）。每步写在哪个后台、点哪里；拿不准的界面写“以实际后台为准”。
+- **测试**：`check_deploy.py` 用临时生成的假密钥和假环境变量测：全对时全部通过；缺变量、密钥长度不对、文件不可读、回调不是 https 各报对应错误；输出里不出现任何变量的值。
+- **不做**：真实部署、真实付款。
+
 ## B-15 微信发货信息录入（接了微信支付必须做）
 
 - **依赖**：B-14；**负责人确认小程序后台“发货信息管理”已开通**　**大小**：S　**只能改**：新建 `server/wx_shipping.py`、后台发货路由里调用它的那一行、`server/tests/`、`docs/deploy.md`

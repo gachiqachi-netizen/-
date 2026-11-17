@@ -321,7 +321,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
       {wo.rework && wo.shipping ? <div className="wo-note">已发货：{wo.shipping.carrierName} · {wo.shipping.trackingNo}</div> : null}
 
       <div className="wo-section-title">按顺序穿（从 1 开始，穿完回到 1 打结）</div>
-      <div className="no-print"><Bracelet sequence={wo.sequence} size={360} numbered label={`${wo.orderName} 工单珠序图`} /></div>
+      <div className="no-print"><Bracelet sequence={wo.sequence} tier="l" numbered label={`${wo.orderName} 工单珠序图`} /></div>
       <div className="wo-seq">
         {wo.sequence.map((s) => (
           <div key={s.seq} className="wo-cell">
@@ -424,7 +424,7 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
         <h2>{wo.orderName} · 工单 {wo.workOrderNo}</h2>
         <p>手围 {wo.wrist}cm · {wo.count} 颗 · 总长 {wo.lengthMm}mm</p>
         {wo.customerNote ? <p>客户备注：{wo.customerNote}</p> : null}
-        <Bracelet sequence={wo.sequence} size={320} numbered label={`${wo.orderName} 工单珠序图`} />
+        <Bracelet sequence={wo.sequence} tier="l" numbered label={`${wo.orderName} 工单珠序图`} />
         <ol>
           {wo.sequence.map((s) => (
             <li key={s.seq}>{s.name}{s.mm ? ` ${s.mm}mm` : ''}</li>

@@ -543,7 +543,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                   <div className="zy-card-title">手串</div>
                   {finishedPhoto && <div style={{ padding: '8px 16px' }}><div className="zy-table-aux">质检成品实拍图</div><img src={finishedPhoto} alt="质检成品实拍图" style={{ width: 152, height: 152, objectFit: 'cover', borderRadius: 8 }} /></div>}
                   <div style={{ padding: '14px 16px' }}>
-                    {snapBeads.length > 0 ? <Bracelet sequence={snapBeads} size={152} label={`${detail.name || '定制手串'} 手串图`} /> : null}
+                    {snapBeads.length > 0 ? <Bracelet sequence={snapBeads} tier="s" label={`${detail.name || '定制手串'} 手串图`} /> : null}
                     <div>
                       <div style={{ fontWeight: 600 }}>{detail.name || '定制手串'}</div>
                       {metaLine && <div className="zy-table-aux">{metaLine}</div>}

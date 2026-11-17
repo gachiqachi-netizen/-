@@ -1,8 +1,22 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
 const api = require('../utils/api')
 const store = require('../utils/design')
 const { queue } = require('../utils/toast')
+
+test('home uses only the native 珠养养 title and keeps dots inside the banner', () => {
+  const home = path.join(__dirname, '../pages/home')
+  const config = JSON.parse(fs.readFileSync(path.join(home, 'home.json'), 'utf8'))
+  const markup = fs.readFileSync(path.join(home, 'home.wxml'), 'utf8')
+  const style = fs.readFileSync(path.join(home, 'home.wxss'), 'utf8')
+  assert.equal(config.navigationBarTitleText, '珠养养')
+  assert.equal(config.usingComponents['c-wordmark'], undefined)
+  assert.doesNotMatch(markup, /<c-wordmark|class="brand"/)
+  assert.match(markup, /<swiper class="banner"[^>]*indicator-dots/)
+  assert.match(style, /\.slide\{[^}]*height:100%;[^}]*padding-bottom:calc\(var\(--sp-base\) \+ var\(--sp-tight\)\)/)
+})
 
 function pageWith(catalog) {
   let page

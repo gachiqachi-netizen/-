@@ -23,42 +23,44 @@
 | 中大档相切、无缝隙 | 通过 | `bracelet-tiers.test.js::中大档仍走相切排布` |
 | 订单详情、售后详情、评价页冻结珠序及外观字段 | 通过 | `snapshot-thumbnails.test.js::订单详情、售后详情和评价都用冻结珠序，三处手串均有照片和颜色` |
 | 微信组件实际加载、订单详情有手串 | 通过 | `shots/V7a/order-detail-pending.png`；修复前微信日志报 `style.json.js is not defined`，改为 JS 模块后截图显示珠子 |
-| 九页截图 | 已截 9/9；视觉一致性仅对同一作品的页面确认 | `shots/V7a/result.json` 与下表。AI 配展示独立推荐方案，售后商品行在首屏下方，已补滚动截图；AI 配为独立推荐，不能据此说九张图完全一致。 |
+| 九页截图 | 已截 9/9；视觉一致性仅对同一作品的页面确认 | `shots/V7a/result.json` 与下表。AI 配展示独立推荐方案；售后商品行在首屏下方，已补滚动截图。九页完全一致仍待核对。 |
 
 ### 截图对照表
 
 | 页面 | 截图 | 核对结果 |
 |---|---|---|
-| 工作台 | [workbench](shots/V7a/workbench.png) | 好运连连，19 颗 |
-| 确认订单 | [order-confirm](shots/V7a/order-confirm.png)、[无弹层补图](shots/V7a/order-confirm-visible.png) | 好运连连；补图可见整行和 32rpx 间距 |
-| 订单详情 | [order-detail-pending](shots/V7a/order-detail-pending.png) | 好运连连；手串已显示 |
-| 我的订单 | [my-orders](shots/V7a/my-orders.png) | 好运连连；同一圈珠序 |
-| 售后详情 | [after-sale-detail](shots/V7a/after-sale-detail.png)、[滚动补图](shots/V7a/after-sale-detail-product.png) | 好运连连；补图可见商品行 |
-| 写评价 | [write-review](shots/V7a/write-review.png) | 好运连连；同一圈珠序 |
-| AI 配 | [ai-match](shots/V7a/ai-match.png) | 推荐方案「薰衣草梦」，珠序不同；需在开发者工具核对同一作品场景 |
-| 好友落地页 | [friend-landing](shots/V7a/friend-landing.png) | 好运连连；同一圈珠序 |
-| 分享海报 | [share-poster](shots/V7a/share-poster.png) | 好运连连；同一圈珠序 |
+| 工作台 | <img src="shots/V7a/workbench.png" width="130" alt="workbench"> | 好运连连，19 颗 |
+| 确认订单 | <img src="shots/V7a/order-confirm.png" width="130" alt="order-confirm">、[无弹层补图](shots/V7a/order-confirm-visible.png) | 好运连连；补图可见整行和 32rpx 间距 |
+| 订单详情 | <img src="shots/V7a/order-detail-pending.png" width="130" alt="order-detail-pending"> | 好运连连；手串已显示 |
+| 我的订单 | <img src="shots/V7a/my-orders.png" width="130" alt="my-orders"> | 好运连连；同一圈珠序 |
+| 售后详情 | <img src="shots/V7a/after-sale-detail.png" width="130" alt="after-sale-detail">、[滚动补图](shots/V7a/after-sale-detail-product.png) | 好运连连；补图可见商品行 |
+| 写评价 | <img src="shots/V7a/write-review.png" width="130" alt="write-review"> | 好运连连；同一圈珠序 |
+| AI 配 | <img src="shots/V7a/ai-match.png" width="130" alt="ai-match"> | 推荐方案「薰衣草梦」，珠序不同；需在开发者工具核对同一作品场景 |
+| 好友落地页 | <img src="shots/V7a/friend-landing.png" width="130" alt="friend-landing"> | 好运连连；同一圈珠序 |
+| 分享海报 | <img src="shots/V7a/share-poster.png" width="130" alt="share-poster"> | 好运连连；同一圈珠序 |
 
 ## 3. 改了的文件
 
 ```text
- docs/reports/V7a.md                                |  74 +++++++++++++++++++
+ docs/reports/V7a.md                                | 126 +++++++++++++++++++++
+ .../shots/V7a/after-sale-detail-product.png        | Bin 0 -> 47619 bytes
  docs/reports/shots/V7a/after-sale-detail.png       | Bin 0 -> 46001 bytes
  docs/reports/shots/V7a/ai-match.png                | Bin 0 -> 81264 bytes
  docs/reports/shots/V7a/friend-landing.png          | Bin 0 -> 77447 bytes
  docs/reports/shots/V7a/my-orders.png               | Bin 0 -> 77955 bytes
+ docs/reports/shots/V7a/order-confirm-visible.png   | Bin 0 -> 64671 bytes
  docs/reports/shots/V7a/order-confirm.png           | Bin 0 -> 62922 bytes
  docs/reports/shots/V7a/order-detail-pending.png    | Bin 0 -> 47680 bytes
- docs/reports/shots/V7a/result.json                 |  79 +++++++++++++++++++++
+ docs/reports/shots/V7a/result.json                 |  79 +++++++++++++
  docs/reports/shots/V7a/share-poster.png            | Bin 0 -> 77351 bytes
  docs/reports/shots/V7a/workbench.png               | Bin 0 -> 115271 bytes
  docs/reports/shots/V7a/write-review.png            | Bin 0 -> 48583 bytes
  miniprogram/components/bracelet-thumb/index.wxml   |   5 +-
  miniprogram/components/bracelet-thumb/index.wxss   |   5 +-
- miniprogram/components/bracelet/index.js           |  47 ++++++++----
+ miniprogram/components/bracelet/index.js           |  47 +++++---
  miniprogram/components/bracelet/index.wxml         |   7 +-
  miniprogram/components/bracelet/index.wxss         |   2 +
- miniprogram/components/bracelet/style.js           |  31 ++++++++
+ miniprogram/components/bracelet/style.js           |  31 +++++
  miniprogram/components/cell/index.json             |   2 +-
  miniprogram/components/cell/index.wxml             |   2 +-
  miniprogram/components/cell/index.wxss             |   1 -
@@ -86,11 +88,11 @@
  miniprogram/pages/mine/mine.wxml                   |   2 +-
  miniprogram/pages/order/order.wxml                 |   2 +-
  miniprogram/pages/order/order.wxss                 |   5 +-
- miniprogram/pages/share/share.js                   |  24 ++++---
- miniprogram/tests/bracelet-tiers.test.js           |  58 +++++++++++++++
- miniprogram/tests/snapshot-thumbnails.test.js      |  45 +++++++++++-
- server/tests/fixtures/bracelet_style.json          |  30 ++++++++
- 48 files changed, 404 insertions(+), 67 deletions(-)
+ miniprogram/pages/share/share.js                   |  24 ++--
+ miniprogram/tests/bracelet-tiers.test.js           |  58 ++++++++++
+ miniprogram/tests/snapshot-thumbnails.test.js      |  45 +++++++-
+ server/tests/fixtures/bracelet_style.json          |  30 +++++
+ 50 files changed, 456 insertions(+), 67 deletions(-)
 ```
 
 除报告与截图，均在卡片允许范围；`features/review/review.js` 的一行扩展经负责人本次明确同意。
@@ -114,7 +116,7 @@
 
 ## 6. 没做 / 没验证 / 偏离卡片
 
-- 九页已用 `tools/shoot` 截图，但 AI 配脚本展示独立推荐方案，售后商品行已补滚动截图，但 AI 配仍为独立推荐方案，尚不能证明九页是同一条手串。需要负责人在开发者工具补核这两处；没有声称九页视觉完全一致。
+- 九页已用 `tools/shoot` 截图，并补了确认订单无遮挡和售后商品行的截图。AI 配脚本展示独立推荐方案，尚不能证明九页是同一条手串；需要负责人在开发者工具补核该场景。
 - 确认订单的默认自动截图打开送礼弹层，另用同一脚本关闭弹层补图；截图脚本警告 `¥0.00`，这是送礼弹层的关闭礼盒价格显示，不影响手串图。
 - 微信小程序运行时不支持直接 `require('./style.json')`：用 `style.js` 承载与 `bracelet_style.json` 完全一致的参数，由测试防漂移。此处为实际运行必要的实现偏离。
 - 工作台托盘保留原 `size/mode/selected`；记录页只传 `tier`，未改变首页封面图和详情主图。

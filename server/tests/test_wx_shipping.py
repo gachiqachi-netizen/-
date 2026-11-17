@@ -112,9 +112,10 @@ class ShippingTest(unittest.TestCase):
 
     def test_carrier_failure_is_not_retriable_until_name_changes(self):
         rec = order()
-        rec['logistics']['carrierName'] = '未知快递'
+        rec['logistics']['carrierName'] = '京东快递'
         db = FakeDB(rec)
         with mock.patch.object(wx_shipping.payments, 'provider', return_value='wechat'), \
+             mock.patch.object(wx_shipping, '_get_delivery_list', return_value=DELIVERY_LIST[:5]), \
              mock.patch.object(wx_shipping.wechat_pay, 'query_order') as query:
             result = wx_shipping.sync(db, rec['no'], rec)
             self.assertEqual(result['wxShipping']['reason'], 'carrier')

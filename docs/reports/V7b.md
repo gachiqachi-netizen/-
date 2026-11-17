@@ -1,6 +1,6 @@
 # V7b 交付报告
 
-分支：`agent/V7b-admin-bracelet-style`　功能提交：`df9f746`
+分支：`agent/V7b-admin-bracelet-style`　功能提交：`b0733da`
 
 ## 1. 步骤
 
@@ -23,18 +23,16 @@
 ## 3. 改了的文件
 
 ```text
- admin-web/scripts/check-bracelet-style.cjs         | 70 ++++++++++++++++
- admin-web/scripts/check-layout.cjs                 |  1 +
- admin-web/src/bracelet/Bracelet.tsx                | 94 ++++++++++++++++------
- admin-web/src/bracelet/style.ts                    | 69 ++++++++++++++++
- admin-web/src/components/OrdersView.tsx            |  2 +-
- admin-web/src/components/TemplatesView.tsx         | 11 +--
- admin-web/src/pages/afterSales/detail.tsx          |  2 +-
- admin-web/src/pages/products/beadPhoto.tsx         |  4 +-
- .../src/pages/templates/TemplatesWorkbench.tsx     |  2 +-
- admin-web/src/pages/workOrders/detail.tsx          |  4 +-
- docs/reports/V7b.md                                | 61 ++++++++++++++
- 11 files changed, 280 insertions(+), 40 deletions(-)
+ admin-web/scripts/check-bracelet-style.cjs | 69 ++++++++++++++++++++++
+ admin-web/scripts/check-layout.cjs         |  1 +
+ admin-web/src/bracelet/Bracelet.tsx        | 95 ++++++++++++++++++++++--------
+ admin-web/src/bracelet/style.ts            | 69 ++++++++++++++++++++++
+ admin-web/src/components/OrdersView.tsx    |  2 +-
+ admin-web/src/pages/afterSales/detail.tsx  |  2 +-
+ admin-web/src/pages/products/beadPhoto.tsx |  4 +-
+ admin-web/src/pages/workOrders/detail.tsx  |  4 +-
+ docs/reports/V7b.md                        | 69 ++++++++++++++++++++++
+ 9 files changed, 283 insertions(+), 32 deletions(-)
 ```
 
 仅改 `admin-web/src/bracelet/*`、工单/订单/售后/商品相关的手串图调用行、`admin-web/scripts/` 和本报告；模板编辑文件已恢复为 integration 版本；构建生成的 `server/static/admin/shadcn-admin.*` 未提交。
@@ -51,7 +49,7 @@
 
 ## 5. 自查
 
-- `git log --oneline origin/integration/2026-11..HEAD`：`df9f746 V7b: 校验样式参数及后台调用点一致`、`22cca0d V7b: 后台手串使用明确尺寸档位`、`6d5352c V7b: 后台手串 SVG 对齐 V8 三档材质画法`、`0582f9d V7b: 开工`。
+- `git log --oneline origin/integration/2026-11..HEAD`：`b0733da V7b: 审核 1 撤回模板页并保留旧调用兼容`、`df9f746 V7b: 校验样式参数及后台调用点一致`、`22cca0d V7b: 后台手串使用明确尺寸档位`、`6d5352c V7b: 后台手串 SVG 对齐 V8 三档材质画法`、`0582f9d V7b: 开工`。
 - `git diff --check`：无输出。
 - `npm run build`：通过，打包文件未提交。
 - `npm run check:layout`：通过。
@@ -66,4 +64,4 @@
 
 | 审核意见 | 怎么改的 | 提交 |
 |---|---|---|
-| 模板编辑页归 V9，V7b 不改 | 恢复两处模板文件；检查脚本移除模板断言；共用组件保留旧尺寸调用兼容 | 待提交 |
+| 模板编辑页归 V9，V7b 不改 | 恢复两处模板文件；检查脚本移除模板断言；共用组件保留旧尺寸调用兼容 | `b0733da` |

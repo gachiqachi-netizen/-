@@ -33,7 +33,8 @@
  admin-web/src/pages/products/beadPhoto.tsx         |  4 +-
  .../src/pages/templates/TemplatesWorkbench.tsx     |  2 +-
  admin-web/src/pages/workOrders/detail.tsx          |  4 +-
- 10 files changed, 219 insertions(+), 40 deletions(-)
+ docs/reports/V7b.md                                | 61 ++++++++++++++
+ 11 files changed, 280 insertions(+), 40 deletions(-)
 ```
 
 仅改 `admin-web/src/bracelet/*`、后台显示手串图的调用行、`admin-web/scripts/` 和本报告；构建生成的 `server/static/admin/shadcn-admin.*` 未提交。

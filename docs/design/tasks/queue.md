@@ -137,6 +137,7 @@
 | U18 | agent/U18-home-title | followups-ui.md | U16 | 任何 |  |  |
 | U19 | agent/U19-ai-input | followups-ui.md | U16 | 任何 |  |  |
 | V7a | agent/V7a-bracelet-tiers | followups-visual.md | U16 | 任何 |  |  |
+| V8 | agent/V8-share-poster | followups-visual.md | V7a | 任何 |  |  |
 | V7b | agent/V7b-admin-bracelet-style | followups-visual.md | V7a | 任何 |  |  |
 | U11 | agent/U11-admin-aftersale-review-fix | followups-ui.md |  | 任何 |  |  |
 

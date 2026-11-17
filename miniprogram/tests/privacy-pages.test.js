@@ -49,6 +49,9 @@ test('privacy copy matches each purpose and unknown kinds use camera copy', () =
   for (const [kind, title] of Object.entries(titles)) {
     assert.equal(copyFor(kind, '测试场景').title, title)
     assert.ok(copyFor(kind, '测试场景').body.length > 10)
+    const instance = { properties: { kind, scene: '测试场景' }, setData(data) { this.data = data } }
+    component.methods.updateCopy.call(instance)
+    assert.equal(instance.data.title, title)
   }
   assert.deepEqual(copyFor('unknown', '测试场景'), copyFor('camera', '测试场景'))
   assert.match(copyFor('camera', '测试场景').body, /测试场景/)

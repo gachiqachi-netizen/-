@@ -5,13 +5,12 @@
   <view class="profile-text" wx:if="{{loggedIn}}">
    <input type="nickname" placeholder="给自己起个名字 ›" value="{{name}}" bindblur="changeName"/>
    <view wx:if="{{nameIsDefault}}" class="caption">点这里换成你的名字</view>
-   <view class="caption">{{orderError ? '没连上，下拉再试' : designCount ? '串过 '+designCount+' 条 · 下过 '+orderCount+' 单' : '还没串过，去串第一条'}}</view>
+   <view class="caption">{{designCount ? '串过 '+designCount+' 条' : '还没串过，去串第一条'}}</view>
   </view>
   <view class="profile-text" wx:else bindtap="goLogin"><view class="profile-title">手机号快捷登录 ›</view><view class="caption">登录后，订单和作品换手机也在</view></view>
  </view>
  <view class="gap"></view>
- <view wx:if="{{recent}}" class="recent" bindtap="viewRecent"><view class="recent-thumb"><c-bracelet beads="{{recentBeads}}" tier="s"/></view><view class="recent-copy"><view>{{recent.name || '我的手串'}}</view><view class="caption">{{recent.stateView.label}}</view></view><view class="chevron">›</view></view>
- <view class="row" bindtap="goOrders"><text>我的订单</text><text class="caption">{{orderError ? '没连上，下拉再试' : '全部 ›'}}</text></view>
+ <view class="row" bindtap="goOrders"><text>我的订单</text><text class="caption">全部 ›</text></view>
  <view class="row" bindtap="goWorks"><text>我的作品</text><text class="caption">{{loggedIn ? designCount+' 条 ›' : '本机 '+designCount+' 条 ›'}}</text></view>
  <view class="gap"></view>
  <view class="row" bindtap="goWrist"><text>手围</text><text class="caption">{{wrist}}cm ›</text></view>

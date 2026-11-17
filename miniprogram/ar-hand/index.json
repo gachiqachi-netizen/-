@@ -1,1 +1,1 @@
-{"navigationBarTitleText":"实时试戴","usingComponents":{"photo-ring":"/features/tryon/photo3d/index","privacy-popup":"/components/privacy-popup/index"}}
+{"navigationBarTitleText":"实时试戴","usingComponents":{"c-state":"/components/state/index","photo-ring":"/features/tryon/photo3d/index","privacy-popup":"/components/privacy-popup/index"}}

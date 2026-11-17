@@ -96,6 +96,7 @@ Page({
   });
  },
  switchCamera(){if(this._busy)return;this._pose=null;this.setData({frozen:false});this.stopFrames();this._version=(this._version||0)+1;this._cameraReady=false;this._seenFrame=false;this.setData({cameraMounted:false,tracked:false},()=>{if(!this._closed)this.setData({position:this.data.position==='back'?'front':'back',cameraMounted:true,status:'正在切换相机…'})})},
+ stateAction(){if(this.data.errorKind==='download')this.retry();else this.photoTryon()},
  retry(){if(this._busy||this._loading)return;if(this.data.renderFailed){wx.redirectTo({url:'/ar-hand/index'});return;}this.stopFrames();this._seenFrame=false;this._cameraReady=false;this.setData({cameraMounted:false,error:'',errorKind:'',tracked:false},()=>{if(this._tracker)this.setData({cameraMounted:true,status:'正在重启相机…'});else this.initialize()})},
  fail(message){console.error('[AR-TFJS]',message);if(this._closed)return;const permission=/权限|授权|摄像头/.test(message),unsupported=/不支持|不可用|识别画布|画面画布/.test(message),download=this.data.modelLoading&&!permission&&!unsupported;this.setData({error:message,errorKind:permission?'permission':unsupported?'unsupported':download?'download':'other',status:'',tracked:false})},
  overlayError(e){this._renderFailure=e&&e.detail||{};this.stopFrames();this.setData({renderFailed:true});this.fail('手串 3D 渲染失败（'+(this._renderFailure.stage||'unknown')+'）：'+(this._renderFailure.message||'未知错误'))},

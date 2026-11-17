@@ -32,7 +32,7 @@ def _file(path, loader):
             return '不对（文件权限应为 600）'
         with open(path, 'rb') as handle:
             loader(handle.read())
-    except (OSError, ValueError, TypeError):
+    except Exception:
         return '不对（文件不可读或格式不正确）'
     return '通过'
 

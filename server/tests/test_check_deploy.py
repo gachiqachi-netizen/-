@@ -60,6 +60,13 @@ class CheckDeployTest(unittest.TestCase):
         os.chmod(self.private, 0o644)
         self.assertIn('不对', self.statuses()['WXPAY_PRIVATE_KEY_PATH 文件'])
 
+    def test_corrupt_pem_is_rejected_without_file_content(self):
+        with open(self.public, 'wb') as handle:
+            handle.write(b'fake-private-content-do-not-print')
+        status = self.statuses()['WXPAY_PLATFORM_PUBLIC_KEY_PATH 文件']
+        self.assertIn('不对', status)
+        self.assertNotIn('fake-private-content', status)
+
     def test_non_https_or_wrong_callback_path_fails(self):
         self.assertIn('不对', self.statuses(WXPAY_NOTIFY_URL='http://example.invalid/api/payments/notify')['WXPAY_NOTIFY_URL 格式'])
         self.assertIn('不对', self.statuses(WXPAY_NOTIFY_URL='https://example.invalid/other')['WXPAY_NOTIFY_URL 格式'])

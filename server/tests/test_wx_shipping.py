@@ -67,7 +67,7 @@ class ShippingTest(unittest.TestCase):
         variants = (('顺丰', '顺丰速运', 'sF'), ('中通', '中通快递', 'zTo'),
                     ('圆通', '圆通快递', 'yTo'), ('韵达', '韵达快递', 'yD'),
                     ('申通', '申通快递', 'sTo'), ('EMS', 'ems', '中国邮政速递物流'),
-                    ('邮政', '邮政快递包裹', 'yZpY'), ('京东', '京东快递', 'jD'),
+                    ('邮政', '邮政快递包裹', '中国邮政', 'yZpY'), ('京东', '京东快递', 'jD'),
                     ('极兔', '极兔速递', 'jTsD'), ('德邦', '德邦快递', 'dB'))
         for index, names in enumerate(variants):
             for name in names:

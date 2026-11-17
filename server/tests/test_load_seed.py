@@ -72,11 +72,15 @@ class LoadSeedTests(unittest.TestCase):
         self.assertTrue(all(row["status"] == "draft" for row in db.list("terms")))
 
     def test_output_does_not_expose_environment_values(self):
-        secret = "private-value-that-must-not-print"
-        with patch.dict(os.environ, {"SENSITIVE_MARKER": secret}):
-            output = self.run_command()
-        self.assertNotIn(secret, output)
-        self.assertNotIn(self.path, output)
+        secret = "postgresql://private-value-that-must-not-print"
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with patch.dict(os.environ, {"DATABASE_URL": secret}), patch.object(
+            load_seed, "open_database", side_effect=RuntimeError(secret)
+        ), contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            result = load_seed.main([])
+        self.assertEqual(result, 1)
+        self.assertNotIn(secret, stdout.getvalue() + stderr.getvalue())
+        self.assertNotIn(self.path, stdout.getvalue() + stderr.getvalue())
 
 
 if __name__ == "__main__":

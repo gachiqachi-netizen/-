@@ -7,13 +7,20 @@ import tempfile
 import unittest
 from unittest import mock
 
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
+try:
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    HAS_CRYPTO = True
+except ImportError:
+    serialization = None
+    rsa = None
+    HAS_CRYPTO = False
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'tools'))
 import check_deploy
 
 
+@unittest.skipUnless(HAS_CRYPTO, 'cryptography 未安装')
 class CheckDeployTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

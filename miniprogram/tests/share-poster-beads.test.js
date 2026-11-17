@@ -5,6 +5,7 @@ const path = require('node:path')
 global.Page = () => {}
 const { drawBead, drawPoster } = require('../pages/share/share')
 const { materialOf, materialParams, cssPaint } = require('../components/bracelet/fallback')
+const { layout: componentLayout } = require('../components/bracelet/index')
 const style = require('../components/bracelet/style')
 function context() {
   const calls = []
@@ -35,6 +36,9 @@ test('三类材质使用同一份不同参数，蜜蜡按通透类', () => {
   assert.notEqual(style.materials.translucent.highlightAlpha, style.materials.matte.highlightAlpha)
   assert.ok(style.materials.metal.highlightAlpha > style.materials.translucent.highlightAlpha)
   assert.equal(materialParams({ mat: 'metal' }, 's').shadowAlpha, 0)
+  const ring = componentLayout(Array.from({ length: 8 }, (_, i) => ({ mm: 8, mat: i % 2 ? 'crystal' : 'metal', colors: ['#ffe2a0', '#9c6d22'] })), 320, 'm')
+  assert.match(ring[0].paintStyle, new RegExp(String(style.materials.metal.highlightAlpha)))
+  assert.match(ring[1].paintStyle, new RegExp(String(style.materials.translucent.highlightAlpha)))
 })
 
 test('海报照片在圆形裁切后旋转绘制', () => {

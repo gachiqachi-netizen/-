@@ -244,3 +244,20 @@
      - 没设头像时，用品牌色圆形底加一颗珠子图标（新图放 `miniprogram/assets/`，用现有珠子画法导出，不用 tab 栏的“我的”图标）。
      - 昵称保存前走现有的内容安全检查（`content_security.py`），不通过时提示“这个名字不能用，换一个吧”。
 - **截图**：订单详情（制作中，没底栏）、售后详情、确认订单的地址弹层、我的（没填昵称头像、已填两种）。
+
+## U21 隐私授权弹层补到所有用到隐私接口的页面（2026-11-17 负责人体验版：登录点了没反应）
+
+- **依赖**：无　**大小**：S　**只能改**：下面 8 个页面各自的 `.json`（只加 `usingComponents` 里的 `privacy-popup`）、`.wxml`（只在页面末尾加一行组件）、`.js`（只加 `privacyRejected` 处理）；新建 `miniprogram/tests/privacy-pages.test.js`
+- **现象**：体验版登录页勾同意后点“手机号快捷登录”，没弹手机号授权框，也没任何提示。
+- **原因**：`app.json` 开了 `"__usePrivacyCheck__": true`，第一次调用隐私接口时微信触发 `wx.onNeedPrivacyAuthorization`，要页面上的 `privacy-popup` 组件弹出并调 `resolve`；登录页没放组件，接口一直挂起。拍照、试戴、实时试戴已经放了，做法照 `miniprogram/pages/photo/photo.{json,wxml,js}` 抄。
+- **要改的页面**（以 `git grep -l -E "getPhoneNumber|chooseAddress|chooseMedia|chooseImage|saveImageToPhotosAlbum" miniprogram` 为准，少了多了都在报告里说）：
+  1. `pages/login/login` — scene“用手机号登录”；拒绝时 `this.setData({busy:false, error:'没拿到手机号，可以再点一次，或先逛逛'})`
+  2. `pages/order/order` — scene“选择收货地址”
+  3. `features/address/address`、`features/address-edit/address-edit` — scene“选择微信收货地址”
+  4. `features/after-sale/apply`、`features/review/review` — scene“上传照片”
+  5. `features/logistics/logistics` — 先看它到底调了哪个隐私接口，scene 照实写
+  6. `pages/share/share` — scene“保存海报到相册”
+  - 拒绝处理只做“恢复按钮可点 + 一句提示”，不改原有业务逻辑。
+- **测试** `miniprogram/tests/privacy-pages.test.js`：扫描 `miniprogram/` 下所有 `.js/.wxml`，凡调用上面这些接口（或 `open-type="getPhoneNumber"`、`open-type="chooseAvatar"`）的页面，其 `.json` 必须注册 `privacy-popup` 且 `.wxml` 里有 `<privacy-popup`；组件、utils、tests 目录除外。以后新页面漏放会直接测试失败。
+- **报告**：开发者工具里“清除授权数据”后，在登录页点手机号登录，截图弹出的隐私弹层；分享页保存海报同样截一张。说明真机没验证（负责人体验版复测）。
+- **不做**：改 `utils/privacy.js`、`components/privacy-popup/`、`app.json`；改后台隐私指引（负责人自己在小程序后台声明手机号、收货地址、相册、摄像头）。

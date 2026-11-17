@@ -36,6 +36,7 @@ import status  # noqa: E402
 import commerce  # noqa: E402
 import routes  # noqa: E402
 import uploads  # noqa: E402
+from bead_visual import colors_for  # noqa: E402
 from db import DB  # noqa: E402
 
 ROUTE_TABLE = routes.load()
@@ -135,6 +136,11 @@ def page_skeleton(body, head=""):
 def on_sale_catalog():
     beads = [kb.enrich(b) for b in db.list("beads") if b.get("onSale", True) and (b.get("mm") or 0) > 0
              and status.product_type(b) in ("bead", "spacer")]
+    for bead in beads:
+        if not (bead.get("colors") or bead.get("c")):
+            fallback = colors_for(bead)
+            if fallback:
+                bead["c"] = fallback
     ids = {b["id"] for b in beads}
     tpls = [t for t in db.list("templates") if t.get("onSale", True)
             and all(x in ids for x in (t.get("special") or []) + (t.get("pattern") or []) + (t.get("tail") or []))

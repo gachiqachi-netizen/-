@@ -1,13 +1,31 @@
 """Stable, public visual fields for one bead in an order or share snapshot."""
 
+import seed
+
 VISUAL_KEYS = ("id", "name", "mm", "spacer", "mat", "colors", "photo", "photoMd", "photoSm")
 PLACEHOLDER_COLORS = ("#b8b8b8", "#e3e3e3")
 
 
+def colors_for(bead):
+    """Use the established palette when an admin-created bead has no color data."""
+    bead = bead or {}
+    raw = bead.get("colors") or bead.get("c")
+    if isinstance(raw, (list, tuple)) and len(raw) >= 2 and raw[0] and raw[1]:
+        return list(raw[:2])
+    kb_id = bead.get("kb")
+    if not kb_id:
+        return []
+    candidates = [item for item in seed.BEADS if item.get("kb") == kb_id and item.get("c")]
+    if not candidates:
+        return []
+    attrs = bead.get("attrs") or {}
+    matched = next((item for item in candidates if attrs and item.get("attrs") == attrs), candidates[0])
+    return list(matched["c"][:2])
+
+
 def visual_of(bead):
     bead = bead or {}
-    raw_colors = bead.get("colors") if "colors" in bead else bead.get("c")
-    colors = list(raw_colors[:2]) if isinstance(raw_colors, (list, tuple)) else []
+    colors = colors_for(bead)
     colors += [None] * (2 - len(colors))
     return {
         "id": bead.get("id"),

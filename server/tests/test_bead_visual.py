@@ -27,6 +27,12 @@ class BeadVisualTest(unittest.TestCase):
             'photoMd': None, 'photoSm': None,
         })
 
+    def test_obsidian_snapshot_without_product_colors_is_dark(self):
+        visual = visual_of({'id': 'obsidian-live', 'kb': 'heiyao', 'name': '测试·黑曜石', 'mm': 8})
+        self.assertEqual(visual['colors'], ['#55556a', '#0b0b10'])
+        explicit = visual_of({'id': 'obsidian-live', 'kb': 'heiyao', 'c': ['#101010', '#010101']})
+        self.assertEqual(explicit['colors'], ['#101010', '#010101'])
+
     def test_visual_sizes_are_frozen_in_order_snapshot(self):
         bead = dict(self.bead, photo='/480.png', photoMd='/240.png', photoSm='/96.png')
         self.db.put('beads', bead['id'], bead)

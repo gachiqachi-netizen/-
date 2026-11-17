@@ -50,3 +50,16 @@ class CatalogVersionTests(unittest.TestCase):
         changed = dict(current, handwork={**current['handwork'], 'fen': current['handwork']['fen'] + 100})
         self.db.put('settings', 'pricing', changed)
         self.assertNotEqual(after_bead, self.get()['version'])
+
+    def test_obsidian_without_photo_or_colors_has_dark_catalog_fallback(self):
+        self.db.put('beads', 'obsidian-live', {
+            'name': '测试·黑曜石', 'mm': 8, 'mat': 'crystal', 'kb': 'heiyao',
+            'price': 3, 'status': 'on_sale', 'onSale': True,
+            'photoSm': '/uploads/user/missing.png',
+        })
+        bead = next(item for item in self.get()['beads'] if item['id'] == 'obsidian-live')
+        self.assertEqual(bead['c'], ['#55556a', '#0b0b10'])
+        self.db.put('beads', 'obsidian-live', {
+            **self.db.get('beads', 'obsidian-live'), 'c': ['#101010', '#010101']})
+        bead = next(item for item in self.get()['beads'] if item['id'] == 'obsidian-live')
+        self.assertEqual(bead['c'], ['#101010', '#010101'])

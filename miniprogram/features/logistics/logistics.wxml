@@ -32,4 +32,4 @@
 </view>
 
 <c-toast />
-<privacy-popup scene="选择微信收货地址" bind:reject="privacyRejected"/>
+<privacy-popup kind="address" scene="选择微信收货地址" bind:reject="privacyRejected"/>

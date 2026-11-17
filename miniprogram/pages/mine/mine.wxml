@@ -19,4 +19,4 @@
 </view>
 
 <c-toast />
-<privacy-popup scene="选择头像" bind:reject="privacyRejected"/>
+<privacy-popup kind="avatar" scene="选择头像" bind:reject="privacyRejected"/>

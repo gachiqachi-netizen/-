@@ -14,4 +14,4 @@
   <c-bar wx:if="{{design && (ready || !error)}}" layout="dual"><button slot="secondary" wx:if="{{!shareId}}" class="c-btn c-btn--sec" loading="{{shareBusy}}" bindtap="prepareShare">分享给好友</button><button slot="secondary" wx:else class="c-btn c-btn--sec" open-type="share">发给朋友</button><button class="c-btn" bindtap="saveCard" loading="{{saveBusy}}" disabled="{{!ready||saveBusy}}">保存图片</button></c-bar>
 </c-page>
 <c-toast />
-<privacy-popup scene="保存海报到相册" bind:reject="privacyRejected"/>
+<privacy-popup kind="album" scene="保存海报到相册" bind:reject="privacyRejected"/>

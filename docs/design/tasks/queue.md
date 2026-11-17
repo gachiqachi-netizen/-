@@ -44,7 +44,7 @@
 | B-11b | agent/B-11b-gift | backend-wave2.md | A11 | 任何 | A3 |  |
 | B-11c | agent/B-11c-design-delete | backend-wave2.md | A11 | 任何 | B-3 |  |
 | B-12 | agent/B-12-ai-logs | backend-wave2.md | A8b、A11m | 任何 |  |  |
-| B-13 | agent/B-13-tracking | backend-wave2.md | A11 | 任何 |  | 选快递查询服务商 |
+| B-13 | agent/B-13-tracking | backend-wave2.md | A11 V7a | 任何 |  | 确认微信物流服务和物流查询插件已开通 |
 | B-14 | agent/B-14-wechat-pay | backend-wave2.md | A5b | Codex |  |  |
 | A5c | agent/A5c-rewrist | backend-wave2.md | A5b | Codex |  |  |
 | C1p | agent/C1p-page-shells | miniprogram-wave2.md | C0z | 任何 |  |  |
@@ -59,7 +59,7 @@
 | C4c | agent/C4c-design-detail | miniprogram-wave2.md | C1p | 任何 |  |  |
 | C4d | agent/C4d-content-pages | miniprogram-wave2.md | C1p、B-4 | 任何 |  |  |
 | C5a | agent/C5a-ai-chat | miniprogram-wave2.md | C0z、B-8 | 任何 |  |  |
-| C5b | agent/C5b-voice-photo | miniprogram-wave2.md | C5a | 任何 |  | 选语音识别服务（照片部分可以先做） |
+| C5b | agent/C5b-voice-photo | miniprogram-wave2.md | C5a U19 | 任何 |  | 确认同声传译插件已申请通过 |
 | C5c | agent/C5c-photo-copy | miniprogram-wave2.md | C0z、B-1、B-9 | 任何 |  |  |
 | C6a | agent/C6a-tryon | miniprogram-wave2.md | C0z、C1b | 任何 |  |  |
 | C6b | agent/C6b-ar | miniprogram-wave2.md | C0z、C1b | 任何 |  |  |

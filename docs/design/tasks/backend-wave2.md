@@ -371,11 +371,16 @@
 
 ---
 
-## B-13 物流轨迹
+## B-13 物流轨迹（2026-11-17 负责人定：用微信自带的物流服务，同事在申请）
 
-- **依赖**：选定快递查询服务（负责人）　**大小**：M
-
-`server/tracking.py`：`fetch(carrierCode, trackingNo)` 调第三方查询（服务商定了再写），结果缓存 30 分钟；订单接口带 `tracking: [{at, text}]`（给用户的，不带内部信息）。**服务商没定之前不开工。**
+- **依赖**：A11、V7a（V7a 也改订单详情）；**负责人确认微信物流服务和物流查询插件已开通**　**大小**：M　**只能改**：新建 `server/tracking.py`、订单详情和发货相关路由、`server/content_security.py` 里的 access_token 取法抽成公用函数（只搬不改行为）、`miniprogram/app.json`（只加插件声明）、`miniprogram/config.js`、`miniprogram/features/order-detail/*` 里物流那一块、`server/tests/`、`miniprogram/tests/` 对应测试、`docs/deploy.md`
+- **不接第三方快递查询**，用微信小程序的物流服务（查询组件）：
+  1. 后台发货（填快递公司和单号）后，后端调微信“传运单”接口，拿到 `waybill_token` 存进订单；接口地址、字段以微信官方文档为准，**开工前先在报告里贴出你用的接口文档链接和字段**，和下面写的不一致就照文档、并在报告里说明。
+  2. 订单详情“物流”一行：点了用物流查询插件打开轨迹（传 `waybill_token`）；插件 AppID 和版本写在 `miniprogram/config.js`，`app.json` 里按微信要求声明。没有 token（老订单、调用失败）时显示“快递公司 + 单号 + 复制”，不报错。
+  3. access_token 复用 `content_security.py` 现有的取法（抽成一个公用函数），不新增密钥；AppID、AppSecret 只读环境变量。
+  4. 调用失败记日志、可在后台重试，不影响发货本身。
+- **测试**：用假接口覆盖：发货后存 token、接口失败不影响发货、老订单回退显示单号。
+- **不做**：自己存和轮询物流轨迹。
 
 ---
 

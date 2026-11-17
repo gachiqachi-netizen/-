@@ -1,5 +1,4 @@
 <c-page><view class="home">
-  <view class="brand"><c-wordmark tone="text" size="nav" /></view>
   <swiper class="banner" autoplay interval="4000" circular indicator-dots wx:if="{{banners.length}}">
     <swiper-item wx:for="{{banners}}" wx:key="id">
       <view class="slide" data-i="{{index}}" bindtap="bannerTap">

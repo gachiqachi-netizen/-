@@ -1,4 +1,4 @@
-<c-page>
+<c-page bar="{{design && (ready || !error)}}">
   <c-cell wx:if="{{shareId}}" label="更多" arrow bind:tap="more" />
   <c-card wx:if="{{loading}}"><view class="share-loading"><c-skeleton shape="block" width="100%" ratio="3/5"/></view></c-card>
   <c-state wx:elif="{{!design && error}}" title="还不能生成海报" desc="{{error}}" action="再试一次" bind:action="retry" />

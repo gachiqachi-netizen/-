@@ -1,4 +1,4 @@
-<c-page>
+<c-page bar="{{option}}">
   <view class="surface">
     <c-card wx:if="{{loading}}"><view class="hint">正在读取申请选项…</view></c-card>
     <c-state wx:if="{{loginRequired}}" title="登录后申请售后" desc="登录后就能查看这笔订单" action="去登录" bind:action="goLogin" />

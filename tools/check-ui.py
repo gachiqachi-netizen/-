@@ -24,6 +24,7 @@ LEGACY_BUTTON_EXCEPTIONS = {
     'miniprogram/pages/diy/diy.wxss': ('.side-action',),
     'miniprogram/pages/photo/photo.wxss': ('.camera-actions text',),
 }
+PAGE_ROOT = re.compile(r'^(?:page|\.page|\.[a-z-]*(?:page|surface))$', re.I)
 
 def violations(path):
     content = COMMENT.sub('', path.read_text())
@@ -36,6 +37,9 @@ def violations(path):
                 found.append(f'{path.relative_to(ROOT)}:{match.group(1)}:{match.group(2).strip()}')
     for rule in RULE.finditer(content):
         selector, body = rule.groups()
+        if '/pages/' in str(path) or '/features/' in str(path):
+            if any(PAGE_ROOT.fullmatch(part.strip()) for part in selector.split(',')) and re.search(r'\bbackground\s*:\s*var\(--c-surface\)', body):
+                found.append(f'{path.relative_to(ROOT)}:page-background:{selector.strip()}')
         if not IMAGE_SELECTOR.search(selector) or SHAPE_EXCEPTION.search(selector):
             continue
         for match in re.finditer(r'\bborder-radius\s*:\s*([^;{}]+)', body, re.I):

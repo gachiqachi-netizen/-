@@ -1,4 +1,4 @@
-<c-page>
+<c-page bar="{{true}}">
   <view class="edit-surface">
     <c-card wx:if="{{loading}}"><view class="state">正在取回地址…</view></c-card>
     <c-card wx:elif="{{error && !person && id}}"><view class="state">{{error}}<text class="retry" data-id="{{id}}" bindtap="retryLoad">再试一次</text></view></c-card>

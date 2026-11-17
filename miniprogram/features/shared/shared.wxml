@@ -1,4 +1,4 @@
-<c-page>
+<c-page bar="{{design}}">
   <c-card wx:if="{{loading}}"><view class="shared-loading"><c-skeleton shape="block" width="100%" ratio="1/1"/><c-skeleton shape="line" width="80%" font="title"/><c-skeleton shape="line" width="60%" font="body"/></view></c-card>
   <c-state wx:elif="{{deleted}}" title="这条手串看不到了" desc="可能已经被主人删除" action="我也串一条" bind:action="start" />
   <c-state wx:elif="{{error}}" title="没连上" desc="{{error}}" action="再试一次" bind:action="retry" />

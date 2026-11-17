@@ -12,6 +12,7 @@ import app
 import phone_auth
 from routes import auth_phone
 import user_api
+import content_security
 
 
 class PhoneAuthTests(unittest.TestCase):
@@ -41,7 +42,7 @@ class PhoneAuthTests(unittest.TestCase):
     def test_bind_success_and_no_plain_phone_in_response_or_storage(self):
         code, body = auth_phone.bind(self.context("first"), None, {"code": "ok"})
         self.assertEqual((code, body), (200, {"phoneMasked": "138****8000", "merged": False}))
-        self.assertEqual(auth_phone.me(self.context("first"), None, None), (200, {"phoneMasked": "138****8000"}))
+        self.assertEqual(auth_phone.me(self.context("first"), None, None), (200, {"phoneMasked": "138****8000", "nickname": "珠友 IRST", "nameIsDefault": True}))
         self.assertNotIn("13800008000", str(body) + str(self.db.get("users", "first")))
 
     def test_second_device_merges_designs_and_session(self):
@@ -61,7 +62,34 @@ class PhoneAuthTests(unittest.TestCase):
                          (502, {"error": "没登录上，网络不太好，再点一次试试"}))
 
     def test_unbound_me_has_null_phone(self):
-        self.assertEqual(auth_phone.me(self.context("first"), None, None), (200, {"phoneMasked": None}))
+        self.assertEqual(auth_phone.me(self.context("first"), None, None), (200, {"phoneMasked": None, "nickname": "珠友 IRST", "nameIsDefault": True}))
+
+    def test_nickname_rejects_empty_and_overlong(self):
+        for value in ('  ', '字' * 21):
+            code, _ = auth_phone.update_nickname(self.context('first'), None, {'nickname': value})
+            self.assertEqual(code, 400)
+
+    def test_nickname_rejects_content_security_failure(self):
+        with patch.object(content_security, 'ensure_allowed', side_effect=content_security.ContentRejected('blocked')):
+            self.assertEqual(auth_phone.update_nickname(self.context('first'), None, {'nickname': '坏名字'}),
+                             (400, {'error': '这个名字不能用，换一个吧'}))
+        self.assertNotIn('nickname', self.db.get('users', 'first'))
+
+    def test_nickname_saves_when_checker_unavailable(self):
+        with patch.object(content_security, 'ensure_allowed', side_effect=RuntimeError('offline')):
+            with self.assertLogs('routes.auth_phone', level='ERROR'):
+                code, profile = auth_phone.update_nickname(self.context('first'), None, {'nickname': '  小珠  '})
+        self.assertEqual(code, 200)
+        self.assertEqual(profile['nickname'], '小珠')
+        self.assertFalse(profile['nameIsDefault'])
+        self.assertEqual(auth_phone.me(self.context('first'), None, None)[1]['nickname'], '小珠')
+
+    def test_nickname_saves_when_security_is_unconfigured(self):
+        with patch.object(content_security, 'ensure_allowed', side_effect=content_security.ContentRejected('内容安全未配置，无法校验文字')):
+            with self.assertLogs('routes.auth_phone', level='ERROR'):
+                code, profile = auth_phone.update_nickname(self.context('first'), None, {'nickname': '小珠'})
+        self.assertEqual(code, 200)
+        self.assertEqual(profile['nickname'], '小珠')
 
     def test_dev_code_fallback(self):
         phone_auth._exchanger = None

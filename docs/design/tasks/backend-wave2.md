@@ -375,7 +375,7 @@
 
 - **依赖**：B-14；**负责人确认小程序后台“发货信息管理”已开通**　**大小**：S　**只能改**：新建 `server/wx_shipping.py`、后台发货路由里调用它的那一行、`server/tests/`、`docs/deploy.md`
 - **为什么**：小程序用微信支付卖实物，微信要求发货后把物流信息录入给微信，否则订单资金结算会受影响，用户也收不到发货提醒。
-- **要做的**：后台点发货（填快递公司和单号）时，调微信“发货信息录入”接口（以官方文档为准，报告里贴文档链接和字段），用支付单号关联；快递公司编码按微信给的列表映射，映射表放代码里并有测试。调用失败不阻断发货，记日志，后台工单上显示“微信发货信息未同步 · 重试”。access_token 复用公用取法（和 B-13 同一个函数；谁先做谁抽）。`PAY_CHANNEL=mock` 时不调用。
+- **要做的**：后台点发货（填快递公司和单号）时，调微信“发货信息录入”接口（以官方文档为准，报告里贴文档链接和字段），用支付单号关联；快递公司编码按微信给的列表映射，映射表放代码里并有测试。调用失败不阻断发货，记日志，后台工单上显示“微信发货信息未同步 · 重试”。access_token 复用公用取法（和 B-13 同一个函数；谁先做谁抽）。`PAYMENT_PROVIDER` 不是 `wechat` 时不调用。
 - **测试**：用假接口覆盖成功、失败可重试、mock 通道不调用、快递编码映射。
 
 ## B-13 物流轨迹（2026-11-17 负责人定：用微信自带的物流服务，同事在申请）
@@ -394,7 +394,7 @@
 ## B-14 接入微信支付（2026-11-16 负责人确认：商户号和密钥已备好，可以开工）
 
 - **依赖**：A5b（已完成）　**大小**：L　**只能改**：`server/payments.py`、新建 `server/wechat_pay.py`、支付和退款相关路由、`server/config` 里读环境变量的地方、`miniprogram/pages/order/order.js`、`miniprogram/features/order-detail/order-detail.js` 里付款那一段、`server/tests/`、`miniprogram/tests/` 里支付相关测试、`docs/deploy.md`（没有就新建）
-- **通道开关**：环境变量 `PAY_CHANNEL=mock|wechat`，**默认 mock**。不配置时一切照旧，现有测试全部不改就能过。
+- **通道开关**：沿用现有环境变量 `PAYMENT_PROVIDER`（`payments.py` 已有，默认 `none` 不可付款；`mock` 只在开发和开了开关的体验版能用、正式环境禁用），只新增一个取值 `wechat`。不配置时一切照旧，现有测试全部不改就能过。
 - **密钥只读环境变量，仓库里一个字都不许出现**：`WXPAY_MCHID`、`WXPAY_APPID`、`WXPAY_API_V3_KEY`、`WXPAY_CERT_SERIAL`、`WXPAY_PRIVATE_KEY_PATH`（商户私钥文件路径）、`WXPAY_PLATFORM_PUBLIC_KEY_PATH` 和 `WXPAY_PLATFORM_PUBLIC_KEY_ID`（微信支付公钥；如负责人用的是平台证书，就改读平台证书，两种都支持）、`WXPAY_NOTIFY_URL`（https 回调地址）。`wechat` 通道缺任何一项，启动时报错并说缺哪一项，不许静默退回 mock。
 - **后端**：
   1. 下单：JSAPI 下单（`/v3/pay/transactions/jsapi`），金额用订单的“分”整数，`openid` 用登录用户的；返回 `wx.requestPayment` 要的 `timeStamp`、`nonceStr`、`package`、`signType=RSA`、`paySign`。同一订单重复点付款要复用未过期的预付单，不重复下单。

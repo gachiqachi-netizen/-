@@ -208,7 +208,7 @@
 
 ## U17 圆形和图标按钮不套 c-btn、检查脚本补按钮规则（2026-11-16 负责人截图）
 
-- **依赖**：U16（已合并）　**只能改**：工作台 `miniprogram/pages/editor/editor.wxml/.wxss` 底栏“串好了”那一处、`pages/photo`、`ar-hand`、`features/tryon`、`pages/wrist` 的按钮样式、`tools/check-ui.py` 和它的基线、`miniprogram/tests/` 对应测试
+- **依赖**：U16（已合并）　**只能改**：工作台 `miniprogram/pages/diy/diy.wxml/.wxss` 底栏“串好了”那一处、`pages/photo`、`ar-hand`、`features/tryon`、`pages/wrist` 的按钮样式、`tools/check-ui.py` 和它的基线、`miniprogram/tests/` 对应测试
 - **问题**：工作台“串好了”被挤成小圆；拍照快门是没字的椭圆、“相册”被切；实时试戴“用照片试”被撑成竖条且下面重复一个“用照片试 ›”；戴上看看两个按钮比字还小。
 - **要做的**：
   1. 长条按钮一律 `c-btn`，按底栏规则：价格加按钮时按钮占半宽 104rpx 高；单个按钮通栏；状态页的按钮走 `c-state` 的 320rpx 次按钮。

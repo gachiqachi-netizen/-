@@ -629,6 +629,7 @@ export const OrdersAndWorkOrdersView: React.FC<OrdersViewProps> = ({
                     )}
                     canEditLogistics={!['delivered', 'returned'].includes(String(detail.logisticsStatus || '')) && detail.orderStatus !== 'completed'}
                     logistics={detail.logistics}
+                    wxShipping={detail.wxShipping}
                     onChanged={() => {
                       loadOrderDetail(detail.no);
                       onRefresh();

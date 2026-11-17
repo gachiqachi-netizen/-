@@ -98,7 +98,7 @@
 
 ## V9 模板封面图：后台上传，首页和详情优先显示（2026-11-17 负责人确认）
 
-- **依赖**：V7b（后台模板页它也在改）　**只能改**：`admin-web/src/pages/templates/*`、`admin-web/src/components/TemplatesView.tsx`、`server/home.py` 和模板保存相关代码（`grep -n "def " server/commerce.py | grep -i templ` 先找到位置）、新建或复用 `server/routes/uploads.py` 的上传逻辑、`miniprogram/pages/home/*`、手串详情页里轮播那一处、`tools/export_contract.py` 重新生成的契约文件、对应测试
+- **依赖**：无，马上做（负责人 2026-11-17 要求提前；V7b 已改为不碰模板页，模板编辑预览的手串画法由本卡一起按 `bracelet_style.json` 做）　**只能改**：`admin-web/src/pages/templates/*`、`admin-web/src/components/TemplatesView.tsx`、`server/home.py` 和模板保存相关代码（`grep -n "def " server/commerce.py | grep -i templ` 先找到位置）、新建或复用 `server/routes/uploads.py` 的上传逻辑、`miniprogram/pages/home/*`、手串详情页里轮播那一处、`tools/export_contract.py` 重新生成的契约文件、对应测试
 - **现状**：小程序首页已经写了“模板有 `cover` 就显示封面图，没有才用程序拼图”，但后台模板编辑里**没有上传封面图的地方**，服务端模板也没有这个字段，所以现在首页全是程序拼的。
 - **要做的**：
   1. 后台模板编辑加“封面图”：上传、预览、替换、删除。上传在浏览器里校验并缩成三档（和珠子照片同一套：长边 1080 / 540 / 240，JPEG），后端只解析文件头，不新增依赖。建议比例 1:1，不是 1:1 时居中裁成 1:1，并在上传框旁写“建议 1:1，主体居中”。

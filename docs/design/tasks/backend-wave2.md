@@ -384,6 +384,18 @@
 - **测试**：`check_deploy.py` 用临时生成的假密钥和假环境变量测：全对时全部通过；缺变量、密钥长度不对、文件不可读、回调不是 https 各报对应错误；输出里不出现任何变量的值。
 - **不做**：真实部署、真实付款。
 
+## B-21 用新导入的珠子建 6 个首页模板（导入命令）（2026-11-19 负责人）
+
+- **依赖**：B-20　**大小**：S　**只能改**：新建 `tools/load_templates.py`、`deploy/docker-compose.yml`（app 只读挂载 `../tools/load_templates.py` 和 `./data-files`，写法照 `load_seed.py` 那行）、`docs/deploy.md`、`server/tests/` 对应测试
+- **数据**：`deploy/data-files/templates-2026-11.json`（审核已写好，6 个模板，全部用 `sm20261116-*` 新珠子；文字已过禁用词表）。**不要改这个文件的内容**，发现珠子 id 不存在等问题写进报告。
+- **要做的**：`tools/load_templates.py <json 路径>`，容器内用法 `python tools/load_templates.py /app/deploy-data/templates-2026-11.json`：
+  1. 选库、预览/`--apply`、只补缺不覆盖、输出不打印环境变量——全部照 `tools/load_seed.py` 的做法。
+  2. 写入前逐个校验：每个 id 在 `beads` 里存在且在售（`onSale`）、是珠子或隔珠；任一不满足就报出模板名和缺的珠子，整批不写。
+  3. 写入走 `commerce.create_template`（和后台新建同一套校验和审计，actor 记 `load_templates`），不直接 `db.put`。
+  4. 预览输出：每个模板“将新增 / 已存在跳过 / 珠子缺失”。
+- **测试**：临时库：珠子齐全时预览不写、`--apply` 写入 6 条、重复运行全跳过；缺一颗珠子整批不写并报出；已有同 id 模板不覆盖。
+- **不做**：下架旧的 t1–t6（负责人在后台自己处理）；上传封面。
+
 ## B-20 评价图片改为人工审核，微信图片机审做成开关（2026-11-18 负责人定）
 
 - **依赖**：B-19（已完成）　**大小**：S　**只能改**：`server/uploads.py`、`server/reviews.py`、`server/routes/uploads.py`、`admin-web/src/pages/reviews.tsx`（只改机审那一列的文字和颜色）、`deploy/app.env.example`（加一行开关）、`docs/deploy.md`、`server/tests/`、构建产物照以往做法

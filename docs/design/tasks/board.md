@@ -10,11 +10,12 @@
 | B-20 | 评价图片改为人工审核，微信图片机审做成开关 | 分支上有提交，交了就告诉审核 |
 | C5b | 语音和照片 | 分支上有提交，交了就告诉审核 |
 
-## 现在能派（2）
+## 现在能派（3）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
 | U23 | 登录页协议弹层“同意并继续”点了没反应 |  |
+| U24 | 确认订单：选了地址后改不了 |  |
 | U25 | 工作台珠盘看不清 |  |
 
 ### 提示词（一张卡一个对话，整段复制）
@@ -30,6 +31,17 @@
 
 </details>
 
+<details><summary>U24 确认订单：选了地址后改不了</summary>
+
+```
+你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
+这次直接领 U24（确认订单：选了地址后改不了，卡在 docs/design/tasks/followups-ui.md，先读文件开头的共同规矩，再读 U24 这一节）。
+从最新的 origin/integration/2026-11 开新目录 ~/chuan-U24，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/U24-order-address，不要直接推 integration。页面只用 U0 的 c-page、c-card、c-cell、c-bar 组件拼；交付前跑 python3 tools/check-ui.py；用 tools/shoot 截改前改后的图（先登录、等数据加载完；空状态、出错状态也截），提交到 docs/reports/shots/U24/。
+交付后回复“U24 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
+```
+
+</details>
+
 <details><summary>U25 工作台珠盘看不清</summary>
 
 ```
@@ -41,11 +53,10 @@
 
 </details>
 
-## 等前面的卡（3）
+## 等前面的卡（2）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
-| U24 | 确认订单：选了地址后改不了 | 等 U23 |
 | U26 | 第一次进工作台先确认手围 | 等 U25 |
 | U27 | 确认订单一屏放下 | 等 U24 |
 

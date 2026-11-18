@@ -145,7 +145,7 @@
 | U21 | agent/U21-privacy-popup | followups-ui.md |  | 任何 |  |  |
 | U22 | agent/U22-privacy-copy | followups-ui.md | U21 | 任何 |  |  |
 | U23 | agent/U23-login-agree | followups-ui.md | U22 | 任何 |  |  |
-| U24 | agent/U24-order-address | followups-ui.md | U23 | 任何 |  |  |
+| U24 | agent/U24-order-address | followups-ui.md |  | 任何 |  |  |
 | U25 | agent/U25-tray-contrast | followups-ui.md |  | 任何 |  |  |
 | U26 | agent/U26-first-wrist | followups-ui.md | U25 | 任何 |  |  |
 | U27 | agent/U27-order-one-screen | followups-ui.md | U24 | 任何 |  |  |

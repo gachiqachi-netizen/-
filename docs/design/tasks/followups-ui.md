@@ -296,7 +296,7 @@
 
 ## U24 确认订单：选了地址后改不了（2026-11-18 同事体验）
 
-- **依赖**：U23　**大小**：S　**只能改**：`miniprogram/pages/order/order.{js,wxml,wxss}`、`miniprogram/tests/` 订单相关测试
+- **依赖**：无　**大小**：S　**只能改**：`miniprogram/pages/order/order.{js,wxml,wxss}`、`miniprogram/tests/` 订单相关测试
 - **现象**：选过地址后再点地址行，只能打开手动填写弹层，没法换成别的微信地址；同事反馈“地址选择后无法修改”。
 - **原因**：`order.js` 的 `addressEntry()`：已有地址时直接 `manualAddress()`，不再出“用微信收货地址 / 手动填写”的选择。
 - **要做的**：

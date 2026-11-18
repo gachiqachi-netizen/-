@@ -120,6 +120,10 @@ sudo docker compose --env-file app.env exec app python tools/load_seed.py --appl
 
 ## 7. 微信后台：域名和支付通知
 
+### 以后打开图片机审
+
+评价图片默认由负责人在后台人工审核。需要启用微信异步图片机审时，先生成独立随机的 `WECHAT_MSG_TOKEN`，填入服务器 `deploy/app.env`，并设置 `IMAGE_SEC_CHECK=on`。随后在小程序后台 **开发管理 → 开发设置 → 消息推送** 填写 URL `https://<API域名>/api/wechat/media-check`，Token 与 `WECHAT_MSG_TOKEN` 相同，数据格式选 JSON，模式选明文。保存时服务端会校验签名并原样返回 `echostr`。改完环境变量后重建应用容器；菜单名称以实际后台为准。
+
 在 **微信公众平台 → 小程序后台 → 开发管理 → 服务器域名**，把 `https://<API域名>` 加入 **request 合法域名**（菜单以实际后台为准）。**商户平台不需要单独填支付回调地址**：本项目用 APIv3，下单和退款请求都由服务器带上 `app.env` 里的 `WXPAY_NOTIFY_URL`（`https://<API域名>/api/payments/notify`），只要它正确且 `--ping` 返回 400 即可。商户平台只需在 **产品中心 → AppID 账号管理** 核对小程序 AppID 已关联。
 
 ## 8. 负责人验收真实交易

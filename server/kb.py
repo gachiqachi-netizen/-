@@ -5,6 +5,7 @@
 import glob
 import json
 import os
+import threading
 import time
 import warnings
 
@@ -12,11 +13,13 @@ import kb_store
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kb", "data"))
 _cache = {"stamp": None}
+_cache_lock = threading.RLock()
 
 
 def invalidate_cache():
-    _cache['checked_at'] = None
-    _cache['stamp'] = None
+    with _cache_lock:
+        _cache['checked_at'] = None
+        _cache['stamp'] = None
 
 
 kb_store.register_cache_invalidator(invalidate_cache)
@@ -44,6 +47,11 @@ def _files():
 
 
 def _load():
+    with _cache_lock:
+        return _load_unlocked()
+
+
+def _load_unlocked():
     now = time.monotonic()
     checked_at = _cache.get('checked_at')
     if (_cache.get('from_db') and checked_at is not None and

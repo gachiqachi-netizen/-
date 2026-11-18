@@ -334,7 +334,8 @@ const WorkOrderDetail: React.FC<{ orderNo: string; reworkSaleNo?: string; nextNo
         ))}
       </div>
 
-      <div className="wo-section-title">领料清单（已领只存在本机）</div>
+      <div className="wo-section-title">领料清单</div>
+      <p className="wo-pick-hint no-print">勾选仅供当前浏览器核对，不会记录领料或扣减库存。</p>
       <table className="wo-bom">
         <thead>
           <tr><th style={{ width: 40 }}></th><th>珠子</th><th style={{ width: 80 }}>尺寸</th><th style={{ width: 60 }}>数量</th><th>位置</th></tr>

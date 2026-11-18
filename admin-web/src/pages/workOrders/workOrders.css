@@ -21,6 +21,7 @@
 .wo-gift-card{white-space:pre-wrap}
 .wo-qcfail{background:#fdeceb;border-radius:8px;padding:10px 12px;font-size:13px;margin:12px 0;color:#8a2a24}
 .wo-section-title{font-size:14px;font-weight:600;margin:20px 0 10px}
+.wo-pick-hint{margin:-4px 0 10px;color:#8a8580;font-size:12px}
 .wo-seq{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px}
 .wo-cell{display:flex;flex-direction:column;align-items:center;gap:4px;break-inside:avoid}
 .wo-bead{width:34px;height:34px;border-radius:50%;background:#d8d2cb;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6e6862;overflow:hidden;box-shadow:inset -3px -4px 6px rgba(0,0,0,.12)}

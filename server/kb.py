@@ -5,12 +5,31 @@
 import glob
 import json
 import os
+import threading
+import time
 import warnings
 
 import kb_store
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kb", "data"))
 _cache = {"stamp": None}
+_cache_lock = threading.RLock()
+
+
+def invalidate_cache():
+    with _cache_lock:
+        _cache['checked_at'] = None
+        _cache['stamp'] = None
+
+
+kb_store.register_cache_invalidator(invalidate_cache)
+
+
+def _stamp_ttl():
+    try:
+        return max(0.0, float(os.environ.get('KB_STAMP_TTL', '5')))
+    except ValueError:
+        return 5.0
 
 # 知识库大类 → 料包材质（决定 3D 质感）
 CAT_MAT = {"crystal": "crystal", "feldspar": "crystal", "colored": "crystal", "manmade": "crystal",
@@ -28,7 +47,17 @@ def _files():
 
 
 def _load():
+    with _cache_lock:
+        return _load_unlocked()
+
+
+def _load_unlocked():
+    now = time.monotonic()
+    checked_at = _cache.get('checked_at')
+    if checked_at is not None and now - checked_at < _stamp_ttl():
+        return _cache
     current_stamp = kb_store.stamp()
+    _cache['checked_at'] = now
     if current_stamp is not None:
         if current_stamp == _cache['stamp']:
             return _cache

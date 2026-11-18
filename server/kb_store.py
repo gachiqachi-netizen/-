@@ -6,6 +6,13 @@ from contextlib import closing, contextmanager
 from datetime import datetime, timezone
 
 DICT_KEYS = frozenset(('banned', 'meaning_tags', 'terms', 'dims', 'grade_families'))
+_cache_invalidator = None
+
+
+def register_cache_invalidator(callback):
+    """Notify the reader after a successful write without importing it here."""
+    global _cache_invalidator
+    _cache_invalidator = callback
 
 
 def _sqlite_path():
@@ -88,4 +95,6 @@ def save(key, data, by, note):
         conn.execute(f'UPDATE kb_items SET doc = {doc_placeholder} WHERE id = {placeholder}', (raw_item, item_id))
         conn.execute(f'INSERT INTO kb_versions (id, doc) VALUES ({placeholder}, {doc_placeholder})',
                      (f'{item_id}:{version}', raw_history))
+    if _cache_invalidator is not None:
+        _cache_invalidator()
     return version

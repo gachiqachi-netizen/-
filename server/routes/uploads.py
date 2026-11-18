@@ -14,9 +14,17 @@ def media_check(ctx, match, data):
     return 200, {"ok": True, "id": record["id"], "checkStatus": record["checkStatus"]}
 
 
+def verify_media_check(ctx, match, data):
+    echo = uploads.verify_media_check(ctx.qs)
+    if echo is None:
+        return 403, {"error": "微信消息签名校验失败"}
+    return 200, echo.encode(), "text/plain; charset=utf-8"
+
+
 ROUTES = [
     ("POST", r"/api/my/uploads", create, "user"),
     ("POST", r"/api/wechat/media-check", media_check, "public"),
+    ("GET", r"/api/wechat/media-check", verify_media_check, "public"),
 ]
 
 

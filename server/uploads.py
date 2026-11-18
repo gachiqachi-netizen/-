@@ -139,9 +139,12 @@ def create(db, user_id, data, now=None):
     if _user_count_today(db, user_id, now) >= DAILY_LIMIT:
         raise ValueError("今天上传的图片太多了，明天再传吧")
     rel_path = os.path.join("user", _today(now), secrets.token_hex(8) + "." + ext).replace("\\", "/")
-    media_url = _media_check_url(rel_path)
-    status, trace_id = (("passed", None) if media_url is None
-                        else content_security.check_image_async(media_url))
+    if os.environ.get("IMAGE_SEC_CHECK", "off").lower() == "on":
+        media_url = _media_check_url(rel_path)
+        status, trace_id = (("passed", None) if media_url is None
+                            else content_security.check_image_async(media_url))
+    else:
+        status, trace_id = "manual", None
     abs_path = os.path.join(uploads_root(), rel_path)
     os.makedirs(os.path.dirname(abs_path), exist_ok=True)
     with open(abs_path, "wb") as f:
@@ -176,6 +179,18 @@ def viewer_can_see(record, user_id, is_admin):
 
 def _msg_token():
     return os.environ.get("WECHAT_MSG_TOKEN") or os.environ.get("WECHAT_TOKEN") or ""
+
+
+def verify_media_check(qs):
+    """校验微信消息推送 GET 请求，并返回原始 echostr。"""
+    token = os.environ.get("WECHAT_MSG_TOKEN") or ""
+    signature = (qs.get("signature") or [""])[0]
+    timestamp = (qs.get("timestamp") or [""])[0]
+    nonce = (qs.get("nonce") or [""])[0]
+    if not token or not signature or not timestamp or not nonce:
+        return None
+    expected = hashlib.sha1("".join(sorted([token, timestamp, nonce])).encode()).hexdigest()
+    return (qs.get("echostr") or [""])[0] if hmac.compare_digest(signature, expected) else None
 
 
 def _check_signature(qs):

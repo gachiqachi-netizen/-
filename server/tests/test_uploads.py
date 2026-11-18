@@ -31,7 +31,7 @@ class UserUploadTests(unittest.TestCase):
         self.db = uploads_db()
         self.tmp = tempfile.TemporaryDirectory()
         self.env = patch.dict(os.environ, {"UPLOADS_DIR": os.path.join(self.tmp.name, "uploads"),
-                                           "PUBLIC_BASE_URL": "https://files.test"},
+                                           "PUBLIC_BASE_URL": "https://files.test", "IMAGE_SEC_CHECK": "on"},
                               clear=False)
         self.env.start()
         for key in ("WECHAT_APP_ID", "WECHAT_APP_SECRET", "WECHAT_MSG_TOKEN", "WECHAT_TOKEN"):
@@ -50,6 +50,27 @@ class UserUploadTests(unittest.TestCase):
     def test_routes_are_loaded(self):
         self.assertTrue(any(m == "POST" and p.fullmatch("/api/my/uploads") for m, p, _, _ in app.ROUTE_TABLE))
         self.assertTrue(any(m == "POST" and p.fullmatch("/api/wechat/media-check") for m, p, _, _ in app.ROUTE_TABLE))
+        self.assertTrue(any(m == "GET" and p.fullmatch("/api/wechat/media-check") for m, p, _, _ in app.ROUTE_TABLE))
+
+    def test_default_off_is_manual_without_wechat_or_link(self):
+        os.environ.pop("IMAGE_SEC_CHECK")
+        with patch.object(uploads, "_media_check_url") as link, patch.object(content_security, "check_image_async") as check:
+            _, body = upload_routes.create(self.ctx(), None, self.png_payload())
+        link.assert_not_called()
+        check.assert_not_called()
+        record = self.db.get("uploads", body["id"])
+        self.assertEqual(record["checkStatus"], "manual")
+        self.assertNotIn("traceId", record)
+        self.assertFalse(uploads.viewer_can_see(record, "stranger", False))
+
+    def test_get_verification_echo_and_bad_signature(self):
+        qs = self.signed_qs()
+        qs["echostr"] = ["raw-echo"]
+        with patch.dict(os.environ, {"WECHAT_MSG_TOKEN": "tok"}):
+            self.assertEqual(upload_routes.verify_media_check(SimpleNamespace(qs=qs), None, None),
+                             (200, b"raw-echo", "text/plain; charset=utf-8"))
+            qs["signature"] = ["bad"]
+            self.assertEqual(upload_routes.verify_media_check(SimpleNamespace(qs=qs), None, None)[0], 403)
 
     # ---- 格式 ----
     def test_reject_unsupported_content_type(self):
@@ -241,7 +262,7 @@ class UserUploadHttpTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory()
         cls.root = os.path.join(cls.temp.name, "uploads")
         cls.env = patch.dict(os.environ, {"UPLOADS_DIR": cls.root,
-                                          "PUBLIC_BASE_URL": "https://files.test"}, clear=False)
+                                          "PUBLIC_BASE_URL": "https://files.test", "IMAGE_SEC_CHECK": "on"}, clear=False)
         cls.env.start()
         for key in ("WECHAT_APP_ID", "WECHAT_APP_SECRET", "WECHAT_MSG_TOKEN", "WECHAT_TOKEN"):
             os.environ.pop(key, None)
@@ -300,6 +321,15 @@ class UserUploadHttpTests(unittest.TestCase):
         if status == "rejected":
             uploads.apply_media_check(app.db, {"result": {"trace_id": trace, "suggest": "risky"}}, {})
         return app.db.get("uploads", body["id"])
+
+    def test_http_get_media_check_verification(self):
+        qs = "timestamp=1700000000&nonce=abc&echostr=hello"
+        signature = hashlib.sha1("".join(sorted(["tok", "1700000000", "abc"])).encode()).hexdigest()
+        with patch.dict(os.environ, {"WECHAT_MSG_TOKEN": "tok"}):
+            status, headers, body = self.get("/api/wechat/media-check?" + qs + "&signature=" + signature)
+            self.assertEqual((status, body), (200, b"hello"))
+            self.assertTrue(headers["Content-Type"].startswith("text/plain"))
+            self.assertEqual(self.get("/api/wechat/media-check?" + qs + "&signature=bad")[0], 403)
 
     def test_owner_can_view_pending(self):
         record = self.make_upload()

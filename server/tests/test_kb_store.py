@@ -69,6 +69,26 @@ class KBStoreTest(unittest.TestCase):
             kb.enrich(seed.BEADS[0])
             self.assertEqual(stamp.call_count, 1)
 
+    def test_empty_kb_table_checks_stamp_once_for_catalog(self):
+        import app
+        from db import DB
+
+        with sqlite3.connect(self.path) as conn:
+            conn.execute('DELETE FROM kb_items')
+        kb._cache.clear()
+        kb._cache['stamp'] = None
+        catalog_db = DB(':memory:')
+        self.addCleanup(catalog_db.conn.close)
+        original_stamp = kb_store.stamp
+        with mock.patch.dict(os.environ, {'KB_STAMP_TTL': '5'}), \
+             mock.patch.object(app, 'db', catalog_db), \
+             mock.patch.object(kb_store, 'stamp', wraps=original_stamp) as stamp:
+            beads, templates, banners = app.on_sale_catalog()
+            self.assertEqual(len(beads), len(seed.BEADS))
+            self.assertEqual(len(templates), len(seed.TEMPLATES))
+            self.assertEqual(len(banners), len(seed.BANNERS))
+            self.assertLessEqual(stamp.call_count, 1)
+
     def test_save_invalidates_cache_before_ttl_expires(self):
         with mock.patch.dict(os.environ, {'KB_STAMP_TTL': '5'}):
             original = kb.get('mila')

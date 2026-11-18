@@ -54,8 +54,7 @@ def _load():
 def _load_unlocked():
     now = time.monotonic()
     checked_at = _cache.get('checked_at')
-    if (_cache.get('from_db') and checked_at is not None and
-            now - checked_at < _stamp_ttl()):
+    if checked_at is not None and now - checked_at < _stamp_ttl():
         return _cache
     current_stamp = kb_store.stamp()
     _cache['checked_at'] = now
@@ -66,7 +65,7 @@ def _load_unlocked():
         if data is not None:
             beads, attrs = data['beads'], data['attrs']
             banned = [x['word'] for x in attrs.get('banned', []) if x.get('word')] or FALLBACK_BANNED
-            _cache.update(stamp=current_stamp, beads=beads, attrs=attrs, errors=[], from_db=True,
+            _cache.update(stamp=current_stamp, beads=beads, attrs=attrs, errors=[],
                           dims={d['key']: d for d in attrs.get('dims', []) if d.get('key')},
                           banned=sorted(set(banned), key=len, reverse=True))
             return _cache
@@ -96,7 +95,7 @@ def _load_unlocked():
         except Exception as e:
             errors.append(f"attributes.json: {e}")
     banned = [x["word"] for x in attrs.get("banned", []) if x.get("word")] or FALLBACK_BANNED
-    _cache.update(stamp=stamp, beads=beads, attrs=attrs, errors=errors, from_db=False,
+    _cache.update(stamp=stamp, beads=beads, attrs=attrs, errors=errors,
                   dims={d["key"]: d for d in attrs.get("dims", []) if d.get("key")},
                   banned=sorted(set(banned), key=len, reverse=True))
     return _cache

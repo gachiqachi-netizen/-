@@ -11,6 +11,7 @@ from unittest import mock
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import kb
 import kb_store
+import seed
 import migrate
 from migrations import m010_kb_tables
 
@@ -57,6 +58,30 @@ class KBStoreTest(unittest.TestCase):
         with sqlite3.connect(self.path) as conn:
             after = conn.execute("SELECT count(*) FROM kb_versions WHERE id LIKE 'bead:mila:%'").fetchone()[0]
         self.assertEqual(after, before + 1)
+
+    def test_stamp_is_checked_once_for_catalog_within_ttl(self):
+        original_stamp = kb_store.stamp
+        with mock.patch.dict(os.environ, {'KB_STAMP_TTL': '5'}), \
+             mock.patch.object(kb_store, 'stamp', wraps=original_stamp) as stamp:
+            for bead in seed.BEADS:
+                kb.enrich(bead)
+            self.assertEqual(stamp.call_count, 1)
+            kb.enrich(seed.BEADS[0])
+            self.assertEqual(stamp.call_count, 1)
+
+    def test_save_invalidates_cache_before_ttl_expires(self):
+        with mock.patch.dict(os.environ, {'KB_STAMP_TTL': '5'}):
+            original = kb.get('mila')
+            kb_store.save('mila', {**original, 'name': '立即更新'}, '测试', '缓存失效')
+            self.assertEqual(kb.get('mila')['name'], '立即更新')
+
+    def test_zero_ttl_checks_stamp_on_every_read(self):
+        original_stamp = kb_store.stamp
+        with mock.patch.dict(os.environ, {'KB_STAMP_TTL': '0'}), \
+             mock.patch.object(kb_store, 'stamp', wraps=original_stamp) as stamp:
+            kb.get('mila')
+            kb.get('mila')
+            self.assertEqual(stamp.call_count, 2)
 
     def test_import_is_repeatable_and_does_not_overwrite(self):
         changed = {**kb.get('mila'), 'name': '保留修改'}

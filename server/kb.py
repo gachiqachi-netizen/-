@@ -5,12 +5,28 @@
 import glob
 import json
 import os
+import time
 import warnings
 
 import kb_store
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kb", "data"))
 _cache = {"stamp": None}
+
+
+def invalidate_cache():
+    _cache['checked_at'] = None
+    _cache['stamp'] = None
+
+
+kb_store.register_cache_invalidator(invalidate_cache)
+
+
+def _stamp_ttl():
+    try:
+        return max(0.0, float(os.environ.get('KB_STAMP_TTL', '5')))
+    except ValueError:
+        return 5.0
 
 # 知识库大类 → 料包材质（决定 3D 质感）
 CAT_MAT = {"crystal": "crystal", "feldspar": "crystal", "colored": "crystal", "manmade": "crystal",
@@ -28,7 +44,13 @@ def _files():
 
 
 def _load():
+    now = time.monotonic()
+    checked_at = _cache.get('checked_at')
+    if (_cache.get('from_db') and checked_at is not None and
+            now - checked_at < _stamp_ttl()):
+        return _cache
     current_stamp = kb_store.stamp()
+    _cache['checked_at'] = now
     if current_stamp is not None:
         if current_stamp == _cache['stamp']:
             return _cache
@@ -36,7 +58,7 @@ def _load():
         if data is not None:
             beads, attrs = data['beads'], data['attrs']
             banned = [x['word'] for x in attrs.get('banned', []) if x.get('word')] or FALLBACK_BANNED
-            _cache.update(stamp=current_stamp, beads=beads, attrs=attrs, errors=[],
+            _cache.update(stamp=current_stamp, beads=beads, attrs=attrs, errors=[], from_db=True,
                           dims={d['key']: d for d in attrs.get('dims', []) if d.get('key')},
                           banned=sorted(set(banned), key=len, reverse=True))
             return _cache
@@ -66,7 +88,7 @@ def _load():
         except Exception as e:
             errors.append(f"attributes.json: {e}")
     banned = [x["word"] for x in attrs.get("banned", []) if x.get("word")] or FALLBACK_BANNED
-    _cache.update(stamp=stamp, beads=beads, attrs=attrs, errors=errors,
+    _cache.update(stamp=stamp, beads=beads, attrs=attrs, errors=errors, from_db=False,
                   dims={d["key"]: d for d in attrs.get("dims", []) if d.get("key")},
                   banned=sorted(set(banned), key=len, reverse=True))
     return _cache

@@ -155,6 +155,7 @@
 | V7a | agent/V7a-bracelet-tiers | followups-visual.md | U16 | 任何 |  |  |
 | V8 | agent/V8-share-poster | followups-visual.md | V7a | 任何 |  |  |
 | V9 | agent/V9-template-cover | followups-visual.md |  | 任何 |  |  |
+| V10 | agent/V10-tryon-photo | followups-visual.md |  | 任何 |  |  |
 | V7b | agent/V7b-admin-bracelet-style | followups-visual.md | V7a | 任何 |  |  |
 | U11 | agent/U11-admin-aftersale-review-fix | followups-ui.md |  | 任何 |  |  |
 

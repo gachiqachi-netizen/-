@@ -145,6 +145,10 @@
 | U21 | agent/U21-privacy-popup | followups-ui.md |  | 任何 |  |  |
 | U22 | agent/U22-privacy-copy | followups-ui.md | U21 | 任何 |  |  |
 | U23 | agent/U23-login-agree | followups-ui.md | U22 | 任何 |  |  |
+| U24 | agent/U24-order-address | followups-ui.md | U23 | 任何 |  |  |
+| U25 | agent/U25-tray-contrast | followups-ui.md |  | 任何 |  |  |
+| U26 | agent/U26-first-wrist | followups-ui.md | U25 | 任何 |  |  |
+| U27 | agent/U27-order-one-screen | followups-ui.md | U24 | 任何 |  |  |
 | V7a | agent/V7a-bracelet-tiers | followups-visual.md | U16 | 任何 |  |  |
 | V8 | agent/V8-share-poster | followups-visual.md | V7a | 任何 |  |  |
 | V9 | agent/V9-template-cover | followups-visual.md |  | 任何 |  |  |

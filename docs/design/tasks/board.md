@@ -1,33 +1,23 @@
 # 任务看板
 
 > 自动生成，别手改。更新：`git fetch origin --prune && python3 tools/board.py`。审核每合并一次都会重新生成并推送。
-> 总共 131 张（第一波之外），已完成 126 张。
+> 总共 135 张（第一波之外），已完成 126 张。
 
-## 在做或待审（1）
+## 在做或待审（2）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
+| B-20 | 评价图片改为人工审核，微信图片机审做成开关 | 分支上有提交，交了就告诉审核 |
 | C5b | 语音和照片 | 分支上有提交，交了就告诉审核 |
 
 ## 现在能派（2）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
-| B-20 | 评价图片改为人工审核，微信图片机审做成开关 |  |
 | U23 | 登录页协议弹层“同意并继续”点了没反应 |  |
+| U25 | 工作台珠盘看不清 |  |
 
 ### 提示词（一张卡一个对话，整段复制）
-
-<details><summary>B-20 评价图片改为人工审核，微信图片机审做成开关</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 B-20（评价图片改为人工审核，微信图片机审做成开关，卡在 docs/design/tasks/backend-wave2.md，先读文件开头的共同规矩，再读 B-20 这一节）。开工前先跑 git log origin/integration/2026-11 --oneline | grep -E "^[0-9a-f]+ (B-19):" | grep -v "开工$"，B-19 都有提交才开工，否则停下等我。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-B-20，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/B-20-manual-photo-review，不要直接推 integration。
-交付后回复“B-20 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
 
 <details><summary>U23 登录页协议弹层“同意并继续”点了没反应</summary>
 
@@ -40,9 +30,24 @@
 
 </details>
 
-## 等前面的卡（0）
+<details><summary>U25 工作台珠盘看不清</summary>
 
-无
+```
+你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
+这次直接领 U25（工作台珠盘看不清，卡在 docs/design/tasks/followups-ui.md，先读文件开头的共同规矩，再读 U25 这一节）。
+从最新的 origin/integration/2026-11 开新目录 ~/chuan-U25，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/U25-tray-contrast，不要直接推 integration。页面只用 U0 的 c-page、c-card、c-cell、c-bar 组件拼；交付前跑 python3 tools/check-ui.py；用 tools/shoot 截改前改后的图（先登录、等数据加载完；空状态、出错状态也截），提交到 docs/reports/shots/U25/。
+交付后回复“U25 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
+```
+
+</details>
+
+## 等前面的卡（3）
+
+| 卡 | 做什么 | 说明 |
+|---|---|---|
+| U24 | 确认订单：选了地址后改不了 | 等 U23 |
+| U26 | 第一次进工作台先确认手围 | 等 U25 |
+| U27 | 确认订单一屏放下 | 等 U24 |
 
 ## 等负责人（2）
 

@@ -384,6 +384,22 @@
 - **测试**：`check_deploy.py` 用临时生成的假密钥和假环境变量测：全对时全部通过；缺变量、密钥长度不对、文件不可读、回调不是 https 各报对应错误；输出里不出现任何变量的值。
 - **不做**：真实部署、真实付款。
 
+## B-20 评价图片改为人工审核，微信图片机审做成开关（2026-11-18 负责人定）
+
+- **依赖**：B-19（已完成）　**大小**：S　**只能改**：`server/uploads.py`、`server/reviews.py`、`server/routes/uploads.py`、`admin-web/src/pages/reviews.tsx`（只改机审那一列的文字和颜色）、`deploy/app.env.example`（加一行开关）、`docs/deploy.md`、`server/tests/`、构建产物照以往做法
+- **现象**：线上评价照片一直“图片检查中”，后台点“通过并公开”被拦“照片还在审核中”。原因：图片走微信异步检测，结果要靠小程序后台“消息推送”回调，没配（且我们没写推送地址的 GET 验证，也配不上），所以永远不返回。
+- **负责人定的规则**：所有评价本来就由负责人人工先审后发，图片不再必须过微信机审。
+- **要做的**：
+  1. 新环境变量 `IMAGE_SEC_CHECK`，默认 `off`；只有值为 `on` 才送微信异步检测（现有逻辑原样保留）。`off` 时 `uploads.create` 不调微信、不生成送审链接，`checkStatus` 记为 `manual`（待人工）。
+  2. `viewer_can_see` 不变：非 `passed` 只有上传者本人和后台能看。
+  3. `reviews` 通过（approve）时：照片状态是 `manual` 或 `pending`（含已经卡住的老记录）都允许通过，并把这些照片记录改成 `passed`，记 `reviewedBy`（后台操作人）和时间——否则公开后别人看不到图。`rejected`（微信明确判违规）仍然拦，逻辑不变。
+  4. 后台评价列表“机审”列：`manual`/`pending` 显示“人工审核”（灰色），`passed` 显示“已通过”，`rejected` 显示“机审判定违规”（红色）。不新增按钮。
+  5. `GET /api/wechat/media-check`：按微信消息推送规范校验 `signature`（用 `WECHAT_MSG_TOKEN`），通过就原样返回 `echostr`（纯文本），否则 403。为以后打开开关时能在小程序后台保存推送配置。
+  6. `deploy/app.env.example` 加 `IMAGE_SEC_CHECK=off` 和中文注释；`docs/deploy.md` 加一节“以后打开图片机审”：生成 `WECHAT_MSG_TOKEN`、填进 `app.env`、`IMAGE_SEC_CHECK=on`、小程序后台“开发管理 → 开发设置 → 消息推送”填 URL `https://<API域名>/api/wechat/media-check`、Token 同上、数据格式 JSON、明文模式。
+- **测试**：`off` 时上传不调 `check_image_async` 且状态 `manual`；`on` 时行为与现在一致；`manual` 和 `pending` 照片的评价可以通过、通过后照片变 `passed` 且公开可见；`rejected` 仍拦；GET 验证签名对返回 echostr、不对 403；评价文字审核逻辑不变。
+- **报告**：后台评价列表三种状态的截图。
+- **不做**：改评价文字的检测；改售后照片流程（只有后台能看，按 `viewer_can_see` 不受影响）；删除机审代码。
+
 ## B-19 商品接口 13 秒：知识库缓存每次都开新数据库连接（2026-11-18 线上实测）
 
 - **依赖**：B-18（已完成）　**大小**：S　**只能改**：`server/kb.py`、`server/kb_store.py`、`server/tests/` 对应测试

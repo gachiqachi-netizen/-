@@ -6,7 +6,7 @@
 - **执行 agent**：每次开工先读第 2 节守则，再读分到的那条任务（第 4 节）。
 - **审查（Claude）**：执行 agent 每做完一条，按第 1.3 节审完再合并。
 
-审查依据：提交 5e4945b 的代码审查。小程序逐条问题和行号见 [review-miniprogram-2026-11-04.md](review-miniprogram-2026-11-04.md)；知识库方案审校意见见 `kb/data/review/plans.json`。
+审查依据：提交 5e4945b 的代码审查。小程序逐条问题和行号见 [review-miniprogram-2026-11-04.md](archive/review-miniprogram-2026-11-04.md)；知识库方案审校意见见 `kb/data/review/plans.json`。
 
 ---
 
@@ -46,7 +46,7 @@
 
 ### 2.1 先了解项目
 
-开工前读：`README.md`、`docs/architecture.md`、`开发与上线准备.md`。涉及界面的任务，再看根目录 `prototype.html` 里对应的功能（它是功能最全的参照版本）。涉及珠子知识的任务，读 `kb/SCHEMA.md`。
+开工前读：`README.md`、`docs/architecture.md`、`开发与上线准备.md`。涉及界面的任务，以微信小程序为准（原型页已删除）。涉及珠子知识的任务，读 `kb/SCHEMA.md`。
 
 ### 2.2 环境
 
@@ -141,7 +141,7 @@ python3 kb/validate.py
 
 #### T3 材料清单、卖点、讲解和安全提示
 - **目标**：用户在编辑、下单、订单详情都能看到每种珠子的卖点、讲解和安全提示。
-- **现状**：后端 `/api/catalog` 每颗珠子带 `points`（卖点）、`meaning`/`summary`（讲解）、`safety`（有毒提示，例如朱砂、红豆杉、相思子、元宝菩提），小程序全部没展示（`pages/editor/editor.js:23` 算了 points 但没渲染）。原型的做法见 `prototype.html` 的 `notesHtml`。
+- **现状**：后端 `/api/catalog` 每颗珠子带 `points`（卖点）、`meaning`/`summary`（讲解）、`safety`（有毒提示，例如朱砂、红豆杉、相思子、元宝菩提），小程序全部没展示（`pages/editor/editor.js:23` 算了 points 但没渲染）。原型页已删除，前台是微信小程序。
 - **改动文件**：`miniprogram/pages/editor/*`、`miniprogram/pages/order/*`、`miniprogram/pages/order-detail/*`、`server/user_api.py`、`server/tests/test_user_api.py`、`miniprogram/tests/`。
 - **要做**：
   1. 编辑器加“材料清单”区：每种珠子一行，显示名称、尺寸、数量、小计、卖点（`points` 用“ · ”连接）、一句讲解；有 `safety` 的用红字单独一行。
@@ -171,7 +171,7 @@ python3 kb/validate.py
 #### T5 计价规则只留一份，旧演示下单默认关闭
 - **目标**：改一处计价参数，所有地方一起变；只保留一条正式下单路径。
 - **现状**：手工费 15、编织绳 5、礼盒 10、满 99 免运费否则 8，在旧接口 `/api/orders`、新接口 `/api/my/orders`、小程序、原型里各写一遍。旧接口不用登录、带首单立减 10，默认开着。
-- **改动文件**：新建 `server/pricing.py`、`server/app.py`、`server/user_api.py`、`miniprogram/pages/order/*`、`prototype.html`（只改读计价参数的地方）、`Dockerfile`、`开发与上线准备.md`、`server/tests/`。
+- **改动文件**：新建 `server/pricing.py`、`server/app.py`、`server/user_api.py`、`miniprogram/pages/order/*`、`Dockerfile`、`开发与上线准备.md`、`server/tests/`。
 - **要做**：
   1. `pricing.py` 定义计价参数和 `quote(items, options)`，两个下单接口都调它；`/api/catalog` 返回 `pricing` 字段，小程序和原型从这里读。
   2. 旧演示接口改为只有设置 `DEMO_ORDERS=1` 才开放（替代 `DISABLE_DEMO_ORDERS`），文档和 Dockerfile 同步改。
@@ -236,7 +236,7 @@ python3 kb/validate.py
 
 #### T13 视觉和设计规范同步
 - **待你决定**：这次提交把视觉改了：托盘底色接近纯白、卡片加边框、语音按钮用 emoji 🎙、编辑页把“名称与寓意”“按颗数串”折叠、“去下单”前加了“完成设计”页。原设计规范是托盘用浅色绒布渐变、卡片不加边框、不用 emoji 当图标。请在派这条任务时告诉 执行 agent：保留新视觉（更新规范）还是改回原规范，或者逐项说明。
-- **改动文件**：`prototype.html` 的样式、`miniprogram/app.wxss` 和各页面 `.wxss`、`docs/` 下新建 `design-tokens.md`。
+- **改动文件**：`miniprogram/app.wxss` 和各页面 `.wxss`、`docs/` 下新建 `design-tokens.md`。
 - **要做**：按你的决定统一原型和小程序的颜色、边框、圆角 token，写进 `docs/design-tokens.md`；无论哪种决定，emoji 图标都换成线性 SVG 图标（24px 网格、1.5px 描边、圆角端点）。
 - **验收**：原型和小程序同一页面截图对比，附在汇报里。
 

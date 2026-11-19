@@ -28,7 +28,7 @@
 
 - 本机 PATH 里没有 node，我用的是 `~/.local/toolchains/node/bin/node`（v22.23.4）。
 - 按任务给的命令 `node --test miniprogram/tests/` 会失败：Node 22 不把目录当测试入口，报 `Cannot find module .../miniprogram/tests`。这不是代码问题。
-- 用 `node --test miniprogram/tests/*.test.js`（项目文档 `docs/frontend-interaction-audit-2026-11-03.md` 里写的命令）：**15 tests / 15 pass / 0 fail**，耗时约 1.1s。
+- 用 `node --test miniprogram/tests/*.test.js`（项目文档 `docs/archive/frontend-interaction-audit-2026-11-03.md` 里写的命令）：**15 tests / 15 pass / 0 fail**，耗时约 1.1s。
 - 10 个文件逐个用 `node <file>` 跑，都打印出了成功信息。
 - 缺口：没有测试直接覆盖 `logic.stats/fill/setCount` 和 `template.build` 的尺寸规则。我用临时脚本抽测过：手围 15cm 时，6/8/10/12mm 分别铺 27/21/17/15 颗，差值 +2/+3/0/+5mm，全部落在区间内。
 
@@ -38,7 +38,7 @@
 |---|---|---|---|
 | 高 | miniprogram/app.js:6 | 非 develop 环境（体验版、正式版）的 `apiBase = 'http://127.0.0.1:8800'`，在用户手机上指向手机本机，而且是 http。注释说“正式版不用私网地址”，实际给的地址同样不可用。体验版和正式版所有接口都会失败（目录、下单、分享落地页、AI）。 | 按 `envVersion` 区分 develop/trial/release，trial 和 release 用 HTTPS 合法域名，并在公众平台配置 request 域名。 |
 | 高 | tools/hand-tracker/build.js:9-11 → miniprogram/ar-hand/runtime.js；runtime.ts:6-14 | 手部模型来自他人的测试 CDN `cdn.static.oppenlab.com/weblf/test/...`，约 12.5MB（README 自己写了）。用 `wx.request` 下载、不落盘缓存，每次进 AR 页都重新拉。服务可用性不受控；正式版要把这个域名加进 request 合法域名；4G 下首次加载要十几到几十秒，还消耗流量。 | 模型迁到自有、带版本号的 HTTPS 存储；用 `wx.getFileSystemManager` 缓存到 `USER_DATA_PATH`，按版本校验；进页前提示体积，或者只在 Wi-Fi 下预载；评估换更轻的模型（只做 palm 检测 + 量化 int8）。 |
-| 高 | miniprogram/pages/editor/editor.wxml:19；pages/editor/editor.js:23；pages/order/order.wxml:6；pages/shared/shared.wxml:1 | 知识库的 `safety` 字段（朱砂、红豆杉、相思子、金元宝等标了 toxic）在小程序里没有任何展示，全目录 grep 不到 `safety`。原型 prototype.html:1048 的材料清单会用 `--danger` 色显示这条提示。`notes` 里算好了 `points/meaning`，但编辑器 wxml 没渲染（`detailsOpen` 等字段是死代码）；长按详情只显示 `meaning`，没有卖点、讲解（summary）和安全提示。违反“有毒材质要提示”的规则。 | 在长按详情、编辑器材料清单、订单材料明细、分享落地页统一渲染 `points`、`summary`、`safety`（红色）。下单前如果含 toxic 材质，弹出确认。`utils/catalog-preview.js` 里也要补上 safety 字段。 |
+| 高 | miniprogram/pages/editor/editor.wxml:19；pages/editor/editor.js:23；pages/order/order.wxml:6；pages/shared/shared.wxml:1 | 知识库的 `safety` 字段（朱砂、红豆杉、相思子、金元宝等标了 toxic）在小程序里没有任何展示，全目录 grep 不到 `safety`。原型 已删除的原型页第 1048 行 的材料清单会用 `--danger` 色显示这条提示。`notes` 里算好了 `points/meaning`，但编辑器 wxml 没渲染（`detailsOpen` 等字段是死代码）；长按详情只显示 `meaning`，没有卖点、讲解（summary）和安全提示。违反“有毒材质要提示”的规则。 | 在长按详情、编辑器材料清单、订单材料明细、分享落地页统一渲染 `points`、`summary`、`safety`（红色）。下单前如果含 toxic 材质，弹出确认。`utils/catalog-preview.js` 里也要补上 safety 字段。 |
 | 高（待真机确认） | components/bracelet-thumb/index.js:23,31；用在 pages/home/home.wxml:4,9、pages/diy/diy.wxml:5、pages/mine/mine.wxml:7,10、pages/ai/ai.wxml:11、pages/photo、pages/order | 每个缩略图各创建一个 `canvas type="webgl"` 上下文。“我的”列出全部订单和作品，AI 页恢复最多 20 条消息、每条 3 个方案，tab 页又常驻内存，叠加后很容易几十个 WebGL 上下文同时存在。iOS 和部分安卓对同时存在的 WebGL 上下文有上限，超出会丢上下文、黑块甚至闪退；`detached` 也不释放 program 和 buffer。首页、diy、我的、AI 都没绑 `unavailable`，失败时没有降级图。 | 缩略图改成 2D 圆点图（像 fallback-ring 那样用 view，或者一个 2D canvas 画好后转 tempFile 图片缓存）；只有编辑器、完成页、分享页保留一个 3D 实例。 |
 | 中 | miniprogram/utils/api.js:21-26 | develop 环境下 `catalog()` 永远返回打包的 `catalog-preview.js`，`force` 也无效。真机联调时价格是快照，下单走真实后端，容易触发 price_changed；快照里也没有 safety。审计文档已经列为 P1，但没修。 | 把“离线演示”和“联调”分开，用开关或 `catalogOffline` 只在请求失败时兜底。 |
 | 中 | pages/ai/ai.js:46；pages/editor/editor.js:66；utils/template.js:6 | 服务端方案总是返回 `count=len(seq)`（server/plans.py:236），`use()` 却写成 `d.fixed=t.fixed\|\|t.count`。结果普通按手围的方案也被标成定颗数，编辑器里“按手围重排”永远按旧颗数排，改了手围也不会重新适配。 | 只用 `t.fixed` 写 `d.fixed`；`count` 只用于展示。 |
@@ -61,7 +61,7 @@
 | 低 | pages/share/share.js:12,23；pages/tryon/tryon.js:50,69 | 用的是旧版 `wx.createCanvasContext` 和 `canvas-id`，已被官方标为不推荐。 | 迁移到 `type="2d"` 的 canvas。 |
 | 低 | 多处：editor.js:26、finish.js:8、share.js:9、shared.js:2、tryon.js:13、photo.js:92、home/data.js:11、diy.js:4、order.js:9 | 手工费 15（或 1500 分）、绳 5、礼盒 10、包邮 99、运费 8 这些魔法数散落在 9 处；圆环坐标 `50+35/37*cos` 也复制了 6 处。 | 抽出 `utils/pricing.js`（同时对齐服务端常量）和 `ringLayout()`。 |
 | 低 | three-renderer.js 对比 pages/tryon/three-tryon.js；bracelet3d/index.js 对比 bracelet-thumb/index.js | `textureData/makeEnvironment/mapFor`、`compile/mesh/rgb` 大段重复。 | 抽成共享模块。 |
-| 低 | app.wxss 及各页 wxss | 没有用设计 token。品牌色 #c8302e、danger #b42318、fit-warn #9a5800 对得上；ink 用的是 #1f1b1a（原型是 --ink #211e1d），灰阶有 #777/#68625f/#645d59/#5e5753 等十几种；没有 `--font-num`（DIN）数字字体。 | 在 `page{}` 上定义 CSS 变量，对齐 prototype.html:6-16，各页引用变量。 |
+| 低 | app.wxss 及各页 wxss | 没有用设计 token。品牌色 #c8302e、danger #b42318、fit-warn #9a5800 对得上；ink 用的是 #1f1b1a（原型是 --ink #211e1d），灰阶有 #777/#68625f/#645d59/#5e5753 等十几种；没有 `--font-num`（DIN）数字字体。 | 在 `page{}` 上定义 CSS 变量，对齐 已删除的原型页第 6 至 16 行，各页引用变量。 |
 | 低 | project.config.json:7,26 | `minified:false`；`packOptions.ignore` 为空，`tests/`、`README.md`、仅开发用的 `catalog-preview.js`（40KB）都会被打进包。 | 打开压缩，ignore 掉 tests/README；catalog-preview 只在开发时引入，或者放到分包。 |
 | 低 | app.json | 没开 `lazyCodeLoading: "requiredComponents"`；没给 ar-hand 配 `preloadRule`；sitemap 放开了所有页面（包括 login、order）。 | 补上这些配置。 |
 | 低 | miniprogram/README.md:3 对比 app.js:6、phone-test-proxy.py | README 写 8801 端口，代码用 8800（开发者工具）和 8802（代理），文档和实现对不上。 | 统一端口说明。 |

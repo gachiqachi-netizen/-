@@ -90,8 +90,8 @@ Page({
     } })
   },
   addressEntry() {
-    if (this.data.person && this.data.phone && this.data.addr) return this.manualAddress()
-    wx.showActionSheet({ itemList: ['用微信收货地址', '手动填写'], success: result => {
+    const hasAddress = this.data.person && this.data.phone && this.data.addr
+    wx.showActionSheet({ itemList: hasAddress ? ['换一个微信地址', '修改当前地址'] : ['用微信收货地址', '手动填写'], success: result => {
       if (result.tapIndex === 0) this.chooseAddress()
       else if (result.tapIndex === 1) this.manualAddress()
     } })

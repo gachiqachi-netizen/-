@@ -1,4 +1,4 @@
-<view class="c-cell-row" wx:if="{{!design}}" bindtap="onTap">
+<view class="c-cell-row" wx:if="{{!design}}" catchtap="onTap">
   <view class="c-cell-row__label">{{label}}<slot name="label" /></view>
   <view class="c-cell-row__right"><text>{{value}}</text><slot name="value" /><image wx:if="{{arrow}}" class="c-cell-row__arrow" src="../../assets/icons/chevron-right.svg" /><view wx:if="{{switch}}" class="c-cell-row__switch {{checked ? 'is-on' : ''}}" catchtap="onSwitch"><view class="c-cell-row__knob" /></view></view>
 </view>

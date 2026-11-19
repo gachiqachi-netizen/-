@@ -22,6 +22,24 @@ test('cell renders row, arrow and monochrome switch', () => {
   assert.match(wxss, /var\(--h-row\)/)
   assert.match(wxss, /var\(--c-text\)/)
 })
+test('cell row tap reaches the page once and switch tap only emits change', () => {
+  const wxml = read('miniprogram/components/cell/index.wxml')
+  assert.match(wxml, /<view class="c-cell-row"[^>]*catchtap="onTap"/)
+  assert.match(wxml, /class="c-cell-row__switch[^>]*catchtap="onSwitch"/)
+  const source = read('miniprogram/components/cell/index.js')
+  let definition
+  vm.runInNewContext(source, {
+    require: () => ({ yuan: () => '' }),
+    Component: value => { definition = value },
+  })
+  const received = []
+  const component = { data: { checked: false }, triggerEvent: (name, detail) => received.push([name, detail]) }
+  definition.methods.onTap.call(component)
+  assert.deepEqual(received.map(([name]) => name), ['tap'])
+  definition.methods.onSwitch.call(component)
+  assert.deepEqual(received.map(([name]) => name), ['tap', 'change'])
+  assert.equal(received[1][1].value, true)
+})
 test('bar exposes three layouts and token button height', () => {
   const wxml = read('miniprogram/components/bar/index.wxml')
   assert.match(wxml, /layout === 'agreement'/)

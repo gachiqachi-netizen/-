@@ -174,3 +174,9 @@
 | H4 | agent/H4-pg-tests | followups-infra.md | B-24 | Codex |  |  |
 | H5 | agent/H5-component-rules | followups-infra.md | U28 | 任何 |  |  |
 | H6 | agent/H6-import-beads | followups-infra.md | B-23 | Codex |  |  |
+| B-26 | agent/B-26-wxacode-env | followups-1119.md |  | 任何 |  |  |
+| U34 | agent/U34-diy-entries | followups-1119.md | U33 | Codex | U35、U36 |  |
+| U35 | agent/U35-ring-layout | followups-1119.md | U34 | Codex | U36 |  |
+| U36 | agent/U36-thumb-center | followups-1119.md | U35 | 任何 |  |  |
+| U38 | agent/U38-share-once | followups-1119.md | B-26 | 任何 |  |  |
+| H7 | agent/H7-import-hc | followups-1119.md | H6 | Codex |  |  |

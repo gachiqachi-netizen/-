@@ -4,6 +4,7 @@ const nav=require('../../utils/nav'), {fitText,meterPos}=require('../../utils/fi
 const {totalHand}=require('../finish/total'), {yuan}=require('../../utils/money')
 const {message}=require('./feedback')
 const {layout}=require('../../components/bracelet/index')
+const {angleDelta}=require('../../utils/bracelet-layout')
 const {bannedWords}=require('../../utils/contract')
 const MAX_BEADS=54
 const LIMIT_MESSAGE='这一版最多串 54 颗，多圈手串之后会开放'
@@ -66,7 +67,7 @@ Page({
     const fitOK=!result.missing&&d.beads.length>0&&fitResult.state==='ok'
     const withoutLast=d.beads.length?logic.stats(d.beads.slice(0,-1),this.data.catalog,d.wrist):null
     const overHint=fitResult.state==='long'&&withoutLast&&fitText(withoutLast,d.beads.length-1).state==='ok'?'去掉 1 颗刚好合适':''
-    const kindPositions=this.data.selectedKind?layout(items,470).filter((p,i)=>d.beads[i]===this.data.selectedKind):[]
+    const kindPositions=this.data.selectedKind?layout(items,470,'',Number(d.wrist||16)*10,this.data.ringRotation||0).filter((p,i)=>d.beads[i]===this.data.selectedKind):[]
     this.setData({...filterPatch,items,missingItems,picked,displayBeads,kindPositions,overHint,beadCount:d.beads.length,handPrice,price:result.missing?'--':(result.price+(d.beads.length?15:0)).toFixed(2),length:result.missing?'--':(result.length/10).toFixed(1),lengthMm:result.missing?'--':Math.round(result.length),fit:result.missing?'部分材料已下架，请替换后继续':d.beads.length?(fitResult.state==='multi'?'已超过单圈长度':fitResult.word):'还没有珠子',fitState:d.beads.length?fitResult.state:'empty',shortMm:fitResult.mm||0,missing:result.missing,tags:tags.slice(0,3),tagLine:tags.slice(0,3).join(' · '),nameLabel:unnamed(d.name)?'起个名字':d.name,notes,safetyNotice:materials.safetyLines(notes),meterFill:meterPos(result),meterZoneLeft:43,meterZoneWidth:17,fitOK,fillCount:Math.max(0,Math.min(MAX_BEADS,next.length)-d.beads.length),fillLabel:last?`${map[last].name} ${map[last].mm}mm`:'',selectedLabel:selectedItem?`${selectedItem.name} ${selectedItem.mm}mm`:this.data.selected>=0?'已下架材料':'',canUndo:!!(this.history&&this.history.length)})
     store.selected(d)
   },
@@ -82,7 +83,7 @@ Page({
   vibrate(type='light'){if(wx.vibrateShort)wx.vibrateShort({type,fail(){}})},
   focusKbBead(){const id=this.pendingBeadKbId;if(!id)return;this.pendingBeadKbId='';const bead=this.data.catalog.find(b=>b.kbId===id||b.kb===id||b.id===id);if(!bead||bead.onSale===false||bead.stock==='out_of_stock')return;this.setData({cat:'all',size:'all',materialTab:bead.mat==='metal'||bead.spacer?'accessories':'beads',focusedBeadId:bead.id,scrollBeadId:'bead-'+bead.id});this.filterKey='';this.update()},
   clearFocus(){this.setData({focusedBeadId:'',scrollBeadId:''})},
-  selectTray(e){if(!this.data.items.length||!this.createSelectorQuery)return;this.createSelectorQuery().select('#workbench-bracelet').boundingClientRect(rect=>{if(!rect)return;const x=(e.detail.x-rect.left)/rect.width*470,y=(e.detail.y-rect.top)/rect.height*470;const positions=layout(this.data.items,470);let best=-1,distance=Infinity;positions.forEach((p,i)=>{const dx=x-(p.x+p.box/2),dy=y-(p.y+p.box/2),d=dx*dx+dy*dy;if(d<distance){distance=d;best=i}});if(best>=0)this.select({currentTarget:{dataset:{i:best}}})}).exec()},
+  selectTray(e){if(!this.data.items.length||!this.createSelectorQuery)return;this.createSelectorQuery().select('#workbench-bracelet').boundingClientRect(rect=>{if(!rect)return;const x=(e.detail.x-rect.left)/rect.width*470,y=(e.detail.y-rect.top)/rect.height*470;const positions=layout(this.data.items,470,'',Number(this.data.design.wrist||16)*10,this.data.ringRotation||0);let best=-1,distance=Infinity;positions.forEach((p,i)=>{const dx=x-(p.x+p.box/2),dy=y-(p.y+p.box/2),d=dx*dx+dy*dy;if(d<distance){distance=d;best=i}});if(best>=0&&distance<=(positions[best].box/2)**2)this.select({currentTarget:{dataset:{i:best}}})}).exec()},
   stack(){const others=store.list().filter(d=>d.id!==this.data.design.id&&d.beads&&d.beads.length).map(d=>({...d,chosen:false}));if(!others.length)return this.say('stackEmpty');this.setData({stackOptions:others,stackIds:[],stackOpen:true})},
   closeStack(){this.setData({stackOpen:false});this.rehideTabBarSoon()},
   chooseStack(e){const id=e.currentTarget.dataset.id,ids=this.data.stackIds.slice(),index=ids.indexOf(id);if(index>=0)ids.splice(index,1);else if(ids.length<2)ids.push(id);else return queue.show({text:'最多选两条作品'});this.setData({stackIds:ids,stackOptions:this.data.stackOptions.map(d=>({...d,chosen:ids.includes(d.id)}))})},
@@ -122,10 +123,36 @@ Page({
   reflowWrist(){const d=this.data.design;if(!d.beads.length)return queue.show({text:'先挑一颗珠子'});const map=Object.fromEntries(this.data.catalog.map(b=>[b.id,b]));let next=d.pattern&&d.pattern.length?templates.build(d,this.data.catalog,d.wrist):null;if(!next){next=d.beads.slice();const last=[...next].reverse().find(id=>map[id]&&!map[id].spacer&&map[id].mat!=='metal');if(last)next=logic.fill(next,this.data.catalog,d.wrist,last);while(next.length>1&&fitText(logic.stats(next,this.data.catalog,d.wrist),next.length).state==='long'){const shorter=next.slice(0,-1);if(fitText(logic.stats(shorter,this.data.catalog,d.wrist),shorter.length).state==='short')break;next=shorter}}if(!next||next.length===d.beads.length&&next.every((id,i)=>id===d.beads[i]))return queue.show({text:'当前已经按手围排好'});this.changeBeads(next);this.setData({moreOpen:false});queue.show({text:`已按 ${d.wrist}cm 重新排好`})},
   openCount(){this.setData({moreOpen:false,countOpen:true})},
   closeCount(){this.setData({countOpen:false});this.rehideTabBarSoon()},
-  trayTouchStart(e){const touch=e.touches&&e.touches[0];this.trayStartY=touch&&touch.clientY;this.trayLastX=touch&&touch.clientX;this.trayLastY=this.trayStartY},
-  trayTouchMove(e){const touch=e.touches&&e.touches[0];if(!touch)return;this.trayLastX=touch.clientX;this.trayLastY=touch.clientY;if(this.trayStartY!=null&&this.trayStartY-touch.clientY>40&&!this.data.trayExpanded)this.setData({trayExpanded:true})},
-  trayLongPress(e){if(!this.data.items.length)return;this.trayDragIndex=this.data.selected>=0?this.data.selected:0;this.setData({trayExpanded:true})},
-  trayTouchEnd(){if(this.trayDragIndex!=null&&this.data.items.length>1&&this.trayLastX!=null&&this.createSelectorQuery){const from=this.trayDragIndex;this.createSelectorQuery().select('#workbench-bracelet').boundingClientRect(rect=>{if(!rect)return;const positions=layout(this.data.items,470),x=(this.trayLastX-rect.left)/rect.width*470,y=(this.trayLastY-rect.top)/rect.height*470;let target=from,best=Infinity;positions.forEach((p,i)=>{const dx=x-p.x-p.box/2,dy=y-p.y-p.box/2,d=dx*dx+dy*dy;if(d<best){best=d;target=i}});if(target!==from){const next=this.data.design.beads.slice(),[bead]=next.splice(from,1);next.splice(target,0,bead);this.changeBeads(next,target);this.vibrate()}}).exec()}this.trayDragIndex=null;this.trayStartY=null;this.setData({trayExpanded:false})},
+  trayTouchStart(e){
+    const touch=e.touches&&e.touches[0];if(!touch)return
+    this.trayStartY=touch.clientY;this.trayLastX=touch.clientX;this.trayLastY=touch.clientY
+    this.trayTouchBead=-1;this.rotateGesture=false;this.trayRect=null
+    if(!this.data.items.length||!this.createSelectorQuery)return
+    this.createSelectorQuery().select('#workbench-bracelet').boundingClientRect(rect=>{
+      if(!rect||!this.data.design)return
+      this.trayRect=rect
+      const x=(touch.clientX-rect.left)/rect.width*470,y=(touch.clientY-rect.top)/rect.height*470
+      if(x<0||x>470||y<0||y>470)return
+      const points=layout(this.data.items,470,'',Number(this.data.design.wrist||16)*10,this.data.ringRotation||0)
+      this.trayTouchBead=points.findIndex(p=>Math.hypot(x-p.left-p.d/2,y-p.top-p.d/2)<=p.d/2)
+      if(this.trayTouchBead<0){this.rotateGesture=true;this.lastRingAngle=Math.atan2(touch.clientY-rect.top-rect.height/2,touch.clientX-rect.left-rect.width/2)}
+    }).exec()
+  },
+  trayTouchMove(e){
+    const touch=e.touches&&e.touches[0];if(!touch)return
+    this.trayLastX=touch.clientX;this.trayLastY=touch.clientY
+    if(this.rotateGesture&&this.trayRect){
+      const rect=this.trayRect,angle=Math.atan2(touch.clientY-rect.top-rect.height/2,touch.clientX-rect.left-rect.width/2)
+      this.setData({ringRotation:(this.data.ringRotation||0)+angleDelta(this.lastRingAngle,angle)})
+      this.lastRingAngle=angle;return
+    }
+    if(this.trayStartY!=null&&this.trayStartY-touch.clientY>40&&!this.data.trayExpanded)this.setData({trayExpanded:true})
+  },
+  trayLongPress(){if(this.trayTouchBead<0||!this.data.items.length)return;this.trayDragIndex=this.trayTouchBead;this.rotateGesture=false;this.setData({trayExpanded:true})},
+  trayTouchEnd(){
+    if(this.trayDragIndex!=null&&this.data.items.length>1&&this.trayLastX!=null&&this.createSelectorQuery){const from=this.trayDragIndex;this.createSelectorQuery().select('#workbench-bracelet').boundingClientRect(rect=>{if(!rect)return;const positions=layout(this.data.items,470,'',Number(this.data.design.wrist||16)*10,this.data.ringRotation||0),x=(this.trayLastX-rect.left)/rect.width*470,y=(this.trayLastY-rect.top)/rect.height*470;let target=from,best=Infinity;positions.forEach((p,i)=>{const dx=x-p.x-p.box/2,dy=y-p.y-p.box/2,d=dx*dx+dy*dy;if(d<best){best=d;target=i}});if(target!==from){const next=this.data.design.beads.slice(),[bead]=next.splice(from,1);next.splice(target,0,bead);this.changeBeads(next,target);this.vibrate()}}).exec()}
+    this.trayDragIndex=null;this.trayStartY=null;this.rotateGesture=false;this.trayRect=null;this.setData({trayExpanded:false})
+  },
   inspect(e){const b=this.data.filtered.find(b=>b.id===e.currentTarget.dataset.id);if(b){this.setData({detailBead:b,detailOpen:true,detailSafetyNote:typeof b.safety==='string'?b.safety:b.safety&&b.safety.note||'',detailSafetyCare:b.care||''});const kbId=b.kb||b.kbId;if(kbId)api.request('/kb/bead/'+encodeURIComponent(kbId)).then(kb=>{if(this.data.detailBead&&this.data.detailBead.id===b.id)this.setData({detailSafetyNote:kb.safety&&kb.safety.note||'',detailSafetyCare:kb.care||''})}).catch(()=>{});this.vibrate()}this.suppressTapUntil=Date.now()+600},
   closeInspect(){this.setData({detailBead:null,detailOpen:false,detailSafetyNote:'',detailSafetyCare:''});this.rehideTabBarSoon()},
   focusSheetSimilar(){const bead=this.data.detailBead;this.closeInspect();if(bead)this.focusSimilar(bead)},

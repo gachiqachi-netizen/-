@@ -5,7 +5,7 @@
       <view class="empty-ring"><view class="empty-ring-wordmark"><c-wordmark tone="text" size="trayLg" /></view></view>
       <view class="empty-hint">从下面挑一颗开始</view>
     </view>
-    <view wx:else id="workbench-bracelet" class="bracelet-touch" bindtap="selectTray" bindlongpress="trayLongPress"><view wx:if="{{stackPreview}}" class="stack-extra"><c-bracelet mode="stack" stackBeads="{{stackBeads}}" size="{{330}}" /></view><view class="{{stackPreview ? 'stack-current' : ''}}"><c-bracelet beads="{{items}}" size="{{stackPreview ? 330 : 470}}" selected="{{selected}}" wordmark="{{true}}" /></view><view class="kind-ring" wx:for="{{kindPositions}}" wx:key="index" style="left:{{item.x}}rpx;top:{{item.y}}rpx;width:{{item.box}}rpx;height:{{item.box}}rpx;"></view></view>
+    <view wx:else id="workbench-bracelet" class="bracelet-touch" bindtap="selectTray" bindlongpress="trayLongPress"><view wx:if="{{stackPreview}}" class="stack-extra"><c-bracelet mode="stack" stackBeads="{{stackBeads}}" size="{{330}}" /></view><view class="{{stackPreview ? 'stack-current' : ''}}"><c-bracelet beads="{{items}}" size="{{stackPreview ? 330 : 470}}" circumferenceMm="{{(design.wrist || 16) * 10}}" rotation="{{ringRotation || 0}}" selected="{{selected}}" wordmark="{{true}}" /></view><view class="kind-ring" wx:for="{{kindPositions}}" wx:key="index" style="left:{{item.x}}rpx;top:{{item.y}}rpx;width:{{item.box}}rpx;height:{{item.box}}rpx;"></view></view>
     <view class="stack-label" wx:if="{{stackPreview}}" bindtap="closeStackPreview">叠戴预览 · {{stackLabel}}　✕</view>
     <view class="side-actions">
       <view class="side-action {{canUndo ? '' : 'is-disabled'}}" bindtap="undo">↶<text>撤销</text></view>

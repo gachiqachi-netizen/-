@@ -117,12 +117,29 @@ def existing_component_violations(path):
         return set()
     return set(component_violations(path, source, markup))
 
+def navigation_violations(root=ROOT):
+    app = json.loads((root / 'miniprogram/app.json').read_text())
+    pages = list(app.get('pages', []))
+    pages += [part['root'].rstrip('/') + '/' + name
+              for part in app.get('subPackages', []) for name in part.get('pages', [])]
+    inherited = (app.get('window') or {}).get('navigationBarTitleText')
+    found = []
+    for name in pages:
+        relative = f'miniprogram/{name}.json'
+        path = root / relative
+        config = json.loads(path.read_text()) if path.exists() else {}
+        if config.get('navigationStyle') == 'custom':
+            found.append(f'{relative}:navigationStyle:不能使用 custom')
+        if not (config.get('navigationBarTitleText') or inherited):
+            found.append(f'{relative}:navigationBarTitleText:没有页面标题，也没有 app.window 默认标题')
+    return found
+
 def main():
     paths = [Path(arg).resolve() for arg in sys.argv[1:]] if len(sys.argv) > 1 else list((ROOT / 'miniprogram').rglob('*.wxss')) + list((ROOT / 'miniprogram').rglob('*.wxml')) + list((ROOT / 'miniprogram/components').glob('*/index.js'))
     old = set(json.loads(BASELINE.read_text())) if BASELINE.exists() else set()
     current = {item for path in paths if path.name != 'tokens.wxss' for item in (markup_violations(path) if path.suffix == '.wxml' else component_violations(path) if path.suffix == '.js' else violations(path))}
     legacy = {item for path in paths if path.suffix == '.js' for item in existing_component_violations(path)}
-    added = sorted(current - old - legacy)
+    added = sorted(current - old - legacy) + navigation_violations()
     for item in added: print(item)
     print(f'UI check: {len(current)} violations, {len(added)} new')
     return bool(added)

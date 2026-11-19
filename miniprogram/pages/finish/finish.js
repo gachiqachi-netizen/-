@@ -158,7 +158,7 @@ Page({
   goWorkbench() {
     const d = this.data.design
     if (d) store.selected(d)
-    wx.switchTab({ url: '/pages/diy/diy' })
+    nav.openWorkbench(d)
   },
 
   order() {

@@ -3,6 +3,8 @@ const assert = require('node:assert/strict')
 
 let stack, relaunched, notice, storage, switched
 function get(key) { return structuredClone(storage[key]) }
+const app = { globalData: {} }
+global.getApp = () => app
 global.getCurrentPages = () => stack
 global.wx = {
   getStorageSync: key => get(key),
@@ -22,6 +24,7 @@ test.beforeEach(() => {
   stack = [{ route: 'pages/home/home' }]
   relaunched = notice = switched = undefined
   storage = {}
+  app.globalData = {}
 })
 
 test('opening another design saves an unsaved current draft before switching tab', () => {
@@ -44,17 +47,18 @@ test('unchanged current draft does not create another saved work', () => {
   assert.equal(notice, undefined)
 })
 
-test('workbench returns to the tab from home, AI, or mine', () => {
-  for (const tab of ['pages/home/home', 'pages/ai/ai', 'pages/mine/mine']) {
-    stack = [{ route: tab }, { route: 'pages/finish/finish' }]
-    nav.openWorkbench({ id: tab, beads: [] })
-    nav.backFromWorkbench()
-    assert.equal(switched, '/' + tab)
-  }
-  stack = [{ route: 'features/shared/shared' }]
-  nav.openWorkbench({ id: 'shared', beads: [] })
-  nav.backFromWorkbench()
+test('openWorkbench records the exact source before switching tabs', () => {
+  stack = [{ route: 'pages/home/home' }, { route: 'features/works/works', options: { id: 'a b', from: 'mine' } }]
+  nav.openWorkbench({ id: 'work', beads: [] })
+  assert.deepEqual(app.globalData.workbenchReturn, { route: 'features/works/works', options: { id: 'a b', from: 'mine' } })
+  assert.equal(switched, '/pages/diy/diy')
+})
+
+test('workbench returns to tab by switchTab and non-tab by navigateTo with parameters', () => {
+  nav.backFromWorkbench({ route: 'pages/home/home', options: {} })
   assert.equal(switched, '/pages/home/home')
+  nav.backFromWorkbench({ route: 'features/works/works', options: { id: 'a b' } })
+  assert.equal(stack.at(-1).route, 'features/works/works?id=a%20b')
 })
 
 test('openEditor uses tab navigation without exceeding page stack', () => {

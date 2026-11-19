@@ -41,7 +41,7 @@ Page({
     const beadId = article.beadKbIds && article.beadKbIds[0]
     if (target === '/pages/diy/diy') {
       getApp().globalData.pendingWorkbenchBeadKbId = beadId
-      wx.switchTab({ url: target })
+      require('../../utils/nav').openWorkbench()
     } else wx.navigateTo({ url: target + (beadId ? (target.includes('?') ? '&' : '?') + 'beadKbId=' + encodeURIComponent(beadId) : '') })
   },
 })

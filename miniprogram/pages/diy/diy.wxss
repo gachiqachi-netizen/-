@@ -17,3 +17,5 @@
 .picker-empty{padding:var(--sp-section) var(--sp-base);font-size:var(--fs-body);color:var(--c-text-2);text-align:center}
 .search-focused .picker{padding-bottom:var(--sp-tight)}
 .search-focused .bead-scroll{height:36vh}
+
+.tray-name{max-width:420rpx;display:flex;align-items:center;gap:16rpx}.tray-back{color:var(--c-text);white-space:nowrap}.status-summary{display:flex;align-items:center;gap:16rpx}.wrist-link{color:var(--c-text-2);white-space:nowrap}

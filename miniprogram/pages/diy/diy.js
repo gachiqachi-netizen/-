@@ -15,12 +15,14 @@ const cleanName=name=>String(name||'').trim().slice(0,8)
 const nameHasBanned=name=>bannedWords.some(word=>word&&name.includes(word))
 const namesFromTags=tags=>[tags[0],tags[0]&&tags[1]?tags[0]+tags[1]:'',tags[0]&&tags[2]?tags[0]+tags[2]:''].map(cleanName).filter((name,i,all)=>name&&!nameHasBanned(name)&&all.indexOf(name)===i)
 Page({
-  data:{searchText:'',searchQuery:'',searchCount:0,searchFocused:false,displayBeads:[],soundOn:true,dragging:false,trashHover:false,dragX:0,dragY:0,dragColor:'#888',settingsOpen:false,prefSize:'all',prefWrist:15,prefColor:'全部',prefMeaning:'全部',prefRecipient:'自己',prefSizes:[6,8,10,12],prefWrists:[14.5,15,16,17.5],prefColors:['全部','深色系','浅色系','暖色系','冷色系'],prefMeanings:['全部','平安','好运','学业','事业','爱情'],prefRecipients:['自己','爱人','朋友','爸妈'],materialTab:"beads",filterOpen:false,moreOpen:false,detailBead:null,design:null,catalog:[],catalogReady:false,filtered:[],cats:[],sizes:[],cat:'all',size:'all',items:[],missingItems:[],price:'0.00',handPrice:'¥0',length:'0.0',lengthMm:0,fit:'',missing:0,error:'',selected:-1,selectedLabel:'',canUndo:false,hasPattern:false,renderFallback:false,viewMode:'ring',detailsOpen:false,countsOpen:false,counts:[12,14,18,21],tags:[],notes:[],meterFill:0,meterZoneLeft:0,meterZoneWidth:0,fitOK:false,fillCount:0,fillLabel:'',wristConfirmed:false,firstWristOpen:false,picked:[],beadCount:0,selectedKind:'',replaceMode:false,safetyOpen:false,safetyBead:null,detailOpen:false,flight:null,meterShake:false,saveDot:false,scrollBeadId:'',focusedBeadId:'',stackOpen:false,stackOptions:[],stackIds:[],stackPreview:false,stackBeads:[[],[]],stackLabel:'',trayExpanded:false,nameOpen:false,nameDraft:'',nameError:'',nameSuggestions:[],nameLabel:'起个名字',detailSafetyNote:'',detailSafetyCare:''},
+  data:{searchText:'',searchQuery:'',searchCount:0,searchFocused:false,displayBeads:[],soundOn:true,dragging:false,trashHover:false,dragX:0,dragY:0,dragColor:'#888',settingsOpen:false,prefSize:'all',prefWrist:15,prefColor:'全部',prefMeaning:'全部',prefRecipient:'自己',prefSizes:[6,8,10,12],prefWrists:[14.5,15,16,17.5],prefColors:['全部','深色系','浅色系','暖色系','冷色系'],prefMeanings:['全部','平安','好运','学业','事业','爱情'],prefRecipients:['自己','爱人','朋友','爸妈'],materialTab:"beads",filterOpen:false,moreOpen:false,detailBead:null,design:null,catalog:[],catalogReady:false,filtered:[],cats:[],sizes:[],cat:'all',size:'all',items:[],missingItems:[],price:'0.00',handPrice:'¥0',length:'0.0',lengthMm:0,fit:'',missing:0,error:'',selected:-1,selectedLabel:'',canUndo:false,hasPattern:false,renderFallback:false,viewMode:'ring',detailsOpen:false,countsOpen:false,counts:[12,14,18,21],tags:[],notes:[],meterFill:0,meterZoneLeft:0,meterZoneWidth:0,fitOK:false,fillCount:0,fillLabel:'',wristConfirmed:false,firstWristOpen:false,picked:[],beadCount:0,selectedKind:'',replaceMode:false,safetyOpen:false,safetyBead:null,detailOpen:false,flight:null,meterShake:false,saveDot:false,scrollBeadId:'',focusedBeadId:'',stackOpen:false,stackOptions:[],stackIds:[],stackPreview:false,stackBeads:[[],[]],stackLabel:'',trayExpanded:false,nameOpen:false,nameDraft:'',nameError:'',nameSuggestions:[],nameLabel:'起个名字',detailSafetyNote:'',detailSafetyCare:'',returnSource:null},
   onLoad(options){this.pendingBeadKbId=options&&options.beadKbId?decodeURIComponent(options.beadKbId):''},
   onShow(){
     this.visible=true
     if(wx.hideTabBar)wx.hideTabBar({fail(){}})
     const global=typeof getApp==='function'&&getApp().globalData
+    if(global){this.setData({returnSource:global.workbenchReturn||this.wristPagePending&&this.data.returnSource||null});delete global.workbenchReturn}
+    this.wristPagePending=false
     if(global&&global.pendingWorkbenchBeadKbId){this.pendingBeadKbId=global.pendingWorkbenchBeadKbId;delete global.pendingWorkbenchBeadKbId}
     const d=store.current()||store.create();if(d.beads.length>MAX_BEADS){d.beads=d.beads.slice(0,MAX_BEADS);queue.show({text:LIMIT_MESSAGE})}this.setData({soundOn:wx.getStorageSync('cgz_sound')!==false})
     if (!this.data.design || this.data.design.id!==d.id) { this.history=[]; this.setData({selected:-1,renderFallback:false}) }
@@ -30,6 +32,8 @@ Page({
     api.request('/kb/rules').then(r=>{if(Array.isArray(r.counts)){const counts=[...new Set(r.counts.filter(c=>c.count>=11&&c.count<=30&&c.confidence!=='low').map(c=>c.count))].sort((a,b)=>a-b);if(counts.length)this.setData({counts})}}).catch(()=>{})
   },
   confirmFirstWrist(){wx.setStorageSync('cgz_wrist_confirmed',true);this.setData({wristConfirmed:true,firstWristOpen:false})},
+  openWrist(){this.setData({firstWristOpen:true})},
+  openClear(){this.setData({moreOpen:false,clearOpen:true})},
   measureFirstWrist(){this.pendingWristReflow=true;this.setData({firstWristOpen:false});this.wristPage()},
   update(){
     const d=this.data.design; if(!d)return
@@ -67,7 +71,7 @@ Page({
   saveDraftSoon(){clearTimeout(this.draftTimer);const id=this.data.design.id;this.setData({saveDot:true});this.draftTimer=setTimeout(()=>{const d=this.data.design;if(d&&d.id===id){store.save(d);if(!this.savedNotified){this.savedNotified=true;this.say('autoSave')}this.setData({saveDot:false})}},400)},
   onHide(){this.visible=false;clearTimeout(this.searchTimer);this.filterKey='';this.setData({searchText:'',searchQuery:'',searchFocused:false});if(wx.showTabBar)wx.showTabBar({fail(){}});if(this.audio)this.audio.stop();this.dragCancel();clearTimeout(this.draftTimer);const d=this.data.design;if(d)store.save(d)},
   rehideTabBarSoon(){setTimeout(()=>{if(this.visible&&wx.hideTabBar)wx.hideTabBar({fail(){}})},0)},
-  back(){nav.backFromWorkbench()},
+  back(){nav.backFromWorkbench(this.data.returnSource);this.setData({returnSource:null})},
   works(){this.setData({moreOpen:false});wx.navigateTo({url:'/features/works/works'})},
   retryCatalog(){this.onShow()},
   say(type,state,extra){const value=message(type,state);if(value)queue.show({text:value,...extra})},
@@ -135,6 +139,8 @@ Page({
   confirmSafety(){const bead=this.data.safetyBead;if(!bead)return;this.safetyAccepted=this.safetyAccepted||new Set();this.safetyAccepted.add(bead.kb||bead.id);const pending=this.pendingSheetAdd;this.cancelSafety();if(pending)this.addSheetBatch(pending.bead,pending.quantity);else this.addBead(bead)},
   select(e){const i=Number(e.currentTarget.dataset.i);this.setData({selected:i===this.data.selected?-1:i,selectedKind:'',replaceMode:false});this.update();this.vibrate()},
   select3d(e){const i=Number(e.detail.index);this.setData({selected:i===this.data.selected?-1:i,selectedKind:'',replaceMode:false});this.update();this.vibrate()},
+  removePickedOne(e){if(Date.now()<(this.suppressTapUntil||0))return;const id=e.currentTarget.dataset.id,next=logic.removeOne(this.data.design.beads,id);if(next.length===this.data.design.beads.length)return;this.changeBeads(next);this.playSound('remove')},
+  removePickedGroup(e){const id=e.currentTarget.dataset.id,next=logic.removeGroup(this.data.design.beads,id);if(next.length===this.data.design.beads.length)return;this.suppressTapUntil=Date.now()+500;this.changeBeads(next);this.playSound('remove')},
   selectKind(e){const id=e.currentTarget.dataset.id;const index=this.data.design.beads.indexOf(id);this.setData({selectedKind:id,selected:index,replaceMode:false});this.update();this.vibrate()},
   removeKind(){const id=this.data.selectedKind;if(!id)return;const bead=this.data.catalog.find(b=>b.id===id),next=this.data.design.beads.filter(x=>x!==id);this.changeBeads(next);this.setData({selectedKind:''});this.say('delete',{name:bead&&bead.name},{action:'撤销',onAction:()=>this.undo(),duration:3000})},
   replaceSelected(){this.setData({replaceMode:true,selectedKind:''})},
@@ -146,7 +152,7 @@ Page({
   rename(e){this.nameInput(e);this.confirmName()},
   count(e){const n=Number(e.currentTarget.dataset.count),d=this.data.design,result=logic.setCount(d.beads,this.data.catalog,d.wrist,n);let next=result&&result.seq;if(!next)return queue.show({text:'没有合适的珠子尺寸'});this.changeBeads(next);this.closeCount();queue.show({text:`已按 ${Math.min(n,MAX_BEADS)} 颗搭配`})},
   refit(){const d=this.data.design;if(!d.pattern||!d.pattern.length)return;const beads=templates.build(d,this.data.catalog,d.wrist);if(!beads)return queue.show({text:'模板材料不可用'});this.changeBeads(beads)},
-  wristPage(){wx.navigateTo({url:'/pages/wrist/wrist?source=editor'})},
+  wristPage(){this.wristPagePending=true;wx.navigateTo({url:'/pages/wrist/wrist?source=editor'})},
   remove(){const i=this.data.selected,beads=this.data.design.beads.slice();if(i<0||i>=beads.length)return;const bead=this.data.catalog.find(b=>b.id===beads[i]);beads.splice(i,1);this.changeBeads(beads);this.playSound('remove');this.say('delete',{name:bead&&bead.name},{action:'撤销',onAction:()=>this.undo(),duration:3000})},
   removeLast(){const beads=this.data.design.beads.slice();if(!beads.length)return;const bead=this.data.catalog.find(b=>b.id===beads.pop());this.changeBeads(beads);this.vibrate();this.playSound('remove');this.say('removeLast',{name:bead&&bead.name},{action:'撤销',onAction:()=>this.undo(),duration:3000})},
   move(e){const i=this.data.selected,delta=Number(e.currentTarget.dataset.delta),result=logic.move(this.data.design.beads,i,delta);if(result.index!==i){this.changeBeads(result.items,result.index);this.vibrate()}},

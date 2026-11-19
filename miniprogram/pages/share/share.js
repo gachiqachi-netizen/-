@@ -62,10 +62,10 @@ function drawPoster(ctx,{width:w,height:h,items,paths,design,meaning,qrPath,day}
  return points
 }
 Page({
- data:{design:null,width:348,height:464,previewTop:0,loading:true,ready:false,preview:false,missing:0,error:'',saveBusy:false,shareBusy:false,shareId:'',shareError:'',items:[],catalog:[],snapshot:"",snapshotFailed:false,tags:[],meaning:'',qrPath:'',qrFallback:true,albumDenied:false,moreOpen:false},
+ data:{design:null,width:348,height:464,previewTop:0,loading:true,ready:false,preview:false,missing:0,error:'',saveBusy:false,shareBusy:false,shareId:'',shareImage:'',shareReady:false,shareError:'',items:[],catalog:[],snapshot:"",snapshotFailed:false,tags:[],meaning:'',qrPath:'',qrFallback:true,albumDenied:false,moreOpen:false},
  onLoad(){const info=wx.getSystemInfoSync(),{width,height}=posterSize(info.windowWidth);this.setData({width,height,previewTop:posterTop(info.windowHeight,height)})},
  onReady(){this.canvasReady=true;this.renderCard()},
- onShow(){const d=store.current(),key=keyOf(d);if(!d||!Array.isArray(d.beads)||!d.beads.length){this.setData({design:null,loading:false,error:'',ready:false});return}if(key!==this.shareKey)this.setData({shareId:'',shareError:''});this.designKey=key;this.setData({design:d,loading:true,error:'',ready:false,snapshot:'',snapshotFailed:false});api.catalog().then(c=>{if(keyOf(store.current())!==key)return;this.catalog=c.beads||[];this.calculate(d);this.setData({catalog:this.catalog,loading:false},()=>this.renderCard())}).catch(e=>this.setData({loading:false,error:api.userMessage(e),ready:false}))},
+ onShow(){const d=store.current(),key=keyOf(d);if(!d||!Array.isArray(d.beads)||!d.beads.length){this.setData({design:null,loading:false,error:'',ready:false,shareId:'',shareImage:'',shareReady:false,shareError:''});return}if(key!==this.shareKey)this.setData({shareId:'',qrPath:'',qrFallback:true});this.designKey=key;this.qrPending=true;this.setData({design:d,loading:true,error:'',ready:false,preview:false,shareReady:false,shareImage:'',shareError:'',snapshot:'',snapshotFailed:false});api.catalog().then(c=>{if(keyOf(store.current())!==key)return;this.catalog=c.beads||[];this.calculate(d);this.setData({catalog:this.catalog,loading:false},()=>{if(!this.data.items.length){this.setData({shareError:'分享准备失败：材料暂时不可用'});return}this.renderCard();if(this.shareKey===key&&this.data.shareId)this.loadCode(this.data.shareId);else this.prepareShare()})}).catch(e=>this.setData({loading:false,error:api.userMessage(e),ready:false,shareError:'分享准备失败：'+api.userMessage(e)}))},
  retry(){this.onShow()},
  calculate(d){const map={};this.catalog.forEach(b=>{map[b.id]=b});this.map=map;let missing=0;const tags=[];const items=d.beads.map((id,i)=>{const b=map[id];if(!b){missing++;return null}(b.tags||[]).forEach(t=>{if(t!=='点缀'&&!tags.includes(t))tags.push(t)});return {...b,colors:b.colors||b.c||[]}}).filter(Boolean);const meaning=d.meaning||d.aiMeaning||tags.slice(0,3).join(' · ');this.setData({items,missing,tags:tags.slice(0,3),meaning})},
  photoPath(photo){
@@ -89,16 +89,43 @@ Page({
   if(revision!==this.renderRevision||keyOf(store.current())!==this.designKey)return
   const ctx=wx.createCanvasContext('shareCard',this)
   drawPoster(ctx,{width:w,height:h,items,paths,design:d,meaning:this.data.meaning,qrPath:this.data.qrPath})
-  ctx.draw(false,()=>{if(revision===this.renderRevision&&keyOf(store.current())===this.designKey){this.setData({ready:true});wx.canvasToTempFilePath({canvasId:'shareCard',x:0,y:0,width:w,height:h,destWidth:w*2,destHeight:h*2,success:r=>this.setData({shareImage:r.tempFilePath})},this)}})
+  ctx.draw(false,()=>{if(revision===this.renderRevision&&keyOf(store.current())===this.designKey){this.setData({ready:true});wx.canvasToTempFilePath({canvasId:'shareCard',x:0,y:0,width:w,height:h,destWidth:w*2,destHeight:h*2,success:r=>{if(revision!==this.renderRevision||keyOf(store.current())!==this.designKey)return;if(!r.tempFilePath){if(this.data.shareId&&!this.qrPending)this.setData({shareReady:false,shareError:'分享图片生成失败，请重试'});return}this.setData({shareImage:r.tempFilePath});if(this.data.shareId&&!this.qrPending){this.setData({shareReady:true,shareError:''});this.notifyShareReady()}} ,fail:()=>{if(revision===this.renderRevision&&keyOf(store.current())===this.designKey&&this.data.shareId&&!this.qrPending)this.setData({shareReady:false,shareError:'分享图片生成失败，请重试'})}},this)}})
  },
  saveCard(){if(!this.data.ready||this.data.saveBusy)return;this.setData({saveBusy:true,error:'',albumDenied:false});wx.canvasToTempFilePath({canvasId:'shareCard',destWidth:this.data.width*2,destHeight:this.data.height*2,success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>toast.show({ text: '已保存到相册' }),fail:e=>{const denied=/auth|authorize|deny|permission|scope/i.test(e.errMsg||'');this.setData({albumDenied:denied,error:denied?'没有相册权限，去设置里打开':'保存失败，请稍后重试。'})},complete:()=>this.setData({saveBusy:false})}),fail:()=>this.setData({saveBusy:false,error:'图片生成失败，请重试。'})},this)},
  openAlbumSettings(){wx.openSetting({success:r=>{if(r.authSetting&&r.authSetting['scope.writePhotosAlbum'])this.setData({albumDenied:false,error:''})}})},
  more(){if(!this.data.shareId)return toast.show({ text: '请先准备分享' });this.setData({moreOpen:true})},
  closeMore(){this.setData({moreOpen:false})},
  viewFriend(){this.closeMore();wx.navigateTo({url:'/features/shared/shared?id='+encodeURIComponent(this.data.shareId)})},
- loadCode(id){const base=getApp().globalData.apiBase;if(!base)return;wx.downloadFile({url:base+'/api/shares/'+encodeURIComponent(id)+'/qrcode',success:r=>{if(r.statusCode===200){this.setData({qrPath:r.tempFilePath,qrFallback:false},()=>this.renderCard())}else this.setData({qrPath:'',qrFallback:true},()=>this.renderCard())},fail:()=>this.setData({qrPath:'',qrFallback:true},()=>this.renderCard())})},
- prepareShare(){const d=this.data.design;if(!d||this.data.shareBusy)return;const key=keyOf(d);this.setData({shareBusy:true,shareError:''});auth.authorized('/shares',{name:d.name||'我的手串',wrist:d.wrist,beads:d.beads.slice(),meaning:this.data.meaning}).then(r=>{if(keyOf(store.current())!==key)return this.setData({shareError:'设计已更改，请重新准备分享。'});if(!r.shareId)throw new Error('未生成分享链接');this.shareKey=key;this.setData({shareId:r.shareId},()=>this.loadCode(r.shareId))}).catch(e=>this.setData({shareError:'分享准备失败：'+(e.message||'请稍后重试')})).finally(()=>this.setData({shareBusy:false}))},
- onShareAppMessage(){if(!this.data.shareId||keyOf(store.current())!==this.shareKey)return {title:'珠养养',path:'/pages/home/home'};return {title:`看看我串的‘${this.data.design.name||'我的手串'}’`,path:'/features/shared/shared?id='+encodeURIComponent(this.data.shareId),imageUrl:this.data.shareImage||undefined}},
+ loadCode(id){
+  this.qrPending=true
+  const base=getApp().globalData.apiBase
+  const finish=path=>{this.qrPending=false;this.setData({qrPath:path,qrFallback:!path},()=>this.renderCard())}
+  if(!base)return finish('')
+  wx.downloadFile({url:base+'/api/shares/'+encodeURIComponent(id)+'/qrcode',success:r=>finish(r.statusCode===200?r.tempFilePath:''),fail:()=>finish('')})
+ },
+ prepareShare(){
+  const d=this.data.design;if(!d||this.data.shareBusy)return
+  const key=keyOf(d)
+  this.qrPending=true
+  this.setData({shareBusy:true,shareId:'',shareReady:false,shareImage:'',shareError:''})
+  auth.authorized('/shares',{name:d.name||'我的手串',wrist:d.wrist,beads:d.beads.slice(),meaning:this.data.meaning}).then(r=>{
+    if(keyOf(store.current())!==key){this.setData({shareError:'设计已更改，请重新准备分享。'});return}
+    if(!r.shareId)throw new Error('未生成分享链接')
+    this.shareKey=key
+    this.setData({shareId:r.shareId},()=>this.loadCode(r.shareId))
+  }).catch(e=>this.setData({shareReady:false,shareError:'分享准备失败：'+(e.message||'请稍后重试')})).finally(()=>this.setData({shareBusy:false}))
+ },
+ shareContent(){return {title:`看看我串的‘${this.data.design.name||'我的手串'}’`,path:'/features/shared/shared?id='+encodeURIComponent(this.data.shareId),imageUrl:this.data.shareImage}},
+ notifyShareReady(){const waiters=this.shareWaiters||[];this.shareWaiters=[];waiters.forEach(resolve=>resolve(this.shareContent()))},
+ onShareAppMessage(){
+  if(this.data.shareReady&&this.data.shareId&&this.data.shareImage&&keyOf(store.current())===this.shareKey)return this.shareContent()
+  const fallback={title:'珠养养',path:'/pages/home/home'}
+  return new Promise(resolve=>{
+    const timeout=setTimeout(()=>{this.shareWaiters=(this.shareWaiters||[]).filter(waiter=>waiter!==done);resolve(fallback)},this.shareTimeoutMs||3000)
+    const done=content=>{clearTimeout(timeout);resolve(content)}
+    this.shareWaiters=this.shareWaiters||[];this.shareWaiters.push(done)
+  })
+ },
  preview(){this.setData({preview:true})},
  closePreview(){this.setData({preview:false},()=>this.renderCard())},
  use(){const d=this.data.design;if(!d)return;store.save(d);const next=store.create();next.name=d.name;next.wrist=d.wrist;next.beads=d.beads.slice();store.selected(next);require('../../utils/nav').openWorkbench(next)},

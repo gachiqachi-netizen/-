@@ -8,7 +8,8 @@ import time
 import unittest
 from http.server import ThreadingHTTPServer
 from urllib.error import HTTPError
-from urllib.request import Request, urlopen
+from urllib.request import Request
+from http_helper import urlopen
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import app

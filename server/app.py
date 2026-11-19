@@ -34,6 +34,7 @@ import kb  # noqa: E402
 import plans  # noqa: E402
 import status  # noqa: E402
 import commerce  # noqa: E402
+import catalog_cache  # noqa: E402
 import routes  # noqa: E402
 import uploads  # noqa: E402
 from db import DB  # noqa: E402
@@ -304,6 +305,8 @@ class Handler(BaseHTTPRequestHandler):
         return self.send(200, {"ok": True}, headers={"Set-Cookie": cookie})
 
     def audit_admin_mutation(self, path):
+        if re.match(r"^/api/admin/(beads|templates|banners)(?:/|$)", path):
+            catalog_cache.invalidate()
         _audit_admin(self.command, path, self.client_address[0])
 
     def qs(self):
@@ -345,6 +348,10 @@ class Handler(BaseHTTPRequestHandler):
             except KeyError as e:
                 self.send(404, {"error": str(e)})
             else:
+                if is_admin and method != "GET" and status_code < 400 and re.match(
+                    r"^/api/admin/(pricing-settings|articles|kb)(?:/|$)", path
+                ):
+                    catalog_cache.invalidate()
                 if len(result) == 3 and isinstance(body, bytes):
                     self.send(status_code, body, result[2])
                 else:
@@ -424,15 +431,18 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(200, f.read(), "application/json" if fp.endswith(".json") else "application/octet-stream")
             if path == "/api/catalog":
                 import hashlib
-                beads, tpls, banners = on_sale_catalog()
-                catalog = {"beads": beads, "templates": tpls, "banners": banners,
-                           "ai": ai.status(), "pricing": pricing.public_config(),
-                           "homeArticles": __import__("home").home_articles(db)}
-                raw = json.dumps(catalog, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-                version = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
+                def build():
+                    beads, tpls, banners = on_sale_catalog()
+                    catalog = {"beads": beads, "templates": tpls, "banners": banners,
+                               "ai": ai.status(), "pricing": pricing.public_config(),
+                               "homeArticles": __import__("home").home_articles(db)}
+                    raw = json.dumps(catalog, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                    version = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
+                    return version, json.dumps({**catalog, "version": version}, ensure_ascii=False).encode()
+                version, payload = catalog_cache.get(build)
                 if self.qs().get("v", [""])[0] == version:
                     return self.send(200, {"unchanged": True, "version": version})
-                return self.send(200, {**catalog, "version": version})
+                return self.send(200, payload)
             if path == "/api/meta/contract":
                 import contract
                 return self.send(200, contract.payload())

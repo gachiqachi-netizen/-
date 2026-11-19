@@ -371,3 +371,15 @@
 - **测试**：按名称、按 kbName 命中；和材质、尺寸叠加；清除恢复；0 结果文案；超过 60 条分批。
 - **截图**：搜“沉香”的结果、0 结果、键盘弹起时。
 - **不做**：拼音搜索、服务端搜索、改排序（排序等负责人定）。
+
+## U32 珠盘中间的“珠养养”字标要看得见（2026-11-19 负责人：要看到 logo）
+
+- **依赖**：U26（同改 `pages/diy/diy.wxml`）　**大小**：S　**只能改**：`miniprogram/components/bracelet/index.{wxml,wxss}`、`miniprogram/pages/diy/diy.{wxml,wxss}`（只动字标那一处）、`miniprogram/components/wordmark/index.js`（只加尺寸档）、`miniprogram/tests/` 对应测试
+- **现状**：工作台珠盘中心的字标用的是 `tone="line"`（`assets/brand/wordmark-line.svg`，和分隔线同色）、高 64rpx，在 U25 加深后的珠盘底色上几乎看不见。空盘（`diy.wxml` 的 `.empty-ring`）和有珠子时（`c-bracelet` 的 `wordmark` 属性）两处都是这样。
+- **要做的**：
+  1. 两处都改用 `tone="text"`（`wordmark.svg`，品牌主色），外层加一个类控制透明度 **0.28–0.35**（目标：一眼能认出“珠养养”，但不抢珠子），不新增颜色。
+  2. `wordmark` 组件加尺寸档 `trayLg: '96rpx'`，珠盘里用它；`c-bracelet` 的 `wordmarkSize()` 仍按圈的内径自动缩小，保证字标不压到珠子。
+  3. 叠戴预览、小尺寸缩略图（`tier` 为 s/m）不显示字标，行为不变。
+- **截图**：空盘、深色珠一圈、浅色珠一圈（如星月菩提）三张，改前改后对比。
+- **测试**：`wordmarkSize` 在小圈时不超过内径；`wordmark` 组件新尺寸档。
+- **不做**：改字标图形、改珠盘底色。

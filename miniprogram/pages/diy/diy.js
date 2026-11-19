@@ -18,11 +18,14 @@ Page({
   data:{searchText:'',searchQuery:'',searchCount:0,searchFocused:false,displayBeads:[],soundOn:true,dragging:false,trashHover:false,dragX:0,dragY:0,dragColor:'#888',settingsOpen:false,prefSize:'all',prefWrist:15,prefColor:'全部',prefMeaning:'全部',prefRecipient:'自己',prefSizes:[6,8,10,12],prefWrists:[14.5,15,16,17.5],prefColors:['全部','深色系','浅色系','暖色系','冷色系'],prefMeanings:['全部','平安','好运','学业','事业','爱情'],prefRecipients:['自己','爱人','朋友','爸妈'],materialTab:"beads",filterOpen:false,moreOpen:false,detailBead:null,design:null,catalog:[],catalogReady:false,filtered:[],cats:[],sizes:[],cat:'all',size:'all',items:[],missingItems:[],price:'0.00',handPrice:'¥0',length:'0.0',lengthMm:0,fit:'',missing:0,error:'',selected:-1,selectedLabel:'',canUndo:false,hasPattern:false,renderFallback:false,viewMode:'ring',detailsOpen:false,countsOpen:false,counts:[12,14,18,21],tags:[],notes:[],meterFill:0,meterZoneLeft:0,meterZoneWidth:0,fitOK:false,fillCount:0,fillLabel:'',wristConfirmed:false,firstWristOpen:false,picked:[],beadCount:0,selectedKind:'',replaceMode:false,safetyOpen:false,safetyBead:null,detailOpen:false,flight:null,meterShake:false,saveDot:false,scrollBeadId:'',focusedBeadId:'',stackOpen:false,stackOptions:[],stackIds:[],stackPreview:false,stackBeads:[[],[]],stackLabel:'',trayExpanded:false,nameOpen:false,nameDraft:'',nameError:'',nameSuggestions:[],nameLabel:'起个名字',detailSafetyNote:'',detailSafetyCare:'',returnSource:null},
   onLoad(options){this.pendingBeadKbId=options&&options.beadKbId?decodeURIComponent(options.beadKbId):''},
   onShow(){
+    const keepSource=this.returningFromChild||this.visible
     this.visible=true
     if(wx.hideTabBar)wx.hideTabBar({fail(){}})
     const global=typeof getApp==='function'&&getApp().globalData
-    if(global){this.setData({returnSource:global.workbenchReturn||this.wristPagePending&&this.data.returnSource||null});delete global.workbenchReturn}
-    this.wristPagePending=false
+    const source=global&&global.workbenchReturn
+    this.setData({returnSource:source||(keepSource?this.data.returnSource:null)})
+    if(global)delete global.workbenchReturn
+    this.returningFromChild=false
     if(global&&global.pendingWorkbenchBeadKbId){this.pendingBeadKbId=global.pendingWorkbenchBeadKbId;delete global.pendingWorkbenchBeadKbId}
     const d=store.current()||store.create();if(d.beads.length>MAX_BEADS){d.beads=d.beads.slice(0,MAX_BEADS);queue.show({text:LIMIT_MESSAGE})}this.setData({soundOn:wx.getStorageSync('cgz_sound')!==false})
     if (!this.data.design || this.data.design.id!==d.id) { this.history=[]; this.setData({selected:-1,renderFallback:false}) }
@@ -72,9 +75,10 @@ Page({
   onHide(){this.visible=false;clearTimeout(this.searchTimer);this.filterKey='';this.setData({searchText:'',searchQuery:'',searchFocused:false});if(wx.showTabBar)wx.showTabBar({fail(){}});if(this.audio)this.audio.stop();this.dragCancel();clearTimeout(this.draftTimer);const d=this.data.design;if(d)store.save(d)},
   rehideTabBarSoon(){setTimeout(()=>{if(this.visible&&wx.hideTabBar)wx.hideTabBar({fail(){}})},0)},
   back(){nav.backFromWorkbench(this.data.returnSource);this.setData({returnSource:null})},
-  works(){this.setData({moreOpen:false});wx.navigateTo({url:'/features/works/works'})},
+  openChild(url){this.returningFromChild=true;wx.navigateTo({url,fail:()=>{this.returningFromChild=false}})},
+  works(){this.setData({moreOpen:false});this.openChild('/features/works/works')},
   retryCatalog(){this.onShow()},
-  say(type,state,extra){const value=message(type,state);if(value)queue.show({text:value,...extra})},
+  say(type,state,extra){let value=message(type,state);if(type==='delete'&&state&&state.count>1)value=value.replace('已删除 1 颗',`已删除 ${state.count} 颗`);if(value)queue.show({text:value,...extra})},
   vibrate(type='light'){if(wx.vibrateShort)wx.vibrateShort({type,fail(){}})},
   focusKbBead(){const id=this.pendingBeadKbId;if(!id)return;this.pendingBeadKbId='';const bead=this.data.catalog.find(b=>b.kbId===id||b.kb===id||b.id===id);if(!bead||bead.onSale===false||bead.stock==='out_of_stock')return;this.setData({cat:'all',size:'all',materialTab:bead.mat==='metal'||bead.spacer?'accessories':'beads',focusedBeadId:bead.id,scrollBeadId:'bead-'+bead.id});this.filterKey='';this.update()},
   clearFocus(){this.setData({focusedBeadId:'',scrollBeadId:''})},
@@ -139,8 +143,8 @@ Page({
   confirmSafety(){const bead=this.data.safetyBead;if(!bead)return;this.safetyAccepted=this.safetyAccepted||new Set();this.safetyAccepted.add(bead.kb||bead.id);const pending=this.pendingSheetAdd;this.cancelSafety();if(pending)this.addSheetBatch(pending.bead,pending.quantity);else this.addBead(bead)},
   select(e){const i=Number(e.currentTarget.dataset.i);this.setData({selected:i===this.data.selected?-1:i,selectedKind:'',replaceMode:false});this.update();this.vibrate()},
   select3d(e){const i=Number(e.detail.index);this.setData({selected:i===this.data.selected?-1:i,selectedKind:'',replaceMode:false});this.update();this.vibrate()},
-  removePickedOne(e){if(Date.now()<(this.suppressTapUntil||0))return;const id=e.currentTarget.dataset.id,next=logic.removeOne(this.data.design.beads,id);if(next.length===this.data.design.beads.length)return;this.changeBeads(next);this.playSound('remove')},
-  removePickedGroup(e){const id=e.currentTarget.dataset.id,next=logic.removeGroup(this.data.design.beads,id);if(next.length===this.data.design.beads.length)return;this.suppressTapUntil=Date.now()+500;this.changeBeads(next);this.playSound('remove')},
+  removePickedOne(e){if(Date.now()<(this.suppressTapUntil||0))return;const id=e.currentTarget.dataset.id,next=logic.removeOne(this.data.design.beads,id);if(next.length===this.data.design.beads.length)return;const bead=this.data.catalog.find(b=>b.id===id);this.changeBeads(next);this.playSound('remove');this.say('delete',{name:bead&&bead.name},{action:'撤销',onAction:()=>this.undo(),duration:3000})},
+  removePickedGroup(e){const id=e.currentTarget.dataset.id,next=logic.removeGroup(this.data.design.beads,id);if(next.length===this.data.design.beads.length)return;const bead=this.data.catalog.find(b=>b.id===id),count=this.data.design.beads.length-next.length;this.suppressTapUntil=Date.now()+500;this.changeBeads(next);this.playSound('remove');this.say('delete',{name:bead&&bead.name,count},{action:'撤销',onAction:()=>this.undo(),duration:3000})},
   selectKind(e){const id=e.currentTarget.dataset.id;const index=this.data.design.beads.indexOf(id);this.setData({selectedKind:id,selected:index,replaceMode:false});this.update();this.vibrate()},
   removeKind(){const id=this.data.selectedKind;if(!id)return;const bead=this.data.catalog.find(b=>b.id===id),next=this.data.design.beads.filter(x=>x!==id);this.changeBeads(next);this.setData({selectedKind:''});this.say('delete',{name:bead&&bead.name},{action:'撤销',onAction:()=>this.undo(),duration:3000})},
   replaceSelected(){this.setData({replaceMode:true,selectedKind:''})},
@@ -152,7 +156,7 @@ Page({
   rename(e){this.nameInput(e);this.confirmName()},
   count(e){const n=Number(e.currentTarget.dataset.count),d=this.data.design,result=logic.setCount(d.beads,this.data.catalog,d.wrist,n);let next=result&&result.seq;if(!next)return queue.show({text:'没有合适的珠子尺寸'});this.changeBeads(next);this.closeCount();queue.show({text:`已按 ${Math.min(n,MAX_BEADS)} 颗搭配`})},
   refit(){const d=this.data.design;if(!d.pattern||!d.pattern.length)return;const beads=templates.build(d,this.data.catalog,d.wrist);if(!beads)return queue.show({text:'模板材料不可用'});this.changeBeads(beads)},
-  wristPage(){this.wristPagePending=true;wx.navigateTo({url:'/pages/wrist/wrist?source=editor'})},
+  wristPage(){this.openChild('/pages/wrist/wrist?source=editor')},
   remove(){const i=this.data.selected,beads=this.data.design.beads.slice();if(i<0||i>=beads.length)return;const bead=this.data.catalog.find(b=>b.id===beads[i]);beads.splice(i,1);this.changeBeads(beads);this.playSound('remove');this.say('delete',{name:bead&&bead.name},{action:'撤销',onAction:()=>this.undo(),duration:3000})},
   removeLast(){const beads=this.data.design.beads.slice();if(!beads.length)return;const bead=this.data.catalog.find(b=>b.id===beads.pop());this.changeBeads(beads);this.vibrate();this.playSound('remove');this.say('removeLast',{name:bead&&bead.name},{action:'撤销',onAction:()=>this.undo(),duration:3000})},
   move(e){const i=this.data.selected,delta=Number(e.currentTarget.dataset.delta),result=logic.move(this.data.design.beads,i,delta);if(result.index!==i){this.changeBeads(result.items,result.index);this.vibrate()}},
@@ -160,7 +164,7 @@ Page({
   fill(){const d=this.data.design,last=[...d.beads].reverse().find(id=>{const b=this.data.catalog.find(x=>x.id===id);return b&&!b.spacer&&b.mat!=='metal'});if(!last)return queue.show({text:'请先选择一颗主珠'});const next=logic.fill(d.beads,this.data.catalog,d.wrist,last);if(next.length===d.beads.length)return queue.show({text:this.data.missing?'请先替换下架材料':'当前长度无需补齐'});this.changeBeads(next.slice(0,MAX_BEADS))},
   wrist(e){const d=this.data.design,value=Number(e.detail.value);if(!Number.isFinite(value)||value<8||value>30){queue.show({text:'手围请输入 8–30 cm'});this.setData({'design.wrist':d.wrist});return}d.wrist=value;this.setData({design:d});this.update();this.say('wrist',{wrist:value})},
   save(){const d=this.data.design;if(!d.beads.length)return queue.show({text:'请先选珠'});store.save(d);store.selected(d);queue.show({text:'已保存在本机'});store.sync(d).then(()=>queue.show({text:'已同步保存版本'})).catch(e=>queue.show({text:e.message&&e.message.includes('冲突')?'云端版本冲突，已保存本机':'仅保存在本机，未同步',duration:3000}))},
-  share(){if(this.data.design.beads.length<6)return this.say('shareFew');this.save();wx.navigateTo({url:'/pages/share/share'})},
-  finish(){const count=this.data.design.beads.length;if(count<6){this.shakeMeter();return this.say('finishFew',{count})}if(!this.data.catalogReady)return queue.show({text:'材料加载中，请稍后重试'});if(this.data.missing)return queue.show({text:'请先替换下架材料'});if(this.data.fitState==='multi')return queue.show({text:'这一版只支持单圈手串'});if(this.data.fitState==='short'){this.shakeMeter();this.vibrate();return this.say('finishShort',{mm:this.data.shortMm})}let autoName='';if(unnamed(this.data.design.name)){autoName=namesFromTags(this.data.tags||[])[0];if(!autoName){this.openName();return}this.data.design.name=autoName;this.setData({design:this.data.design,nameLabel:autoName})}this.save();if(autoName)this.say('unnamedFinish',{name:autoName});this.vibrate();wx.navigateTo({url:'/pages/finish/finish'})},
+  share(){if(this.data.design.beads.length<6)return this.say('shareFew');this.save();this.openChild('/pages/share/share')},
+  finish(){const count=this.data.design.beads.length;if(count<6){this.shakeMeter();return this.say('finishFew',{count})}if(!this.data.catalogReady)return queue.show({text:'材料加载中，请稍后重试'});if(this.data.missing)return queue.show({text:'请先替换下架材料'});if(this.data.fitState==='multi')return queue.show({text:'这一版只支持单圈手串'});if(this.data.fitState==='short'){this.shakeMeter();this.vibrate();return this.say('finishShort',{mm:this.data.shortMm})}let autoName='';if(unnamed(this.data.design.name)){autoName=namesFromTags(this.data.tags||[])[0];if(!autoName){this.openName();return}this.data.design.name=autoName;this.setData({design:this.data.design,nameLabel:autoName})}this.save();if(autoName)this.say('unnamedFinish',{name:autoName});this.vibrate();this.openChild('/pages/finish/finish')},
   shakeMeter(){this.setData({meterShake:true});setTimeout(()=>this.setData({meterShake:false}),350)}
 })

@@ -3,6 +3,7 @@ import argparse
 import io
 import json
 import re
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urljoin
@@ -74,8 +75,14 @@ def default_url():
 
 
 def fetch(url):
-    with urlopen(url, timeout=15) as response:
-        return response.read()
+    for attempt in range(3):
+        try:
+            with urlopen(url, timeout=15) as response:
+                return response.read()
+        except OSError:
+            if attempt == 2:
+                raise
+            time.sleep(.2 * (attempt + 1))
 
 
 def process(bead, base):

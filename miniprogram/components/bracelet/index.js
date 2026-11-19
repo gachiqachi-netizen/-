@@ -32,13 +32,13 @@ function wordmarkSize(ring, size) {
   if (!ring.length) return 'tray'
   const center = size / 2
   const innerRadius = Math.min(...ring.map(it => Math.hypot(it.left + it.r - center, it.top + it.r - center) - it.r))
-  return innerRadius * 2 < 190 ? 'corner' : 'tray'
+  return innerRadius * 2 < 196 ? 'corner' : 'trayLg'
 }
 if (typeof Component === 'function') Component({
   options: { styleIsolation: 'apply-shared' },
   properties: { beads: { type: Array, value: [] }, tier: { type: String, value: '' }, size: { type: Number, value: 320 }, wordmark: { type: Boolean, value: false },
     selected: { type: Number, value: -1 }, mode: { type: String, value: 'ring' }, stackBeads: { type: Array, value: [] } },
-  data: { rings: [], height: 320, side: 320, wordmarkSize: 'tray', background: 'transparent', record: false },
+  data: { rings: [], height: 320, side: 320, wordmarkSize: 'trayLg', background: 'transparent', record: false },
   observers: { 'beads,tier,size,mode,stackBeads,wordmark': function () { this.rebuild() } },
   lifetimes: { attached() { this.rebuild() } },
   methods: { rebuild() {

@@ -7,7 +7,7 @@
   <view class="tray {{trayExpanded ? 'tray-expanded' : ''}}" bindtouchstart="trayTouchStart" bindtouchmove="trayTouchMove" bindtouchend="trayTouchEnd">
     <view class="tray-name" bindtap="openName"><text>{{nameLabel}} ›</text><text class="tray-tags" wx:if="{{beadCount >= 6}}">{{tagLine}}</text></view>
     <view class="tray-empty" wx:if="{{!items.length}}">
-      <view class="empty-ring"><c-wordmark tone="line" size="tray" /></view>
+      <view class="empty-ring"><view class="empty-ring-wordmark"><c-wordmark tone="text" size="trayLg" /></view></view>
       <view class="empty-hint">从下面挑一颗开始</view>
     </view>
     <view wx:else id="workbench-bracelet" class="bracelet-touch" bindtap="selectTray" bindlongpress="trayLongPress"><view wx:if="{{stackPreview}}" class="stack-extra"><c-bracelet mode="stack" stackBeads="{{stackBeads}}" size="{{330}}" /></view><view class="{{stackPreview ? 'stack-current' : ''}}"><c-bracelet beads="{{items}}" size="{{stackPreview ? 330 : 470}}" selected="{{selected}}" wordmark="{{true}}" /></view><view class="kind-ring" wx:for="{{kindPositions}}" wx:key="index" style="left:{{item.x}}rpx;top:{{item.y}}rpx;width:{{item.box}}rpx;height:{{item.box}}rpx;"></view></view>

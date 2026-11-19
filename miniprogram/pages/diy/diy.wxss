@@ -8,3 +8,5 @@
 .bead-photo{width:80rpx;height:80rpx;display:block;object-fit:contain}
 .finish{width:100%;height:var(--h-btn);flex:none;min-width:0}
 .first-wrist-actions{display:flex;gap:var(--sp-tight)}.first-wrist-actions button{flex:1;min-width:0;margin:0}
+
+.empty-ring-wordmark{opacity:.32}

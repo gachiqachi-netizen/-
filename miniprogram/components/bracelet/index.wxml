@@ -1,5 +1,5 @@
 <view class="c-bracelet" style="width:{{side}}rpx;height:{{height}}rpx;background:{{background}};">
-  <view class="c-bracelet__wordmark" wx:if="{{wordmark && mode === 'ring'}}"><c-wordmark tone="line" size="{{wordmarkSize}}" /></view>
+  <view class="c-bracelet__wordmark" wx:if="{{wordmark && tier !== 's' && tier !== 'm' && mode === 'ring'}}"><c-wordmark tone="text" size="{{wordmarkSize}}" /></view>
   <view wx:for="{{rings}}" wx:for-item="ring" wx:key="idx" class="c-bracelet__ring" style="width:{{side}}rpx;height:{{side}}rpx;margin-top:-{{side / 2}}rpx;opacity:{{ring.opacity}};transform:translateY({{ring.ty}}rpx);">
     <view wx:for="{{ring.items}}" wx:for-item="it" wx:key="index" class="c-bracelet__pos {{selected === it.zeroIndex ? 'is-sel' : ''}} {{selected >= 0 && selected !== it.zeroIndex ? 'is-dim' : ''}}" style="left:{{it.left}}rpx;top:{{it.top}}rpx;width:{{it.diameter}}rpx;height:{{it.diameter}}rpx;transform:rotate({{it.rotate}}deg);">
       <view wx:if="{{mode === 'ring'}}" class="c-bracelet__bead" style="{{it.paintStyle}}"><image wx:if="{{it.photoPath}}" src="{{it.photoPath}}" mode="aspectFill" lazy-load="{{tier === 's'}}" /></view>

@@ -157,8 +157,8 @@
 | U28 | agent/U28-cell-double-tap | followups-ui.md |  | 任何 |  |  |
 | U29 | agent/U29-photo-layout | followups-ui.md | U28 | 任何 |  |  |
 | U30 | agent/U30-diy-top-gap | followups-ui.md | U26 | 任何 |  |  |
-| U31 | agent/U31-diy-search | followups-ui.md | U30 | 任何 |  |  |
-| U32 | agent/U32-tray-logo | followups-ui.md | U26 | 任何 |  |  |
+| U31 | agent/U31-diy-search | followups-ui.md | U32 | 任何 |  |  |
+| U32 | agent/U32-tray-logo | followups-ui.md | U30 | 任何 |  |  |
 | V7a | agent/V7a-bracelet-tiers | followups-visual.md | U16 | 任何 |  |  |
 | V8 | agent/V8-share-poster | followups-visual.md | V7a | 任何 |  |  |
 | V9 | agent/V9-template-cover | followups-visual.md |  | 任何 |  |  |

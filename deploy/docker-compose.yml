@@ -12,6 +12,7 @@ services:
       - ../tools/check_deploy.py:/app/tools/check_deploy.py:ro
       - ../tools/load_seed.py:/app/tools/load_seed.py:ro
       - ../tools/load_templates.py:/app/tools/load_templates.py:ro
+      - ../tools/patch_beads.py:/app/tools/patch_beads.py:ro
       - ./data-files:/app/deploy-data:ro
     depends_on:
       postgres:

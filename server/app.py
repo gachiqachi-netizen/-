@@ -439,7 +439,7 @@ class Handler(BaseHTTPRequestHandler):
                     raw = json.dumps(catalog, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
                     version = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
                     return version, json.dumps({**catalog, "version": version}, ensure_ascii=False).encode()
-                version, payload = catalog_cache.get(build)
+                version, payload = catalog_cache.get(build, db)
                 if self.qs().get("v", [""])[0] == version:
                     return self.send(200, {"unchanged": True, "version": version})
                 return self.send(200, payload)
@@ -781,8 +781,11 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.admin_can(data=data):
                     return
                 if m.group(1) == "beads":
-                    return self.send(200, commerce.copy_product(db, m.group(2), actor=self.admin_user["name"]))
-                return self.send(200, commerce.copy_template(db, m.group(2), actor=self.admin_user["name"]))
+                    result = commerce.copy_product(db, m.group(2), actor=self.admin_user["name"])
+                else:
+                    result = commerce.copy_template(db, m.group(2), actor=self.admin_user["name"])
+                catalog_cache.invalidate()
+                return self.send(200, result)
             if path == "/api/admin/after-sales":
                 if not self.admin_can(data=data):
                     return

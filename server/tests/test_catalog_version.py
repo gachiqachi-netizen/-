@@ -7,6 +7,7 @@ import unittest
 from http.server import ThreadingHTTPServer
 from urllib.request import urlopen
 from unittest.mock import patch
+from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import app
@@ -66,7 +67,15 @@ class CatalogVersionTests(unittest.TestCase):
 
     def test_expired_entry_rebuilds(self):
         with patch.object(app, 'on_sale_catalog', wraps=app.on_sale_catalog) as build, \
-             patch.object(catalog_cache.time, 'monotonic', side_effect=[0, 0, 61, 61]):
+             patch.object(catalog_cache.time, 'monotonic', return_value=0) as clock:
             self.get()
+            clock.return_value = 61
             self.get()
             self.assertEqual(build.call_count, 2)
+
+    def test_concurrent_misses_build_once(self):
+        with patch.object(app, 'on_sale_catalog', wraps=app.on_sale_catalog) as build:
+            with ThreadPoolExecutor(max_workers=6) as pool:
+                results = list(pool.map(lambda _: self.get()['version'], range(6)))
+            self.assertEqual(len(set(results)), 1)
+            self.assertEqual(build.call_count, 1)

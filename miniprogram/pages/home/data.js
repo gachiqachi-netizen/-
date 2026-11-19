@@ -14,7 +14,7 @@ function catalogCards(data) {
     return {...t, beads:ids, tags:tags.slice(0,2), length, price:Math.round(price*100)/100, coverUrl:materialUrl(cover.md), coverLgUrl:materialUrl(cover.lg), coverFailed:false}
   }).filter(Boolean)
 }
-function selectCard(card) { const d=store.create(); d.wrist=wrist(); d.name=card.name; d.beads=card.beads.slice(); d.source='tpl'; d.tplId=card.id; d.meaning=card.meaning||''; d.pattern=(card.pattern||[]).slice(); d.special=(card.special||[]).slice(); d.tail=(card.tail||[]).slice(); d.fixed=card.fixed||null; d.cover=card.cover||''; store.selected(d); return d }
+function selectCard(card) { const d=store.create(); d.wrist=wrist(); d.name=card.name; d.beads=card.beads.slice(); d.source='tpl'; d.tplId=card.id; d.testOnly=card.testOnly===true; d.meaning=card.meaning||''; d.pattern=(card.pattern||[]).slice(); d.special=(card.special||[]).slice(); d.tail=(card.tail||[]).slice(); d.fixed=card.fixed||null; d.cover=card.cover||''; store.selected(d); return d }
 function goWrist() { wx.navigateTo({url:'/pages/wrist/wrist'}) }
 function openEditor(card, mode) { if (card) selectCard(card); else if (mode!=='try') { const d=store.create();d.wrist=wrist();store.selected(d) } if(mode==='try') wx.navigateTo({url:'/features/tryon/tryon'}); else nav.openEditor() }
 module.exports = {wrist,catalogCards,selectCard,openEditor,goWrist}

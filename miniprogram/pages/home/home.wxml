@@ -18,7 +18,7 @@
   <view class="template-grid" wx:elif="{{templates.length}}">
     <c-card class="tpl" wx:for="{{templates}}" wx:key="id" data-i="{{index}}" bindtap="use">
       <view class="traybox"><image class="thumb-image" wx:if="{{item.coverUrl && !item.coverFailed}}" src="{{item.coverUrl}}" mode="aspectFill" data-i="{{index}}" binderror="coverError"/><bracelet-thumb wx:else beads="{{item.beads}}" catalog="{{catalog}}" /></view>
-      <view class="tpl-body"><text class="nm">{{item.name}}</text><text class="meaning">{{item.meaning}}</text><text class="price">¥{{item.price}}</text></view>
+      <view class="tpl-body"><text class="test-label" wx:if="{{item.testOnly}}">测试</text><text class="nm">{{item.name}}</text><text class="meaning">{{item.meaning}}</text><text class="price">¥{{item.price}}</text></view>
     </c-card>
   </view>
   <c-state wx:elif="{{!loading}}" title="还没有热门款" desc="过一会儿再来看看" />

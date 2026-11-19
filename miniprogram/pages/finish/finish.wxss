@@ -74,6 +74,8 @@
   font-size: var(--fs-caption);
   color: var(--c-text-2);
 }
+.test-label { color: var(--c-text-2); font-size: var(--fs-caption); margin-right: var(--sp-tight); }
+.test-warning { color: var(--c-text-2); font-size: var(--fs-caption); margin-top: var(--sp-tight); }
 .name {
   margin-top: 12rpx;
   font-size: 36rpx;

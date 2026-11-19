@@ -50,6 +50,15 @@ def is_experience():
     return env_name() == ENV_TRIAL
 
 
+def wxacode_env_version():
+    value = os.environ.get("WXACODE_ENV_VERSION")
+    if value is not None:
+        if value not in ("release", "trial", "develop"):
+            raise ValueError("WXACODE_ENV_VERSION 必须是 release/trial/develop 之一")
+        return value
+    return "trial" if is_experience() else "release"
+
+
 def is_prod():
     return env_name() == ENV_PRODUCTION
 

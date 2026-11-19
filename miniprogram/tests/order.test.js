@@ -32,6 +32,29 @@ function page() {
 }
 const catalog = (value, pricing) => ({ beads: [{ id: 'a', name: '珠子', mm: 8, price: value }], pricing })
 async function run() {
+  // Both address states keep the WeChat and manual choices available.
+  let sheetOptions, chosen = 0, manual = 0
+  wx.showActionSheet = options => { sheetOptions = options }
+  let addressPage = page()
+  addressPage.chooseAddress = () => { chosen++ }
+  addressPage.manualAddress = () => { manual++; addressPage.setData({ sheet: 'address' }) }
+  addressPage.addressEntry()
+  assert.deepStrictEqual(sheetOptions.itemList, ['换一个微信地址', '修改当前地址'])
+  sheetOptions.success({ tapIndex: 0 }); assert.strictEqual(chosen, 1)
+  sheetOptions.success({ tapIndex: 1 }); assert.strictEqual(manual, 1)
+  assert.strictEqual(addressPage.data.sheet, 'address')
+  assert.strictEqual(addressPage.data.person, '测试')
+  addressPage.input({ currentTarget: { dataset: { key: 'addr' } }, detail: { value: '新地址' } })
+  addressPage.closeSheet()
+  assert.strictEqual(addressPage.data.addr, '新地址')
+  assert.strictEqual(addressPage.data.sheet, '')
+  addressPage = page(); addressPage.data.person = ''; addressPage.data.phone = ''; addressPage.data.addr = ''
+  addressPage.chooseAddress = () => { chosen++ }
+  addressPage.manualAddress = () => { manual++ }
+  addressPage.addressEntry()
+  assert.deepStrictEqual(sheetOptions.itemList, ['用微信收货地址', '手动填写'])
+  sheetOptions.success({ tapIndex: 0 }); sheetOptions.success({ tapIndex: 1 })
+  assert.strictEqual(chosen, 2); assert.strictEqual(manual, 2)
   const source = fs.readFileSync(path.join(__dirname, '../pages/order/order.wxml'), 'utf8')
   const logic = fs.readFileSync(path.join(__dirname, '../pages/order/order.js'), 'utf8')
   assert.strictEqual((source.match(/class="check /g) || []).length, 1)

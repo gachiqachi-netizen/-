@@ -38,6 +38,16 @@ function create(canvas,width,height,pixelRatio,onReady,mode){
  function buildRing(list){const g=new T.Group(),total=list.reduce((s,b)=>s+(Number(b.mm)||8),0),R=total/(2*Math.PI);let cur=Math.PI/2,maxD=8
   list.forEach(it=>{const mm=Number(it.mm)||8,a=cur-mm/total*Math.PI;cur-=mm/total*2*Math.PI;maxD=Math.max(maxD,mm);const p=({wood:[.55,0,.35],bodhi:[.5,0,.25],stone:[.22,0,.9],jade:[.22,0,.9],crystal:[.05,0,1],metal:[.22,1,.2]})[it.mat]||[.4,0,.5],mat=new T.MeshPhysicalMaterial({map:mapFor(it),roughness:p[0],metalness:p[1],clearcoat:p[2],clearcoatRoughness:.08,transparent:it.mat==='crystal',opacity:it.mat==='crystal'?.8:1,envMap:env,envMapIntensity:mode==='photo'?(it.mat==='metal'?.5:.32):(it.mat==='metal'?1.2:.9)}),geo=it.spacer?new T.CylinderGeometry(4.6,4.6,mm,36):new T.SphereGeometry(mm/2,48,32),m=new T.Mesh(geo,mat);m.position.set(R*Math.cos(a),R*Math.sin(a),0);m.rotation.z=a;m.userData.bead=true;g.add(m)})
   if(list.length)g.add(new T.Mesh(new T.TorusGeometry(R,.5,8,160),new T.MeshStandardMaterial({color:0x8c2a1c,roughness:.8})))
+  if(mode==='photo'){
+   const n=128,data=new Uint8Array(n*n*4),cx=(n-1)/2
+   for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+    const d=Math.hypot(x-cx,y-cx)/cx,fade=Math.max(0,1-Math.abs(d-.72)/.17),i=(y*n+x)*4
+    data[i+3]=Math.round(255*.3*fade*fade)
+   }
+   const tex=new T.DataTexture(data,n,n,T.RGBAFormat);tex.needsUpdate=true
+   const shadow=new T.Mesh(new T.PlaneGeometry(2*(R+maxD),2*(R+maxD)),new T.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,side:T.DoubleSide}))
+   shadow.position.set(2,-3,-maxD);g.add(shadow)
+  }
   return {group:g,R,maxD}
  }
  function buildArm(wrist,skin){const g=new T.Group(),k=Number(wrist||15)*10*.92/(2*Math.PI*1.011),mat=new T.MeshStandardMaterial({color:skin,roughness:.7,metalness:0})
@@ -56,7 +66,7 @@ function create(canvas,width,height,pixelRatio,onReady,mode){
    if(nextArmKey!==armKey){dispose(arm);const a=buildArm(opts.wrist,opts.skin);arm=a.group;armKey=nextArmKey;root.add(arm)}
    const k=Number(opts.wrist||15)*10*.92/(2*Math.PI*1.011);g.rotation.y=Math.PI/2;const main=Number(opts.mainSize)||8,sag=Math.max(0,(R-main/2)-k*.85);g.position.set(10,-sag,0);camera.position.set(0,0,260);camera.lookAt(0,0,0);root.rotation.set(opts.rx,opts.ry,0)
   } else {
-   root.rotation.set(0,0,0);const px=Number(opts.size)/100*width/(2*R+built.maxD);g.scale.setScalar(px);g.rotation.set(0,Number(opts.tilt)*Math.PI/180,0);ring.rotation.z=-Number(opts.angle)*Math.PI/180;ring.position.set(Number(opts.x)-width/2,height/2-Number(opts.y),0);ring.updateMatrixWorld(true);const v=new T.Vector3();g.children.forEach(m=>{if(!m.userData.bead){m.visible=!opts.hideBack;return}m.getWorldPosition(v);m.visible=!opts.hideBack||v.z>-R*px*.15})
+   root.rotation.set(0,0,0);const px=Number(opts.size)/100*width/(2*R+built.maxD);g.scale.setScalar(px);g.rotation.set(Number(opts.tilt)*Math.PI/180,0,0);ring.rotation.z=-Number(opts.angle)*Math.PI/180;ring.position.set(Number(opts.x)-width/2,height/2-Number(opts.y),0);ring.updateMatrixWorld(true);const v=new T.Vector3();g.children.forEach(m=>{if(!m.userData.bead){m.visible=!opts.hideBack;return}m.getWorldPosition(v);m.visible=!opts.hideBack||v.z>-R*px*.15})
   }
   camera.updateProjectionMatrix();renderer.render(scene,camera)
  },dispose(){disposed=true;dispose(ring);dispose(arm);Object.values(imageCache).forEach(x=>{if(x.texture)x.texture.dispose()});Object.values(textureCache).forEach(x=>x.dispose());if(env)env.dispose();renderer.dispose()}}

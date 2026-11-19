@@ -143,6 +143,10 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(self.request('/api/admin/session', 'POST',
                                       {'username': 'browser-owner', 'password': 'test-only-owner-pass'})[0], 429)
 
+    def test_removed_prototype_routes_return_json_404(self):
+        for path in ("/", "/index.html"):
+            self.assertEqual(self.request(path), (404, {"error": "not_found"}))
+
     def test_admin_page_has_browser_security_headers(self):
         status, _, headers = self.request('/admin', with_headers=True)
         self.assertEqual(status, 200)

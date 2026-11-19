@@ -118,6 +118,22 @@ sudo docker compose --env-file app.env exec app python tools/load_seed.py --appl
 
 只需补某些表时加 `--only beads,templates`（可选 `beads,templates,banners,terms`）。命令只按 ID 补缺，不删除、不覆盖已有记录，可重复运行；条款保持草稿状态。模板封面需负责人之后在后台上传，前台没有封面时使用生成图。导入之后在后台修改价格、封面、上下架状态，不要用此命令覆盖人工修改。
 
+### 导入 2026 年 11 月首页模板
+
+先确认新珠子已在后台导入并上架。在服务器的 `deploy/` 目录更新代码后，执行 `sudo docker compose --env-file app.env up -d`，使脚本和数据文件的只读挂载生效。先预览 6 个模板及珠子校验结果：
+
+```bash
+sudo docker compose --env-file app.env exec app python tools/load_templates.py /app/deploy-data/templates-2026-11.json
+```
+
+全部显示“将新增”或“已存在跳过”，且没有“珠子缺失或不可用”后，再执行：
+
+```bash
+sudo docker compose --env-file app.env exec app python tools/load_templates.py /app/deploy-data/templates-2026-11.json --apply
+```
+
+命令只按模板 ID 补缺，不覆盖后台已修改的模板；任一待导入模板引用的珠子不存在、未上架或类型不符时，整批不写。旧的 t1–t6 由负责人在后台下架；模板封面也由负责人上传。
+
 ## 7. 微信后台：域名和支付通知
 
 ### 以后打开图片机审

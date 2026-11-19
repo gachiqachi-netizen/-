@@ -64,3 +64,13 @@
   4. 预览输出：将新增、跳过、缺字段、知识库待确认四类的数量和明细。
   5. 列名映射写在脚本开头，报告里列出支持的 Excel 列名。
 - **测试**：临时库 + 小样表格覆盖缺字段、重复、取色、知识库匹配、只新增不覆盖。
+
+## H8 后端 HTTP 测试不走系统代理（2026-11-19 审核：开了代理的 Mac 上 6 个测试报错）
+
+- **依赖**：无　**大小**：S　**只能改**：`server/tests/` 里用 `urlopen` 访问本机测试服务器的文件（`git grep -ln urlopen server/tests` 当前 18 个），可新建 `server/tests/http_helper.py`
+- **现状**（审核复现过）：`test_env.DemoOrderHTTPTest`、`test_env_prod.AIFallbackHTTPTest` 共 6 条在负责人的 Mac 上报 `JSONDecodeError`。原因是 macOS 系统代理把发往 `127.0.0.1` 的请求拦下，回了一个空内容的 403，不是程序的问题。`urllib` 在 macOS 上会读系统代理设置，只设 `NO_PROXY` 环境变量也绕不过去。在运行前加一句 `install_opener(build_opener(ProxyHandler({})))`，725 条全部通过。
+- **要做的**：
+  1. 新建 `http_helper.py`，提供不走代理的 `urlopen`（`build_opener(ProxyHandler({}))`），测试里访问本机服务器的地方全部换成它。
+  2. 不改 `server/` 下的正式代码（访问微信、AI 的请求仍按系统设置走）。
+- **测试**：把 `HTTP_PROXY`、`HTTPS_PROXY` 设成一个不存在的地址（如 `http://127.0.0.1:9`）跑全部后端测试，必须全部通过；报告贴这次的输出。
+- **不做**：改 CI；改正式代码的网络设置。

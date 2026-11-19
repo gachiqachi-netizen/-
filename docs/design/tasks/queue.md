@@ -181,3 +181,4 @@
 | U38 | agent/U38-share-once | followups-1119.md | B-26 | 任何 |  |  |
 | H7 | agent/H7-import-hc | followups-1119.md | H6 | Codex |  |  |
 | H8 | agent/H8-tests-no-proxy | followups-infra.md |  | 任何 |  |  |
+| H9 | agent/H9-archive-old-beads | followups-1119.md | H7 | 任何 |  |  |

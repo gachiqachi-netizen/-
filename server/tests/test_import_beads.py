@@ -66,6 +66,16 @@ class ImportBeadsTests(unittest.TestCase):
         self.assertEqual(len(colors), 2)
         self.assertTrue(all(color.startswith("#") and len(color) == 7 for color in colors))
 
+    def test_duplicate_id_inside_file_is_skipped_in_preview(self):
+        row = {"ID": "same", "名称": "紫水晶", "尺寸(mm)": "8", "价格(分)": "100",
+               "材质": "水晶", "照片": str(self.photo)}
+        other = dict(row, **{"名称": "红玛瑙"})
+        with patch.object(import_beads, "color_for", return_value=["#123456", "#123456"]):
+            groups = import_beads.import_rows(self.db(), [row, other], self.root / "input.csv",
+                                              output=lambda _: None)
+        self.assertEqual(len(groups["将新增"]), 1)
+        self.assertEqual(len(groups["跳过"]), 1)
+
     def test_required_fields_and_price_are_checked_per_row(self):
         source = self.root / "input.csv"
         entries = import_beads.load_entries()

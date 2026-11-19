@@ -211,6 +211,8 @@ def import_rows(db, rows, source, apply=False, output=print):
                 continue
             saved = create_product(db, data, actor="import_beads")
             ids.add(saved["id"])
+        elif data.get("id"):
+            ids.add(data["id"])
         keys.add(key)
         groups["将新增"].append(label)
         if pending:

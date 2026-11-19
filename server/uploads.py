@@ -178,7 +178,7 @@ def viewer_can_see(record, user_id, is_admin):
 
 
 def _msg_token():
-    return os.environ.get("WECHAT_MSG_TOKEN") or os.environ.get("WECHAT_TOKEN") or ""
+    return os.environ.get("WECHAT_MSG_TOKEN") or ""
 
 
 def verify_media_check(qs):

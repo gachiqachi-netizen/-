@@ -47,7 +47,6 @@ ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
 DATA_DIR = os.environ.get("DATA_DIR") or HERE
 UPLOADS = os.environ.get("UPLOADS_DIR") or os.path.join(DATA_DIR, "uploads")
 MODELS = os.environ.get("MODELS_DIR") or os.path.join(HERE, "..", "tools", "hand-tracker", "models")   # 本地开发用的 AR 模型
-FRONT = os.path.join(HERE, "..", "prototype.html")   # 前台就是原型页面，加上接口地址后直接用
 os.makedirs(UPLOADS, exist_ok=True)
 def ensure_dev_login_local():
     # 开发测试登录只签 dev: 前缀的本地账号，绝不能出现在生产数据库上。
@@ -399,9 +398,6 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlparse(self.path).path
         try:
-            if path in ("/", "/index.html"):
-                html = open(FRONT, encoding="utf-8").read()
-                return self.send(200, page_skeleton(html, '<script>window.CGZ_API="/api";</script>'), "text/html; charset=utf-8")
             if path in ("/admin", "/admin/"):
                 with open(os.path.join(HERE, "static", "admin.html"), encoding="utf-8") as stream:
                     return self.send(200, stream.read(), "text/html; charset=utf-8")

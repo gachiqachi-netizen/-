@@ -1,6 +1,5 @@
 .page { min-height: 100vh; background: var(--c-bg); }
 .content { padding: 48rpx 40rpx 80rpx; }
-.title { font-size: var(--fs-title); font-weight: var(--fw-bold); color: var(--c-text); margin-bottom: 40rpx; }
 .section { margin-top: 32rpx; }
 .heading { font-size: var(--fs-caption); color: var(--c-text-2); margin-bottom: 12rpx; }
 .paragraph { font-size: var(--fs-body); color: var(--c-text); line-height: 1.7; }

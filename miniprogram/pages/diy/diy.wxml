@@ -1,10 +1,10 @@
-<view class="workbench {{searchFocused || searchQuery ? 'search-focused' : ''}}">
+<view class="workbench {{searchFocused || searchQuery || error ? 'search-focused' : ''}}">
   <c-nav-bar title="自己串" home="{{true}}" />
   <view class="topbar">
     <view class="topbar-title" bindtap="works">我的作品 <text class="save-dot" wx:if="{{saveDot}}">●</text> ›</view>
     <view class="topbar-more" bindtap="toggleMore">···</view>
   </view>
-  <view wx:if="{{!searchFocused && !searchQuery}}" class="tray {{trayExpanded ? 'tray-expanded' : ''}}" bindtouchstart="trayTouchStart" bindtouchmove="trayTouchMove" bindtouchend="trayTouchEnd">
+  <view wx:if="{{!searchFocused && !searchQuery && !error}}" class="tray {{trayExpanded ? 'tray-expanded' : ''}}" bindtouchstart="trayTouchStart" bindtouchmove="trayTouchMove" bindtouchend="trayTouchEnd">
     <view class="tray-name" bindtap="openName"><text>{{nameLabel}} ›</text><text class="tray-tags" wx:if="{{beadCount >= 6}}">{{tagLine}}</text></view>
     <view class="tray-empty" wx:if="{{!items.length}}">
       <view class="empty-ring"><view class="empty-ring-wordmark"><c-wordmark tone="text" size="trayLg" /></view></view>

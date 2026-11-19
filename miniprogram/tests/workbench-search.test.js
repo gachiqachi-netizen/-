@@ -90,5 +90,5 @@ test('搜索聚焦收起珠盘，失焦恢复',()=>{
   assert.equal(p.data.searchFocused,false)
   const markup=fs.readFileSync(path.join(__dirname,'../pages/diy/diy.wxml'),'utf8')
   assert.match(markup,/focus="\{\{searchFocused\}\}"/)
-  assert.match(markup,/wx:if="\{\{!searchFocused && !searchQuery\}\}"/)
+  assert.match(markup,/wx:if="\{\{!searchFocused && !searchQuery && !error\}\}"/)
 })

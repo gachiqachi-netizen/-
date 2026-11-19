@@ -1,5 +1,5 @@
 // Coordinates are bead centers in pixels. Sequence position 1 starts at 12 o'clock.
-function layout(sequence, size) {
+function legacyLayout(sequence, size) {
   if (!Array.isArray(sequence)) throw new TypeError('sequence must be an array')
   if (!sequence.length) return []
   if (sequence.length > 80 || !Number.isFinite(size) || size <= 0) throw new RangeError('invalid bracelet size or bead count')
@@ -64,4 +64,67 @@ function layout(sequence, size) {
   })
 }
 
-module.exports = { layout }
+// Angles are radians. Keep the shortest step when a finger crosses -π/π.
+function angleDelta(previous, current) {
+  let delta = current - previous
+  if (delta > Math.PI) delta -= 2 * Math.PI
+  if (delta < -Math.PI) delta += 2 * Math.PI
+  return delta
+}
+
+function layout(sequence, size, circumferenceMm, rotation = 0) {
+  if (circumferenceMm == null) return legacyLayout(sequence, size)
+  if (!Array.isArray(sequence)) throw new TypeError('sequence must be an array')
+  if (!sequence.length) return []
+  if (sequence.length > 80 || !Number.isFinite(size) || size <= 0 || !Number.isFinite(circumferenceMm) || circumferenceMm <= 0) throw new RangeError('invalid bracelet size or circumference')
+  const mm = sequence.map(bead => {
+    const value = Number(bead.mm)
+    if (!Number.isFinite(value) || value <= 0) throw new RangeError('bead mm must be positive')
+    return value
+  })
+  const radii = mm.map(value => value / 2)
+  const maxRadius = Math.max(...radii)
+  const inset = Math.min(2, size * 0.04)
+  // A fixed physical scale for a given viewport; count never enters it.
+  const pixelsPerMm = (size / 2 - inset) / (160 / (2 * Math.PI) + 6)
+  const baseRadius = circumferenceMm / (2 * Math.PI)
+  const chords = radii.map((radius, i) => radius + radii[(i + 1) % radii.length])
+  const angleSum = radius => chords.reduce((sum, chord) => sum + 2 * Math.asin(Math.min(1, chord / (2 * radius))), 0)
+  let circleRadius = baseRadius
+  if (mm.length > 2 && angleSum(circleRadius) > 2 * Math.PI) {
+    let low = Math.max(circleRadius, Math.max(...chords) / 2), high = low * 2
+    while (angleSum(high) > 2 * Math.PI) high *= 2
+    for (let step = 0; step < 60; step++) {
+      const mid = (low + high) / 2
+      if (angleSum(mid) > 2 * Math.PI) low = mid
+      else high = mid
+    }
+    circleRadius = high
+  }
+  const scale = Math.min(pixelsPerMm, (size / 2 - inset) / (circleRadius + maxRadius))
+  const center = size / 2
+  let walked = 0
+  const angles = mm.map((_, i) => {
+    const value = walked
+    if (i + 1 < mm.length) walked += 2 * Math.asin(Math.min(1, chords[i] / (2 * circleRadius)))
+    return value
+  })
+  const open = mm.length < 3 || angleSum(circleRadius) < 2 * Math.PI - 0.08
+  return sequence.map((bead, position) => {
+    const theta = angles[position] + rotation
+    const angle = -Math.PI / 2 + theta
+    return {
+      index: position + 1,
+      x: center + scale * circleRadius * Math.cos(angle),
+      y: center + scale * circleRadius * Math.sin(angle),
+      r: scale * radii[position],
+      rotate: theta * 180 / Math.PI,
+      circleRadius: scale * circleRadius,
+      open,
+      photo: bead.photo || null,
+      colors: Array.isArray(bead.colors) ? bead.colors.slice(0, 2) : [null, null],
+    }
+  })
+}
+
+module.exports = { layout, angleDelta }

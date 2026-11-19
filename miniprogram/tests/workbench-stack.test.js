@@ -69,9 +69,11 @@ test('托盘上拉放大、松手复位，长按拖动可换位', () => {
   assert.equal(p.data.trayExpanded,true)
   p.trayTouchEnd()
   assert.equal(p.data.trayExpanded,false)
-  const target=layout(p.data.items,470)[1]
+  const points=layout(p.data.items,470,'',Number(p.data.design.wrist||16)*10,0)
+  const target=points[1]
   p.setData({selected:0})
   p.createSelectorQuery=()=>({select(){return this},boundingClientRect(callback){this.callback=callback;return this},exec(){this.callback({left:0,top:0,width:470,height:470})}})
+  p.trayTouchStart({touches:[{clientX:points[0].left+points[0].d/2,clientY:points[0].top+points[0].d/2}]})
   p.trayLongPress({})
   p.trayLastX=target.x+target.box/2;p.trayLastY=target.y+target.box/2
   p.trayTouchEnd()

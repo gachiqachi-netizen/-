@@ -9,10 +9,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 sys.path.insert(0, str(ROOT / 'server'))
-import bead_colors
 import patch_beads
 from db import DB
-from PIL import Image, ImageDraw
+
+try:  # Pillow is a local-only dev dependency (tools/requirements-dev.txt), not in the server image.
+    from PIL import Image, ImageDraw
+    import bead_colors
+except ImportError:  # pragma: no cover - depends on the machine
+    Image = ImageDraw = bead_colors = None
 
 
 def jpeg(background, center=None):
@@ -24,6 +28,7 @@ def jpeg(background, center=None):
     return buffer.getvalue()
 
 
+@unittest.skipUnless(Image, '需要 Pillow（tools/requirements-dev.txt）')
 class BeadColorsTest(unittest.TestCase):
     def test_solid_photo(self):
         colors = bead_colors.photo_color(jpeg('#639379'))

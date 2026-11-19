@@ -53,6 +53,7 @@
 | B-22 | agent/B-22-bead-colors | backend-wave2.md | B-21 | Codex |  |  |
 | B-23 | agent/B-23-bead-kb | backend-wave2.md | B-22 | Codex |  |  |
 | B-24 | agent/B-24-catalog-cache | backend-wave2.md | B-19 | Codex |  |  |
+| B-25 | agent/B-25-test-template | backend-wave2.md | B-21 | Codex |  |  |
 | B-15 | agent/B-15-wx-shipping | backend-wave2.md | B-14 | Codex |  | 确认发货信息管理已开通 |
 | B-13 | agent/B-13-tracking | backend-wave2.md | A11 V7a | 任何 |  | 确认微信物流服务和物流查询插件已开通 |
 | B-14 | agent/B-14-wechat-pay | backend-wave2.md | A5b | Codex |  |  |

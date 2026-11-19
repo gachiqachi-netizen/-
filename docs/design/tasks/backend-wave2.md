@@ -384,6 +384,21 @@
 - **测试**：`check_deploy.py` 用临时生成的假密钥和假环境变量测：全对时全部通过；缺变量、密钥长度不对、文件不可读、回调不是 https 各报对应错误；输出里不出现任何变量的值。
 - **不做**：真实部署、真实付款。
 
+## B-25 支付测试款：0.2 元左右的测试模板，带“测试”标记和上线前提醒（2026-11-19 负责人）
+
+- **依赖**：B-21（要用 `load_templates.py` 导入）　**大小**：S　**只能改**：`server/commerce.py`（`normalize_template` 只加 `testOnly` 字段放行）、`server/app.py`（`on_sale_catalog` 排序：`testOnly` 永远排最后）、`miniprogram/components/card/`、`miniprogram/pages/home/`、模板详情页（找到首页卡片点进去的页面）、`admin-web/src/pages/templates*`、`tools/check_deploy.py`（只加一项检查）、`docs/deploy.md`、`server/tests/`、`miniprogram/tests/`
+- **目的**：真实微信支付开通后（备案、提审、订单路径录入都完成后），负责人要在真机上走“付款 → 发货同步 → 退款”整条链路，金额越小越好。
+- **数据**：`deploy/data-files/templates-test.json`（已写好）：`t-test-pay`“测试款·支付验证”，用线上已有的 3 颗 0.01 元测试珠（`b8d484ede` 测试·粉晶、`bd79027aa` 测试·白水晶、`b408ecefb` 测试·黑曜石，8mm），15cm 手围约 20 颗，珠子合计约 ¥0.20；`testOnly: true`。**不要改价格或珠子**。
+- **要做的**：
+  1. 后端：模板允许 `testOnly` 布尔字段，原样存、原样返回；catalog 里 `testOnly` 模板排在所有模板最后。
+  2. 小程序：`testOnly` 模板的卡片和详情页标题前加灰色小标签“测试”，详情页寓意下方加一行“仅供内部测试，请勿购买”。不做隐藏（要能在首页找到）。
+  3. 后台模板列表：`testOnly` 显示红色“测试款”标签；编辑页能勾选/取消“测试款”。
+  4. `tools/check_deploy.py`：`ENV=production` 且 `PAYMENT_PROVIDER=wechat` 时，若线上还有上架中的 `testOnly` 模板，输出“提醒：测试款仍在上架”（只提醒，不判失败，不打印任何值）。读库方式照 `load_seed.py`。
+  5. `docs/deploy.md` 加一节“支付验收用测试款”：导入命令（`load_templates.py` 读 `templates-test.json`）、测试前把手工费设为不收、运费设为 0、测试完立即在后台下架；并写进“上线前检查清单”。
+- **测试**：`testOnly` 存取和排序；小程序卡片/详情出现“测试”标签；check_deploy 有/无测试款两种输出且不含值。
+- **截图**：首页最后一张测试款卡片、详情页、后台列表。
+- **不做**：改价格规则、做“只给某些人看”的权限（测试期很短，靠上线前下架）。
+
 ## B-22 新珠子补颜色：照片取色 + 名称兜底，按数据文件写回（2026-11-19 负责人）
 
 - **依赖**：B-21（同改 compose 挂载）　**大小**：M　**只能改**：新建 `tools/bead_colors.py`（本机运行）、新建 `tools/patch_beads.py`（服务器运行）、新建 `deploy/data-files/bead-colors-2026-11.json`、`deploy/docker-compose.yml`（只读挂载 `../tools/patch_beads.py`）、`docs/deploy.md`、`server/tests/` 对应测试、`tools/requirements-dev.txt`（如需 Pillow，只给本机工具用，**不进服务器镜像**）

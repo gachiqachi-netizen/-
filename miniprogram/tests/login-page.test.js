@@ -17,11 +17,12 @@ function page() {
   return instance
 }
 
-test('both consent paths use the WeChat phone button and page starts unchecked', () => {
+test('only the main action requests a phone number and page starts unchecked', () => {
   const wxml = fs.readFileSync(path.join(__dirname, '../pages/login/login.wxml'), 'utf8')
-  assert.equal((wxml.match(/open-type="getPhoneNumber"/g) || []).length, 2)
+  assert.equal((wxml.match(/open-type="getPhoneNumber"/g) || []).length, 1)
   assert.match(wxml, /bindgetphonenumber="onPhone"/)
-  assert.match(wxml, /bindgetphonenumber="agreeAndPhone"/)
+  assert.match(wxml, /<c-sheet[\s\S]*bindtap="agreeOnly"[\s\S]*<\/c-sheet>/)
+  assert.doesNotMatch(wxml.match(/<c-sheet[\s\S]*<\/c-sheet>/)[0], /open-type="getPhoneNumber"/)
   assert.equal(page().data.agreed, false)
 })
 
@@ -29,6 +30,27 @@ test('unchecked phone action opens agreement sheet', async () => {
   const instance = page()
   await instance.onPhone({ detail: { code: 'phone-code' } })
   assert.equal(instance.data.sheet, true)
+})
+
+test('agreement closes the sheet, checks the circle, and next phone action binds code', async () => {
+  const instance = page()
+  const original = { bindPhone: auth.bindPhone, syncLocalWorks: auth.syncLocalWorks,
+    continueAfterLogin: auth.continueAfterLogin, showToast: wx.showToast }
+  const calls = []
+  auth.bindPhone = async code => { calls.push(code) }
+  auth.syncLocalWorks = async () => false
+  auth.continueAfterLogin = () => {}
+  wx.showToast = options => { calls.push(options.title) }
+  try {
+    await instance.onPhone({ detail: { code: 'phone-code' } })
+    assert.equal(instance.data.sheet, true)
+    instance.agreeOnly()
+    assert.equal(instance.data.agreed, true)
+    assert.equal(instance.data.sheet, false)
+    assert.equal(calls[0], '已同意，点「手机号快捷登录」继续')
+    await instance.onPhone({ detail: { code: 'phone-code' } })
+    assert.equal(calls[1], 'phone-code')
+  } finally { Object.assign(auth, original); wx.showToast = original.showToast }
 })
 
 test('denial stays on page and shows retry text', async () => {

@@ -87,7 +87,7 @@ Page({
   },
 
   goDiy() {
-    wx.switchTab({ url: '/pages/diy/diy' })
+    require('../../utils/nav').openWorkbench()
   },
 
   switchTab(e) {

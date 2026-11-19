@@ -36,4 +36,10 @@ function setCount(ids, catalog, wrist, count) {
   })
   return best&&Math.abs(best.diff)<=12?best:null
 }
-module.exports={stats,fill,move,setCount}
+function removeOne(ids, id) {
+  const next=ids.slice(), index=next.lastIndexOf(id)
+  if(index>=0) next.splice(index,1)
+  return next
+}
+function removeGroup(ids, id) { return ids.filter(item=>item!==id) }
+module.exports={stats,fill,move,setCount,removeOne,removeGroup}

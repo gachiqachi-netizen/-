@@ -1,7 +1,6 @@
 const store = require('./design')
 const { queue } = require('./toast')
 const TABS = ['pages/home/home', 'pages/diy/diy', 'pages/ai/ai', 'pages/mine/mine']
-let returnTab = 'pages/home/home'
 
 function pages() { return typeof getCurrentPages === 'function' ? getCurrentPages() : [] }
 function open(route) {
@@ -18,7 +17,9 @@ function open(route) {
 }
 function openWorkbench(design) {
   const stack = pages()
-  returnTab = stack.map(page => page.route).reverse().find(route => TABS.includes(route) && route !== 'pages/diy/diy') || 'pages/home/home'
+  const source = stack[stack.length - 1]
+  const global = typeof getApp === 'function' && getApp().globalData
+  if (global) global.workbenchReturn = source && source.route !== 'pages/diy/diy' ? { route: source.route, options: { ...(source.options || {}) } } : null
   const current = store.current()
   const next = design || current
   if (current && next && current.id !== next.id) {
@@ -31,7 +32,13 @@ function openWorkbench(design) {
   if (next) store.selected(next)
   wx.switchTab({ url: '/pages/diy/diy' })
 }
-function backFromWorkbench() { wx.switchTab({ url: '/' + returnTab }) }
+function backFromWorkbench(source) {
+  if (!source || !source.route) return
+  const route = source.route.replace(/^\//, '')
+  if (TABS.includes(route)) return wx.switchTab({ url: '/' + route })
+  const query = Object.keys(source.options || {}).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(source.options[key])).join('&')
+  wx.navigateTo({ url: '/' + route + (query ? '?' + query : '') })
+}
 function wrist() {
   const saved = Number(wx.getStorageSync('cgz_wrist'))
   const measured = saved >= 8 && saved <= 30

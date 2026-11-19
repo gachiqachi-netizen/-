@@ -68,7 +68,8 @@ Page({
     if (target && target.type === 'article') return wx.navigateTo({ url: '/features/article/article?id=' + encodeURIComponent(target.id) })
     if (target && target.type === 'page') {
       const path = target.id[0] === '/' ? target.id : '/' + target.id
-      if (path === '/pages/ai/ai' || path === '/pages/diy/diy' || path === '/pages/mine/mine' || path === '/pages/home/home') return wx.switchTab({ url: path })
+      if (path === '/pages/diy/diy') return nav.openWorkbench()
+      if (path === '/pages/ai/ai' || path === '/pages/mine/mine' || path === '/pages/home/home') return wx.switchTab({ url: path })
       return wx.navigateTo({ url: path })
     }
     if (b.tpl || (target && target.type === 'template')) {

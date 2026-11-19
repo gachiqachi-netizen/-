@@ -1,10 +1,10 @@
-<view class="workbench">
+<view class="workbench {{searchFocused || searchQuery || error ? 'search-focused' : ''}}">
   <c-nav-bar title="自己串" home="{{true}}" />
   <view class="topbar">
     <view class="topbar-title" bindtap="works">我的作品 <text class="save-dot" wx:if="{{saveDot}}">●</text> ›</view>
     <view class="topbar-more" bindtap="toggleMore">···</view>
   </view>
-  <view class="tray {{trayExpanded ? 'tray-expanded' : ''}}" bindtouchstart="trayTouchStart" bindtouchmove="trayTouchMove" bindtouchend="trayTouchEnd">
+  <view wx:if="{{!searchFocused && !searchQuery && !error}}" class="tray {{trayExpanded ? 'tray-expanded' : ''}}" bindtouchstart="trayTouchStart" bindtouchmove="trayTouchMove" bindtouchend="trayTouchEnd">
     <view class="tray-name" bindtap="openName"><text>{{nameLabel}} ›</text><text class="tray-tags" wx:if="{{beadCount >= 6}}">{{tagLine}}</text></view>
     <view class="tray-empty" wx:if="{{!items.length}}">
       <view class="empty-ring"><view class="empty-ring-wordmark"><c-wordmark tone="text" size="trayLg" /></view></view>
@@ -30,11 +30,14 @@
   <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="picked-row"><view class="picked-list"><text wx:if="{{!picked.length}}">已选的珠子会排在这里</text><view class="picked-chip {{selectedKind === item.id ? 'picked-active' : ''}}" wx:for="{{picked}}" wx:key="id" data-id="{{item.id}}" bindtap="selectKind"><c-bead bead="{{item.bead}}" size="s" />{{item.name}} ×{{item.n}}</view></view></scroll-view>
   <view class="picker">
     <view class="picker-head"><text class="picker-title">挑珠子</text><text class="picker-selected" wx:if="{{selected >= 0}}" bindtap="remove">{{selectedLabel}} · 移除</text></view>
+    <view class="picker-search"><input type="text" value="{{searchText}}" focus="{{searchFocused}}" placeholder="搜珠子名称" confirm-type="search" bindinput="searchInput" bindfocus="searchFocus" bindblur="searchBlur" /><text wx:if="{{searchText}}" bindtap="clearSearch" class="picker-search-clear">清除</text></view>
+    <view class="picker-search-result" wx:if="{{searchQuery}}">找到 {{searchCount}} 款</view>
     <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="category-scroll"><view class="categories"><view class="category {{cat === 'all' ? 'active' : ''}}" data-id="all" bindtap="category">全部</view><view class="category {{cat === item.id ? 'active' : ''}}" wx:for="{{cats}}" wx:key="id" data-id="{{item.id}}" bindtap="category">{{item.name}}</view></view></scroll-view>
     <view class="sizes"><view class="size {{size === 'all' ? 'active' : ''}}" data-size="all" bindtap="sizeFilter">全部尺寸</view><view class="size {{size == item ? 'active' : ''}}" wx:for="{{sizes}}" wx:key="*this" data-size="{{item}}" bindtap="sizeFilter">{{item}}mm</view></view>
     <c-state wx:if="{{error}}" title="材料暂时没加载出来" desc="{{error}}" action="重试" bindaction="retryCatalog" />
     <view class="bead-loading" wx:elif="{{!catalogReady}}"><view wx:for="{{[1,2,3,4,5,6,7,8]}}" wx:key="*this" class="bead-visual"><c-skeleton shape="block" width="100%" ratio="5/4"/></view></view>
-    <scroll-view wx:else scroll-y enhanced show-scrollbar="{{false}}" class="bead-scroll" scroll-into-view="{{scrollBeadId}}"><view class="bead-grid"><view class="bead-choice {{outOfStockId === item.id ? 'bead-shake' : ''}} {{focusedBeadId === item.id ? 'bead-focused' : ''}}" wx:for="{{displayBeads}}" wx:key="id" id="bead-{{item.id}}" data-id="{{item.id}}" bindtap="add" bindlongpress="inspect"><view class="bead-visual"><image wx:if="{{item.photoUrl}}" class="bead-photo" src="{{item.photoUrl}}" mode="aspectFit" lazy-load="{{true}}" /><c-bead wx:else bead="{{item}}" size="m" state="{{item.stock === 'out_of_stock' ? 'off' : 'normal'}}" /><text class="bead-count" wx:if="{{item.selectedCount}}">{{item.selectedCount}}</text></view><view class="bead-name">{{item.name}}</view><view class="bead-meta">{{item.stock === 'out_of_stock' ? '暂时缺货' : item.mm + 'mm ¥' + item.price}}</view></view></view></scroll-view>
+    <view wx:elif="{{searchQuery && searchCount === 0}}" class="picker-empty">没找到，换个词或清除筛选</view>
+    <scroll-view wx:else scroll-y enhanced show-scrollbar="{{false}}" class="bead-scroll" scroll-into-view="{{scrollBeadId}}" bindscrolltolower="loadMoreBeads"><view class="bead-grid"><view class="bead-choice {{outOfStockId === item.id ? 'bead-shake' : ''}} {{focusedBeadId === item.id ? 'bead-focused' : ''}}" wx:for="{{displayBeads}}" wx:key="id" id="bead-{{item.id}}" data-id="{{item.id}}" bindtap="add" bindlongpress="inspect"><view class="bead-visual"><image wx:if="{{item.photoUrl}}" class="bead-photo" src="{{item.photoUrl}}" mode="aspectFit" lazy-load="{{true}}" /><c-bead wx:else bead="{{item}}" size="m" state="{{item.stock === 'out_of_stock' ? 'off' : 'normal'}}" /><text class="bead-count" wx:if="{{item.selectedCount}}">{{item.selectedCount}}</text></view><view class="bead-name">{{item.name}}</view><view class="bead-meta">{{item.stock === 'out_of_stock' ? '暂时缺货' : item.mm + 'mm ¥' + item.price}}</view></view></view></scroll-view>
   </view>
   <c-bar wx:if="{{beadCount}}" layout="price"><view slot="left">{{handPrice}}</view><button class="c-btn c-btn--block finish" bindtap="finish">串好了</button></c-bar>
   <c-sheet show="{{firstWristOpen}}" title="先确认手围" maskClose="{{false}}"><view>按 {{design.wrist}}cm 帮你排珠子</view><c-cell label="当前手围" value="{{design.wrist}}cm" /><view slot="footer" class="first-wrist-actions"><button class="c-btn c-btn--sec" bindtap="confirmFirstWrist">就用 {{design.wrist}}cm</button><button class="c-btn" bindtap="measureFirstWrist">量一下</button></view></c-sheet>

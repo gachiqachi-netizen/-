@@ -377,6 +377,9 @@ def normalize_template(db, data, existing=None):
         return None, "寓意里有不能用的词：" + "、".join(bad_words) + "。只写寓意，不写功效"
     images = clean_images(d.get("images"))
     out = dict(d)
+    test_only = d.get("testOnly", (existing or {}).get("testOnly", False))
+    if type(test_only) is not bool:
+        return None, "测试款标记必须是布尔值"
     cover = d.get("cover", (existing or {}).get("cover", ""))
     if cover not in ("", None) and (not isinstance(cover, dict) or set(cover) != {"lg", "md", "sm"}
             or any(not isinstance(cover[key], str) or not cover[key].startswith("/uploads/") for key in cover)):
@@ -393,6 +396,7 @@ def normalize_template(db, data, existing=None):
         "images": images,
         "onSale": status.product_on_sale({"status": pstatus}),
         "cover": cover or "",
+        "testOnly": test_only,
     })
     out.pop("id", None)
     return out, None

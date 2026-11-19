@@ -134,6 +134,21 @@ sudo docker compose --env-file app.env exec app python tools/load_templates.py /
 
 命令只按模板 ID 补缺，不覆盖后台已修改的模板；任一待导入模板引用的珠子不存在、未上架或类型不符时，整批不写。旧的 t1–t6 由负责人在后台下架；模板封面也由负责人上传。
 
+### 支付验收用测试款
+
+确认三颗测试珠已上架后，在 `deploy/` 目录预览并导入测试模板：
+
+```bash
+sudo docker compose --env-file app.env exec app python tools/load_templates.py /app/deploy-data/templates-test.json
+sudo docker compose --env-file app.env exec app python tools/load_templates.py /app/deploy-data/templates-test.json --apply
+```
+
+测试前在后台将手工费设为不收、运费设为 0，再用真机验证付款、发货同步和退款。测试结束立即在后台下架“测试款·支付验证”；勿改测试珠价格或模板配方。
+
+### 上线前检查清单
+
+- 在后台确认所有带“测试款”标记的模板均已下架；生产环境使用微信支付时运行 `python tools/check_deploy.py`，不能留有“提醒：测试款仍在上架”。
+
 ## 7. 微信后台：域名和支付通知
 
 ### 以后打开图片机审

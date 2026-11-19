@@ -22,8 +22,9 @@
       <text class="price">{{price}}</text>
       <text class="price-note">{{shippingNote}}</text>
     </view>
-    <view class="name">{{design.name}}</view>
+    <view class="name"><text class="test-label" wx:if="{{design.testOnly}}">测试</text>{{design.name}}</view>
     <view class="line" wx:if="{{line}}">{{line}}</view>
+    <view class="test-warning" wx:if="{{design.testOnly}}">仅供内部测试，请勿购买</view>
     <view class="tags" wx:if="{{tags}}">{{tags}}</view>
   </view>
 

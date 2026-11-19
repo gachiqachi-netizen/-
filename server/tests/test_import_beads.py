@@ -76,6 +76,35 @@ class ImportBeadsTests(unittest.TestCase):
         self.assertEqual(len(groups["将新增"]), 1)
         self.assertEqual(len(groups["跳过"]), 1)
 
+    def test_missing_runtime_kb_entry_stays_in_new_and_pending_groups(self):
+        row = {"名称": "蔷薇石", "尺寸(mm)": "8", "价格(分)": "100",
+               "材质": "石", "照片": str(self.photo)}
+        self.assertEqual(import_beads.match("蔷薇石", import_beads.load_entries()), "qiangwei-shi")
+        with patch("commerce.kb.get", return_value=None), \
+                patch.object(import_beads, "color_for", return_value=["#123456", "#123456"]):
+            db = self.db()
+            preview = import_beads.import_rows(db, [row], self.root / "input.csv", output=lambda _: None)
+            self.assertEqual(len(preview["将新增"]), 1)
+            self.assertEqual(len(preview["知识库待确认"]), 1)
+            self.assertEqual(len(preview["缺字段"]), 0)
+            applied = import_beads.import_rows(db, [row], self.root / "input.csv", apply=True,
+                                               output=lambda _: None)
+            self.assertEqual(len(applied["将新增"]), 1)
+            self.assertNotIn("kb", db.list("beads")[0])
+
+    def test_archived_name_size_material_does_not_block_new_import(self):
+        db = self.db()
+        db.put("beads", "old", {"name": "旧珠", "mm": 8, "mat": "crystal",
+                                "type": "bead", "status": "archived", "onSale": False})
+        row = {"名称": "旧珠", "尺寸(mm)": "8", "价格(分)": "100",
+               "材质": "水晶", "照片": str(self.photo)}
+        with patch.object(import_beads, "color_for", return_value=["#123456", "#123456"]):
+            preview = import_beads.import_rows(db, [row], self.root / "input.csv", output=lambda _: None)
+            self.assertEqual(len(preview["将新增"]), 1)
+            import_beads.import_rows(db, [row], self.root / "input.csv", apply=True, output=lambda _: None)
+        self.assertEqual(len(db.list("beads")), 2)
+        self.assertEqual(db.get("beads", "old")["status"], "archived")
+
     def test_required_fields_and_price_are_checked_per_row(self):
         source = self.root / "input.csv"
         entries = import_beads.load_entries()

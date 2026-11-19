@@ -408,7 +408,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
                 className={`tpl-item${selectedId === t.id ? ' active' : ''}`}
                 onClick={() => setSelectedId(t.id)}
               >
-                <span className="tpl-item-name">{t.name}{t.testOnly === true && <span style={{ color: 'var(--c-danger)', marginLeft: 8 }}>测试款</span>}</span>
+                <span className="tpl-item-name">{t.name}{t.testOnly === true && <span style={{ color: 'var(--zy-primary, #c8302e)', marginLeft: 8 }}>测试款</span>}</span>
                 <span className="tpl-item-meta">
                   {t.status === 'on_sale' ? '上架中' : t.status === 'draft' ? '草稿' : '已下架'} · 基准{' '}
                   {t.wrist || 15}cm

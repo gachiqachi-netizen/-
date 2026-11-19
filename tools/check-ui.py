@@ -2,6 +2,7 @@
 """Report new literal colors, font sizes and radii in mini program styles."""
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -87,11 +88,41 @@ def markup_violations(path):
             found.append(f'{relative}:vertical-button:{parent.start()}')
     return found
 
+def component_violations(path, source=None, wxml=None):
+    if path.name != 'index.js' or path.parent.parent.name != 'components':
+        return []
+    markup = path.with_suffix('.wxml')
+    if not markup.exists():
+        return []
+    source = path.read_text() if source is None else source
+    wxml = markup.read_text() if wxml is None else wxml
+    relative = str(path.relative_to(ROOT))
+    found = []
+    for match in re.finditer(r"\b(\w+)\s*\([^(){}]*\)\s*\{[^{}]*?triggerEvent\(\s*['\"](tap|click|touchstart)['\"]", source, re.S):
+        method = match.group(1)
+        if re.search(r'\bbindtap\s*=\s*[\'\"]' + re.escape(method) + r'[\'\"]', wxml):
+            found.append(f'{relative}:event-bubble:{method}:原生事件会冒泡，页面会收到两次')
+    if re.search(r'\bclass\s*=\s*[\'\"][^\'\"]*\bc-[\w-]+', wxml) and not re.search(r'\b(?:styleIsolation|addGlobalClass)\s*:', source):
+        found.append(f'{relative}:global-class:组件未声明 styleIsolation 或 addGlobalClass')
+    return found
+
+def existing_component_violations(path):
+    relative = str(path.relative_to(ROOT))
+    def original(name):
+        result = subprocess.run(['git', 'show', f'origin/integration/2026-11:{name}'], cwd=ROOT, capture_output=True, text=True)
+        return result.stdout if result.returncode == 0 else None
+    source = original(relative)
+    markup = original(str(path.with_suffix('.wxml').relative_to(ROOT)))
+    if source is None or markup is None:
+        return set()
+    return set(component_violations(path, source, markup))
+
 def main():
-    paths = [Path(arg).resolve() for arg in sys.argv[1:]] if len(sys.argv) > 1 else list((ROOT / 'miniprogram').rglob('*.wxss')) + list((ROOT / 'miniprogram').rglob('*.wxml'))
+    paths = [Path(arg).resolve() for arg in sys.argv[1:]] if len(sys.argv) > 1 else list((ROOT / 'miniprogram').rglob('*.wxss')) + list((ROOT / 'miniprogram').rglob('*.wxml')) + list((ROOT / 'miniprogram/components').glob('*/index.js'))
     old = set(json.loads(BASELINE.read_text())) if BASELINE.exists() else set()
-    current = {item for path in paths if path.name != 'tokens.wxss' for item in (markup_violations(path) if path.suffix == '.wxml' else violations(path))}
-    added = sorted(current - old)
+    current = {item for path in paths if path.name != 'tokens.wxss' for item in (markup_violations(path) if path.suffix == '.wxml' else component_violations(path) if path.suffix == '.js' else violations(path))}
+    legacy = {item for path in paths if path.suffix == '.js' for item in existing_component_violations(path)}
+    added = sorted(current - old - legacy)
     for item in added: print(item)
     print(f'UI check: {len(current)} violations, {len(added)} new')
     return bool(added)

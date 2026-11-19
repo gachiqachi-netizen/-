@@ -64,6 +64,23 @@ function legacyLayout(sequence, size) {
   })
 }
 
+// Center the rendered bead bounds in a square preview without changing the ring layout.
+function centerInFrame(points, size, radiusScale = 1) {
+  if (!points.length) return []
+  const left = Math.min(...points.map(point => point.x - point.r * radiusScale))
+  const right = Math.max(...points.map(point => point.x + point.r * radiusScale))
+  const top = Math.min(...points.map(point => point.y - point.r * radiusScale))
+  const bottom = Math.max(...points.map(point => point.y + point.r * radiusScale))
+  const scale = Math.min(1, size * 0.88 / Math.max(right - left, bottom - top))
+  const midX = (left + right) / 2, midY = (top + bottom) / 2
+  const center = size / 2
+  return points.map(point => ({ ...point,
+    x: center + (point.x - midX) * scale,
+    y: center + (point.y - midY) * scale,
+    r: point.r * scale,
+  }))
+}
+
 // Angles are radians. Keep the shortest step when a finger crosses -π/π.
 function angleDelta(previous, current) {
   let delta = current - previous
@@ -127,4 +144,4 @@ function layout(sequence, size, circumferenceMm, rotation = 0) {
   })
 }
 
-module.exports = { layout, angleDelta }
+module.exports = { layout, angleDelta, centerInFrame }

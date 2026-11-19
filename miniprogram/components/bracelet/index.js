@@ -1,4 +1,4 @@
-const { layout } = require('../../utils/bracelet-layout')
+const { layout, centerInFrame } = require('../../utils/bracelet-layout')
 const style = require('./style.js')
 const { materialParams, cssPaint } = require('./fallback.js')
 function normalize(beads) { return (beads || []).filter(b => b && Number(b.mm) > 0).map(b => ({ ...b, colors: b.colors || b.c || [] })) }
@@ -13,14 +13,16 @@ function photoOf(bead, tier) {
 function paint(colors, params) {
   return cssPaint(colors, params)
 }
-function positions(beads, size, tier, circumferenceMm, rotation = 0) {
+function positions(beads, size, tier, circumferenceMm, rotation = 0, center = false) {
   const sequence = normalize(beads)
   if (!sequence.length || !Number.isFinite(size) || size <= 0) return []
   const visual = tier === 's' || tier === 'm' || tier === 'l'
   const params = tier === 's' ? style.small : style.regular
   const drawSize = visual ? size * style.fillRatio : size
   const offset = (size - drawSize) / 2
-  return layout(sequence, drawSize, visual ? undefined : circumferenceMm, visual ? 0 : rotation).map((point, index) => {
+  const raw = layout(sequence, drawSize, visual ? undefined : circumferenceMm, visual ? 0 : rotation)
+  const points = center && visual ? centerInFrame(raw, drawSize, params.beadScale) : raw
+  return points.map((point, index) => {
     const bead = sequence[index], d = point.r * 2 * (visual ? params.beadScale : 1)
     const left = point.x + offset - d / 2, top = point.y + offset - d / 2
     return { ...point, bead, index, zeroIndex: index, d, diameter: d, box: d, x: left, y: top,
@@ -37,14 +39,14 @@ function wordmarkSize(ring, size) {
 if (typeof Component === 'function') Component({
   options: { styleIsolation: 'apply-shared' },
   properties: { beads: { type: Array, value: [] }, tier: { type: String, value: '' }, size: { type: Number, value: 320 }, wordmark: { type: Boolean, value: false },
-    circumferenceMm: { type: Number, value: 0 }, rotation: { type: Number, value: 0 },
+    circumferenceMm: { type: Number, value: 0 }, rotation: { type: Number, value: 0 }, center: { type: Boolean, value: false },
     selected: { type: Number, value: -1 }, mode: { type: String, value: 'ring' }, stackBeads: { type: Array, value: [] } },
   data: { rings: [], height: 320, side: 320, wordmarkSize: 'trayLg', background: 'transparent', record: false },
-  observers: { 'beads,tier,size,mode,stackBeads,wordmark,circumferenceMm,rotation': function () { this.rebuild() } },
+  observers: { 'beads,tier,size,mode,stackBeads,wordmark,circumferenceMm,rotation,center': function () { this.rebuild() } },
   lifetimes: { attached() { this.rebuild() } },
   methods: { rebuild() {
     const p = this.properties, record = Object.prototype.hasOwnProperty.call(style.tiers, p.tier)
-    const size = record ? style.tiers[p.tier] : Number(p.size) || 320
+    const size = record && !p.center ? style.tiers[p.tier] : Number(p.size) || (record ? style.tiers[p.tier] : 320)
     if (p.mode === 'stack') {
       const gap = Math.round(size * 0.36)
       this.setData({ side: size, height: size + gap, record: false, background: 'transparent', rings: [
@@ -52,7 +54,7 @@ if (typeof Component === 'function') Component({
         { idx: 1, ty: gap / 2, opacity: 0.55, items: positions((p.stackBeads || [])[1], size, '') },
       ] })
     } else {
-      const ring = positions(p.beads, size, record ? p.tier : '', !record && Number(p.circumferenceMm) > 0 ? Number(p.circumferenceMm) : undefined, Number(p.rotation) || 0)
+      const ring = positions(p.beads, size, record ? p.tier : '', !record && Number(p.circumferenceMm) > 0 ? Number(p.circumferenceMm) : undefined, Number(p.rotation) || 0, Boolean(p.center))
       const track = !record && ring.length && ring[0].open ? { left: size / 2 - ring[0].circleRadius, top: size / 2 - ring[0].circleRadius, diameter: ring[0].circleRadius * 2 } : null
       this.setData({ side: size, height: size, record, background: record ? style.background[p.tier] : 'transparent', wordmarkSize: wordmarkSize(ring, size), track, rings: [{ idx: 0, ty: 0, opacity: 1, items: ring }] })
     }

@@ -47,7 +47,7 @@ test('记录页只传 tier，确认订单缩略图在紧凑容器内', () => {
     'pages/order/order.wxml', 'features/order-detail/order-detail.wxml', 'features/orders/orders.wxml',
     'pages/mine/mine.wxml', 'features/review/review.wxml', 'features/after-sale/detail.wxml',
     'pages/ai/ai.wxml', 'features/shared/shared.wxml', 'components/design-row/index.wxml',
-    'components/cell/index.wxml', 'components/bracelet-thumb/index.wxml'
+    'components/cell/index.wxml'
   ]
   for (const file of files) {
     const content = read(file)
@@ -57,5 +57,6 @@ test('记录页只传 tier，确认订单缩略图在紧凑容器内', () => {
       assert.doesNotMatch(tag, /\bsize=/)
     }
   }
+  assert.match(read('components/bracelet-thumb/index.wxml'), /<c-bracelet[^>]*tier="s"[^>]*size="\{\{sizeRpx\}\}"[^>]*center="\{\{true\}\}"/)
   assert.match(read('pages/order/order.wxss'), /\.bracelet \{ width: 128rpx; height: 128rpx;/)
 })

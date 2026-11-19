@@ -42,7 +42,7 @@ test('中大档仍走相切排布，居中落在容器 88% 区域', () => {
   }
 })
 
-test('记录页只传 tier，确认订单的 200rpx 例外由容器放大', () => {
+test('记录页只传 tier，确认订单缩略图在紧凑容器内', () => {
   const files = [
     'pages/order/order.wxml', 'features/order-detail/order-detail.wxml', 'features/orders/orders.wxml',
     'pages/mine/mine.wxml', 'features/review/review.wxml', 'features/after-sale/detail.wxml',
@@ -57,5 +57,5 @@ test('记录页只传 tier，确认订单的 200rpx 例外由容器放大', () =
       assert.doesNotMatch(tag, /\bsize=/)
     }
   }
-  assert.match(read('pages/order/order.wxss'), /\.bracelet \{ width: 200rpx; height: 200rpx;/)
+  assert.match(read('pages/order/order.wxss'), /\.bracelet \{ width: 128rpx; height: 128rpx;/)
 })

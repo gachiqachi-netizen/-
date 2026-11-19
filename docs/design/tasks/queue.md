@@ -50,6 +50,9 @@
 | B-19 | agent/B-19-kb-cache | backend-wave2.md | B-18 | Codex |  |  |
 | B-20 | agent/B-20-manual-photo-review | backend-wave2.md | B-19 | Codex |  |  |
 | B-21 | agent/B-21-load-templates | backend-wave2.md | B-20 | Codex |  |  |
+| B-22 | agent/B-22-bead-colors | backend-wave2.md | B-21 | Codex |  |  |
+| B-23 | agent/B-23-bead-kb | backend-wave2.md | B-22 | Codex |  |  |
+| B-24 | agent/B-24-catalog-cache | backend-wave2.md | B-19 | Codex |  |  |
 | B-15 | agent/B-15-wx-shipping | backend-wave2.md | B-14 | Codex |  | 确认发货信息管理已开通 |
 | B-13 | agent/B-13-tracking | backend-wave2.md | A11 V7a | 任何 |  | 确认微信物流服务和物流查询插件已开通 |
 | B-14 | agent/B-14-wechat-pay | backend-wave2.md | A5b | Codex |  |  |

@@ -5,6 +5,7 @@ import urllib.parse
 import urllib.request
 
 import content_security
+import env
 import user_api
 
 
@@ -16,7 +17,7 @@ def _fetch_code(short_code):
         'scene': 's=' + short_code,
         'page': 'features/shared/shared',
         'check_path': False,
-        'env_version': 'release',
+        'env_version': env.wxacode_env_version(),
     }).encode()
     request = urllib.request.Request(url, data=payload,
                                      headers={'Content-Type': 'application/json'}, method='POST')

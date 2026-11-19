@@ -10,6 +10,7 @@ from unittest.mock import patch
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from db import DB
+import env
 import user_api
 from routes import share_qrcode
 
@@ -85,6 +86,30 @@ class ShareQRCodeTests(unittest.TestCase):
         self.assertEqual(payload['scene'], 's=' + 'a' * 16)
         self.assertLessEqual(len(payload['scene']), 32)
         self.assertEqual(payload['page'], 'features/shared/shared')
+
+    def test_wxacode_env_versions(self):
+        class FakeResponse:
+            def __enter__(self): return self
+            def __exit__(self, *_): return False
+            def read(self): return b'\x89PNG\r\n\x1a\nimage'
+
+        for version in ('release', 'trial', 'develop'):
+            with self.subTest(version=version), \
+                 patch.dict(os.environ, {'WXACODE_ENV_VERSION': version}), \
+                 patch.object(share_qrcode.content_security, '_access_token', return_value='test-token'), \
+                 patch.object(share_qrcode.urllib.request, 'urlopen', return_value=FakeResponse()) as open_url:
+                share_qrcode._fetch_code('a' * 16)
+                self.assertEqual(json.loads(open_url.call_args.args[0].data)['env_version'], version)
+
+    def test_invalid_wxacode_env_version(self):
+        with patch.dict(os.environ, {'WXACODE_ENV_VERSION': 'unknown'}):
+            with self.assertRaisesRegex(ValueError, 'WXACODE_ENV_VERSION'):
+                env.wxacode_env_version()
+
+    def test_experience_defaults_to_trial(self):
+        with patch.dict(os.environ, {'ENV': 'trial'}, clear=True):
+            self.assertTrue(env.is_experience())
+            self.assertEqual(env.wxacode_env_version(), 'trial')
 
     def test_deleted_design_is_not_resolved_by_short_code(self):
         design_id = 'd' * 32

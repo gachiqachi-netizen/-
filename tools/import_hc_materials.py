@@ -129,7 +129,7 @@ def import_prepared(bundle, db, apply=False, uploads=None, output=print):
         preview = import_rows(db, rows, source, apply=False, output=lambda _: None)
         if not apply:
             import_rows(db, rows, source, apply=False, output=output)
-            output(f"总行数 {len(rows)}；新建 {len(preview['将新增'])}；跳过 {len(preview['跳过'])}")
+            output(f"总行数 {len(rows)}；新建 {len(preview['将新增'])}；跳过 {len(preview['跳过'])}；缺字段 {len(preview['缺字段'])}；知识库待确认 {len(preview['知识库待确认'])}")
             return preview
         # Copy only images needed by new rows. Preview does not create UPLOADS_DIR.
         new_indices = {int(label.split()[1]) - 2 for label in preview["将新增"]}
@@ -146,7 +146,7 @@ def import_prepared(bundle, db, apply=False, uploads=None, output=print):
             if not dst.exists():
                 shutil.copy2(bundle / filename, dst)
         groups = import_rows(db, rows, source, apply=True, output=output)
-        output(f"总行数 {len(rows)}；新建 {len(groups['将新增'])}；跳过 {len(groups['跳过'])}")
+        output(f"总行数 {len(rows)}；新建 {len(groups['将新增'])}；跳过 {len(groups['跳过'])}；缺字段 {len(groups['缺字段'])}；知识库待确认 {len(groups['知识库待确认'])}")
         return groups
     finally:
         import_beads.check_photo = original_check

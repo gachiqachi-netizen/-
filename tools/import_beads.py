@@ -184,6 +184,11 @@ def prepare(row, source, entries):
         data["kb"] = kb_id
     data["c"] = color_for(name, mat, image)
     _, error = normalize_product(data)
+    if error == "知识库里没有这个品种，请重新选" and data.get("kb"):
+        # The packaged KB can know this name while the runtime KB lacks its entry.
+        # Leave the link for review instead of rejecting the otherwise valid row.
+        data.pop("kb")
+        _, error = normalize_product(data)
     if error:
         return None, [error], False
     return data, [], not bool(data.get("kb"))
@@ -193,7 +198,8 @@ def import_rows(db, rows, source, apply=False, output=print):
     entries = load_entries()
     existing = db.list("beads")
     ids = {str(item["id"]) for item in existing}
-    keys = {(item.get("name"), item.get("mm"), item.get("mat")) for item in existing}
+    keys = {(item.get("name"), item.get("mm"), item.get("mat")) for item in existing
+            if item.get("status") != "archived"}
     groups = {"将新增": [], "跳过": [], "缺字段": [], "知识库待确认": []}
     for number, row in enumerate(rows, 2):
         data, errors, pending = prepare(row, source, entries)

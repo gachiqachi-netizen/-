@@ -20,6 +20,29 @@ from import_beads import open_database
 
 @unittest.skipUnless(Image, '需要 Pillow（tools/requirements-dev.txt）')
 class ImportHcTest(unittest.TestCase):
+    def test_runtime_missing_kb_keeps_hc_row_in_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            bundle = base / "hc-prepared"
+            bundle.mkdir()
+            Image.new("RGB", (8, 8), "pink").save(bundle / "hc-test.png")
+            with (bundle / "import.csv").open("w", encoding="utf-8-sig", newline="") as stream:
+                writer = csv.DictWriter(stream, fieldnames=["名称", "尺寸(mm)", "价格", "材质", "图片"])
+                writer.writeheader()
+                writer.writerow({"名称": "蔷薇石", "尺寸(mm)": "8", "价格": "3",
+                                 "材质": "stone", "图片": "/uploads/hc-test.png"})
+            with patch.dict(os.environ, {"DATABASE_URL": "", "DATABASE_PATH": str(base / "test.sqlite3")}), \
+                    patch("commerce.kb.get", return_value=None):
+                db = open_database()
+                try:
+                    messages = []
+                    preview = import_prepared(bundle, db, uploads=base / "uploads", output=messages.append)
+                    self.assertEqual(len(preview["将新增"]), 1)
+                    self.assertEqual(len(preview["知识库待确认"]), 1)
+                    self.assertIn("总行数 1；新建 1；跳过 0；缺字段 0；知识库待确认 1", messages)
+                finally:
+                    db.conn.close()
+
     def test_prepare_and_import_without_pillow(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)

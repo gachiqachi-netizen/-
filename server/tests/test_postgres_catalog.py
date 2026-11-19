@@ -48,6 +48,9 @@ class PostgresCatalogTest(unittest.TestCase):
             conn.execute(sql.SQL('DROP SCHEMA {} CASCADE').format(sql.Identifier(cls.schema)))
 
     def setUp(self):
+        environment = patch.dict(os.environ, {'DATABASE_URL': self.url})
+        environment.start()
+        self.addCleanup(environment.stop)
         from db import TABLES
         with self.db.connect() as conn:
             for table in TABLES:

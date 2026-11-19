@@ -7,7 +7,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from PIL import Image, ImageDraw
+try:  # Pillow is a local-only dev dependency (tools/requirements-dev.txt).
+    from PIL import Image, ImageDraw
+except ImportError:
+    Image = ImageDraw = None
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -15,6 +18,7 @@ from import_hc_materials import prepare, import_prepared
 from import_beads import open_database
 
 
+@unittest.skipUnless(Image, '需要 Pillow（tools/requirements-dev.txt）')
 class ImportHcTest(unittest.TestCase):
     def test_prepare_and_import_without_pillow(self):
         with tempfile.TemporaryDirectory() as tmp:

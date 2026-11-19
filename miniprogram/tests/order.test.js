@@ -57,6 +57,15 @@ async function run() {
   assert.strictEqual(chosen, 2); assert.strictEqual(manual, 2)
   const source = fs.readFileSync(path.join(__dirname, '../pages/order/order.wxml'), 'utf8')
   const logic = fs.readFileSync(path.join(__dirname, '../pages/order/order.js'), 'utf8')
+  assert(source.includes('wx:if="{{priceDetailsOpen}}"'))
+  for (const entry of ['openCord', 'openGift', 'openMaterials', 'openSafety']) {
+    assert(source.includes(`bind:tap="${entry}"`))
+  }
+  let compact = page()
+  assert.strictEqual(compact.data.priceDetailsOpen, false)
+  compact.togglePriceDetails(); assert.strictEqual(compact.data.priceDetailsOpen, true)
+  compact.togglePriceDetails(); assert.strictEqual(compact.data.priceDetailsOpen, false)
+  compact.openSafety(); assert.strictEqual(compact.data.sheet, 'safety')
   assert.strictEqual((source.match(/class="check /g) || []).length, 1)
   assert(!source.includes('title="确认下单"')) // No second confirmation sheet.
   let requests = 0, next = catalog(3)

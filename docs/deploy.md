@@ -162,3 +162,17 @@ sudo docker compose --env-file app.env exec app python tools/check_deploy.py
 ```
 
 `deploy/data/app` 和 Compose 的 `postgres_data` 卷不会因镜像重建而删除。上线后检查应用、数据库容器状态与 Nginx，必要时由负责人执行 `--ping` 复核。
+
+### 给新珠子补颜色
+
+本机工具 `tools/bead_colors.py` 从正式商品接口读取没有颜色的珠子，下载小图取中心主色；白底空图、下载失败或金属珠使用名称或金属色表。需要重新生成和核对时，在本机安装 `Pillow`，运行 `python3 tools/bead_colors.py`；它生成 `deploy/data-files/bead-colors-2026-11.json` 和供目测的拼图。先审核 JSON 和拼图，再把数据文件随代码部署。
+
+服务器更新代码后，在 `deploy/` 目录重建应用容器，让脚本的只读挂载生效。先预览，只补数据库中现有珠子的缺失 `c` 字段：
+
+```bash
+sudo docker compose --env-file app.env up -d
+sudo docker compose --env-file app.env exec app python tools/patch_beads.py /app/deploy-data/bead-colors-2026-11.json
+sudo docker compose --env-file app.env exec app python tools/patch_beads.py /app/deploy-data/bead-colors-2026-11.json --apply
+```
+
+命令会列出不存在的 ID、已有字段跳过数和补入数；不会覆盖已有颜色，也可重复运行。`patch_beads.py` 只接受 `c`、`kb` 两种待补字段，预览默认不写入。

@@ -21,8 +21,12 @@ test('wordmark component maps trayLg to 96rpx', () => {
 test('wordmarkSize shrinks below the ring inner diameter', () => {
   const smallRing = [{ left: 125, top: 95, r: 10 }]
   assert.equal(wordmarkSize(smallRing, 320), 'corner')
+  const smallInner = 2 * (Math.hypot(125 + 10 - 160, 95 + 10 - 160) - 10)
+  assert.ok(28 * 259 / 128.3 <= smallInner)
   const largeRing = [{ left: 40, top: 225, r: 10 }]
   assert.equal(wordmarkSize(largeRing, 470), 'trayLg')
+  const largeInner = 2 * (Math.hypot(40 + 10 - 235, 225 + 10 - 235) - 10)
+  assert.ok(96 * 259 / 128.3 <= largeInner)
 })
 
 test('tray wordmarks use text tone and small tiers stay hidden', () => {

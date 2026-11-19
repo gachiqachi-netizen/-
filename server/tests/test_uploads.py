@@ -63,6 +63,12 @@ class UserUploadTests(unittest.TestCase):
         self.assertNotIn("traceId", record)
         self.assertFalse(uploads.viewer_can_see(record, "stranger", False))
 
+    def test_message_token_ignores_legacy_alias(self):
+        with patch.dict(os.environ, {"WECHAT_TOKEN": "legacy"}):
+            self.assertEqual(uploads._msg_token(), "")
+        with patch.dict(os.environ, {"WECHAT_TOKEN": "legacy", "WECHAT_MSG_TOKEN": "current"}):
+            self.assertEqual(uploads._msg_token(), "current")
+
     def test_get_verification_echo_and_bad_signature(self):
         qs = self.signed_qs()
         qs["echostr"] = ["raw-echo"]

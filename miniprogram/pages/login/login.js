@@ -44,9 +44,9 @@ Page({
       this.setData({ error: '没登录上，网络不太好，再点一次试试' })
     } finally { this.setData({ busy: false }) }
   },
-  async agreeAndPhone(event) {
-    this.setData({ agreed: true })
-    await this.onPhone(event)
+  agreeOnly() {
+    this.setData({ agreed: true, sheet: false })
+    wx.showToast({ title: '已同意，点「手机号快捷登录」继续', icon: 'none' })
   },
   privacyRejected() { this.setData({ busy: false, error: '没拿到手机号，可以再点一次，或先逛逛' }) },
 })

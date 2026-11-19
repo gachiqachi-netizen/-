@@ -26,7 +26,7 @@
     <view class="login-sheet-copy">我们用手机号认出你，订单和作品跟着账号走。</view>
     <view slot="footer" class="login-sheet-actions">
       <button class="c-btn c-btn--sec" bindtap="closeAgreement">不同意</button>
-      <button class="c-btn" open-type="getPhoneNumber" bindgetphonenumber="agreeAndPhone" loading="{{busy}}" disabled="{{busy}}">同意并继续</button>
+      <button class="c-btn" bindtap="agreeOnly">同意并继续</button>
     </view>
   </c-sheet>
 </view>

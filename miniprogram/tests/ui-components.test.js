@@ -77,13 +77,12 @@ test('UI checker rejects numeric button size and fixed width', () => {
     assert.equal(result.status, 0)
   } finally { fs.rmSync(dir, { recursive: true, force: true }) }
 })
-test('navigation aligns title with capsule measurements', () => {
-  assert.match(read('miniprogram/components/nav-bar/index.js'), /getMenuButtonBoundingClientRect/)
-  assert.match(read('miniprogram/components/nav-bar/index.wxml'), /navHeight/)
-  assert.match(read('miniprogram/components/nav-bar/index.wxml'), /statusHeight \+ navHeight/)
-  assert.match(read('miniprogram/components/nav-bar/index.wxss'), /position:\s*fixed/)
+test('system navigation supplies the workbench title', () => {
+  const config = JSON.parse(read('miniprogram/pages/diy/diy.json'))
+  assert.equal(config.navigationBarTitleText, '自己串')
+  assert.notEqual(config.navigationStyle, 'custom')
 })
-test('only the DIY workbench keeps custom navigation', () => {
+test('all listed pages use system navigation', () => {
   const pages = ['pages/home/home', 'pages/ai/ai', 'pages/order/order', 'pages/login/login', 'pages/share/share',
     'features/order-detail/order-detail', 'features/shared/shared', 'features/after-sale/type',
     'features/after-sale/apply', 'features/after-sale/detail']
@@ -93,8 +92,8 @@ test('only the DIY workbench keeps custom navigation', () => {
     assert.ok(config.navigationBarTitleText, page)
     assert.doesNotMatch(read(`miniprogram/${page}.wxml`), /<c-nav-bar\b/, page)
   }
-  assert.equal(JSON.parse(read('miniprogram/pages/diy/diy.json')).navigationStyle, 'custom')
-  assert.match(read('miniprogram/pages/diy/diy.wxml'), /<c-nav-bar\b/)
+  assert.notEqual(JSON.parse(read('miniprogram/pages/diy/diy.json')).navigationStyle, 'custom')
+  assert.doesNotMatch(read('miniprogram/pages/diy/diy.wxml'), /<c-nav-bar\b/)
   assert.match(read('miniprogram/pages/ai/ai.wxml'), /class="ai-chat-tools"[\s\S]*class="ai-new" bindtap="clear"/)
 })
 test('home thumbnails fit inside the two-column tiles', () => {
@@ -118,29 +117,16 @@ test('UI checker enforces square image areas but allows circular add-photo', () 
     assert.equal(result.status, 0)
   } finally { fs.rmSync(dir, { recursive: true, force: true }) }
 })
-test('home navigation shows home icon and switches to the home tab', () => {
-  const wxml = read('miniprogram/components/nav-bar/index.wxml')
-  assert.match(wxml, /wx:if="{{home}}" src="\.\.\/\.\.\/assets\/icons\/home\.svg"/)
-  const calls = []
-  let component
-  vm.runInNewContext(read('miniprogram/components/nav-bar/index.js'), {
-    Component: definition => { component = definition },
-    wx: { switchTab: options => calls.push(['switchTab', options.url]), navigateBack: () => calls.push(['navigateBack']) },
-  })
-  component.methods.goBack.call({ data: { home: true } })
-  assert.deepEqual(calls, [['switchTab', '/pages/home/home']])
+test('system navigation uses the home tab title', () => {
+  const config = JSON.parse(read('miniprogram/pages/home/home.json'))
+  assert.equal(config.navigationBarTitleText, '珠养养')
+  assert.notEqual(config.navigationStyle, 'custom')
 })
-test('back navigation shows back icon and navigates back', () => {
-  const wxml = read('miniprogram/components/nav-bar/index.wxml')
-  assert.match(wxml, /wx:else src="\.\.\/\.\.\/assets\/icons\/back\.svg"/)
-  const calls = []
-  let component
-  vm.runInNewContext(read('miniprogram/components/nav-bar/index.js'), {
-    Component: definition => { component = definition },
-    wx: { switchTab: () => calls.push(['switchTab']), navigateBack: options => calls.push(['navigateBack', options.delta]) },
-  })
-  component.methods.goBack.call({ data: { home: false } })
-  assert.deepEqual(calls, [['navigateBack', 1]])
+test('workbench uses system navigation and removes the old component', () => {
+  const config = JSON.parse(read('miniprogram/pages/diy/diy.json'))
+  assert.equal(config.navigationBarTitleText, '自己串')
+  assert.notEqual(config.navigationStyle, 'custom')
+  assert.equal(fs.existsSync(path.join(root, 'miniprogram/components/nav-bar')), false)
 })
 test('UI checker rejects a new literal color', () => {
   const dir = fs.mkdtempSync(path.join(root, 'miniprogram', 'ui-check-'))

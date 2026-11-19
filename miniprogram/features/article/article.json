@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "珠养养小知识",
+  "navigationBarTitleText": "小知识",
   "usingComponents": {
     "c-bead": "/components/bead/index",
     "c-bar": "/components/bar/index",

@@ -29,13 +29,15 @@ MATERIALS = {
     '银曜石': 'heiyao', '金曜石': 'heiyao',
     '红碧玉': 'bi-shi',
 }
+MATERIALS.update({'吉金石青金石': 'qingjin', '孔雀石孔产白': 'kongque', '干此巴西紫': 'zi-jing', '白水晶屁桃': 'bai-shuijing', '粉水晶屁桃': 'fen-jing', '粉草莓五瓣花': 'caomei-jing', '绿松石屁桃': 'lvsong', '艹卡呵蓝虎眼': 'huyan-shi', '黄玛瑙': 'putong-manao', '印度玛瑙': 'putong-manao', '灰玛瑙': 'putong-manao', '蓝纹玛瑙': 'putong-manao', '银曜石小熊': 'heiyao', '银曜石猫头': 'heiyao', '925银哑光银珠': 'zhuanyun', '999银小狗': 'zhuanyun', '999银法棍狗': 'zhuanyun', '999银猫头': 'zhuanyun', '克罗十字圆珠': 'zhuanyun', '克罗十字方块': 'zhuanyun', '哑光金珠': 'zhuanyun', '清迈手工925银扭纹款': 'zhuanyun', '清迈手工925银方块款': 'zhuanyun', '清迈手工925银雕花圆轮': 'zhuanyun', '藏银五面花方块': 'zhuanyun', '藏银克罗十字': 'zhuanyun', '藏银十字架-凸': 'zhuanyun', '藏银十字架-凹': 'zhuanyun', '藏银喜鹊': 'zhuanyun', '藏银小南瓜': 'zhuanyun', '藏银小花方块': 'zhuanyun', '藏银树叶纹': 'zhuanyun', '藏银桃花': 'zhuanyun', '藏银棱块': 'zhuanyun', '藏银祥云镂空': 'zhuanyun', '藏银竹叶圆珠': 'zhuanyun', '藏银银块': 'zhuanyun', '锆石银燕子': 'zhuanyun', '藏银飞碟': 'zhuanyun'})
+
 # Names that can mean several materials or describe a component rather than a single bead.
 REVIEW = {'乌拉圭紫与拉主紫', '士相红主青提奶盖', '婚纱白方糖', '樱花粉', '樱花雨',
           '深海蓝晶·甄选', '羽化蓝晶', '青提玉葡', '黑金超·红黄', '黑金超·红黑',
           '花绿石', '蓝点玉', '蓝松石', '蓝松石屁桃', '黄玉', '吉金石青金石',
-          '孔雀石孔产白', '干此巴西紫', '艹卡呵蓝虎眼', '紫水小马',
-          '白水晶屁桃', '粉水晶屁桃', '绿松石屁桃', '镀金白水元宝',
-          '黄水元宝', '银曜石小熊', '银曜石猫头', '18K镀金+翡翠龙柱'}
+          '紫水小马',
+          '镀金白水元宝',
+          '黄水元宝', '白猫眼', '黄猫眼', '白猫眼跑环17mm', '黄猫眼跑环17mm', '18K镀金+翡翠龙柱'}
 
 
 def normalize(name):
@@ -51,6 +53,8 @@ def load_entries(root=ROOT):
 
 
 def match(name, entries):
+    if name in MATERIALS:
+        return MATERIALS[name]
     if name in REVIEW:
         return None
     clean = normalize(name)

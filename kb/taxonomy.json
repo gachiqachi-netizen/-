@@ -1756,6 +1756,31 @@
      "sub": [],
      "note": "",
      "flags": []
+    },
+    {
+     "id": "tian-shi",
+     "name": "天使石",
+     "std": "硬石膏",
+     "aliases": [
+      "天使石",
+      "Angelite"
+     ],
+     "sub": [],
+     "note": "",
+     "flags": []
+    },
+    {
+     "id": "qiangwei-shi",
+     "name": "蔷薇石",
+     "std": "蔷薇辉石",
+     "aliases": [
+      "蔷薇石",
+      "蔷薇辉石",
+      "Rhodonite"
+     ],
+     "sub": [],
+     "note": "",
+     "flags": []
     }
    ]
   },

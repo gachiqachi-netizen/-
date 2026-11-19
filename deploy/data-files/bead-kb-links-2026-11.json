@@ -36,6 +36,10 @@
     "kb": "youling"
   },
   {
+    "id": "sm20261116-011",
+    "kb": "qingjin"
+  },
+  {
     "id": "sm20261116-012",
     "kb": "youling"
   },
@@ -50,6 +54,18 @@
   {
     "id": "sm20261116-015",
     "kb": "youling"
+  },
+  {
+    "id": "sm20261116-017",
+    "kb": "tian-shi"
+  },
+  {
+    "id": "sm20261116-018",
+    "kb": "tian-shi"
+  },
+  {
+    "id": "sm20261116-019",
+    "kb": "tian-shi"
   },
   {
     "id": "sm20261116-021",
@@ -120,6 +136,10 @@
     "kb": "kongque"
   },
   {
+    "id": "sm20261116-039",
+    "kb": "kongque"
+  },
+  {
     "id": "sm20261116-040",
     "kb": "kongque"
   },
@@ -182,6 +202,10 @@
   {
     "id": "sm20261116-056",
     "kb": "huang-shuijing"
+  },
+  {
+    "id": "sm20261116-057",
+    "kb": "zi-jing"
   },
   {
     "id": "sm20261116-058",
@@ -412,6 +436,10 @@
     "kb": "bai-shuijing"
   },
   {
+    "id": "sm20261116-127",
+    "kb": "bai-shuijing"
+  },
+  {
     "id": "sm20261116-128",
     "kb": "bai-shuijing"
   },
@@ -430,14 +458,6 @@
   {
     "id": "sm20261116-132",
     "kb": "bai-shuijing"
-  },
-  {
-    "id": "sm20261116-133",
-    "kb": "jinlv"
-  },
-  {
-    "id": "sm20261116-134",
-    "kb": "jinlv"
   },
   {
     "id": "sm20261116-135",
@@ -528,8 +548,16 @@
     "kb": "fen-jing"
   },
   {
+    "id": "sm20261116-160",
+    "kb": "fen-jing"
+  },
+  {
     "id": "sm20261116-161",
     "kb": "fen-jing"
+  },
+  {
+    "id": "sm20261116-162",
+    "kb": "caomei-jing"
   },
   {
     "id": "sm20261116-163",
@@ -892,6 +920,10 @@
     "kb": "youling"
   },
   {
+    "id": "sm20261116-254",
+    "kb": "lvsong"
+  },
+  {
     "id": "sm20261116-259",
     "kb": "caomei-jing"
   },
@@ -930,6 +962,14 @@
   {
     "id": "sm20261116-273",
     "kb": "youling"
+  },
+  {
+    "id": "sm20261116-274",
+    "kb": "huyan-shi"
+  },
+  {
+    "id": "sm20261116-275",
+    "kb": "huyan-shi"
   },
   {
     "id": "sm20261116-280",
@@ -1200,24 +1240,20 @@
     "kb": "huang-shuijing"
   },
   {
-    "id": "sm20261116-375",
-    "kb": "jinlv"
+    "id": "sm20261116-380",
+    "kb": "putong-manao"
   },
   {
-    "id": "sm20261116-376",
-    "kb": "jinlv"
+    "id": "sm20261116-381",
+    "kb": "putong-manao"
   },
   {
-    "id": "sm20261116-377",
-    "kb": "jinlv"
+    "id": "sm20261116-382",
+    "kb": "putong-manao"
   },
   {
-    "id": "sm20261116-378",
-    "kb": "jinlv"
-  },
-  {
-    "id": "sm20261116-379",
-    "kb": "jinlv"
+    "id": "sm20261116-383",
+    "kb": "putong-manao"
   },
   {
     "id": "sm20261116-384",
@@ -1340,6 +1376,14 @@
     "kb": "linhui"
   },
   {
+    "id": "sm20261116-435",
+    "kb": "qiangwei-shi"
+  },
+  {
+    "id": "sm20261116-436",
+    "kb": "qiangwei-shi"
+  },
+  {
     "id": "sm20261116-438",
     "kb": "heiyao"
   },
@@ -1380,7 +1424,27 @@
     "kb": "chenxiang"
   },
   {
+    "id": "sm20261116-448",
+    "kb": "putong-manao"
+  },
+  {
+    "id": "sm20261116-449",
+    "kb": "putong-manao"
+  },
+  {
     "id": "sm20261116-453",
+    "kb": "putong-manao"
+  },
+  {
+    "id": "sm20261116-454",
+    "kb": "putong-manao"
+  },
+  {
+    "id": "sm20261116-455",
+    "kb": "putong-manao"
+  },
+  {
+    "id": "sm20261116-456",
     "kb": "putong-manao"
   },
   {
@@ -1400,6 +1464,10 @@
     "kb": "beike"
   },
   {
+    "id": "sm20261116-477",
+    "kb": "zhuanyun"
+  },
+  {
     "id": "sm20261116-478",
     "kb": "gezhu"
   },
@@ -1408,12 +1476,112 @@
     "kb": "gezhu"
   },
   {
+    "id": "sm20261116-480",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-481",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-482",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-483",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-484",
+    "kb": "zhuanyun"
+  },
+  {
     "id": "sm20261116-485",
     "kb": "gezhu"
   },
   {
+    "id": "sm20261116-487",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-492",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-493",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-494",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-495",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-496",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-497",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-498",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-499",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-500",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-501",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-502",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-503",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-504",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-505",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-506",
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-507",
+    "kb": "zhuanyun"
+  },
+  {
     "id": "sm20261116-508",
-    "kb": "feidie"
+    "kb": "zhuanyun"
+  },
+  {
+    "id": "sm20261116-509",
+    "kb": "heiyao"
+  },
+  {
+    "id": "sm20261116-510",
+    "kb": "heiyao"
+  },
+  {
+    "id": "sm20261116-511",
+    "kb": "zhuanyun"
   },
   {
     "id": "sm20261116-512",

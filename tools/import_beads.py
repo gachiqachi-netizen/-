@@ -31,7 +31,8 @@ COLUMNS = {
     "legal": ("合法来源证明", "legal"),
 }
 MATERIALS = {"木": "wood", "木质": "wood", "菩提": "bodhi", "石": "stone",
-             "石质": "stone", "水晶": "crystal", "金属": "metal"}
+             "石质": "stone", "玉石": "stone", "水晶": "crystal", "金属": "metal",
+             "金属配件": "metal"}
 NS = {"x": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
       "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships"}
 

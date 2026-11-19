@@ -100,10 +100,10 @@ sudo docker compose --env-file app.env exec app python tools/check_deploy.py --p
 
 ### 首次导入初始数据
 
-更新代码后，先在服务器的 `deploy/` 目录执行 `sudo docker compose --env-file app.env up -d`，让新增的只读脚本挂载生效。服务可用后，再预览珠子、模板、宣传位和草稿条款的缺失数量：
+更新代码后，在服务器的 `deploy/` 目录执行 `sudo docker compose --env-file app.env up -d --build`。镜像已包含 `tools/`，不用再单独传工具文件。服务可用后，再预览珠子、模板、宣传位和草稿条款的缺失数量：
 
 ```bash
-sudo docker compose --env-file app.env up -d
+sudo docker compose --env-file app.env up -d --build
 ```
 
 ```bash
@@ -120,7 +120,7 @@ sudo docker compose --env-file app.env exec app python tools/load_seed.py --appl
 
 ### 导入 2026 年 11 月首页模板
 
-先确认新珠子已在后台导入并上架。在服务器的 `deploy/` 目录更新代码后，执行 `sudo docker compose --env-file app.env up -d`，使脚本和数据文件的只读挂载生效。先预览 6 个模板及珠子校验结果：
+先确认新珠子已在后台导入并上架。在服务器的 `deploy/` 目录更新代码后，执行 `sudo docker compose --env-file app.env up -d --build`，更新镜像中的工具；数据文件仍从只读目录挂载。先预览 6 个模板及珠子校验结果：
 
 ```bash
 sudo docker compose --env-file app.env exec app python tools/load_templates.py /app/deploy-data/templates-2026-11.json
@@ -182,10 +182,10 @@ sudo docker compose --env-file app.env exec app python tools/check_deploy.py
 
 本机工具 `tools/bead_colors.py` 从正式商品接口读取没有颜色的珠子，下载小图取中心主色；白底空图、下载失败或金属珠使用名称或金属色表。需要重新生成和核对时，在本机安装 `Pillow`，运行 `python3 tools/bead_colors.py`；它生成 `deploy/data-files/bead-colors-2026-11.json` 和供目测的拼图。先审核 JSON 和拼图，再把数据文件随代码部署。
 
-服务器更新代码后，在 `deploy/` 目录重建应用容器，让脚本的只读挂载生效。先预览，只补数据库中现有珠子的缺失 `c` 字段：
+服务器更新代码后，在 `deploy/` 目录重建应用镜像。先预览，只补数据库中现有珠子的缺失 `c` 字段：
 
 ```bash
-sudo docker compose --env-file app.env up -d
+sudo docker compose --env-file app.env up -d --build
 sudo docker compose --env-file app.env exec app python tools/patch_beads.py /app/deploy-data/bead-colors-2026-11.json
 sudo docker compose --env-file app.env exec app python tools/patch_beads.py /app/deploy-data/bead-colors-2026-11.json --apply
 ```

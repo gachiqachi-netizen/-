@@ -8,6 +8,8 @@
 """
 import re
 import subprocess
+
+import card_lint
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -101,6 +103,9 @@ def main():
                 groups['等前面的卡'].append((r, title, '等 ' + '、'.join(missing)))
             else:
                 groups['现在能派'].append((r, title, ''))
+    lint = card_lint.check([r['card'] for r, _, _ in groups['现在能派']], base=BASE)
+    groups['现在能派'] = [(r, title, '卡片待修：' + '；'.join(lint[r['card']]) if lint[r['card']] else note)
+                      for r, title, note in groups['现在能派']]
     total = sum(len(v) for v in groups.values())
     lines = ['# 任务看板', '',
              '> 自动生成，别手改。更新：`git fetch origin --prune && python3 tools/board.py`。审核每合并一次都会重新生成并推送。',

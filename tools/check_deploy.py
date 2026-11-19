@@ -98,6 +98,17 @@ def _ping(url):
         return '不对（回调不可达）'
 
 
+def _live_test_template():
+    """Read the selected deployment database; never expose row or connection values."""
+    try:
+        import load_seed
+        db = load_seed.open_database()
+        return any(row.get('testOnly') is True and row.get('onSale') is True
+                   for row in db.list('templates'))
+    except Exception:
+        return False
+
+
 def check(values=None, ping=False):
     """Return ordered (name, status) pairs. Never include supplied values."""
     values = os.environ if values is None else values
@@ -138,6 +149,8 @@ def check(values=None, ping=False):
     if ping:
         add('回调公网探测', _ping(values['WXPAY_NOTIFY_URL']) if _notify_url(values.get('WXPAY_NOTIFY_URL', '')) == '通过'
             else '不对（先修正回调地址）')
+    if values.get('ENV') == 'production' and provider == 'wechat' and _live_test_template():
+        add('提醒', '测试款仍在上架')
     return result
 
 
@@ -148,7 +161,7 @@ def main(argv=None):
     results = check(ping=args.ping)
     for name, status in results:
         print(f'{name}：{status}')
-    return 0 if all(status == '通过' for _, status in results) else 1
+    return 0 if all(status == '通过' or (name, status) == ('提醒', '测试款仍在上架') for name, status in results) else 1
 
 
 if __name__ == '__main__':

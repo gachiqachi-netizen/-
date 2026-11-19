@@ -16,7 +16,7 @@ function price(fenValue) { return (fenValue / 100).toFixed(2) }
 Page({
   data: { design: null, person: '', phone: '', addr: '', agreed: false, agreeError: false,
     addressShake: false, agreeShake: false, error: '', busy: false, order: null,
-    cord: 0, gift: false, giftNote: '', hidePrice: false, sheet: '',
+    cord: 0, gift: false, giftNote: '', hidePrice: false, sheet: '', priceDetailsOpen: false,
     items: [], beads: [], missing: [], goods: '0.00', handwork: '0.00',
     cordPrice: '0.00', giftPrice: '0.00', ship: '0.00', shipNote: '', total: '0.00',
     catalogReady: false, quotePending: false, quoteChanges: [], length: '0.0',
@@ -101,6 +101,8 @@ Page({
   openMaterials() { this.setData({ sheet: 'materials' }) },
   openCord() { this.setData({ sheet: 'cord' }) },
   openGift() { this.setData({ sheet: 'gift' }) },
+  openSafety() { this.setData({ sheet: 'safety' }) },
+  togglePriceDetails() { this.setData({ priceDetailsOpen: !this.data.priceDetailsOpen }) },
   input(event) { this.setData({ [event.currentTarget.dataset.key]: event.detail.value }) },
   toggleGift() { this.setData({ gift: !this.data.gift }, () => this.calculate()) },
   setGift(event) { this.setData({ gift: !!event.detail.value }, () => this.calculate()) },

@@ -10,21 +10,25 @@
 
     <c-card><view class="summary">
       <view class="bracelet"><c-bracelet beads="{{beads}}" tier="s" /></view>
-      <view class="summary-text"><view class="name">{{design.name}}</view><view class="meaning">{{design.meaning}}</view><view class="hint">{{design.beads.length}} 颗 · 手围 {{design.wrist}}cm 合适</view></view>
+      <view class="summary-text"><view class="name">{{design.name}}</view><view class="hint">{{design.beads.length}} 颗 · 手围 {{design.wrist}}cm</view></view>
     </view></c-card>
     <c-card><view class="rows">
-      <c-cell label="材料" value="{{items.length}} 种" arrow="{{true}}" bind:tap="openMaterials" />
       <c-cell label="穿绳" value="{{cord === 1 ? '编织绳' : '弹力线'}}" arrow="{{true}}" bind:tap="openCord" />
-      <c-cell label="送礼" value="礼盒和贺卡" arrow="{{true}}" bind:tap="openGift" />
+      <c-cell label="送礼" value="{{gift ? '礼盒' : '不加礼盒'}}{{hidePrice ? ' · 隐藏价格' : ''}}" arrow="{{true}}" bind:tap="openGift" />
+      <c-cell label="材料清单" value="{{items.length}} 种" arrow="{{true}}" bind:tap="openMaterials" />
+      <c-cell label="安全说明" value="查看" arrow="{{true}}" bind:tap="openSafety" />
     </view></c-card>
     <c-card><view class="rows prices">
-      <c-cell label="珠子" value="¥{{goods}}" />
-      <c-cell wx:if="{{handwork !== '0.00'}}" label="手工费" value="¥{{handwork}}" />
-      <c-cell wx:if="{{cord === 1}}" label="穿绳" value="¥{{cordPrice}}" />
-      <c-cell wx:if="{{gift}}" label="礼盒" value="¥{{giftPrice}}" />
-      <c-cell label="运费" value="{{ship === '0.00' ? '包邮' : '¥' + ship}}"><view slot="label" wx:if="{{shipNote}}" class="hint">{{shipNote}}</view></c-cell>
+      <c-cell label="应付 ¥{{total}}" value="明细" arrow="{{true}}" bind:tap="togglePriceDetails" />
+      <view class="price-summary">手工费 ¥{{handwork}} · 运费 {{ship === '0.00' ? '包邮' : '¥' + ship}}</view>
+      <view wx:if="{{priceDetailsOpen}}" class="price-details">
+        <c-cell label="珠子" value="¥{{goods}}" />
+        <c-cell wx:if="{{handwork !== '0.00'}}" label="手工费" value="¥{{handwork}}" />
+        <c-cell wx:if="{{cord === 1}}" label="穿绳" value="¥{{cordPrice}}" />
+        <c-cell wx:if="{{gift}}" label="礼盒" value="¥{{giftPrice}}" />
+        <c-cell label="运费" value="{{ship === '0.00' ? '包邮' : '¥' + ship}}"><view slot="label" wx:if="{{shipNote}}" class="hint">{{shipNote}}</view></c-cell>
+      </view>
     </view></c-card>
-    <view class="payment-note">提交订单后进入付款，付款前可以再次核对金额。</view>
     <view wx:if="{{error}}" class="error">{{error}}</view>
     <c-bar layout="agreement">
       <view slot="top" class="bar-top">

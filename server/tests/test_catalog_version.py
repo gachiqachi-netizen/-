@@ -1,5 +1,6 @@
 """P1 public catalog version changes with products and pricing."""
 import json
+import hashlib
 import os
 import sys
 import threading
@@ -13,6 +14,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import app
 import pricing
 import catalog_cache
+import ai
+import home
 from db import DB
 
 
@@ -58,9 +61,17 @@ class CatalogVersionTests(unittest.TestCase):
         self.assertNotEqual(after_bead, self.get()['version'])
 
     def test_hit_reuses_serialized_response_and_version(self):
+        beads, templates, banners = app.on_sale_catalog()
+        catalog = {'beads': beads, 'templates': templates, 'banners': banners,
+                   'ai': ai.status(), 'pricing': pricing.public_config(),
+                   'homeArticles': home.home_articles(self.db)}
+        raw = json.dumps(catalog, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+        version = hashlib.sha256(raw.encode('utf-8')).hexdigest()[:16]
+        expected = json.dumps({**catalog, 'version': version}, ensure_ascii=False).encode()
         with patch.object(app, 'on_sale_catalog', wraps=app.on_sale_catalog) as build:
             with urlopen(self.base, timeout=3) as response:
                 first = response.read()
+            self.assertEqual(first, expected)
             with urlopen(self.base, timeout=3) as response:
                 self.assertEqual(first, response.read())
             self.assertEqual(build.call_count, 1)

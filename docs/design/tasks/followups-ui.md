@@ -383,3 +383,25 @@
 - **截图**：空盘、深色珠一圈、浅色珠一圈（如星月菩提）三张，改前改后对比。
 - **测试**：`wordmarkSize` 在小圈时不超过内径；`wordmark` 组件新尺寸档。
 - **不做**：改字标图形、改珠盘底色。
+
+## U33 全部页面统一用微信自带导航栏，去掉页内重复标题（2026-11-19 负责人：页头标题字体字号位置不一、浪费空间）
+
+- **依赖**：U31（同改 diy 页面）　**大小**：M　**只能改**：`miniprogram/pages/diy/diy.{json,wxml,wxss,js}`、`miniprogram/components/nav-bar/`（删除）、下表列出页面的 `.json`（只改 `navigationBarTitleText`）和 `.wxml/.wxss`（只删和导航标题重复的页内大标题）、`tools/check-ui.py`、`miniprogram/tests/`
+- **现状**（审核核对过）：28 个页面里 27 个用微信自带导航栏；只有工作台 `pages/diy` 用 `navigationStyle: custom` + 自绘 `c-nav-bar`（字号、粗细、返回图标位置都和其它页不一样），下面还有一行自绘 `.topbar`（“我的作品 › · · ·”），两层叠起来占了导航栏下约 100rpx。部分页面在导航栏下又放一个和导航标题意思重复的页内大标题。
+- **要做的**：
+  1. **工作台改回系统导航栏**：`diy.json` 去掉 `navigationStyle`，`navigationBarTitleText: "自己串"`；删掉 `c-nav-bar` 和 `.topbar` 那一行。“我的作品”入口（含未保存小圆点）挪进珠盘右侧竖排按钮的“更多”菜单第一项；原 topbar 右侧“···”的菜单内容并入同一个“更多”。从分享卡片进入时左上角“回首页”由微信自动提供，不用自己画。
+  2. 删除 `components/nav-bar/`（删前 `git grep c-nav-bar` 证明没有别处在用）。
+  3. **标题统一**（≤6 个字、名词、不带标点），只改 `navigationBarTitleText`：
+     | 页面 | 改成 |
+     |---|---|
+     | `features/address/address` | 收货地址 |
+     | `features/review/review` | 写评价 |
+     | `pages/share/share` | 分享海报 |
+     | `features/doc/doc` | 说明（保留按条款动态改标题） |
+     | `features/article/article` | 小知识（保留按文章动态改标题） |
+     | 其余页面 | 保持现有 |
+  4. **页内重复标题**：逐页检查导航栏下第一块内容，若是一个和导航标题同义的大标题（例如标题“申请售后”下又写“申请售后”），删掉；状态类标题（订单“运输中”、AI 配欢迎语、详情页手串名）是内容，**不删**。报告里列出每页的判断。
+  5. `tools/check-ui.py` 加规则：任何页面 `.json` 出现 `navigationStyle: custom` 报错；`app.json` 列出的每个页面都必须有 `navigationBarTitleText`（或继承 `app.json` 的 window 标题时在报告说明）。
+- **截图**：工作台改前改后（空盘、有珠子、更多菜单展开），以及改了标题的 3 个页面。
+- **测试**：工作台“更多”里“我的作品”能跳转、未保存小圆点仍显示；check-ui 新规则的通过和失败用例。
+- **不做**：改导航栏颜色；改各页业务内容。

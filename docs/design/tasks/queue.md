@@ -159,6 +159,7 @@
 | U30 | agent/U30-diy-top-gap | followups-ui.md | U26 | 任何 |  |  |
 | U31 | agent/U31-diy-search | followups-ui.md | U32 | 任何 |  |  |
 | U32 | agent/U32-tray-logo | followups-ui.md | U30 | 任何 |  |  |
+| U33 | agent/U33-system-navbar | followups-ui.md | U31 | 任何 |  |  |
 | V7a | agent/V7a-bracelet-tiers | followups-visual.md | U16 | 任何 |  |  |
 | V8 | agent/V8-share-poster | followups-visual.md | V7a | 任何 |  |  |
 | V9 | agent/V9-template-cover | followups-visual.md |  | 任何 |  |  |

@@ -8,7 +8,7 @@ from pathlib import Path
 from urllib.parse import urljoin
 from urllib.request import urlopen
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / 'deploy/data-files/bead-colors-2026-11.json'
@@ -101,6 +101,10 @@ def contact_sheet(results, beads, path, count=40):
     names = {bead['id']: bead.get('name', '') for bead in beads}
     sheet = Image.new('RGB', (680, len(chosen) * 82), 'white')
     draw = ImageDraw.Draw(sheet)
+    try:
+        font = ImageFont.truetype('/System/Library/Fonts/PingFang.ttc', 15)
+    except OSError:
+        font = ImageFont.load_default()
     for index, rid in enumerate(chosen):
         item, data = by_id[rid]
         y = index * 82
@@ -115,7 +119,7 @@ def contact_sheet(results, beads, path, count=40):
         for offset, color in enumerate(item['c']):
             draw.rectangle((84 + 70 * offset, y + 7, 146 + 70 * offset, y + 69), fill=color)
         label = f"{rid} {names[rid]} ({item['source']})"
-        draw.text((235, y + 30), label, fill='black')
+        draw.text((235, y + 30), label, fill='black', font=font)
     sheet.save(path)
     return len(chosen)
 

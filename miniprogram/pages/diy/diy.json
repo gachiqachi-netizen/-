@@ -1,1 +1,1 @@
-{"navigationStyle":"custom","usingComponents":{"c-skeleton":"/components/skeleton/index","bead-sheet":"/components/bead-sheet/index","c-nav-bar":"/components/nav-bar/index"}}
+{"usingComponents":{"c-skeleton":"/components/skeleton/index","bead-sheet":"/components/bead-sheet/index"},"navigationBarTitleText":"自己串"}

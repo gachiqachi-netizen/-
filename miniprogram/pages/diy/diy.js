@@ -68,7 +68,7 @@ Page({
   onHide(){this.visible=false;clearTimeout(this.searchTimer);this.filterKey='';this.setData({searchText:'',searchQuery:'',searchFocused:false});if(wx.showTabBar)wx.showTabBar({fail(){}});if(this.audio)this.audio.stop();this.dragCancel();clearTimeout(this.draftTimer);const d=this.data.design;if(d)store.save(d)},
   rehideTabBarSoon(){setTimeout(()=>{if(this.visible&&wx.hideTabBar)wx.hideTabBar({fail(){}})},0)},
   back(){nav.backFromWorkbench()},
-  works(){wx.navigateTo({url:'/features/works/works'})},
+  works(){this.setData({moreOpen:false});wx.navigateTo({url:'/features/works/works'})},
   retryCatalog(){this.onShow()},
   say(type,state,extra){const value=message(type,state);if(value)queue.show({text:value,...extra})},
   vibrate(type='light'){if(wx.vibrateShort)wx.vibrateShort({type,fail(){}})},

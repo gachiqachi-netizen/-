@@ -9,7 +9,7 @@ import unittest
 import uuid
 from http.server import ThreadingHTTPServer
 from unittest.mock import patch
-from urllib.request import urlopen
+from http_helper import urlopen
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]

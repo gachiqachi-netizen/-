@@ -6,7 +6,7 @@ import sys
 import threading
 import unittest
 from http.server import ThreadingHTTPServer
-from urllib.request import urlopen
+from http_helper import urlopen
 from unittest.mock import patch
 from concurrent.futures import ThreadPoolExecutor
 

@@ -7,7 +7,7 @@ import time
 import unittest
 from http.server import ThreadingHTTPServer
 from unittest.mock import patch
-from urllib.request import urlopen
+from http_helper import urlopen
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import app

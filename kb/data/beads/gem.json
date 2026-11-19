@@ -420,7 +420,9 @@
    "金曜石",
    "银曜石",
    "彩虹眼",
-   "红曜石"
+   "红曜石",
+   "银曜石小熊",
+   "银曜石猫头"
   ],
   "summary": "火山喷发形成的天然火山玻璃，整体黑色，部分有金银光泽或彩虹圈。",
   "look": "整体黑色，玻璃光泽强，断口像贝壳。对着光转动，部分料会出现金色、银色的光泽（金曜、银曜）或彩色同心圈（彩虹眼）；边缘薄处透出烟灰或墨绿色。",
@@ -2997,6 +2999,218 @@
    "grades": "low",
    "meaning": "mid",
    "treatments": "mid"
+  }
+ },
+ {
+  "id": "tian-shi",
+  "name": "天使石",
+  "std": "硬石膏",
+  "category": "gem",
+  "aliases": [
+   "天使石",
+   "Angelite"
+  ],
+  "summary": "天使石是蓝灰色硬石膏的商业名称，属于硫酸钙矿物。",
+  "look": "浅蓝至蓝灰色，通常不透明至微透，有柔和的蜡状或玻璃光泽；颜色不均与白色纹理都可能出现。",
+  "identify": [
+   "先按硬石膏核对，单靠蓝灰色外观不能鉴定",
+   "表面较软，旧珠常见细小划痕",
+   "染色及其他蓝色石材也可呈相似外观，贵重交易需检测"
+  ],
+  "confusables": [
+   {
+    "id": "lvsong",
+    "name": "绿松石",
+    "how": "颜色可相近，绿松石常有铁线；仅凭照片不能判定"
+   },
+   {
+    "id": "baisong",
+    "name": "染色白松石",
+    "how": "染色白松石也可呈均匀浅蓝，需核对材质证书"
+   }
+  ],
+  "dims": {
+   "color": [
+    "浅蓝",
+    "蓝灰"
+   ],
+   "shape": [
+    "圆珠",
+    "雕件"
+   ],
+   "treatment": [
+    "天然",
+    "染色"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色匀少裂",
+    "desc": "蓝色较均匀，表面少明显裂纹"
+   },
+   {
+    "level": 2,
+    "label": "自然纹理",
+    "desc": "可见色差与白色纹理"
+   },
+   {
+    "level": 3,
+    "label": "多裂多痕",
+    "desc": "裂纹或磨痕较明显"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "染色",
+    "note": "蓝色外观可能来自其他材料或染色，无法凭商品名确认"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "“天使石”是商业名称，商品材质应标明硬石膏；不承诺任何作用。"
+  },
+  "meaning": {
+   "tags": [
+    "宁静",
+    "温柔"
+   ],
+   "text": "浅蓝灰的颜色像薄雾与晴空，常被用来表达安静、温柔的审美意象。"
+  },
+  "story": "英文商名 Angelite 借用了“天使”的意象；它不是独立矿物种。",
+  "care": "材质较软，避免碰撞、酸液和长时间浸水；清洁时用柔软干布。",
+  "price_band": "低",
+  "sources": [
+   "https://www.mindat.org/min-232.html",
+   "https://www.mindat.org/min-234.html"
+  ],
+  "confidence": {
+   "look": "mid",
+   "identify": "low",
+   "confusables": "mid",
+   "dims": "low",
+   "grades": "low",
+   "treatments": "low",
+   "meaning": "mid",
+   "story": "mid",
+   "care": "mid"
+  }
+ },
+ {
+  "id": "qiangwei-shi",
+  "name": "蔷薇石",
+  "std": "蔷薇辉石",
+  "category": "gem",
+  "aliases": [
+   "蔷薇石",
+   "蔷薇辉石",
+   "Rhodonite"
+  ],
+  "summary": "蔷薇石通常指粉红至红色的蔷薇辉石，是含锰硅酸盐矿物。",
+  "look": "以粉红、玫红及红褐色为主，常伴黑色或深褐色纹理，抛光后有玻璃至珍珠光泽。",
+  "identify": [
+   "粉红基底与深色纹理是常见外观，但不能单凭颜色鉴定",
+   "观察是否有天然的色带、纹理及矿物集合体结构",
+   "与红纹石等粉色材料区分时应以检测结果为准"
+  ],
+  "confusables": [
+   {
+    "id": "hongwen",
+    "name": "红纹石",
+    "how": "同为粉红色，红纹石常见白色带纹；需检测判别"
+   },
+   {
+    "id": "fen-jing",
+    "name": "粉晶",
+    "how": "粉晶多呈云雾状透光，蔷薇辉石常更不透明且有深色纹理"
+   }
+  ],
+  "dims": {
+   "color": [
+    "粉",
+    "红",
+    "灰"
+   ],
+   "pattern": [
+    "深色纹理"
+   ],
+   "shape": [
+    "圆珠",
+    "雕件"
+   ],
+   "treatment": [
+    "天然"
+   ]
+  },
+  "grades": [
+   {
+    "level": 1,
+    "label": "色鲜纹清",
+    "desc": "粉红色较鲜明，纹理协调，少明显裂"
+   },
+   {
+    "level": 2,
+    "label": "色纹自然",
+    "desc": "颜色和纹理有自然变化"
+   },
+   {
+    "level": 3,
+    "label": "色暗多裂",
+    "desc": "颜色偏暗或有较多裂纹"
+   }
+  ],
+  "sizes": {
+   "common": [
+    6,
+    8,
+    10,
+    12
+   ],
+   "note": ""
+  },
+  "treatments": [
+   {
+    "type": "仿品",
+    "note": "其他粉色石材也可能以相近名称出售，需核对材质"
+   }
+  ],
+  "compliance": {
+   "level": "none",
+   "note": "“蔷薇石”是商称，材质应按蔷薇辉石标注。"
+  },
+  "meaning": {
+   "tags": [
+    "温柔",
+    "自然"
+   ],
+   "text": "名称来自玫瑰般的粉红色，适合表达温柔、明朗的审美意象。"
+  },
+  "story": "Rhodonite 的名称与希腊语中的玫瑰有关，呼应其粉红色。",
+  "care": "避免剧烈碰撞；用软布擦拭，避免酸液和长时间浸水。",
+  "price_band": "低",
+  "sources": [
+   "https://www.mindat.org/min-3407.html",
+   "https://www.gia.edu/gems-gemology/spring-2020-rhodonite-pyroxmangite-tanatz-alp"
+  ],
+  "confidence": {
+   "look": "mid",
+   "identify": "low",
+   "confusables": "mid",
+   "dims": "low",
+   "grades": "low",
+   "treatments": "low",
+   "meaning": "mid",
+   "story": "mid",
+   "care": "low"
   }
  }
 ]

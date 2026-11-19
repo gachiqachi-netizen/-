@@ -31,8 +31,8 @@ class KBRulesTest(unittest.TestCase):
     def errors(self, item, mode='save'):
         return kb_rules.check_bead(item, self.dicts, mode)
 
-    def test_existing_all_200_pass(self):
-        self.assertEqual(len(self.items), 200)
+    def test_existing_all_202_pass(self):
+        self.assertEqual(len(self.items), 202)
         for key, item in self.items.items():
             with self.subTest(key=key):
                 self.assertEqual(self.errors(item, 'existing'), [])

@@ -87,10 +87,29 @@ class ReviewsTests(unittest.TestCase):
         review = self.submit(photoIds=['p1'])
         self.assertEqual(review['status'], 'pending')
         self.assertEqual(review['machine']['photos'], [{'id': 'p1', 'status': 'pending'}])
-        with self.assertRaisesRegex(ValueError, '审核中'):
-            reviews.moderate(self.db, review['id'], 'approve')
-        self.db.put('uploads', 'p1', {'userId': 'u1', 'checkStatus': 'passed'})
         self.assertEqual(reviews.moderate(self.db, review['id'], 'approve')['status'], 'published')
+        photo = self.db.get('uploads', 'p1')
+        self.assertEqual(photo['checkStatus'], 'passed')
+        self.assertEqual(photo['reviewedBy'], '测试审核员')
+        self.assertIsInstance(photo['reviewedAt'], int)
+
+    def test_manual_photo_approved_and_public(self):
+        self.db.put('uploads', 'p1', {'userId': 'u1', 'checkStatus': 'manual', 'path': 'user/test/p1.png'})
+        review = self.submit(photoIds=['p1'])
+        self.assertEqual(review['machine']['photos'][0]['status'], 'manual')
+        self.assertFalse(__import__('uploads').viewer_can_see(self.db.get('uploads', 'p1'), 'u2', False))
+        reviews.moderate(self.db, review['id'], 'approve')
+        photo = self.db.get('uploads', 'p1')
+        self.assertEqual(photo['checkStatus'], 'passed')
+        self.assertTrue(__import__('uploads').viewer_can_see(photo, 'u2', False))
+        self.assertEqual(reviews.public_reviews(self.db, 't1')[0]['photos'][0]['id'], 'p1')
+
+    def test_rejected_after_submission_still_blocks_approval(self):
+        self.db.put('uploads', 'p1', {'userId': 'u1', 'checkStatus': 'pending'})
+        review = self.submit(photoIds=['p1'])
+        self.db.put('uploads', 'p1', {'userId': 'u1', 'checkStatus': 'rejected'})
+        with self.assertRaisesRegex(ValueError, '照片没有通过审核'):
+            reviews.moderate(self.db, review['id'], 'approve')
 
     def test_public_photos_use_passed_upload_urls_only(self):
         self.db.put('uploads', 'p1', {'userId': 'u1', 'checkStatus': 'passed', 'path': 'user/test/p1.png'})

@@ -40,7 +40,7 @@ def _photo_checks(db, user_id, photo_ids):
         if not upload or upload.get('userId') != user_id:
             raise ValueError('照片不属于当前用户')
         check = upload.get('checkStatus')
-        checks.append({'id': photo_id, 'status': check if check in ('passed', 'pending') else 'rejected'})
+        checks.append({'id': photo_id, 'status': check if check in ('passed', 'pending', 'manual') else 'rejected'})
     return checks
 
 
@@ -136,8 +136,15 @@ def moderate(db, review_id, action, reason=''):
             db.put('reviews', review_id, review)
             _set_order_review_status(db, review['orderNo'], review['status'])
             raise ValueError('照片没有通过审核')
-        if any(photo['status'] == 'pending' for photo in photos):
-            raise ValueError('照片还在审核中')
+        actor = (accounts.CURRENT_ADMIN.get() or {}).get('name') or '后台'
+        for photo in photos:
+            if photo['status'] in ('manual', 'pending'):
+                upload = db.get('uploads', photo['id'])
+                upload['checkStatus'] = 'passed'
+                upload['reviewedBy'] = actor
+                upload['reviewedAt'] = _now()
+                db.put('uploads', photo['id'], upload)
+                photo['status'] = 'passed'
         review['status'] = 'published'
         review['publishedAt'] = _now()
         review['rejectReason'] = None

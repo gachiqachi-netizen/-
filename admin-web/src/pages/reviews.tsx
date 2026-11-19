@@ -88,7 +88,15 @@ const ReviewsPage: React.FC = () => {
       { title: '评价', width: 220, render: r => <div><strong>手串评价</strong><div>{r.orderNo} · {'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</div></div> },
       { title: '内容', render: r => <span style={r.machine?.textOk === false ? danger : undefined}>{r.text || '只打了星'}</span> },
       { title: '晒图', width: 70, render: r => r.photoIds?.length ? `${r.photoIds.length} 张` : '—' },
-      { title: '机审', width: 130, render: r => <span style={issue(r) && issue(r) !== '图片检查中' ? danger : undefined}>{issue(r) || '通过'}</span> },
+      { title: '机审', width: 130, render: r => {
+        const photos = r.machine?.photos || [];
+        const rejected = photos.some(p => p.status === 'rejected');
+        const manual = photos.some(p => p.status === 'manual' || p.status === 'pending');
+        const textIssue = r.machine?.textOk === false;
+        return <span style={rejected || textIssue ? danger : manual ? { color: 'var(--c-muted, #777)' } : undefined}>
+          {rejected ? '机审判定违规' : textIssue ? r.machine?.textReason || '文字未通过' : manual ? '人工审核' : '已通过'}
+        </span>;
+      } },
       { title: '状态', width: 100, render: r => statusName(r.status) },
       { title: '提交时间', width: 140, render: r => fmtTime(r.createdAt) },
       { title: '', width: 70, render: () => '审核 ›' },

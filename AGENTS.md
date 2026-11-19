@@ -19,6 +19,8 @@
   python3 -m unittest discover -s server/tests
   node --test miniprogram/tests/*.test.js
   python3 kb/validate.py
+  # 可选：TEST_DATABASE_URL 配好后运行 Postgres 专项测试
+  TEST_DATABASE_URL=postgresql://... python3 -m unittest discover -s server/tests -p test_postgres_catalog.py
   ```
 - 真实支付只在 B-14 里接，默认仍是模拟支付（`PAYMENT_PROVIDER` 不配 wechat 就不走真实支付）；不写任何真实密钥、令牌、手机号、地址，密钥一律只读环境变量。
 - 给用户看的文字只讲寓意不讲功效（禁用词表在 `kb/data/attributes.json`）。

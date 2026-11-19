@@ -191,3 +191,21 @@ sudo docker compose --env-file app.env exec app python tools/patch_beads.py /app
 ```
 
 命令会列出不存在的 ID、已有字段跳过数和补入数；不会覆盖已有颜色，也可重复运行。`patch_beads.py` 只接受 `c`、`kb` 两种待补字段，预览默认不写入。
+
+### 批量导入商品
+
+先把 CSV 或 Excel `.xlsx` 文件放在服务器可读取的位置。若从应用容器执行，将文件放入已挂载的 `deploy/data-files/`，容器路径为 `/app/deploy-data/`。更新代码后在 `deploy/` 目录执行 `sudo docker compose --env-file app.env up -d --build`，再预览：
+
+```bash
+sudo docker compose --env-file app.env exec app python tools/import_beads.py /app/deploy-data/beads.xlsx
+```
+
+预览会逐行列出“将新增、跳过、缺字段、知识库待确认”的数量和明细，不写数据库。确认后加 `--apply` 导入：
+
+```bash
+sudo docker compose --env-file app.env exec app python tools/import_beads.py /app/deploy-data/beads.xlsx --apply
+```
+
+脚本与 `load_seed.py` 使用相同的 `DATABASE_URL` / `DATABASE_PATH` / `DATA_DIR` 选库规则。相同 ID 或名称、尺寸、材质组合的商品会跳过，已有商品不会覆盖；导入商品默认为草稿，需在后台复核后上架。照片列可写可访问的 HTTP(S) 地址，或执行命令的机器上存在的文件路径；容器内路径必须位于已挂载目录。无法访问的照片对应整行不导入。取色优先读取照片，照片无法取色时按名称补色；没有匹配到知识库的商品照常导入并列在“知识库待确认”。
+
+支持的列名：`ID` / `id` / `商品ID`，`名称` / `商品名称` / `珠子名称` / `name`，`尺寸(mm)` / `尺寸（mm）` / `尺寸` / `mm`，`价格(分)` / `价格（分）` / `priceFen`（整数分）或 `价格` / `售价` / `price`（元），`材质` / `材质类型` / `mat`，`照片` / `图片` / `主图` / `photo`，以及可选的 `类型` / `商品类型` / `type`、`合法来源证明` / `legal`。材质列可用 `wood`、`bodhi`、`stone`、`crystal`、`metal` 或对应中文“木、木质、菩提、石、石质、玉石、水晶、金属、金属配件”。

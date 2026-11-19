@@ -6,3 +6,6 @@ server/__pycache__
 server/tests
 **/__pycache__
 miniprogram
+tools/shoot/node_modules
+tools/hand-tracker/node_modules
+tools/hand-tracker/models

@@ -48,7 +48,9 @@ class BeadColorsTest(unittest.TestCase):
 
 class PatchBeadsTest(unittest.TestCase):
     def setUp(self):
-        self.db = DB(':memory:')
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.db = DB(str(Path(temporary.name) / 'beads.sqlite3'))
         self.addCleanup(self.db.conn.close)
         self.rid = self.db.list('beads')[0]['id']
         bead = self.db.get('beads', self.rid)

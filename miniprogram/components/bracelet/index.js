@@ -46,7 +46,7 @@ if (typeof Component === 'function') Component({
   lifetimes: { attached() { this.rebuild() } },
   methods: { rebuild() {
     const p = this.properties, record = Object.prototype.hasOwnProperty.call(style.tiers, p.tier)
-    const size = record ? style.tiers[p.tier] : Number(p.size) || 320
+    const size = record && !p.center ? style.tiers[p.tier] : Number(p.size) || (record ? style.tiers[p.tier] : 320)
     if (p.mode === 'stack') {
       const gap = Math.round(size * 0.36)
       this.setData({ side: size, height: size + gap, record: false, background: 'transparent', rings: [

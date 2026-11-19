@@ -51,6 +51,23 @@ test('only bracelet-thumb requests centering and home card art stays square', ()
   const root = path.join(__dirname, '..')
   const thumb = fs.readFileSync(path.join(root, 'components/bracelet-thumb/index.wxml'), 'utf8')
   const home = fs.readFileSync(path.join(root, 'pages/home/home.wxss'), 'utf8')
-  assert.match(thumb, /<c-bracelet[^>]*center="\{\{true\}\}"/)
+  assert.match(thumb, /<c-bracelet[^>]*size="\{\{sizeRpx\}\}"[^>]*center="\{\{true\}\}"/)
   assert.match(home, /\.traybox\{[^}]*aspect-ratio:1\/1/)
+})
+
+test('centered thumbnail size follows its measured box while uncentered tier keeps 144rpx', () => {
+  let component
+  global.Component = value => { component = value }
+  delete require.cache[require.resolve('../components/bracelet/index')]
+  require('../components/bracelet/index')
+  const beads = [{ mm: 8 }]
+  const make = (size, center) => {
+    const state = { properties: { beads, tier: 's', size, center, mode: 'ring', rotation: 0, circumferenceMm: 0 }, setData(value) { this.data = value } }
+    component.methods.rebuild.call(state)
+    return state.data
+  }
+  assert.equal(make(220, true).side, 220)
+  assert.equal(make(220, false).side, 144)
+  assert.equal(make(144, true).side, 144)
+  delete global.Component
 })

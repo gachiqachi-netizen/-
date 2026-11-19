@@ -1,1 +1,1 @@
-<view class="thumbnail" aria-label="手串配色示意图"><c-bracelet beads="{{items}}" tier="s" center="{{true}}" /></view>
+<view class="thumbnail" aria-label="手串配色示意图"><c-bracelet beads="{{items}}" tier="s" size="{{sizeRpx}}" center="{{true}}" /></view>

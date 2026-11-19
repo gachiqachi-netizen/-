@@ -10,7 +10,7 @@ Component({
   },
   observers: {
     'tone, size': function (tone, size) {
-      const heights = { nav: '40rpx', tray: '64rpx', corner: '28rpx', block: '120rpx' }
+      const heights = { nav: '40rpx', tray: '64rpx', trayLg: '96rpx', corner: '28rpx', block: '120rpx' }
       this.setData({
         src: `/assets/brand/wordmark${tone === 'text' ? '' : '-' + tone}.svg`,
         height: heights[size] || heights.nav,

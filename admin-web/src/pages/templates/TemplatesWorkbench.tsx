@@ -27,6 +27,7 @@ interface RecipeForm {
   wrist: number;
   price: number;
   status: string;
+  testOnly: boolean;
   fixed: string;
   special: string[];
   pattern: string[];
@@ -53,6 +54,7 @@ const emptyForm = (defaults: Partial<RecipeForm> = {}): RecipeForm => ({
   wrist: 15,
   price: 0,
   status: 'on_sale',
+  testOnly: false,
   fixed: '',
   special: [],
   pattern: [],
@@ -109,6 +111,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
       wrist: Number(found.wrist || 15),
       price: Number(found.price || 0),
       status: found.status || 'on_sale',
+      testOnly: found.testOnly === true,
       fixed: recipe.fixed ? String(recipe.fixed) : '',
       special: Array.isArray(recipe.special) ? [...recipe.special] : [],
       pattern: Array.isArray(recipe.pattern)
@@ -256,6 +259,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
         wrist: Number(form.wrist || 15),
         price: Number(form.price || 0),
         status: form.status || 'on_sale',
+        testOnly: form.testOnly,
         tags: form.tagsText
           .split(/[,，]/)
           .map((s) => s.trim())
@@ -404,7 +408,7 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
                 className={`tpl-item${selectedId === t.id ? ' active' : ''}`}
                 onClick={() => setSelectedId(t.id)}
               >
-                <span className="tpl-item-name">{t.name}</span>
+                <span className="tpl-item-name">{t.name}{t.testOnly === true && <span style={{ color: 'var(--c-danger)', marginLeft: 8 }}>测试款</span>}</span>
                 <span className="tpl-item-meta">
                   {t.status === 'on_sale' ? '上架中' : t.status === 'draft' ? '草稿' : '已下架'} · 基准{' '}
                   {t.wrist || 15}cm
@@ -478,6 +482,10 @@ export const TemplatesWorkbench: React.FC<TemplatesWorkbenchProps> = ({ template
                     <option value="draft">草稿</option>
                     <option value="off_sale">已下架</option>
                   </select>
+                </label>
+                <label className="tpl-field">
+                  <span>测试款</span>
+                  <input type="checkbox" checked={form.testOnly} onChange={(e) => setForm({ ...form, testOnly: e.target.checked })} />
                 </label>
                 <label className="tpl-field">
                   <span>固定总颗数（如 108；留空按手围伸缩）</span>

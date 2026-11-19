@@ -1,0 +1,58 @@
+[
+  {
+    "id": "t-2611b-01", "name": "桃云轻语",
+    "meaning": "粉晶与粉草莓晶交错，像初春轻柔的云霞。银色爱心点在一侧，寓意把喜欢与温柔珍藏在日常里。",
+    "special": [{"name": "银色爱心", "mm": 7}],
+    "pattern": [{"name": "粉晶", "mm": 8}, {"name": "粉草莓晶", "mm": 8}],
+    "tail": [], "order": 1, "homeOrder": 1, "status": "on_sale", "onSale": true
+  },
+  {
+    "id": "t-2611b-02", "name": "紫暮微光",
+    "meaning": "巴西紫水晶的明亮与梦幻紫水晶的柔和层层相映，像暮色里渐深的晚霞，寓意从容面对每一个新的开始。",
+    "special": [],
+    "pattern": [{"name": "巴西紫水晶", "mm": 8}, {"name": "梦幻紫水晶", "mm": 8}],
+    "tail": [], "order": 2, "homeOrder": 2, "status": "on_sale", "onSale": true
+  },
+  {
+    "id": "t-2611b-03", "name": "海阔蓝调",
+    "meaning": "海蓝宝的清透与青金石的深蓝轮替，像海面连着远方天空，留下一份开阔、安静而自由的心情。",
+    "special": [],
+    "pattern": [{"name": "海蓝宝", "mm": 8}, {"name": "青金石", "mm": 8}, {"name": "海蓝宝", "mm": 8}],
+    "tail": [], "order": 3, "homeOrder": 3, "status": "on_sale", "onSale": true
+  },
+  {
+    "id": "t-2611b-04", "name": "青岚新叶",
+    "meaning": "葡萄石的浅绿与绿发晶的细密纹理相伴，像雨后新叶舒展，寓意在平凡日子里留住生机和新鲜感。",
+    "special": [],
+    "pattern": [{"name": "葡萄石", "mm": 8}, {"name": "绿发晶", "mm": 8}],
+    "tail": [], "order": 4, "homeOrder": 4, "status": "on_sale", "onSale": true
+  },
+  {
+    "id": "t-2611b-05", "name": "暖橙日光",
+    "meaning": "太阳石的暖橙与柠檬黄的亮色交替，镀金爱心轻轻点缀，像午后落在掌心的阳光，寓意热情与欢喜。",
+    "special": [{"name": "镀金爱心", "mm": 9.5}],
+    "pattern": [{"name": "太阳石", "mm": 8}, {"name": "柠檬黄", "mm": 8}],
+    "tail": [], "order": 5, "homeOrder": 5, "status": "on_sale", "onSale": true
+  },
+  {
+    "id": "t-2611b-06", "name": "玄白分明",
+    "meaning": "单眼黑曜石的深色衬着白玛瑙的柔白，线条干净利落，像黑白分明的街景，寓意沉稳而坦然的选择。",
+    "special": [],
+    "pattern": [{"name": "单眼黑曜石", "mm": 10}, {"name": "白玛瑙荔枝冻", "mm": 10}],
+    "tail": [], "order": 6, "homeOrder": 6, "status": "on_sale", "onSale": true
+  },
+  {
+    "id": "t-2611b-07", "name": "夜岭深蓝",
+    "meaning": "蓝虎眼与茶晶交错出深蓝和棕褐，像夜色里的山脊，低调却有层次，适合偏爱简洁与稳重的日常搭配。",
+    "special": [],
+    "pattern": [{"name": "蓝虎眼", "mm": 10}, {"name": "茶晶", "mm": 10}],
+    "tail": [], "order": 7, "homeOrder": 7, "status": "on_sale", "onSale": true
+  },
+  {
+    "id": "t-2611b-08", "name": "赤影行歌",
+    "meaning": "南红玛瑙与黑玛瑙交错，红色在深色之间更显明朗，像夜里的一点灯火，寓意坚定与热忱并肩同行。",
+    "special": [],
+    "pattern": [{"name": "南红玛瑙", "mm": 8}, {"name": "黑玛瑙", "mm": 8}],
+    "tail": [], "order": 8, "homeOrder": 8, "status": "on_sale", "onSale": true
+  }
+]

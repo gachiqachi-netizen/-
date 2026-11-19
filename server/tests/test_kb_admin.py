@@ -92,7 +92,7 @@ class KbAdminHttpTest(unittest.TestCase):
         self.assertEqual(body['lowConfidence'],
                          sum(1 for p in products
                              if p.get('mat') != 'metal' and conf.get(p.get('kb')) == 'low'))
-        self.assertEqual(body['recent7d'], len(app.db.list('kb_items')))  # m010 导入即当前时间
+        self.assertEqual(body['recent7d'], 202)  # m010 导入的知识库条目
         mila = next(r for r in body['items'] if r['id'] == 'mila')
         self.assertEqual(mila['name'], '蜜蜡')
         self.assertEqual(mila['onSaleCount'], 3)

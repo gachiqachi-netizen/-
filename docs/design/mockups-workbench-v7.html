@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>工作台设计图 v7.3</title>
+<title>工作台设计图 v7.4</title>
 <style>
 /* 1px = 2rpx。颜色、字号、间距取自 docs/design/tokens.wxss */
 :root{--bg:#fff;--surface:#f4f4f4;--line:#e8e8e8;--text:#111;--text2:#6e6e6e;--danger:#c2352b;--fs-title:17px;--fs-body:14px;--fs-caption:12px;--sp-base:20px;--h-btn:52px}
@@ -77,8 +77,8 @@ code{font-size:12px;background:var(--surface);padding:0 4px}
 </style>
 </head>
 <body>
-<h1>工作台设计图 v7.3（2026-11-20 定稿）</h1>
-<p class="sub">整页白底，不分层：上面是手串和它的长度，下面是选珠区，两块之间靠留白分开，不画线、不加阴影。托盘上的按钮是圆形图标键（卡面灰底，和次按钮一致），只留公认的三个：撤销、分享、更多。</p>
+<h1>工作台设计图 v7.4（2026-11-20 定稿）</h1>
+<p class="sub">选珠格里的珠子统一大小，尺寸看数字。整页白底，不分层：上面是手串和它的长度，下面是选珠区，两块之间靠留白分开，不画线、不加阴影。托盘上的按钮是圆形图标键（卡面灰底，和次按钮一致），只留公认的三个：撤销、分享、更多。</p>
 
 <div class="row">
   <div class="col"><div class="cap">① 刚进来（从 tab 进，无返回）</div>
@@ -87,7 +87,7 @@ code{font-size:12px;background:var(--surface);padding:0 4px}
   </div>
   <div class="col"><div class="cap">② 加珠子（从模板进，有返回；动效循环）</div>
     <div class="phone" id="p2"></div>
-    <div class="capd">珠子从轨道最下方出现，沿圈滑到下一个空位；格子里的珠子和托盘里的珠子<b>一样大</b>（同一比例尺）。“已选”上的数字实时 +1。</div>
+    <div class="capd">珠子从轨道最下方出现，沿圈滑到下一个空位；选珠格里的珠子统一大小，尺寸看下面的数字；托盘里的手串按比例尺画。“已选”上的数字实时 +1。</div>
   </div>
   <div class="col"><div class="cap">③ 点“已选”</div>
     <div class="phone" id="p3"></div>
@@ -102,14 +102,14 @@ code{font-size:12px;background:var(--surface);padding:0 4px}
     <tr><td>全页</td><td>白底 <code>--c-bg</code>；左侧分类栏用卡面灰 <code>--c-surface</code> 和右侧白色珠子格区分（电商分类页做法），选中的那一项变白、和右侧连成一片，加粗 + 左侧短竖条；不分层、不画分隔线、不加阴影（阴影只在底部栏，03 §3.3）；手串区和选珠区之间留 8px + 状态行下方 18px 的空白</td></tr>
     <tr><td>托盘按钮</td><td>36px 圆形图标键，卡面灰底（和次按钮同色，03“能点的是圆的”），横排在右上，和名字同一行；只放公认图标：撤销、分享、更多（09 第 24 条）。“保存”是自动保存（已有逻辑），手动保存和“叠戴”在“更多”菜单里</td></tr>
   </table>
-  <h2>1. 珠子大小的规则（托盘和选珠区共用）</h2>
+  <h2>1. 珠子大小的规则</h2>
   <table>
     <tr><th>规则</th><th>说明</th></tr>
     <tr><td>实物比例 s₀</td><td>手机逻辑像素 1px ≈ 0.16mm（iPhone 163 点/英寸），即 <b>1mm ≈ 6.3px</b>。小程序拿不到屏幕物理尺寸，按这个通用值算，不同手机误差约 ±10%。</td></tr>
     <tr><td>托盘可用直径 A</td><td>A = min(屏宽 − 2×20, 托盘高 − 50 − 2)；50 是名字和按钮那一行加 8px 间隔，手串不碰按钮。图标改到右上横排后不再占两侧宽度；375 宽的手机 A = min(335, 252) = 252px。</td></tr>
     <tr><td>手串需要的直径（mm）</td><td>d = 目标长度 ÷ π + 最大珠径。目标长度按规范 1.3（手围 15cm、8mm 主珠 → 165mm），所以 d = 165 ÷ π + 8 ≈ 60.5mm。用目标长度而不是当前长度，<b>加珠子时比例不变</b>（U35 的固定圈）。</td></tr>
     <tr><td>比例尺 s</td><td><b>s = min(s₀, A ÷ d)</b>。能放下就按实物大小；放不下才缩小。上例 s = 252 ÷ 60.5 ≈ 4.17px/mm，即 <b>约 0.7 倍实物</b>，量尺下方左侧小字写“约 0.7 倍实物大小”。</td></tr>
-    <tr><td>珠子图尺寸</td><td>托盘和选珠格<b>都用 s</b>：8mm → 33px，10mm → 42px，7mm → 29px，6mm → 25px。格子大小固定（104 高），珠子在格子里按实际 mm 显示，大小一眼能比。</td></tr>
+    <tr><td>珠子图尺寸</td><td><b>只有托盘里的手串按 s 画</b>（8mm → 33px，10mm → 42px）。<b>选珠格里的珠子一律同样大小 40px</b>（“已选”列表里 32px），不按 mm 缩放，避免大小悬殊看着乱；尺寸靠格子下方“8mm ¥6”的数字区分（2026-11-20 负责人定）。</td></tr>
     <tr><td>看实物大小</td><td>托盘上拉放大（08 规范 1.2 已有）时 s = min(s₀, 屏宽 ÷ d)，375 宽手机约 0.98 倍，接近实物。</td></tr>
   </table>
   <h2>2. 珠子种类多时怎么选</h2>
@@ -130,13 +130,13 @@ code{font-size:12px;background:var(--surface);padding:0 4px}
   <table>
     <tr><td>一屏一种对齐</td><td>名字、状态行、底部栏左边距 20；分类栏 84 宽贴左；手串圈在托盘水平居中</td></tr>
     <tr><td>同一信息只出现一次</td><td>已选数量只在分类栏“已选 N”和格子角标；长度只在状态行</td></tr>
-    <tr><td>头轻脚重</td><td>托盘和格子同一比例尺，托盘里的珠子不再比格子里的小一大截；托盘高 304，选珠区约 40%</td></tr>
+    <tr><td>头轻脚重</td><td>托盘高 304、选珠区约 40%；托盘里的手串按比例尺画，选珠格珠子统一 40px，两者都不过大过小</td</tr>
     <tr><td>量尺</td><td>沿用现有 <code>.meter</code>：4px 胶囊线；灰色段 = 合适区间（按规范 1.3 计算），黑色段 = 当前长度，超出变红；不画刻度竖线；“合适”小字在色段正下方</td></tr>
     <tr><td>字号和层级（03 §3.2）</td><td>只用 4 档字号、2 档字重：17 加粗（导航标题、金额）；14（正文、分类、珠子名、状态行、按钮加粗）；12（规格价格、图标文字、比例说明、提示、数量）。<b>数量统一一种样式</b>：12 加粗主字色，“已选 18”和格子右上角“9”完全一样</td></tr>
     <tr><td>图标</td><td>全部用 <code>miniprogram/assets/icons/</code> 现有图标（back、undo、save、share、more、minus），不用字符；中间字标用 <code>assets/brand/wordmark.svg</code></td></tr>
     <tr><td>分隔</td><td>不画分隔线（“已选”列表行之间除外，03 §7.2）；手串组和选珠区之间留空白；分类栏卡面灰和右侧白色珠子格靠底色区分，选中项白底连成一片</td></tr>
     <tr><td>同一信息只说一次</td><td>到了合适区间，状态行写“合适”，量尺下的“合适”小字就隐藏；比例说明“约 0.7 倍实物大小”放在量尺下方左侧，不压珠子</td></tr>
-    <tr><td>“已选”的层级</td><td>目录是“挑”，用格子看图；已选是“管”，用列表行看数量和钱。一行：珠子图（同一比例尺）→ 名字 14 → 规格·单价 12 灰（一行放得下；总价只在底部栏） → 右侧圆形加减键夹着数量 14 加粗。“−”不再压在珠子图上，数量也不再悬空在角上</td></tr>
+    <tr><td>“已选”的层级</td><td>目录是“挑”，用格子看图；已选是“管”，用列表行看数量和钱。一行：珠子图（统一 32px）→ 名字 14 → 规格·单价 12 灰（一行放得下；总价只在底部栏） → 右侧圆形加减键夹着数量 14 加粗。“−”不再压在珠子图上，数量也不再悬空在角上</td></tr>
     <tr><td>数字验算</td><td>15cm、8mm：目标 165mm，合适 161–171mm；21 颗 168mm 合适；s ≈ 4.17px/mm</td></tr>
     <tr><td>颜色 / 按钮</td><td>黑、灰字、卡面灰、红（只在超出）；一个主按钮</td></tr>
   </table>
@@ -151,9 +151,9 @@ function phone(o){
   const cats=['全部','水晶','玉石','木质','菩提','金属配件','隔珠'];
   const rail=`<div class="rail"><div class="${o.rail==='sel'?'on':''}">已选<span class="cnt" id="${o.id}sel">${o.sel||''}</span></div><div class="gap"></div>${cats.map((c,i)=>`<div class="${o.rail===i?'on':''}">${c}</div>`).join('')}</div>`;
   const list=o.rail==='sel'?o.selItems:NAMES.map((b,i)=>i);
-  if(o.rail==='sel'){const rows=o.selItems.map(i=>{const b=NAMES[i],px=Math.round(b[1]*S);return `<div class="lrow"><div class="im"><img src="${IMG[i+1]}" style="width:${px}px;height:${px}px;object-fit:contain"></div><div class="tx">${b[0]}<span class="p">${b[1]}mm ¥${b[2]}</span></div><div class="step"><span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#111111\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/></svg></span><b>${o.counts[i]}</b><span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#111111\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></span></div></div>`}).join('');
+  if(o.rail==='sel'){const rows=o.selItems.map(i=>{const b=NAMES[i],px=32;return `<div class="lrow"><div class="im"><img src="${IMG[i+1]}" style="width:${px}px;height:${px}px;object-fit:contain"></div><div class="tx">${b[0]}<span class="p">${b[1]}mm ¥${b[2]}</span></div><div class="step"><span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#111111\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/></svg></span><b>${o.counts[i]}</b><span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#111111\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></span></div></div>`}).join('');
     o._list=`<div class="list">${rows}</div>`}
-  const cards=list.map(i=>{const b=NAMES[i],px=Math.round(b[1]*S),cnt=(o.counts||{})[i]||'';return `<div class="card">${o.rail==='sel'?'<span class="minus"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#111111\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/></svg></span>':''}<span class="n cnt" id="${o.id}n${i}">${cnt}</span><div class="bx"><img src="${IMG[i+1]}" style="width:${px}px;height:${px}px;object-fit:contain"></div>${b[0]}<span class="p">${b[1]}mm ¥${b[2]}</span></div>`}).join('');
+  const cards=list.map(i=>{const b=NAMES[i],px=40,cnt=(o.counts||{})[i]||'';return `<div class="card">${o.rail==='sel'?'<span class="minus"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#111111\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/></svg></span>':''}<span class="n cnt" id="${o.id}n${i}">${cnt}</span><div class="bx"><img src="${IMG[i+1]}" style="width:${px}px;height:${px}px;object-fit:contain"></div>${b[0]}<span class="p">${b[1]}mm ¥${b[2]}</span></div>`}).join('');
   return `<div class="sb"><span>9:41</span><span>●●● ▮</span></div>
   <div class="nav">${o.back?'<span class="back"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#111111\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M15 5l-7 7 7 7\"/></svg></span>':''}自己串<span class="caps">··· ◉</span></div>
   <div class="tray"><div class="ring" id="${o.id}ring"><div class="track" style="left:${A/2-RC}px;top:${A/2-RC}px;width:${RC*2}px;height:${RC*2}px"></div><div class="wm"></div></div>

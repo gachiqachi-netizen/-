@@ -18,6 +18,11 @@ def load(db, templates, apply=False, output=print):
     if not isinstance(templates, list):
         raise ValueError("模板文件必须是列表")
     beads = {row["id"]: row for row in db.list("beads")}
+    by_name_size = {}
+    for bead in beads.values():
+        if (bead.get("onSale") is True and status.product_status(bead) == "on_sale"
+                and status.product_type(bead) in ("bead", "spacer")):
+            by_name_size.setdefault((bead.get("name"), bead.get("mm")), []).append(bead["id"])
     existing = {row["id"] for row in db.list("templates")}
     seen = set()
     invalid = []
@@ -34,15 +39,32 @@ def load(db, templates, apply=False, output=print):
             output(f"{name}：已存在跳过")
             continue
         recipe = template.get("recipe") if isinstance(template.get("recipe"), dict) else template
-        ids = dict.fromkeys((recipe.get("special") or []) + (recipe.get("pattern") or []) + (recipe.get("tail") or []))
-        bad = [bid for bid in ids if bid not in beads or beads[bid].get("onSale") is not True
-               or status.product_type(beads[bid]) not in ("bead", "spacer")]
+        resolved = dict(template)
+        bad = []
+        for field in ("special", "pattern", "tail"):
+            ids = []
+            for item in recipe.get(field) or []:
+                if isinstance(item, dict):
+                    bead_name, mm = item.get("name"), item.get("mm")
+                    label = f"{bead_name} {mm}mm"
+                    found = by_name_size.get((bead_name, mm), []) if isinstance(bead_name, str) and type(mm) in (int, float) else []
+                    if len(found) != 1:
+                        bad.append(f"{label}（{'找不到在售珠子' if not found else '匹配到多颗在售珠子'}）")
+                        continue
+                    ids.append(found[0])
+                elif isinstance(item, str):
+                    ids.append(item)
+                    if item not in beads or beads[item].get("onSale") is not True or status.product_type(beads[item]) not in ("bead", "spacer"):
+                        bad.append(item)
+                else:
+                    bad.append(str(item))
+            resolved[field] = ids
         if bad:
             output(f"{name}：珠子缺失或不可用：{'、'.join(bad)}")
             invalid.append(name)
         else:
             output(f"{name}：将新增" if not apply else f"{name}：待新增")
-            pending.append(template)
+            pending.append(resolved)
     if invalid:
         raise ValueError("整批未写入；珠子缺失或不可用的模板：" + "、".join(invalid))
     # Check the same business rules before any write, including banned words.

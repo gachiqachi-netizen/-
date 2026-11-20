@@ -186,3 +186,5 @@
 | U39 | agent/U39-admin-batch-status | followups-1119.md |  | Codex |  |  |
 | U40 | agent/U40-workbench-v7 | followups-1119.md | U36 | Codex | U41 |  |
 | U41 | agent/U41-bead-slide | followups-1119.md | U40 | Codex |  |  |
+| TRY-1 | agent/TRY-1-photo-tryon | followups-tryon.md |  | Codex |  |  |
+| TRY-2 | agent/TRY-2-my-hand | followups-tryon.md | TRY-1 | Codex |  |  |

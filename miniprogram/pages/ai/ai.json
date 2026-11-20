@@ -4,6 +4,7 @@
     "c-skeleton": "/components/skeleton/index",
     "c-bracelet": "/components/bracelet/index",
     "c-composer": "/components/composer/index",
-    "c-toast": "/components/toast/index"
+    "c-toast": "/components/toast/index",
+    "privacy-popup": "/components/privacy-popup/index"
   }
 }

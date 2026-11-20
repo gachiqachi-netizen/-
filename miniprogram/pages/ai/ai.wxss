@@ -42,3 +42,18 @@
 .ai-send { width: 80rpx; height: 80rpx; flex: none; display: flex; align-items: center; justify-content: center; border-radius: var(--r-pill); background: var(--c-text); }
 .ai-send--off { opacity: .4; }
 .ai-send image { width: 40rpx; height: 40rpx; }
+
+.ai-user-image { display: block; width: 120rpx; height: 120rpx; border-radius: var(--r-panel); margin-bottom: 12rpx; }
+.ai-seen { color: var(--c-text-2); font-size: var(--fs-caption); margin-top: 24rpx; }
+.ai-seen + .ai-answer { margin-top: 8rpx; }
+.ai-photo-link { text-align: center; color: var(--c-text-2); font-size: var(--fs-caption); padding: 0 0 14rpx; }
+.ai-input-box { margin: 0 var(--sp-base); padding: 16rpx 18rpx; border: 1rpx solid var(--c-line); border-radius: var(--r-pill); background: var(--c-surface); }
+.ai-input { display: block; width: 100%; min-height: 64rpx; max-height: 240rpx; padding: 8rpx 10rpx; border: 0; background: transparent; border-radius: var(--r-panel); line-height: var(--lh-body); }
+.ai-input-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 4rpx; }
+.ai-add { width: 56rpx; height: 56rpx; display: flex; align-items: center; justify-content: center; }
+.ai-add image { width: 36rpx; height: 36rpx; }
+.ai-send { width: 56rpx; height: 56rpx; }
+.ai-send image { width: 32rpx; height: 32rpx; }
+.ai-attachment { position: relative; width: 64rpx; height: 64rpx; margin: 0 0 10rpx 8rpx; }
+.ai-thumb { width: 64rpx; height: 64rpx; border-radius: var(--r-panel); }
+.ai-remove { position: absolute; right: -14rpx; top: -14rpx; width: 28rpx; height: 28rpx; padding: 4rpx; border-radius: var(--r-pill); background: var(--c-bg); }

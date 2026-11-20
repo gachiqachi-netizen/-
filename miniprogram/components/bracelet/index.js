@@ -71,7 +71,18 @@ if (typeof Component === 'function') Component({
   data: { rings: [], height: 320, side: 320, wordmarkSize: 'trayLg', background: 'transparent', record: false, animatingIndex: -1 },
   observers: { 'beads,tier,size,mode,stackBeads,wordmark,circumferenceMm,rotation,center,pixelsPerMm,slide': function () { this.rebuild() } },
   lifetimes: { attached() { this.rebuild() } },
-  methods: { rebuild() {
+  methods: { finishSlide(seq) {
+    if (this.activeSlideToken !== seq) return
+    const reset = () => {
+      if (this.activeSlideToken !== seq) return
+      this.activeSlideToken = 0
+      this.setData({ animatingIndex: -1 })
+    }
+    try {
+      if (typeof this.clearAnimation === 'function') this.clearAnimation('#slide-bead', { left: true, top: true, opacity: true }, reset)
+      else reset()
+    } catch (_) { reset() }
+  }, rebuild() {
     const p = this.properties, record = Object.prototype.hasOwnProperty.call(style.tiers, p.tier)
     const size = record && !p.center ? style.tiers[p.tier] : Number(p.size) || (record ? style.tiers[p.tier] : 320)
     if (p.mode === 'stack') {
@@ -95,14 +106,9 @@ if (typeof Component === 'function') Component({
       this.setData({ side: size, height: size, record, background: record ? style.background[p.tier] : 'transparent', wordmarkSize: wordmarkSize(ring, size), track, rings: [{ idx: 0, ty: 0, opacity: 1, items: ring }], animatingIndex }, () => {
         if (!fresh || this.activeSlideToken !== slide.seq) return
         try {
-          this.animate('#slide-bead', clockwiseFrames(ring[slide.index], size), 420, () => {
-            if (this.activeSlideToken !== slide.seq) return
-            this.activeSlideToken = 0
-            this.setData({ animatingIndex: -1 })
-          })
+          this.animate('#slide-bead', clockwiseFrames(ring[slide.index], size), 420, () => this.finishSlide(slide.seq))
         } catch (_) {
-          this.activeSlideToken = 0
-          this.setData({ animatingIndex: -1 })
+          this.finishSlide(slide.seq)
         }
       })
     }

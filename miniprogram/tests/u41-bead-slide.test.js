@@ -28,7 +28,7 @@ test('连续加珠先结束上一颗，同一时间只留一颗在动', () => {
     beads: [{ id: 'a', mm: 8 }], size: 200, circumferenceMm: 150, slide: { seq: 1, index: 0 } },
     data: { animatingIndex: -1 }, setData(patch, done) { Object.assign(this.data, patch); if (done) done() },
     animate(selector, frames, duration, done) { calls.push({ selector, frames, duration }); callbacks.push(done) },
-    clearAnimation(selector) { calls.push({ clear: selector }) } }
+    clearAnimation(selector, options, done) { calls.push({ clear: selector, options }); if (done) done() } }
   component.rebuild()
   assert.equal(component.data.animatingIndex, 0)
   component.properties.beads = [{ id: 'a', mm: 8 }, { id: 'b', mm: 8 }]
@@ -39,6 +39,32 @@ test('连续加珠先结束上一颗，同一时间只留一颗在动', () => {
   assert.equal(component.data.animatingIndex, 1)
   callbacks[0]()
   assert.equal(component.data.animatingIndex, 1)
+  callbacks[1]()
+  assert.equal(component.data.animatingIndex, -1)
+  assert.deepEqual(calls.at(-1), { clear: '#slide-bead', options: { left: true, top: true, opacity: true } })
+})
+
+test('动画完成清理样式后旋转手串，新珠坐标跟着更新；清理异常也复位', () => {
+  const callbacks = [], calls = []
+  const component = { ...spec.methods, properties: { ...Object.fromEntries(Object.entries(spec.properties).map(([key, value]) => [key, value.value])),
+    beads: [{ id: 'a', mm: 8 }, { id: 'b', mm: 8 }], size: 200, circumferenceMm: 150, rotation: 0, slide: { seq: 1, index: 1 } },
+    data: { animatingIndex: -1 }, setData(patch, done) { Object.assign(this.data, patch); if (done) done() },
+    animate(selector, frames, duration, done) { callbacks.push(done) },
+    clearAnimation(selector, options, done) { calls.push({ selector, options }); done() } }
+  component.rebuild()
+  callbacks[0]()
+  assert.deepEqual(calls, [{ selector: '#slide-bead', options: { left: true, top: true, opacity: true } }])
+  assert.equal(component.data.animatingIndex, -1)
+  const before = component.data.rings[0].items[1]
+  component.properties.rotation = 45
+  component.rebuild()
+  const after = component.data.rings[0].items[1]
+  assert.ok(Math.hypot(after.left - before.left, after.top - before.top) > 1)
+  assert.equal(component.data.animatingIndex, -1)
+
+  component.properties.slide = { seq: 2, index: 1 }
+  component.clearAnimation = () => { throw Error('clear failed') }
+  component.rebuild()
   callbacks[1]()
   assert.equal(component.data.animatingIndex, -1)
 })

@@ -30,9 +30,9 @@ test('wordmarkSize shrinks below the ring inner diameter', () => {
 })
 
 test('tray wordmarks use text tone and small tiers stay hidden', () => {
-  assert.match(read('pages/diy/diy.wxml'), /empty-ring-wordmark[^>]*><c-wordmark tone="text" size="trayLg"/)
+  assert.match(read('pages/diy/diy.wxml'), /class="empty-ring-wordmark" src="\/assets\/brand\/wordmark.svg"/)
   assert.match(read('components/bracelet/index.wxml'), /tier !== 's' && tier !== 'm'/)
-  assert.match(read('components/bracelet/index.wxml'), /<c-wordmark tone="text" size="{{wordmarkSize}}"/)
-  assert.match(read('pages/diy/diy.wxss'), /\.empty-ring-wordmark\{opacity:\.32\}/)
+  assert.match(read('components/bracelet/index.wxml'), /<c-wordmark wx:else tone="text" size="{{wordmarkSize}}"/)
+  assert.match(read('pages/diy/diy.wxss'), /\.empty-ring-wordmark\{[^}]*opacity:\.35\}/)
   assert.match(read('components/bracelet/index.wxss'), /\.c-bracelet__wordmark\{[^}]*opacity:\.32\}/)
 })

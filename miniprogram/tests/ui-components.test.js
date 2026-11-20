@@ -80,7 +80,7 @@ test('UI checker rejects numeric button size and fixed width', () => {
 test('system navigation supplies the workbench title', () => {
   const config = JSON.parse(read('miniprogram/pages/diy/diy.json'))
   assert.equal(config.navigationBarTitleText, '自己串')
-  assert.notEqual(config.navigationStyle, 'custom')
+  assert.equal(config.navigationStyle, 'custom')
 })
 test('all listed pages use system navigation', () => {
   const pages = ['pages/home/home', 'pages/ai/ai', 'pages/order/order', 'pages/login/login', 'pages/share/share',
@@ -92,7 +92,7 @@ test('all listed pages use system navigation', () => {
     assert.ok(config.navigationBarTitleText, page)
     assert.doesNotMatch(read(`miniprogram/${page}.wxml`), /<c-nav-bar\b/, page)
   }
-  assert.notEqual(JSON.parse(read('miniprogram/pages/diy/diy.json')).navigationStyle, 'custom')
+  assert.equal(JSON.parse(read('miniprogram/pages/diy/diy.json')).navigationStyle, 'custom')
   assert.doesNotMatch(read('miniprogram/pages/diy/diy.wxml'), /<c-nav-bar\b/)
   assert.match(read('miniprogram/pages/ai/ai.wxml'), /class="ai-chat-tools"[\s\S]*class="ai-new" bindtap="clear"/)
 })
@@ -122,10 +122,10 @@ test('system navigation uses the home tab title', () => {
   assert.equal(config.navigationBarTitleText, '珠养养')
   assert.notEqual(config.navigationStyle, 'custom')
 })
-test('workbench uses system navigation and removes the old component', () => {
+test('workbench alone uses custom navigation and removes the old component', () => {
   const config = JSON.parse(read('miniprogram/pages/diy/diy.json'))
   assert.equal(config.navigationBarTitleText, '自己串')
-  assert.notEqual(config.navigationStyle, 'custom')
+  assert.equal(config.navigationStyle, 'custom')
   assert.equal(fs.existsSync(path.join(root, 'miniprogram/components/nav-bar')), false)
 })
 test('UI checker rejects a new literal color', () => {

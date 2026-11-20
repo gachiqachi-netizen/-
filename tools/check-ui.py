@@ -128,7 +128,8 @@ def navigation_violations(root=ROOT):
         relative = f'miniprogram/{name}.json'
         path = root / relative
         config = json.loads(path.read_text()) if path.exists() else {}
-        if config.get('navigationStyle') == 'custom':
+        # A tab page has no native back button; only the DIY workbench supplies one.
+        if config.get('navigationStyle') == 'custom' and name != 'pages/diy/diy':
             found.append(f'{relative}:navigationStyle:不能使用 custom')
         if not (config.get('navigationBarTitleText') or inherited):
             found.append(f'{relative}:navigationBarTitleText:没有页面标题，也没有 app.window 默认标题')

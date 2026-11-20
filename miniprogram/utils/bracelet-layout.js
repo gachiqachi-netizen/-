@@ -89,7 +89,15 @@ function angleDelta(previous, current) {
   return delta
 }
 
-function layout(sequence, size, circumferenceMm, rotation = 0) {
+function beadScale({ screenW, trayH, wristCm, maxMm }) {
+  const { scaleTarget } = require('../pages/diy/logic')
+  const available = Math.min(Number(screenW) - 40, Number(trayH) - 52)
+  const diameterMm = scaleTarget(wristCm, maxMm) / Math.PI + Number(maxMm)
+  if (!(available > 0) || !(diameterMm > 0)) throw new RangeError('invalid bead scale inputs')
+  return Math.min(6.3, available / diameterMm)
+}
+
+function layout(sequence, size, circumferenceMm, rotation = 0, requestedScale) {
   if (circumferenceMm == null) return legacyLayout(sequence, size)
   if (!Array.isArray(sequence)) throw new TypeError('sequence must be an array')
   if (!sequence.length) return []
@@ -103,7 +111,7 @@ function layout(sequence, size, circumferenceMm, rotation = 0) {
   const maxRadius = Math.max(...radii)
   const inset = Math.min(2, size * 0.04)
   // A fixed physical scale for a given viewport; count never enters it.
-  const pixelsPerMm = (size / 2 - inset) / (160 / (2 * Math.PI) + 6)
+  const pixelsPerMm = Number.isFinite(requestedScale) && requestedScale > 0 ? requestedScale : (size / 2 - inset) / (160 / (2 * Math.PI) + 6)
   const baseRadius = circumferenceMm / (2 * Math.PI)
   const chords = radii.map((radius, i) => radius + radii[(i + 1) % radii.length])
   const angleSum = radius => chords.reduce((sum, chord) => sum + 2 * Math.asin(Math.min(1, chord / (2 * radius))), 0)
@@ -144,4 +152,4 @@ function layout(sequence, size, circumferenceMm, rotation = 0) {
   })
 }
 
-module.exports = { layout, angleDelta, centerInFrame }
+module.exports = { layout, angleDelta, centerInFrame, beadScale }

@@ -17,7 +17,7 @@ test('wrist change recalculates remaining length', () => {
 
 test('return button is conditional on a consumed source', () => {
   const wxml = require('node:fs').readFileSync(require('node:path').join(__dirname, '../pages/diy/diy.wxml'), 'utf8')
-  assert.match(wxml, /wx:if="\{\{returnSource\}\}" class="tray-back" bindtap="back"/)
+  assert.match(wxml, /wx:if="\{\{returnSource\}\}" class="nav-back"[^>]*bindtap="back"/)
 })
 
 let definition

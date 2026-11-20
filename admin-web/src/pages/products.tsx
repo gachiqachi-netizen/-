@@ -31,6 +31,7 @@ export default function ProductsPage({ notify }: Props) {
   const [batch, setBatch] = useState(false), [addText, setAddText] = useState(''), [preview, setPreview] = useState<Change[] | null>(null), [batchError, setBatchError] = useState(''), [batchBusy, setBatchBusy] = useState(false);
   const [statusBatch, setStatusBatch] = useState<'on_sale' | 'off_sale' | null>(null);
   const [statusPreview, setStatusPreview] = useState<StatusReport | null>(null), [statusBusy, setStatusBusy] = useState(false), [statusError, setStatusError] = useState('');
+  const [statusRemoved, setStatusRemoved] = useState<StatusItem[]>([]);
   const load = useCallback(async () => {
     setLoading(true); setError('');
     try {
@@ -93,11 +94,26 @@ export default function ProductsPage({ notify }: Props) {
     setPreview(null);
   };
   const openStatusBatch = async (target: 'on_sale' | 'off_sale') => {
-    setStatusBatch(target); setStatusPreview(null); setStatusError(''); setStatusBusy(true);
+    setStatusBatch(target); setStatusPreview(null); setStatusRemoved([]); setStatusError(''); setStatusBusy(true);
     try {
       const report = await apiRequest<StatusReport>('/api/admin/beads/status', { method: 'POST', body: { ids: selected, status: target, preview: true } });
       setStatusPreview(report);
     } catch (err: any) { setStatusError(err.message || '预览失败'); }
+    finally { setStatusBusy(false); }
+  };
+  const removeRejectedAndPreview = async () => {
+    if (!statusBatch || !statusPreview?.rejected.length || statusBusy) return;
+    const rejected = statusPreview.rejected;
+    const rejectedIds = new Set(rejected.map(item => item.id));
+    const remaining = selected.filter(id => !rejectedIds.has(id));
+    setSelected(remaining);
+    setStatusRemoved(old => [...old, ...rejected.filter(item => !old.some(previous => previous.id === item.id))]);
+    setStatusPreview(null); setStatusError(''); setStatusBusy(true);
+    try {
+      if (!remaining.length) throw new Error('没有可继续操作的商品');
+      const report = await apiRequest<StatusReport>('/api/admin/beads/status', { method: 'POST', body: { ids: remaining, status: statusBatch, preview: true } });
+      setStatusPreview(report);
+    } catch (err: any) { setStatusError(err.message || '重新预览失败'); }
     finally { setStatusBusy(false); }
   };
   const applyStatusBatch = async () => {
@@ -135,13 +151,14 @@ export default function ProductsPage({ notify }: Props) {
           <p>已勾选 {selected.length} 件商品；一次最多 500 件。</p>
           {statusBusy && !statusPreview && <p role="status">正在预览…</p>}
           {statusError && <div className="zy-field-error" role="alert">{statusError}</div>}
+          {statusRemoved.length > 0 && <div><strong>已从本批移除，待补资料</strong><ul>{statusRemoved.map(item => <li key={item.id}>{item.name}（{item.id}）：{item.reason}</li>)}</ul></div>}
           {statusPreview && <>
             <p role="status">将变更 {statusPreview.changes.length} 件；被拒绝 {statusPreview.rejected.length} 件；状态已相同 {statusPreview.unchanged.length} 件。</p>
-            {statusPreview.rejected.length > 0 && <div><strong>被拒绝的商品和原因</strong><ul>{statusPreview.rejected.map(item => <li key={item.id}>{item.name}（{item.id}）：{item.reason}</li>)}</ul><p>请先处理被拒绝的商品，或清空勾选后重新选择；本批不会部分执行。</p></div>}
+            {statusPreview.rejected.length > 0 && <div><strong>被拒绝的商品和原因</strong><ul>{statusPreview.rejected.map(item => <li key={item.id}>{item.name}（{item.id}）：{item.reason}</li>)}</ul><p>本批不会部分执行；可先去掉被拒绝的商品，继续处理其余商品。</p></div>}
             {statusPreview.changes.length > 0 && <div><strong>将变更</strong><ul>{statusPreview.changes.map(item => <li key={item.id}>{item.name}（{item.id}）</li>)}</ul></div>}
           </>}
         </div>
-        <div className="zy-drawer-foot"><button className="zy-btn zy-btn-secondary" disabled={statusBusy} onClick={() => setStatusBatch(null)}>取消</button><Can perm="edit_products"><button className="zy-btn zy-btn-primary" disabled={statusBusy || !statusPreview || !!statusPreview.rejected.length || !statusPreview.changes.length} onClick={() => void applyStatusBatch()}>确认{statusBatch === 'on_sale' ? '上架' : '下架'}</button></Can></div>
+        <div className="zy-drawer-foot"><button className="zy-btn zy-btn-secondary" disabled={statusBusy} onClick={() => setStatusBatch(null)}>取消</button><Can perm="edit_products">{statusPreview && statusPreview.rejected.length > 0 && <button className="zy-btn zy-btn-secondary" disabled={statusBusy} onClick={() => void removeRejectedAndPreview()}>去掉这 {statusPreview.rejected.length} 个，继续</button>}<button className="zy-btn zy-btn-primary" disabled={statusBusy || !statusPreview || !!statusPreview.rejected.length || !statusPreview.changes.length} onClick={() => void applyStatusBatch()}>确认{statusBatch === 'on_sale' ? '上架' : '下架'}</button></Can></div>
       </section>
     </div>}
   </div>;

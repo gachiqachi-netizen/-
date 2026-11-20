@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "check:layout": "node scripts/check-layout.cjs"
+    "check:layout": "node scripts/check-layout.cjs",
+    "test:batch-status": "node --test tests/products-batch-status.test.cjs"
   },
   "dependencies": {
     "react": "19.0.0",
@@ -20,7 +21,8 @@
     "@tailwindcss/vite": "4.0.0",
     "typescript": "5.7.2",
     "@types/react": "19.0.2",
-    "@types/react-dom": "19.0.2"
+    "@types/react-dom": "19.0.2",
+    "jsdom": "^26.1.0"
   },
   "overrides": {
     "@tailwindcss/node": "4.0.0",

@@ -9,15 +9,14 @@ const { validateHands } = require('../../utils/wrist-ring')
 const {recognizePhoto,defaultEllipse}=require('./my-hand')
 const SKINS = ['#e9c2a6','#d7ad91','#b98462','#80543d']
 Page({
-  data: { showDesigns:false, showModes:false, designName:'', designChoices:[], aligned:false, fromOrder:false, mode:'photo', hands:[], selectedHand:null, spin:0, handReady:false, handError:'', photo:'', myHand:null, recognizing:false, modelProgress:0, recognitionHint:'', width:320, height:400, size:42, angle:0, flatten:28, hideBack:false, photoFallback:false, photoReady:false, xpos:0, ypos:0, saving:false, error:'', skin:SKINS[1], skins:SKINS, catalog:[], beads:[], wrist:15, length:'--', fit:'', price:'--', missing:0, modelError:false },
+  data: { showDesigns:false, showModes:false, designName:'', designChoices:[], aligned:false, fromOrder:false, mode:'hand', hands:[], selectedHand:null, spin:0, handReady:false, handError:'', photo:'', myHand:null, recognizing:false, modelProgress:0, recognitionHint:'', width:320, height:400, size:42, angle:0, flatten:28, hideBack:false, photoFallback:false, photoReady:false, xpos:0, ypos:0, saving:false, error:'', skin:SKINS[1], skins:SKINS, catalog:[], beads:[], wrist:15, length:'--', fit:'', price:'--', missing:0, modelError:false },
   onUnload(){this._myHandClosed=true;this._photoRequest=(this._photoRequest||0)+1;if(this._myHandModelControl)this._myHandModelControl.cancel()},
   onLoad(options={}) {
     const current=store.current(), saved=store.list().filter(d=>d.beads&&d.beads.length)
     const width=Math.max(200,wx.getSystemInfoSync().windowWidth)
     this.x=width/2;this.y=width*.7
     this.setData({width,height:Math.round(width*1.25),xpos:this.x,ypos:this.y,fromOrder:options.from==='order'})
-    // Model-hand data and rendering stay available for a later launch, but no
-    // placeholder hand is loaded or shown as the entry experience.
+    this.loadHands()
     api.catalog().then(c=>{
       this.catalogData=c
       const catalog=c.beads||[]
@@ -28,12 +27,13 @@ Page({
       const design=pickTryonDesign(current,saved,popular)
       if(design)this.useDesign(design)
       else this.setData({error:'暂时没有可试戴的手串'})
-      // Model hand is the public entry; legacy modes remain available in code.
+      // The real model hand is the public entry; legacy modes remain in code.
     }).catch(()=>this.setData({error:'材料信息暂不可用，请稍后重试'}))
   },
   loadHands(){
     const base=getApp().globalData.modelBase
-    if(!base)return this.setData({handError:'模特手暂时无法加载，请再试一次'})
+    const fallback=()=>this.setData({mode:'photo',hands:[],selectedHand:null,handReady:false,handError:''})
+    if(!base)return fallback()
     this.setData({handError:''})
     wx.request({url:base+'/tryon-hands/v1/hands.json',success:r=>{
       try {if(r.statusCode!==200)throw new Error('not found')
@@ -41,14 +41,14 @@ Page({
           const absolute=src=>/^https?:\/\//.test(src)?src:src.startsWith('/models/')?base.replace(/\/models$/,'')+src:base+'/tryon-hands/v1/'+src
           return {...hand,photo:absolute(hand.photo),cutout:absolute(hand.cutout),thumb:hand.thumb?absolute(hand.thumb):''}
         })
-        this.setData({hands,selectedHand:hands[0],handReady:false})
-      }catch(_){this.setData({handError:'模特手暂时无法加载，请再试一次'})}
-    },fail:()=>this.setData({handError:'模特手暂时无法加载，请再试一次'})})
+        this.setData({mode:'hand',hands,selectedHand:hands[0],handReady:false})
+      }catch(_){fallback()}
+    },fail:fallback})
   },
   selectHand(e){const hand=this.data.hands[e.currentTarget.dataset.index];if(hand)this.setData({selectedHand:hand,handReady:false,spin:0})},
   spinHand(e){this.setData({spin:this.data.spin+e.detail.delta})},
   handRendered(){if(!this.data.handReady)this.setData({handReady:true})},
-  handUnavailable(){this.setData({handError:'模特手暂时无法显示，请再试一次'})},
+  handUnavailable(){this.setData({mode:'photo',handError:'',selectedHand:null,handReady:false})},
   comingSoon(){this.setData({mode:'photo',aligned:false});},
   useDesign(design){
     this.design=design;store.selected(design)

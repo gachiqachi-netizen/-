@@ -20,25 +20,13 @@ function wristRing(hand, beads, spin = 0) {
   const ppm = Number(hand.wristWidthPx) / Number(hand.wristWidthMm)
   const total = beads.reduce((sum, bead) => sum + Number(bead.mm), 0)
   const ratio = Number(hand.ry) / Number(hand.rx)
-  // A unit ellipse is sampled by arc length so unequal beads retain their real spacing.
-  const steps = 2048, lengths = [0]
-  for (let i = 1; i <= steps; i++) {
-    const t = (i - .5) * TAU / steps
-    lengths[i] = lengths[i - 1] + Math.hypot(Math.sin(t), ratio * Math.cos(t)) * TAU / steps
-  }
-  const rx = total * ppm / lengths[steps], ry = rx * ratio
-  function angleAt(distance) {
-    const target = ((distance % total) + total) % total * lengths[steps] / total
-    let lo = 0, hi = steps
-    while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (lengths[mid] < target) lo = mid + 1; else hi = mid }
-    const prev = Math.max(0, lo - 1), part = (target - lengths[prev]) / (lengths[lo] - lengths[prev] || 1)
-    return (prev + part) * TAU / steps
-  }
+  // Beads occupy a 3D circle; only its projection onto the photo is elliptical.
+  const rx = total * ppm / TAU, ry = rx * ratio
   const rotation = Number(hand.angle) * Math.PI / 180
   const c = Math.cos(rotation), s = Math.sin(rotation)
   let distance = 0
   return beads.map(bead => {
-    const mm = Number(bead.mm), phase = angleAt(distance + mm / 2 + Number(spin || 0) / TAU * total)
+    const mm = Number(bead.mm), phase = TAU * (distance + mm / 2) / total + Number(spin || 0)
     distance += mm
     const z = Math.sin(phase), x0 = rx * Math.cos(phase), y0 = ry * z
     return { x: Number(hand.cx) + x0 * c - y0 * s, y: Number(hand.cy) + x0 * s + y0 * c,

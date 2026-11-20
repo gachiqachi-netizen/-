@@ -6,15 +6,18 @@ const { pickTryonDesign } = require('./selection')
 const braceletStyle = require('../../components/bracelet/style')
 const { photoLayout } = require('./photo-layout')
 const { validateHands } = require('../../utils/wrist-ring')
+const {recognizePhoto,defaultEllipse}=require('./my-hand')
 const SKINS = ['#e9c2a6','#d7ad91','#b98462','#80543d']
 Page({
-  data: { showDesigns:false, showModes:false, designName:'', designChoices:[], aligned:false, fromOrder:false, mode:'hand', hands:[], selectedHand:null, spin:0, handReady:false, handError:'', photo:'', width:320, height:400, size:42, angle:0, flatten:28, hideBack:false, photoFallback:false, photoReady:false, xpos:0, ypos:0, saving:false, error:'', skin:SKINS[1], skins:SKINS, catalog:[], beads:[], wrist:15, length:'--', fit:'', price:'--', missing:0, modelError:false },
+  data: { showDesigns:false, showModes:false, designName:'', designChoices:[], aligned:false, fromOrder:false, mode:'photo', hands:[], selectedHand:null, spin:0, handReady:false, handError:'', photo:'', myHand:null, recognizing:false, modelProgress:0, recognitionHint:'', width:320, height:400, size:42, angle:0, flatten:28, hideBack:false, photoFallback:false, photoReady:false, xpos:0, ypos:0, saving:false, error:'', skin:SKINS[1], skins:SKINS, catalog:[], beads:[], wrist:15, length:'--', fit:'', price:'--', missing:0, modelError:false },
+  onUnload(){this._myHandClosed=true;this._photoRequest=(this._photoRequest||0)+1;if(this._myHandModelControl)this._myHandModelControl.cancel()},
   onLoad(options={}) {
     const current=store.current(), saved=store.list().filter(d=>d.beads&&d.beads.length)
     const width=Math.max(200,wx.getSystemInfoSync().windowWidth)
     this.x=width/2;this.y=width*.7
     this.setData({width,height:Math.round(width*1.25),xpos:this.x,ypos:this.y,fromOrder:options.from==='order'})
-    this.loadHands()
+    // Model-hand data and rendering stay available for a later launch, but no
+    // placeholder hand is loaded or shown as the entry experience.
     api.catalog().then(c=>{
       this.catalogData=c
       const catalog=c.beads||[]
@@ -46,7 +49,7 @@ Page({
   spinHand(e){this.setData({spin:this.data.spin+e.detail.delta})},
   handRendered(){if(!this.data.handReady)this.setData({handReady:true})},
   handUnavailable(){this.setData({handError:'模特手暂时无法显示，请再试一次'})},
-  comingSoon(){toast.show({text:'即将上线'})},
+  comingSoon(){this.setData({mode:'photo',aligned:false});},
   useDesign(design){
     this.design=design;store.selected(design)
     const stats=logic.stats(design.beads,this.catalogData.beads||[],design.wrist||15)
@@ -67,17 +70,32 @@ Page({
   saveOrChoose(){if(this.data.aligned)this.saveImage();else this.choose()},
   choose(e) {
     if(!this.design)return toast.show({ text: '请先设计手串' })
+    if(e&&e.currentTarget&&e.currentTarget.dataset.source==='camera')return this.setData({cameraOpen:true})
     wx.chooseMedia({count:1,mediaType:['image'],sourceType:e&&e.currentTarget&&e.currentTarget.dataset.source?[e.currentTarget.dataset.source]:['camera','album'],success:r=>{
       const f=r.tempFiles&&r.tempFiles[0];if(!f)return
-      wx.getImageInfo({src:f.tempFilePath,success:info=>{
+      this.acceptPhoto(f.tempFilePath)
+    },fail:err=>{if(err&&err.errMsg&&!/cancel/i.test(err.errMsg))this.setData({error:'无法打开相机或相册，请检查权限。'})}})
+  },
+  closeCamera(){this.setData({cameraOpen:false})},
+  takePhoto(){wx.createCameraContext().takePhoto({quality:'high',success:r=>{this.setData({cameraOpen:false});this.acceptPhoto(r.tempImagePath)},fail:()=>this.setData({error:'拍照失败，请重试。'})})},
+  acceptPhoto(path){
+      wx.getImageInfo({src:path,success:info=>{
         if(!info.width||!info.height)return this.setData({error:'照片无法读取，请重新选择。'})
         this.imageInfo=info
         const windowInfo=wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync()
         const {width,height,x,y,size,flatten}=photoLayout(info.width,info.height,windowInfo.windowWidth,windowInfo.windowHeight)
         this.x=x;this.y=y
-        this.setData({photo:f.tempFilePath,width,height,size,flatten,xpos:this.x,ypos:this.y,photoReady:false,photoFallback:false,aligned:false,error:''},()=>this.draw())
+        const request=this._photoRequest=(this._photoRequest||0)+1
+        if(this._myHandModelControl)this._myHandModelControl.cancel()
+        this.setData({photo:path,width,height,size,flatten,xpos:this.x,ypos:this.y,photoReady:false,photoFallback:false,aligned:false,error:'',recognitionHint:'',recognizing:true,modelProgress:0,myHand:null},async()=>{
+          try{
+            const pose=await recognizePhoto(this,path,width,height,this.data.wrist,percent=>{if(request===this._photoRequest)this.setData({modelProgress:percent})})
+            if(request!==this._photoRequest||this._myHandClosed)return
+            this.setData({myHand:{...(pose||defaultEllipse(width,height,this.data.wrist)),photo:path},recognizing:false,
+              recognitionHint:pose?'':'没认出手腕，拖一下对准'})
+          }catch(err){if(request!==this._photoRequest||this._myHandClosed)return;this.setData({myHand:{...defaultEllipse(width,height,this.data.wrist),photo:path},recognizing:false,recognitionHint:'没认出手腕，拖一下对准'})}
+        })
       },fail:()=>this.setData({error:'照片无法读取，请重新选择。'})})
-    },fail:err=>{if(err&&err.errMsg&&!/cancel/i.test(err.errMsg))this.setData({error:'无法打开相机或相册，请检查权限。'})}})
   },
   touchStart(e){const t=e.touches[0];if(t)this.touch={x:t.x,y:t.y}},
   touchMove(e){const t=e.touches[0];if(!t||!this.touch)return;this.x=Math.max(0,Math.min(this.data.width,this.x+t.x-this.touch.x));this.y=Math.max(0,Math.min(this.data.height,this.y+t.y-this.touch.y));this.touch={x:t.x,y:t.y};this.draw()},
@@ -87,6 +105,8 @@ Page({
   photoScale(e){const ratio=Number(e.detail.ratio)||1;this.setData({size:Math.max(8,Math.min(95,this.data.size*ratio))});this.align()},
   photoUnavailable(){this.setData({photoFallback:true,photoReady:false},()=>this.draw())},
   photoLoaded(){if(!this.data.photoReady)this.setData({photoReady:true})},
+  myHandMove(e){const h=this.data.myHand;if(!h)return;this.setData({myHand:{...h,cx:Math.max(0,Math.min(this.data.width,h.cx+e.detail.dx)),cy:Math.max(0,Math.min(this.data.height,h.cy+e.detail.dy))},aligned:true})},
+  myHandTransform(e){const h=this.data.myHand;if(!h)return;const ratio=Math.max(.5,Math.min(2,e.detail.ratio||1));this.setData({myHand:{...h,rx:h.rx*ratio,ry:h.ry*ratio,angle:h.angle+(e.detail.angle||0)},aligned:true})},
   sizeChange(e){this.setData({size:Number(e.detail.value)});this.draw()},
   angleChange(e){this.setData({angle:Number(e.detail.value)});this.draw()},
   flattenChange(e){this.setData({flatten:Number(e.detail.value)});this.draw()},
@@ -117,6 +137,13 @@ Page({
   },
   watermark(ctx,w,h){ctx.setFillStyle('#111111');ctx.setTextAlign('right');ctx.setFontSize(13);ctx.fillText('珠养养',w-14,h-25);ctx.setFontSize(7);ctx.fillText('ZHU YANG YANG',w-14,h-12)},
   saveImage(){
+    if(this.data.mode==='photo'&&this.data.myHand){
+      const layer=this.selectComponent('#myHandTryon');if(!layer||this.data.saving)return
+      this.setData({saving:true});return layer.exportImage((err,path)=>{
+        if(err)return this.setData({saving:false,error:'图片生成失败，请重试。'})
+        wx.saveImageToPhotosAlbum({filePath:path,success:()=>toast.show({text:'已保存到相册'}),fail:()=>this.setData({error:'没有相册权限，请去设置后重试'}),complete:()=>this.setData({saving:false})})
+      })
+    }
     if(this.data.mode==='hand'){
       if(this.data.saving||!this.data.handReady)return
       const layer=this.selectComponent('#wristTryon');if(!layer)return

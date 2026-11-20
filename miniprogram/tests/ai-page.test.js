@@ -90,3 +90,40 @@ test('时间行仅在隔五分钟或跨天出现', async () => {
     assert.ok(p.data.messages[8].time)
   } finally { Date.now = realNow }
 })
+
+test('单图选择、移除及隐私说明只出现一次', async () => {
+  saved.delete('cgz_ai_image_notice')
+  let notices = 0
+  wx.showModal = options => { notices++; options.success({ confirm: true }) }
+  wx.chooseMedia = options => options.success({ tempFiles: [{ tempFilePath: '/tmp/photo.jpg' }] })
+  const p = page()
+  await p.chooseImage()
+  assert.equal(p.data.imagePath, '/tmp/photo.jpg')
+  p.removeImage()
+  assert.equal(p.data.imagePath, '')
+  await p.chooseImage()
+  assert.equal(notices, 1)
+})
+
+test('只发图带默认文字和 image，回复展示 seen', async () => {
+  let sent
+  api.request = async (path, body) => { sent = body; return { plans: [{ name: '海风', beads: ['b'] }], message: '为你配好了。', seen: '看到浅蓝和米白，感觉清冷' } }
+  const p = page(); p.data.imagePath = '/tmp/photo.jpg'
+  p.imageData = async () => 'data:image/jpeg;base64,/9j/test'
+  await p.submit()
+  assert.equal(sent.text, '照这张图的感觉配一条')
+  assert.equal(sent.image, 'data:image/jpeg;base64,/9j/test')
+  assert.equal(p.data.messages[0].imagePath, '/tmp/photo.jpg')
+  assert.equal(p.data.messages[1].seen, '看到浅蓝和米白，感觉清冷')
+})
+
+test('看图不可用时保留图片与文字，不请求方案库', async () => {
+  let calls = 0
+  api.request = async () => { calls++; const error = new Error('暂时只能看文字，请去掉图片再发'); error.code = 'vision_unavailable'; throw error }
+  const p = page(); p.data.text = '清冷'; p.data.imagePath = '/tmp/photo.jpg'; p.imageData = async () => 'data:image/jpeg;base64,/9j/test'
+  await p.submit()
+  assert.equal(calls, 1)
+  assert.equal(p.data.text, '清冷')
+  assert.equal(p.data.imagePath, '/tmp/photo.jpg')
+  assert.equal(p.data.error, '暂时只能看文字')
+})

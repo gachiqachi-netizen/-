@@ -16,11 +16,11 @@ test('手围是横向快捷项的第一个 chip，其他快捷项仍能发送', 
   assert.match(wxss, /\.ai-quick-inner \{[^}]*padding: 0 var\(--sp-base\)/)
 })
 
-test('输入和发送同一行，键盘弹起时使用输入框自动避让', () => {
-  assert.match(wxml, /class="ai-input"[^>]*value="{{text}}"[^>]*confirm-type="send" adjust-position="{{true}}"[^>]*bindconfirm="submit"/)
-  assert.match(wxml, /class="ai-send [^>]*role="button" aria-label="发送" bindtap="submit"/)
-  assert.match(wxss, /\.ai-input \{[^}]*height: 80rpx;[^}]*border-radius: var\(--r-pill\)/)
-  assert.match(wxss, /\.ai-send \{[^}]*width: 80rpx; height: 80rpx; flex: none/)
+test('输入框占整行，操作按钮在框内下排', () => {
+  assert.match(wxml, /<textarea class="ai-input"[^>]*value="{{text}}"[^>]*auto-height[^>]*adjust-position="{{true}}"/)
+  assert.match(wxml, /class="ai-input-actions"[\s\S]*class="ai-add"[\s\S]*class="ai-send /)
+  assert.match(wxml, /aria-label="发送" bindtap="submit"/)
+  assert.match(wxss, /\.ai-input-box \{[^}]*border-radius: var\(--r-pill\)/)
   assert.doesNotMatch(wxml, /<c-composer/)
 })
 

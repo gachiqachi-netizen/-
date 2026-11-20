@@ -9,9 +9,10 @@
       <view wx:if="{{message.time}}" class="ai-time">{{message.time}}</view>
       <view wx:if="{{message.role === 'me'}}" class="ai-user-line">
         <text wx:if="{{message.failed}}" class="ai-retry" data-index="{{mi}}" bindtap="retry">重发</text>
-        <view class="ai-user" data-index="{{mi}}" bindtap="editMessage" bindlongpress="copyMessage">{{message.text}}</view>
+        <view class="ai-user" data-index="{{mi}}" bindtap="editMessage" bindlongpress="copyMessage"><image wx:if="{{message.imagePath}}" class="ai-user-image" src="{{message.imagePath}}" mode="aspectFill" data-path="{{message.imagePath}}" catchtap="previewImage" />{{message.text}}</view>
       </view>
       <view wx:else>
+        <view wx:if="{{message.seen}}" class="ai-seen">{{message.seen}}</view>
         <view class="ai-answer" data-index="{{mi}}" bindlongpress="copyMessage">{{message.text}}</view>
         <view wx:if="{{message.results.length}}" class="ai-results">
           <view class="ai-result-top" data-message="{{mi}}" bindtap="nextCard">
@@ -36,7 +37,7 @@
       </view>
     </view>
     <view wx:if="{{busy}}" class="ai-wait"><view class="ai-loading"><c-skeleton shape="block" width="100%" ratio="2/1"/><c-skeleton shape="line" width="80%" font="body"/><c-skeleton shape="line" width="50%" font="caption"/></view></view>
-    <c-state wx:if="{{error}}" title="搭配暂时没完成" desc="{{error}}" action="再试一次" bind:action="retryLast" />
+    <view wx:if="{{error}}" class="ai-error">{{error}}</view>
     <view id="chat-end" />
   </scroll-view>
   <view class="ai-composer">
@@ -46,10 +47,13 @@
         <view class="c-chip ai-quick-item" wx:for="{{chips}}" wx:key="index" data-text="{{item}}" bindtap="example">{{item}}</view>
       </view>
     </scroll-view>
-    <view class="ai-input-row">
-      <input class="ai-input" value="{{text}}" placeholder="{{hasResults ? '还想怎么改，直接说' : '说说想要的感觉、送谁、预算…'}}" confirm-type="send" adjust-position="{{true}}" cursor-spacing="16" bindinput="input" bindconfirm="submit" />
-      <view class="ai-send {{!text || busy ? 'ai-send--off' : ''}}" role="button" aria-label="发送" bindtap="submit"><image src="/assets/icons/up-on.svg" /></view>
+    <view class="ai-photo-link" bindtap="openPhoto">想做一模一样的？去拍照做同款 ›</view>
+    <view class="ai-input-box">
+      <view wx:if="{{imagePath}}" class="ai-attachment"><image class="ai-thumb" src="{{imagePath}}" mode="aspectFill" data-path="{{imagePath}}" bindtap="previewImage" /><image class="ai-remove" src="/assets/icons/close.svg" role="button" aria-label="移除图片" bindtap="removeImage" /></view>
+      <textarea class="ai-input" value="{{text}}" placeholder="{{hasResults ? '还想怎么改，直接说' : '说说想要的感觉、送谁、预算'}}" auto-height maxlength="500" adjust-position="{{true}}" cursor-spacing="16" bindinput="input" />
+      <view class="ai-input-actions"><view class="ai-add" role="button" aria-label="添加图片" bindtap="chooseImage"><image src="/assets/icons/plus.svg" /></view><view class="ai-send {{(!text && !imagePath) || busy ? 'ai-send--off' : ''}}" role="button" aria-label="发送" bindtap="submit"><image src="/assets/icons/up-on.svg" /></view></view>
     </view>
   </view>
+  <privacy-popup scene="拍照或选择照片" />
   <c-toast />
 </view>

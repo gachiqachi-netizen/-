@@ -189,3 +189,6 @@
 | TRY-1 | agent/TRY-1-photo-tryon | followups-tryon.md |  | Codex |  |  |
 | TRY-2 | agent/TRY-2-my-hand | followups-tryon.md | TRY-1 | Codex |  |  |
 | U42 | agent/U42-workbench-menu | followups-1119.md | U41 | 任何 |  |  |
+| AI-2 | agent/AI-2-photo-match | followups-ai.md |  | Codex | AI-1a |  |
+| AI-1a | agent/AI-1a-chat-image-api | followups-ai.md | AI-2 | Codex |  |  |
+| AI-1b | agent/AI-1b-chat-image-ui | followups-ai.md |  | Codex |  |  |

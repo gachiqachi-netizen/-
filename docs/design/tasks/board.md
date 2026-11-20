@@ -1,7 +1,7 @@
 # 任务看板
 
 > 自动生成，别手改。更新：`git fetch origin --prune && python3 tools/board.py`。审核每合并一次都会重新生成并推送。
-> 总共 168 张（第一波之外），已完成 151 张。
+> 总共 171 张（第一波之外），已完成 151 张。
 
 ## 在做或待审（1）
 
@@ -9,7 +9,7 @@
 |---|---|---|
 | C5b | 语音和照片 | 分支上有提交，交了就告诉审核 |
 
-## 现在能派（5）
+## 现在能派（7）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
@@ -18,6 +18,8 @@
 | H7 | 导入交流素材里的全部珠子 |  |
 | H8 | 后端 HTTP 测试不走系统代理 | 卡片待修：71 行环境变量不存在：NO_PROXY；75 行环境变量不存在：HTTP_PROXY；75 行环境变量不存在：HTTPS_PROXY |
 | TRY-1 | 照片试戴渲染组件 + 模特手 | 卡片待修：21 行路径不存在：tools/hand-tracker/tryon-hands.example.json；25 行路径不存在：docs/reports/TRY-1-assets/ |
+| AI-2 | 拍照做同款：两步识别 + 每种珠子 3 个候选 | 卡片待修：27 行路径不存在：server/photo_match.py；38 行路径不存在：docs/reports/AI-2-assets/ |
+| AI-1b | 前台：输入区“+”发图、气泡显示图片和“看到了什么” | 卡片待修：73 行路径不存在：docs/reports/AI-1b-assets/ |
 
 ### 提示词（一张卡一个对话，整段复制）
 
@@ -76,7 +78,29 @@
 
 </details>
 
-## 等前面的卡（9）
+<details><summary>AI-2 拍照做同款：两步识别 + 每种珠子 3 个候选</summary>
+
+```
+你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
+这次直接领 AI-2（拍照做同款：两步识别 + 每种珠子 3 个候选，卡在 docs/design/tasks/followups-ai.md，先读文件开头的共同规矩，再读 AI-2 这一节）。
+从最新的 origin/integration/2026-11 开新目录 ~/chuan-AI-2，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/AI-2-photo-match，不要直接推 integration。
+交付后回复“AI-2 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
+```
+
+</details>
+
+<details><summary>AI-1b 前台：输入区“+”发图、气泡显示图片和“看到了什么”</summary>
+
+```
+你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
+这次直接领 AI-1b（前台：输入区“+”发图、气泡显示图片和“看到了什么”，卡在 docs/design/tasks/followups-ai.md，先读文件开头的共同规矩，再读 AI-1b 这一节）。
+从最新的 origin/integration/2026-11 开新目录 ~/chuan-AI-1b，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/AI-1b-chat-image-ui，不要直接推 integration。
+交付后回复“AI-1b 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
+```
+
+</details>
+
+## 等前面的卡（10）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
@@ -89,6 +113,7 @@
 | U41 | 加珠动效：沿轨道滑入 | 等 U40 |
 | TRY-2 | 我的手：引导拍照 + 自动对位 + 微调 | 等 TRY-1 |
 | U42 | 工作台“更多”精简，“保存”放到底部栏 | 等 U41 |
+| AI-1a | 后端：对话接口收图片 | 等 AI-2 |
 
 ## 等负责人（2）
 

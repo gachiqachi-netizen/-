@@ -25,7 +25,7 @@ test('就用当前手围写入确认标记，下次不弹',()=>{
   try{const next=page();next.onShow();assert.equal(next.data.firstWristOpen,false)}
   finally{store.current=oldCurrent;api.catalog=oldCatalog;api.request=oldRequest}
 })
-test('量一下进入测量页，回来按新手围重排',async()=>{
+test('量一下进入测量页，回来可按新手围选择重排',async()=>{
   const p=page();p.setData({design:{...design,beads:['a']}});p.measureFirstWrist()
   assert.equal(global.lastWristUrl,'/pages/wrist/wrist?source=editor');assert.equal(p.pendingWristReflow,true)
 })

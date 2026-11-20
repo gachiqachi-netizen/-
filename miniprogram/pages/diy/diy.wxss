@@ -78,3 +78,9 @@
 .bead-visual .bead-photo,.picker-bead{width:80rpx;height:80rpx}
 .picked-photo,.picked-bead{width:64rpx;height:64rpx}
 .feedback-row{border:0}
+.bar-actions{width:100%;min-width:0;display:flex;align-items:center;gap:8rpx}
+.bar-actions button{margin:0;min-width:0;box-sizing:border-box;white-space:nowrap}
+.bar-actions .bar-save{flex:0 0 200rpx}
+.bar-actions .finish{width:auto;flex:1}
+.reflow-actions{display:flex;gap:var(--sp-tight)}
+.reflow-actions button{flex:1;min-width:0;margin:0}

@@ -12,17 +12,35 @@ Component({
     },
     touchEnd(){this.touch=null},
     exportImage(callback){if(!this.canvas)return callback(new Error('画布尚未准备好'));wx.canvasToTempFilePath({canvas:this.canvas,success:r=>callback(null,r.tempFilePath),fail:callback},this)},
-    image(src){return new Promise((resolve,reject)=>{
-      if(!src)return resolve(null)
-      wx.getImageInfo({src,success:info=>{const image=this.canvas.createImage();image.onload=()=>resolve(image);image.onerror=reject;image.src=info.path||src},fail:reject})
-    })},
-    render(){if(!this.readyCanvas||!this.properties.hand)return
-      if(this.rendering){this.pending=true;return}this.rendering=true
-      this.createSelectorQuery().select('#wristCanvas').fields({node:true,size:true}).exec(async results=>{
+    image(src){
+      if(!src)return Promise.resolve(null)
+      if(!this.imageCache)this.imageCache=new Map()
+      if(this.imageCache.has(src))return this.imageCache.get(src)
+      const task=new Promise((resolve,reject)=>wx.getImageInfo({src,success:info=>{
+        const image=this.canvas.createImage();image.onload=()=>resolve(image);image.onerror=reject;image.src=info.path||src
+      },fail:reject}))
+      this.imageCache.set(src,task)
+      return task
+    },
+    render(){
+      if(!this.readyCanvas||!this.properties.hand||this.frameRequested)return
+      this.frameRequested=true
+      const frame=()=>{this.frameRequested=false;this.drawFrame()}
+      if(this.canvas&&this.canvas.requestAnimationFrame)this.canvas.requestAnimationFrame(frame)
+      else this.createSelectorQuery().select('#wristCanvas').fields({node:true,size:true}).exec(results=>{
+        if(results&&results[0]&&results[0].node){this.canvas=results[0].node;this.canvas.requestAnimationFrame?this.canvas.requestAnimationFrame(frame):setTimeout(frame,16)}
+        else {this.frameRequested=false;this.triggerEvent('unavailable',{message:'画布不可用'})}
+      })
+    },
+    drawFrame(){if(this.rendering){this.pending=true;return}this.rendering=true
+      Promise.resolve().then(async()=>{
         try {
-          const item=results&&results[0];if(!item||!item.node)throw new Error('画布不可用')
-          const canvas=item.node,ctx=canvas.getContext('2d'),dpr=wx.getWindowInfo?wx.getWindowInfo().pixelRatio:wx.getSystemInfoSync().pixelRatio
-          this.canvas=canvas;canvas.width=Math.round(this.properties.width*(dpr||1));canvas.height=Math.round(this.properties.height*(dpr||1));ctx.scale(dpr||1,dpr||1)
+          const canvas=this.canvas;if(!canvas)throw new Error('画布不可用')
+          const ctx=canvas.getContext('2d'),dpr=wx.getWindowInfo?wx.getWindowInfo().pixelRatio:wx.getSystemInfoSync().pixelRatio
+          const pixelWidth=Math.round(this.properties.width*(dpr||1)),pixelHeight=Math.round(this.properties.height*(dpr||1))
+          if(canvas.width!==pixelWidth||canvas.height!==pixelHeight){canvas.width=pixelWidth;canvas.height=pixelHeight}
+          ctx.setTransform(dpr||1,0,0,dpr||1,0,0)
+
           const hand=this.properties.hand,beads=this.properties.beads||[]
           const thumb=await this.image(hand.thumb||hand.photo).catch(()=>null)
           if(thumb){ctx.fillStyle='#f5f0eb';ctx.fillRect(0,0,this.properties.width,this.properties.height);ctx.drawImage(thumb,0,0,this.properties.width,this.properties.width*thumb.height/thumb.width)}

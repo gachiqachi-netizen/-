@@ -25,6 +25,9 @@ Page({
     const source=global&&global.workbenchReturn
     this.setData({returnSource:source||(keepSource?this.data.returnSource:null)})
     if(global)delete global.workbenchReturn
+    this.pendingWorkbenchCategory=global&&global.pendingWorkbenchCategory
+    if(global)delete global.pendingWorkbenchCategory
+    this.setData({cat:'all',size:'all'})
     this.returningFromChild=false
     if(global&&global.pendingWorkbenchBeadKbId){this.pendingBeadKbId=global.pendingWorkbenchBeadKbId;delete global.pendingWorkbenchBeadKbId}
     const info=wx.getSystemInfoSync?wx.getSystemInfoSync():{windowWidth:375,statusBarHeight:44};const menu=wx.getMenuButtonBoundingClientRect?wx.getMenuButtonBoundingClientRect():{top:(info.statusBarHeight||44)+6,height:32,bottom:(info.statusBarHeight||44)+38};this.setData({screenW:info.windowWidth||375,statusBarHeight:info.statusBarHeight||44,menuTop:menu.top,menuHeight:menu.height,navHeight:(menu.bottom||menu.top+menu.height)+6})
@@ -34,7 +37,7 @@ Page({
     const wristConfirmed=!!wx.getStorageSync('cgz_wrist_confirmed')
     const reflowPromptOpen=!!(this.pendingWristReflow&&d.beads.length&&Number(d.wrist)!==this.pendingWristFrom)
     this.pendingWristReflow=false;this.pendingWristFrom=null
-    this.setData({design:d,catalog:localCatalog,catalogReady:false,ready:false,wristConfirmed,firstWristOpen:!wristConfirmed,reflowPromptOpen});this.update();api.catalog().then(c=>{if(!this.data.design||this.data.design.id!==d.id)return;const beads=c.beads||[], cats=[...new Set(beads.map(b=>b.mat==='stone'||b.mat==='jade'?'jade-stone':b.mat))].sort((a,b)=>['crystal','jade-stone','wood','bodhi','metal'].indexOf(a)-['crystal','jade-stone','wood','bodhi','metal'].indexOf(b)).map(id=>({id,name:id==='jade-stone'?'玉石':CATS[id]||id}));this.setData({catalog:beads,pricing:c.pricing||{},cats,catalogReady:true,error:''});this.update();this.refreshStackPreview();this.focusKbBead();this.setData({ready:true})}).catch(e=>this.setData({catalogReady:false,error:e.message}))
+    this.setData({design:d,catalog:localCatalog,catalogReady:false,ready:false,wristConfirmed,firstWristOpen:!wristConfirmed,reflowPromptOpen});this.update();api.catalog().then(c=>{if(!this.data.design||this.data.design.id!==d.id)return;const beads=c.beads||[], cats=[...new Set(beads.map(b=>b.mat==='stone'||b.mat==='jade'?'jade-stone':b.mat))].sort((a,b)=>['crystal','jade-stone','wood','bodhi','metal'].indexOf(a)-['crystal','jade-stone','wood','bodhi','metal'].indexOf(b)).map(id=>({id,name:id==='jade-stone'?'玉石':CATS[id]||id}));const category=cats.some(item=>item.id===this.pendingWorkbenchCategory)?this.pendingWorkbenchCategory:'all';this.pendingWorkbenchCategory=null;this.setData({catalog:beads,pricing:c.pricing||{},cats,cat:category,catalogReady:true,error:''});this.update();this.refreshStackPreview();this.focusKbBead();this.setData({ready:true})}).catch(e=>this.setData({catalogReady:false,error:e.message}))
     api.request('/kb/rules').then(r=>{if(Array.isArray(r.counts)){const counts=[...new Set(r.counts.filter(c=>c.count>=11&&c.count<=30&&c.confidence!=='low').map(c=>c.count))].sort((a,b)=>a-b);if(counts.length)this.setData({counts})}}).catch(()=>{})
   },
   confirmFirstWrist(){wx.setStorageSync('cgz_wrist_confirmed',true);this.setData({wristConfirmed:true,firstWristOpen:false})},

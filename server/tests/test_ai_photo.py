@@ -1,83 +1,78 @@
-"""B-9 拍照识别：置信度和失败原因（整理函数，模型用假 Provider 代替）"""
-import sys
+"""Photo description cleanup and deterministic catalog matching with a fake provider."""
 import os
+import sys
 import unittest
 from unittest import mock
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-import ai  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+import ai
+from photo_match import lab, delta_e, match_kind
 
 BEADS = [
-    {"id": "a", "name": "粉晶", "mm": 8, "mat": "crystal", "price": 3, "tags": []},
-    {"id": "b", "name": "白水晶", "mm": 8, "mat": "crystal", "price": 2, "tags": []},
-    {"id": "m", "name": "银隔片", "mm": 6, "mat": "metal", "price": 1, "tags": []},
+    {'id':'pink8','name':'粉晶','mm':8,'mat':'crystal','c':['#f8c5cc','#e8a9b3']},
+    {'id':'pink10','name':'粉晶','mm':10,'mat':'crystal','c':['#f8c5cc','#e8a9b3']},
+    {'id':'pinkstone','name':'粉石','mm':8,'mat':'stone','c':['#f8c5cc','#e8a9b3']},
+    {'id':'silver','name':'银隔珠','mm':4,'mat':'metal','c':['#dddde0','#9999a0']},
 ]
 
+def kind(role='main', **changes):
+    value = {'role':role,'color':'#f8c5cc','colorName':'粉色','clarity':'translucent',
+             'pattern':'plain','material':'crystal','mmGuess':8,'count':16,'confidence':.8}
+    value.update(changes)
+    return value
 
 def photo_with(payload):
     class Provider:
-        name = "fake"
-
+        name='fake'
         def json(self, prompt, schema, image=None):
+            assert '目录' not in prompt
             return payload
-
-    with mock.patch.object(ai, "provider", return_value=Provider()):
+    with mock.patch.object(ai, 'provider', return_value=Provider()):
         return ai.photo(BEADS, None)
 
+class PhotoTest(unittest.TestCase):
+    def test_lab_and_delta_e(self):
+        self.assertAlmostEqual(lab('#ffffff')[0], 100, places=2)
+        self.assertLess(lab('#000000')[0], .01)
+        self.assertEqual(delta_e('#abcdef','#abcdef'), 0)
+        self.assertGreater(delta_e('#000000','#ffffff'), 99)
 
-class PhotoConfidenceTest(unittest.TestCase):
-    def test_识别结果带每种珠子的confidence(self):
-        out = photo_with({"ok": True, "seen": "粉色主珠配银隔片", "main": "a", "accent": "b", "metal": "m",
-                          "every": 4, "mainConfidence": 0.85, "accentConfidence": 0.4, "metalConfidence": 0.9})
-        self.assertTrue(out["ok"])
-        self.assertEqual({"main": 0.85, "accent": 0.4, "metal": 0.9}, out["confidence"])
+    def test_match_material_size_metal(self):
+        self.assertEqual(match_kind(kind(), BEADS)[0]['id'], 'pink8')
+        self.assertEqual(match_kind(kind(mmGuess=10), BEADS)[0]['id'], 'pink10')
+        self.assertTrue(all(x['id']=='silver' for x in match_kind(kind('metal',color='#dddde0',material='metal'),BEADS)))
 
-    def test_模型给不出confidence就是null不编(self):
-        out = photo_with({"ok": True, "seen": "粉色主珠", "main": "a", "accent": "", "metal": "",
-                          "every": 4})
-        self.assertIsNone(out["confidence"]["main"])
-        self.assertIsNone(out["confidence"]["accent"])
-        self.assertIsNone(out["confidence"]["metal"])
+    def test_photo_contract(self):
+        out=photo_with({'ok':True,'seen':'粉色主珠和银色隔珠','kinds':[kind(),kind('metal',color='#dddde0',material='metal')],
+                        'layout':{'symmetric':False,'every':4,'sequence':['main','main','metal']}})
+        self.assertTrue(out['ok'])
+        self.assertEqual(out['main'],'pink8')
+        self.assertEqual(out['metal'],'silver')
+        self.assertEqual(out['every'],4)
+        self.assertEqual(len(out['kinds'][0]['candidates']),3)
 
-    def test_乱给的confidence不采信(self):
-        for bad in ("0.9", 1.5, -0.2, True):
-            out = photo_with({"ok": True, "seen": "粉色主珠", "main": "a", "accent": "", "metal": "",
-                              "every": 4, "mainConfidence": bad})
-            self.assertIsNone(out["confidence"]["main"], f"confidence={bad!r} 应被丢弃")
+    def test_cleanup(self):
+        out=photo_with({'ok':True,'seen':'粉色','kinds':[kind(mmGuess=50,count=-5,confidence='0.8'),
+                         kind(role='wrong'),kind('accent',color='bad')],
+                         'layout':{'symmetric':'yes','every':99,'sequence':['wrong','main']*40}})
+        self.assertTrue(out['ok'])
+        self.assertEqual(len(out['kinds']),1)
+        self.assertIsNone(out['kinds'][0]['mmGuess'])
+        self.assertEqual(out['kinds'][0]['count'],0)
+        self.assertIsNone(out['kinds'][0]['confidence'])
+        self.assertEqual(out['layout'],{'symmetric':False,'every':None,'sequence':['main']*15})
 
-    def test_没识别出来的珠子不带confidence(self):
-        out = photo_with({"ok": True, "seen": "粉色主珠", "main": "a", "accent": "", "metal": "",
-                          "every": 4, "mainConfidence": 0.8, "accentConfidence": 0.9})
-        self.assertEqual(0.8, out["confidence"]["main"])
-        self.assertIsNone(out["confidence"]["accent"])
+    def test_malformed_nested_values_do_not_crash(self):
+        out=photo_with({'ok':True,'seen':'粉色','kinds':[kind(clarity=[],pattern={},material=[],confidence=float('nan'))],
+                        'layout':{'sequence':[{},'main'],'every':True}})
+        self.assertTrue(out['ok'])
+        self.assertIsNone(out['kinds'][0]['confidence'])
+        self.assertEqual(out['layout']['sequence'],['main'])
 
-    def test_只返回main的把握时另外两个是None(self):
-        out = photo_with({"ok": True, "seen": "粉色主珠", "main": "a", "accent": "", "metal": "",
-                          "every": 4, "mainConfidence": 0.7})
-        self.assertTrue(out["ok"])
-        self.assertEqual(out["main"], "a")
-        self.assertEqual(0.7, out["confidence"]["main"])
-        self.assertIsNone(out["confidence"]["accent"])
-        self.assertIsNone(out["confidence"]["metal"])
+    def test_failure(self):
+        out=photo_with({'ok':False,'seen':'','reason':'dark'})
+        self.assertEqual(out['reason'],'dark')
+        out=photo_with({'ok':True,'seen':'','kinds':[],'layout':{}})
+        self.assertEqual(out['reason'],'unknown_beads')
 
-    def test_整体失败带模型给的reason(self):
-        out = photo_with({"ok": False, "seen": "", "main": "", "accent": "", "metal": "",
-                          "every": 4, "reason": "dark"})
-        self.assertFalse(out["ok"])
-        self.assertEqual("dark", out["reason"])
-
-    def test_ok为false但没给reason按原意归no_bracelet(self):
-        out = photo_with({"ok": False, "seen": "", "main": "", "accent": "", "metal": "", "every": 4})
-        self.assertFalse(out["ok"])
-        self.assertEqual("no_bracelet", out["reason"])
-
-    def test_认不出料包珠子整体失败不再抛错(self):
-        out = photo_with({"ok": True, "seen": "一种没见过的石头", "main": "invented-id", "accent": "",
-                          "metal": "", "every": 4, "mainConfidence": 0.3})
-        self.assertFalse(out["ok"])
-        self.assertEqual("unknown_beads", out["reason"])
-
-
-if __name__ == "__main__":
-    unittest.main()
+if __name__=='__main__': unittest.main()

@@ -12,6 +12,7 @@ BEADS = [
     {'id':'pink8','name':'粉晶','mm':8,'mat':'crystal','c':['#f8c5cc','#e8a9b3']},
     {'id':'pink10','name':'粉晶','mm':10,'mat':'crystal','c':['#f8c5cc','#e8a9b3']},
     {'id':'pinkstone','name':'粉石','mm':8,'mat':'stone','c':['#f8c5cc','#e8a9b3']},
+    {'id':'strawberry','name':'草莓晶','mm':8,'mat':'crystal','c':['#eaa9b5','#c86f83']},
     {'id':'silver','name':'银隔珠','mm':4,'mat':'metal','c':['#dddde0','#9999a0']},
 ]
 
@@ -41,6 +42,24 @@ class PhotoTest(unittest.TestCase):
         self.assertEqual(match_kind(kind(), BEADS)[0]['id'], 'pink8')
         self.assertEqual(match_kind(kind(mmGuess=10), BEADS)[0]['id'], 'pink10')
         self.assertTrue(all(x['id']=='silver' for x in match_kind(kind('metal',color='#dddde0',material='metal'),BEADS)))
+
+    def test_three_candidates_have_distinct_names_and_nearest_variant(self):
+        beads = [
+            {'id':f'pink{mm}','name':'粉晶','mm':mm,'mat':'crystal','c':['#f8c5cc','#e8a9b3']}
+            for mm in (6, 8, 10)
+        ] + [
+            {'id':'strawberry8','name':'草莓晶','mm':8,'mat':'crystal','c':['#eaa9b5','#c86f83']},
+            {'id':'purple8','name':'紫水晶','mm':8,'mat':'crystal','c':['#dfb7e3','#b890d1']},
+        ]
+        names = {bead['id']:bead['name'] for bead in beads}
+        for guess, expected in ((6,'pink6'), (10,'pink10'), (None,'pink8')):
+            candidates = match_kind(kind(mmGuess=guess), beads)
+            self.assertEqual(len(candidates), 3)
+            self.assertEqual({names[item['id']] for item in candidates}, {'粉晶','草莓晶','紫水晶'})
+            self.assertEqual(next(item['id'] for item in candidates if names[item['id']]=='粉晶'), expected)
+        without_eight = [bead for bead in beads if bead['id'] != 'pink8']
+        candidates = match_kind(kind(mmGuess=None), without_eight)
+        self.assertEqual(next(item['id'] for item in candidates if names[item['id']]=='粉晶'), 'pink6')
 
     def test_photo_contract(self):
         out=photo_with({'ok':True,'seen':'粉色主珠和银色隔珠','kinds':[kind(),kind('metal',color='#dddde0',material='metal')],

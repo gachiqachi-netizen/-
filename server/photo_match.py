@@ -44,7 +44,11 @@ def match_kind(kind, beads):
     color = kind.get("color")
     material = kind.get("material")
     guess = kind.get("mmGuess")
-    scored = []
+    # Pick a size within each named variety before comparing varieties.
+    # The model's size estimate selects the variant; without one, show the
+    # standard 8 mm variant (or its nearest available size).
+    target_mm = guess if guess is not None else 8
+    by_name = {}
     for bead in beads:
         if (bead.get("mat") == "metal") != (role == "metal"):
             continue
@@ -66,6 +70,12 @@ def match_kind(kind, beads):
         size_score = max(0, 1 - abs(bead.get("mm", 0) - guess) / 12) if guess else 0
         score = COLOR_WEIGHT * color_score + MATERIAL_WEIGHT * material_score + SIZE_WEIGHT * size_score + NAME_WEIGHT * int(_name_bonus(kind, name))
         if score >= MIN_SCORE:
-            scored.append((score, abs(bead.get("mm", 0) - guess) if guess else 0, str(bead["id"])))
+            size = bead.get("mm", 0)
+            variant = (abs(size - target_mm), size, str(bead["id"]))
+            group = name or str(bead["id"])
+            previous = by_name.get(group)
+            if previous is None or variant < previous[0]:
+                by_name[group] = (variant, score)
+    scored = [(score, variant[0], variant[2]) for variant, score in by_name.values()]
     scored.sort(key=lambda row: (-row[0], row[1], row[2]))
     return [{"id": id_, "score": round(score, 3)} for score, _, id_ in scored[:3]]

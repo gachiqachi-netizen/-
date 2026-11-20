@@ -1,0 +1,6 @@
+{
+  "hands": [
+    {"id":"light","label":"偏白","photo":"/models/tryon-hands/v1/light.jpg","cutout":"/models/tryon-hands/v1/light-cutout.png","thumb":"/models/tryon-hands/v1/light-thumb.jpg","cx":375,"cy":480,"rx":170,"ry":55,"angle":0,"wristWidthPx":300,"wristWidthMm":60},
+    {"id":"warm","label":"自然","photo":"/models/tryon-hands/v1/warm.jpg","cutout":"/models/tryon-hands/v1/warm-cutout.png","thumb":"/models/tryon-hands/v1/warm-thumb.jpg","cx":375,"cy":480,"rx":170,"ry":55,"angle":0,"wristWidthPx":300,"wristWidthMm":60}
+  ]
+}

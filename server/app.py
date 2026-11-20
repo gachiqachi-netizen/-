@@ -421,10 +421,10 @@ class Handler(BaseHTTPRequestHandler):
             if path.startswith("/models/"):   # 本地开发：AR 手部模型由本机提供，上线后改用对象存储
                 rel = os.path.normpath(path[len("/models/"):]).replace("\\", "/")
                 fp = os.path.join(MODELS, rel)
-                if rel.startswith("..") or os.path.isabs(rel) or not os.path.isfile(fp) or rel.rsplit(".", 1)[-1] not in ("json", "bin"):
+                if rel.startswith("..") or os.path.isabs(rel) or not os.path.isfile(fp) or rel.rsplit(".", 1)[-1] not in (("json", "bin", "png", "jpg", "jpeg", "webp") if rel.startswith("tryon-hands/") else ("json", "bin")):
                     return self.send(404, {"error": "not_found"})
                 with open(fp, "rb") as f:
-                    return self.send(200, f.read(), "application/json" if fp.endswith(".json") else "application/octet-stream")
+                    return self.send(200, f.read(), {"json": "application/json", "png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "webp": "image/webp"}.get(fp.rsplit(".", 1)[-1], "application/octet-stream"))
             if path == "/api/catalog":
                 import hashlib
                 def build():

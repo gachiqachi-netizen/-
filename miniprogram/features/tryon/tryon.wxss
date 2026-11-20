@@ -2,3 +2,12 @@
 .empty-stage button{flex:none;min-height:var(--h-btn)}
 
 .hand-stage{width:100%;min-height:65vh;background:var(--c-bg)}.hand-choices{display:flex;justify-content:center;gap:12rpx;padding:22rpx}.hand-choice{padding:10rpx 20rpx;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text-2)}.hand-choice.active{background:var(--c-text);color:var(--c-bg)}.hand-hint{text-align:center;color:var(--c-text-2);padding:20rpx}.hand-error{text-align:center;padding:80rpx 30rpx;color:var(--c-danger)}.hand-error button{margin-top:20rpx}
+.compute-canvas{position:fixed;left:-10000px;top:0;width:1px;height:1px;pointer-events:none}
+.camera-stage{position:absolute;inset:0;width:100%;height:100%;min-height:65vh;overflow:hidden;background:var(--c-text)}
+.camera-view{width:100%;height:100%}
+.wrist-guide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--c-bg);pointer-events:none}
+.wrist-outline{width:30%;height:42%;border:3rpx dashed var(--c-bg);border-radius:var(--r-pill);transform:rotate(-45deg);margin-bottom:32rpx}
+.guide-pose{font-size:var(--fs-caption);margin-top:8rpx}
+.camera-actions{position:absolute;bottom:28rpx;left:0;right:0;display:flex;align-items:center;justify-content:space-around;color:var(--c-bg)}
+.camera-shutter{border-radius:var(--r-pill);padding:24rpx 48rpx;background:var(--c-bg);color:var(--c-text)}
+.recognition-status{position:absolute;bottom:24rpx;left:0;right:0;text-align:center;color:var(--c-text-2);font-size:var(--fs-caption)}

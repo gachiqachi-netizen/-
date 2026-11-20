@@ -21,3 +21,20 @@ function smooth(previous,next){
  return {...next,x:previous.x+(next.x-previous.x)*k,y:previous.y+(next.y-previous.y)*k,size:previous.size+(next.size-previous.size)*k,angle:previous.angle+delta*k};
 }
 module.exports.smooth=smooth;
+
+// A single still image uses the same 0/5/17 landmarks as live placement.
+// Dimensions and coordinates are in the displayed, aspect-fitted image.
+function wristEllipse(points, fw, fh, width, height) {
+ if(!Array.isArray(points)||points.length!==21||![fw,fh,width,height].every(v=>Number.isFinite(v)&&v>0))return null;
+ const [w,i,p]=[points[0],points[5],points[17]];
+ if(![w,i,p].every(v=>Array.isArray(v)&&v.length>=2&&v.slice(0,2).every(Number.isFinite)))return null;
+ const scale=Math.min(width/fw,height/fh),dx=(width-fw*scale)/2,dy=(height-fh*scale)/2;
+ const mx=(i[0]+p[0])/2,my=(i[1]+p[1])/2,vx=mx-w[0],vy=my-w[1];
+ const palm=Math.hypot(i[0]-p[0],i[1]-p[1]);
+ if(Math.hypot(vx,vy)<3||palm<3)return null;
+ const wristWidthPx=palm*1.15*scale;
+ return {cx:(w[0]-vx*.16)*scale+dx,cy:(w[1]-vy*.16)*scale+dy,
+  rx:wristWidthPx*.62,ry:wristWidthPx*.34,
+  angle:Math.atan2(vy,vx)*180/Math.PI-90,wristWidthPx};
+}
+module.exports.wristEllipse=wristEllipse;

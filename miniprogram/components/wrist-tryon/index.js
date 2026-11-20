@@ -1,12 +1,22 @@
 const { wristRing } = require('../../utils/wrist-ring')
 const TAU = Math.PI * 2
+function hiddenBehindWrist(point,hand,scale=1){
+  if(point.front)return false
+  const angle=Number(hand.angle)*Math.PI/180,dx=point.x-Number(hand.cx)*scale,dy=point.y-Number(hand.cy)*scale
+  const across=dx*Math.cos(angle)+dy*Math.sin(angle)
+  return Math.abs(across)<Number(hand.wristWidthPx)*scale/2
+}
 Component({
-  properties: {hand:{type:Object,value:null},beads:{type:Array,value:[]},spin:{type:Number,value:0},width:{type:Number,value:375},height:{type:Number,value:500}},
-  observers: {'hand,beads,spin,width,height':function(){this.render()}},
+  properties: {hand:{type:Object,value:null},beads:{type:Array,value:[]},spin:{type:Number,value:0},width:{type:Number,value:375},height:{type:Number,value:500},noCutout:{type:Boolean,value:false}},
+  observers: {'hand,beads,spin,width,height,noCutout':function(){this.render()}},
   lifetimes: {ready(){this.readyCanvas=true;this.render()}},
   methods: {
-    touchStart(e){if(e.touches.length!==1)return;this.touch={x:e.touches[0].x,y:e.touches[0].y}},
-    touchMove(e){if(e.touches.length!==1){this.touch=null;return}const t=e.touches[0];if(!this.touch)return
+    touchStart(e){const touches=e.touches||[];if(this.properties.noCutout){this.touch=touches.length===1?{x:touches[0].x,y:touches[0].y}:touches.length===2?{pair:touches.map(t=>({x:t.x,y:t.y}))}:null;return}if(touches.length!==1)return;this.touch={x:touches[0].x,y:touches[0].y}},
+    touchMove(e){const touches=e.touches||[];if(this.properties.noCutout){
+      if(touches.length===1&&this.touch&&!this.touch.pair){const t=touches[0];this.triggerEvent('move',{dx:t.x-this.touch.x,dy:t.y-this.touch.y});this.touch={x:t.x,y:t.y}}
+      else if(touches.length===2&&this.touch&&this.touch.pair){const [a,b]=touches,p=this.touch.pair,oldD=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y),newD=Math.hypot(b.x-a.x,b.y-a.y);const oldA=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x),newA=Math.atan2(b.y-a.y,b.x-a.x);this.triggerEvent('transform',{ratio:oldD?newD/oldD:1,angle:(newA-oldA)*180/Math.PI});this.touch={pair:touches.map(t=>({x:t.x,y:t.y}))}}
+      else this.touch=touches.length===2?{pair:touches.map(t=>({x:t.x,y:t.y}))}:touches.length===1?{x:touches[0].x,y:touches[0].y}:null;return}
+      if(touches.length!==1){this.touch=null;return}const t=touches[0];if(!this.touch)return
       const dx=t.x-this.touch.x,dy=t.y-this.touch.y;this.touch={x:t.x,y:t.y}
       if(Math.abs(dx)>Math.abs(dy))this.triggerEvent('spin',{delta:dx/this.properties.width*TAU})
     },
@@ -44,7 +54,7 @@ Component({
           const hand=this.properties.hand,beads=this.properties.beads||[]
           const thumb=await this.image(hand.thumb||hand.photo).catch(()=>null)
           if(thumb){ctx.fillStyle='#f5f0eb';ctx.fillRect(0,0,this.properties.width,this.properties.height);ctx.drawImage(thumb,0,0,this.properties.width,this.properties.width*thumb.height/thumb.width)}
-          const sources=[hand.photo,hand.cutout,...beads.map(b=>b.photo||'')]
+          const sources=[hand.photo,this.properties.noCutout?'':hand.cutout,...beads.map(b=>b.photo||'')]
           const loaded=await Promise.all(sources.map(src=>this.image(src).catch(()=>null)))
           if(!thumb&&!loaded[0])throw new Error('模特照片无法读取')
           const base=loaded[0]||thumb,scale=this.properties.width/base.width,drawHeight=base.height*scale
@@ -55,7 +65,7 @@ Component({
             if(photo)ctx.drawImage(photo,p.x-radius,p.y-radius,p.size,p.size)
             else {ctx.fillStyle=(beads[index].c||[])[0]||'#b38c69';ctx.beginPath();ctx.arc(p.x,p.y,radius,0,TAU);ctx.fill();ctx.fillStyle='rgba(255,255,255,.28)';ctx.beginPath();ctx.arc(p.x-radius*.25,p.y-radius*.3,radius*.22,0,TAU);ctx.fill()}
             ctx.restore()}
-          points.forEach((p,i)=>{if(!p.front)paint(p,i,true)})
+          points.forEach((p,i)=>{if(!p.front&&(!this.properties.noCutout||!hiddenBehindWrist(p,hand,scale)))paint(p,i,true)})
           if(loaded[1])ctx.drawImage(loaded[1],0,0,this.properties.width,drawHeight)
           // Shadow follows the front semicircle; a small soft contact shadow anchors each bead.
           ctx.save();ctx.filter='blur(7px)';ctx.strokeStyle='rgba(0,0,0,.18)';ctx.lineWidth=Math.max(4,Number(hand.wristWidthPx)*scale*.035)
@@ -69,3 +79,4 @@ Component({
     }
   }
 })
+if(typeof module!=='undefined')module.exports={hiddenBehindWrist}

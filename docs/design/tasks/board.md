@@ -1,15 +1,17 @@
 # 任务看板
 
 > 自动生成，别手改。更新：`git fetch origin --prune && python3 tools/board.py`。审核每合并一次都会重新生成并推送。
-> 总共 172 张（第一波之外），已完成 151 张。
+> 总共 172 张（第一波之外），已完成 152 张。
 
-## 在做或待审（1）
+## 在做或待审（3）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
 | C5b | 语音和照片 | 分支上有提交，交了就告诉审核 |
+| TRY-1 | 照片试戴渲染组件 + 模特手 | 分支上有提交，交了就告诉审核 |
+| AI-2 | 拍照做同款：两步识别 + 每种珠子 3 个候选 | 分支上有提交，交了就告诉审核 |
 
-## 现在能派（8）
+## 现在能派（5）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
@@ -17,10 +19,7 @@
 | U34 | 工作台补齐入口：返回、保存、删除、清空、手围 |  |
 | H7 | 导入交流素材里的全部珠子 |  |
 | H8 | 后端 HTTP 测试不走系统代理 | 卡片待修：71 行环境变量不存在：NO_PROXY；75 行环境变量不存在：HTTP_PROXY；75 行环境变量不存在：HTTPS_PROXY |
-| TRY-1 | 照片试戴渲染组件 + 模特手 | 卡片待修：21 行路径不存在：tools/hand-tracker/tryon-hands.example.json；25 行路径不存在：docs/reports/TRY-1-assets/ |
-| AI-2 | 拍照做同款：两步识别 + 每种珠子 3 个候选 | 卡片待修：27 行路径不存在：server/photo_match.py；38 行路径不存在：docs/reports/AI-2-assets/ |
-| AI-1b | 前台：输入区“+”发图、气泡显示图片和“看到了什么” | 卡片待修：73 行路径不存在：docs/reports/AI-1b-assets/ |
-| H11 | Docker 构建：依赖层缓存 + 国内镜像 | 卡片待修：84 行环境变量不存在：PIP_INDEX_URL；84 行环境变量不存在：PIP_INDEX_URL；84 行环境变量不存在：PIP_INDEX_URL |
+| AI-1b | 前台：输入区“+”发图、气泡显示图片和“看到了什么” |  |
 
 ### 提示词（一张卡一个对话，整段复制）
 
@@ -68,28 +67,6 @@
 
 </details>
 
-<details><summary>TRY-1 照片试戴渲染组件 + 模特手</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 TRY-1（照片试戴渲染组件 + 模特手，卡在 docs/design/tasks/followups-tryon.md，先读文件开头的共同规矩，再读 TRY-1 这一节）。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-TRY-1，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/TRY-1-photo-tryon，不要直接推 integration。
-交付后回复“TRY-1 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
-
-<details><summary>AI-2 拍照做同款：两步识别 + 每种珠子 3 个候选</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 AI-2（拍照做同款：两步识别 + 每种珠子 3 个候选，卡在 docs/design/tasks/followups-ai.md，先读文件开头的共同规矩，再读 AI-2 这一节）。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-AI-2，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/AI-2-photo-match，不要直接推 integration。
-交付后回复“AI-2 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
-
 <details><summary>AI-1b 前台：输入区“+”发图、气泡显示图片和“看到了什么”</summary>
 
 ```
@@ -97,17 +74,6 @@
 这次直接领 AI-1b（前台：输入区“+”发图、气泡显示图片和“看到了什么”，卡在 docs/design/tasks/followups-ai.md，先读文件开头的共同规矩，再读 AI-1b 这一节）。
 从最新的 origin/integration/2026-11 开新目录 ~/chuan-AI-1b，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/AI-1b-chat-image-ui，不要直接推 integration。
 交付后回复“AI-1b 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
-```
-
-</details>
-
-<details><summary>H11 Docker 构建：依赖层缓存 + 国内镜像</summary>
-
-```
-你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
-这次直接领 H11（Docker 构建：依赖层缓存 + 国内镜像，卡在 docs/design/tasks/followups-infra.md，先读文件开头的共同规矩，再读 H11 这一节）。
-从最新的 origin/integration/2026-11 开新目录 ~/chuan-H11，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/H11-docker-cache，不要直接推 integration。
-交付后回复“H11 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
 ```
 
 </details>
@@ -134,6 +100,6 @@
 | B-13 | 物流轨迹 | 确认微信物流服务和物流查询插件已开通 |
 | C11b | 全流程回归 | 负责人在开发者工具和真机上把三条主流程逐屏走一遍（等 V3、W1、U16 都合并后） |
 
-## 已完成（151）
+## 已完成（152）
 
-A3、A7、A8a、A8b、A8c、A8d、A8e、A8f、K1、K2、K3、B-1、B-2、B-3、B-4、B-5、B-6、B-7、B-8、B-9、B-10、B-11a、B-11b、B-11c、B-12、B-16、B-17、B-18、B-19、B-20、B-21、B-22、B-23、B-24、B-25、B-15、B-14、A5c、C1p、C1a、C1b、C3a、C3b、C3c、C3d、C4a、C4b、C4c、C4d、C5a、C5c、C6a、C6b、C6c、C7a、C7b、C8a、C8b、C8c、C9a、C9b、C9c、C10a、C10b、C11a、D3a、D3b、D3c、D3d、D4、D5a、D5b、D6a、D6c、D6b、D7a、D7b、D7c、D8、KD1、KD2、F1、F2、F3、F4、F5、F6、F7、D9、A10、T1、U0、U1、U2、U3、U4、U5、U6、U7、U8、U9、U10、U12、U13、V1、V2、V2b、V3、V4、V5、U14、U15、W1、T2、P1、V6、AI1、AI2、R1、T3、U16、U17、U18、U19、U20、U21、U22、U23、U24、U25、U26、U27、U28、U29、U30、U31、U32、U33、V7a、V8、V9、V10、V7b、U11、H1、H2、H3、H4、H5、H6、U39
+A3、A7、A8a、A8b、A8c、A8d、A8e、A8f、K1、K2、K3、B-1、B-2、B-3、B-4、B-5、B-6、B-7、B-8、B-9、B-10、B-11a、B-11b、B-11c、B-12、B-16、B-17、B-18、B-19、B-20、B-21、B-22、B-23、B-24、B-25、B-15、B-14、A5c、C1p、C1a、C1b、C3a、C3b、C3c、C3d、C4a、C4b、C4c、C4d、C5a、C5c、C6a、C6b、C6c、C7a、C7b、C8a、C8b、C8c、C9a、C9b、C9c、C10a、C10b、C11a、D3a、D3b、D3c、D3d、D4、D5a、D5b、D6a、D6c、D6b、D7a、D7b、D7c、D8、KD1、KD2、F1、F2、F3、F4、F5、F6、F7、D9、A10、T1、U0、U1、U2、U3、U4、U5、U6、U7、U8、U9、U10、U12、U13、V1、V2、V2b、V3、V4、V5、U14、U15、W1、T2、P1、V6、AI1、AI2、R1、T3、U16、U17、U18、U19、U20、U21、U22、U23、U24、U25、U26、U27、U28、U29、U30、U31、U32、U33、V7a、V8、V9、V10、V7b、U11、H1、H2、H3、H4、H5、H6、U39、H11

@@ -5,14 +5,16 @@ const logic = require('../../pages/diy/logic')
 const { pickTryonDesign } = require('./selection')
 const braceletStyle = require('../../components/bracelet/style')
 const { photoLayout } = require('./photo-layout')
+const { validateHands } = require('../../utils/wrist-ring')
 const SKINS = ['#e9c2a6','#d7ad91','#b98462','#80543d']
 Page({
-  data: { showDesigns:false, showModes:false, designName:'', designChoices:[], aligned:false, fromOrder:false, mode:'photo', photo:'', width:320, height:400, size:42, angle:0, flatten:28, hideBack:false, photoFallback:false, photoReady:false, xpos:0, ypos:0, saving:false, error:'', skin:SKINS[1], skins:SKINS, catalog:[], beads:[], wrist:15, length:'--', fit:'', price:'--', missing:0, modelError:false },
+  data: { showDesigns:false, showModes:false, designName:'', designChoices:[], aligned:false, fromOrder:false, mode:'hand', hands:[], selectedHand:null, spin:0, handReady:false, handError:'', photo:'', width:320, height:400, size:42, angle:0, flatten:28, hideBack:false, photoFallback:false, photoReady:false, xpos:0, ypos:0, saving:false, error:'', skin:SKINS[1], skins:SKINS, catalog:[], beads:[], wrist:15, length:'--', fit:'', price:'--', missing:0, modelError:false },
   onLoad(options={}) {
     const current=store.current(), saved=store.list().filter(d=>d.beads&&d.beads.length)
     const width=Math.max(200,wx.getSystemInfoSync().windowWidth)
     this.x=width/2;this.y=width*.7
     this.setData({width,height:Math.round(width*1.25),xpos:this.x,ypos:this.y,fromOrder:options.from==='order'})
+    this.loadHands()
     api.catalog().then(c=>{
       this.catalogData=c
       const catalog=c.beads||[]
@@ -23,14 +25,33 @@ Page({
       const design=pickTryonDesign(current,saved,popular)
       if(design)this.useDesign(design)
       else this.setData({error:'暂时没有可试戴的手串'})
-      if(this.design)this.startBestMode()
+      // Model hand is the public entry; legacy modes remain available in code.
     }).catch(()=>this.setData({error:'材料信息暂不可用，请稍后重试'}))
   },
+  loadHands(){
+    const base=getApp().globalData.modelBase
+    if(!base)return this.setData({handError:'模特手暂时无法加载，请再试一次'})
+    this.setData({handError:''})
+    wx.request({url:base+'/tryon-hands/v1/hands.json',success:r=>{
+      try {if(r.statusCode!==200)throw new Error('not found')
+        const hands=validateHands(r.data).map(hand=>{
+          const absolute=src=>/^https?:\/\//.test(src)?src:src.startsWith('/models/')?base.replace(/\/models$/,'')+src:base+'/tryon-hands/v1/'+src
+          return {...hand,photo:absolute(hand.photo),cutout:absolute(hand.cutout),thumb:hand.thumb?absolute(hand.thumb):''}
+        })
+        this.setData({hands,selectedHand:hands[0],handReady:false})
+      }catch(_){this.setData({handError:'模特手暂时无法加载，请再试一次'})}
+    },fail:()=>this.setData({handError:'模特手暂时无法加载，请再试一次'})})
+  },
+  selectHand(e){const hand=this.data.hands[e.currentTarget.dataset.index];if(hand)this.setData({selectedHand:hand,handReady:false,spin:0})},
+  spinHand(e){this.setData({spin:this.data.spin+e.detail.delta})},
+  handRendered(){if(!this.data.handReady)this.setData({handReady:true})},
+  handUnavailable(){this.setData({handError:'模特手暂时无法显示，请再试一次'})},
+  comingSoon(){toast.show({text:'即将上线'})},
   useDesign(design){
     this.design=design;store.selected(design)
     const stats=logic.stats(design.beads,this.catalogData.beads||[],design.wrist||15)
     this.catalog=stats.map
-    this.setData({designName:design.name||'我的手串',beads:design.beads,wrist:design.wrist||15,missing:stats.missing,length:stats.missing?'--':(stats.length/10).toFixed(1),fit:stats.fit,price:stats.missing?'--':(stats.price+15).toFixed(2),error:''},()=>{if(this.data.photo&&this.data.photoFallback)this.draw()})
+    this.setData({handBeads:design.beads.map(id=>{const b=stats.map[id]||{};const photo=b.photoMd||b.photo||'';const base=getApp().globalData.apiBase||'';return {...b,mm:Number(b.mm)||8,photo:photo&&photo[0]==='/'?base+photo:photo}}),designName:design.name||'我的手串',beads:design.beads,wrist:design.wrist||15,missing:stats.missing,length:stats.missing?'--':(stats.length/10).toFixed(1),fit:stats.fit,price:stats.missing?'--':(stats.price+15).toFixed(2),error:''},()=>{if(this.data.photo&&this.data.photoFallback)this.draw()})
   },
   startBestMode(){
     if(wx.canIUse&&wx.canIUse('createVKSession'))this.openAR()
@@ -96,6 +117,14 @@ Page({
   },
   watermark(ctx,w,h){ctx.setFillStyle('#111111');ctx.setTextAlign('right');ctx.setFontSize(13);ctx.fillText('珠养养',w-14,h-25);ctx.setFontSize(7);ctx.fillText('ZHU YANG YANG',w-14,h-12)},
   saveImage(){
+    if(this.data.mode==='hand'){
+      if(this.data.saving||!this.data.handReady)return
+      const layer=this.selectComponent('#wristTryon');if(!layer)return
+      this.setData({saving:true});return layer.exportImage((err,path)=>{
+        if(err)return this.setData({saving:false,error:'图片生成失败，请重试。'})
+        wx.saveImageToPhotosAlbum({filePath:path,success:()=>toast.show({text:'已保存到相册'}),fail:()=>this.setData({error:'没有相册权限，请去设置后重试'}),complete:()=>this.setData({saving:false})})
+      })
+    }
     if(this.data.saving||!this.data.photo||this.data.mode!=='photo'||!this.data.photoReady)return
     this.setData({saving:true,error:''});const save=id=>wx.canvasToTempFilePath({canvasId:id,destWidth:Math.round(this.data.width*Math.min(2,(wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync()).pixelRatio||1)),destHeight:Math.round(this.data.height*Math.min(2,(wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync()).pixelRatio||1)),success:r=>wx.saveImageToPhotosAlbum({filePath:r.tempFilePath,success:()=>toast.show({ text: '已保存到相册' }),fail:()=>this.setData({error:'没有相册权限，请去设置后重试'}),complete:()=>this.setData({saving:false})}),fail:()=>this.setData({saving:false,error:'图片生成失败，请重试。'})},this)
     if(this.data.photoFallback)return this.draw(()=>{const w=this.data.width,h=this.data.height,ctx=wx.createCanvasContext('tryonCanvas',this);this.watermark(ctx,w,h);ctx.draw(true,()=>save('tryonCanvas'))})

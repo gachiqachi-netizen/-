@@ -1,20 +1,26 @@
 <view class="tryon-page">
-  <view class="stage" wx:if="{{mode==='photo'}}">
+  <view wx:if="{{mode==='hand'}}" class="hand-stage">
+    <view class="hand-choices"><text wx:for="{{hands}}" wx:key="id" class="hand-choice {{selectedHand.id===item.id?'active':''}}" data-index="{{index}}" bindtap="selectHand">{{item.label}}</text></view>
+    <wrist-tryon wx:if="{{selectedHand}}" id="wristTryon" hand="{{selectedHand}}" beads="{{handBeads}}" spin="{{spin}}" width="{{width}}" height="{{height}}" bind:spin="spinHand" bind:rendered="handRendered" bind:unavailable="handUnavailable"/>
+    <view wx:if="{{handError}}" class="hand-error"><text>{{handError}}</text><button class="c-btn c-btn--sec" bindtap="loadHands">再试一次</button></view>
+    <view wx:if="{{selectedHand}}" class="hand-hint">左右滑动，转动手串</view>
+  </view>
+  <view wx:elif="{{mode=='photo'}}" class="stage">
     <view wx:if="{{!photo}}" class="empty-stage"><view>先拍一张手腕的照片</view><button class="c-btn c-btn--sec c-btn--block" data-source="camera" bindtap="choose">拍一张</button><button class="c-btn c-btn--sec c-btn--block" data-source="album" bindtap="choose">从相册选</button></view>
     <canvas wx:if="{{photo && photoFallback}}" canvas-id="tryonCanvas" class="photo-stage" style="width:{{width}}px;height:{{height}}px" bindtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd"></canvas>
     <view wx:if="{{photo && !photoFallback}}" class="photo-layer" style="width:{{width}}px;height:{{height}}px"><image class="photo-image" src="{{photo}}" mode="widthFix"/><photo-ring id="photo3d" class="photo-ring" beads="{{beads}}" catalog="{{catalog}}" size="{{size}}" angle="{{angle}}" tilt="{{flatten}}" hide-back="{{hideBack}}" xpos="{{xpos}}" ypos="{{ypos}}" bind:move="photoMove" bind:scale="photoScale" bind:rendered="photoLoaded" bind:unavailable="photoUnavailable"/><view wx:if="{{!aligned}}" class="align-frame">把手腕放在这里</view><c-wordmark wx:else class="stage-mark" size="corner"/></view>
     <canvas wx:if="{{photo && !photoFallback}}" canvas-id="composeCanvas" class="compose-canvas" style="width:{{width}}px;height:{{height}}px"></canvas>
     <view wx:if="{{photo && photoFallback && !aligned}}" class="align-frame">把手腕放在这里</view><c-wordmark wx:if="{{photo && photoFallback && aligned}}" class="stage-mark" size="corner"/>
   </view>
-  <view wx:else class="model-stage"><tryon-model beads="{{beads}}" catalog="{{catalog}}" skin="{{skin}}" wrist="{{wrist}}" bind:unavailable="modelUnavailable"/><view wx:if="{{modelError}}">当前设备暂不支持模型手，请用照片试</view></view>
-  <view class="actions"><text bindtap="saveOrChoose">{{aligned?'保存照片':'重拍'}}</text><text bindtap="openModes">换一种方式 ›</text></view>
-  <view wx:if="{{photo && !aligned}}" class="hint">拖动照片，让手腕落在虚线框里</view>
+  <view wx:elif="{{mode==='model'}}" class="model-stage"><tryon-model beads="{{beads}}" catalog="{{catalog}}" skin="{{skin}}" wrist="{{wrist}}" bind:unavailable="modelUnavailable"/><view wx:if="{{modelError}}">当前设备暂不支持模型手，请用照片试</view></view>
+  <view class="actions" wx:if="{{mode==='hand'}}"><text bindtap="saveImage">保存照片</text><text bindtap="comingSoon">换成我的手 ›</text></view><view class="actions" wx:else><text bindtap="saveOrChoose">{{aligned?'保存照片':'重拍'}}</text></view>
+  <view wx:if="{{mode==='photo' && photo && !aligned}}" class="hint">拖动照片，让手腕落在虚线框里</view>
   <view class="design-row"><text>戴的是 <text class="design-name">{{designName}}</text></text><text bindtap="openDesigns">换一条 ›</text></view>
   <view class="hint">示意效果，以实物为准</view>
   <view wx:if="{{error}}" class="error" bindtap="openSettings">{{error}}</view>
   <c-bar wx:if="{{!fromOrder}}" layout="price"><view slot="left" class="price">¥{{price}}</view><button class="c-btn" bindtap="order">去下单</button></c-bar>
   <c-sheet show="{{showDesigns}}" title="换一条" bind:close="closeDesigns"><view wx:for="{{designChoices}}" wx:key="index" class="sheet-row" data-index="{{item.index}}" bindtap="selectDesign"><text>{{item.name}}</text><text>{{item.group}}</text></view></c-sheet>
-  <c-sheet show="{{showModes}}" title="换一种方式" bind:close="closeModes"><view class="sheet-row" data-mode="photo" bindtap="selectMode">用照片</view><view class="sheet-row" data-mode="model" bindtap="selectMode">用模型手</view><view class="sheet-row" data-mode="ar" bindtap="selectMode">实时试戴</view></c-sheet>
+
 </view>
 <privacy-popup scene="拍照或选择手腕照片" bind:reject="privacyRejected"/>
 

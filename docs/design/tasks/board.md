@@ -1,7 +1,7 @@
 # 任务看板
 
 > 自动生成，别手改。更新：`git fetch origin --prune && python3 tools/board.py`。审核每合并一次都会重新生成并推送。
-> 总共 162 张（第一波之外），已完成 150 张。
+> 总共 163 张（第一波之外），已完成 150 张。
 
 ## 在做或待审（1）
 
@@ -9,7 +9,7 @@
 |---|---|---|
 | C5b | 语音和照片 | 分支上有提交，交了就告诉审核 |
 
-## 现在能派（4）
+## 现在能派（5）
 
 | 卡 | 做什么 | 说明 |
 |---|---|---|
@@ -17,6 +17,7 @@
 | U34 | 工作台补齐入口：返回、保存、删除、清空、手围 |  |
 | H7 | 导入交流素材里的全部珠子 |  |
 | H8 | 后端 HTTP 测试不走系统代理 | 卡片待修：71 行环境变量不存在：NO_PROXY；75 行环境变量不存在：HTTP_PROXY；75 行环境变量不存在：HTTPS_PROXY |
+| U39 | 后台珠子批量上架和下架 | 卡片待修：175 行路径不存在：docs/reports/U39-assets/ |
 
 ### 提示词（一张卡一个对话，整段复制）
 
@@ -60,6 +61,17 @@
 这次直接领 H8（后端 HTTP 测试不走系统代理，卡在 docs/design/tasks/followups-infra.md，先读文件开头的共同规矩，再读 H8 这一节）。
 从最新的 origin/integration/2026-11 开新目录 ~/chuan-H8，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/H8-tests-no-proxy，不要直接推 integration。
 交付后回复“H8 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
+```
+
+</details>
+
+<details><summary>U39 后台珠子批量上架和下架</summary>
+
+```
+你是“串个珠”项目的执行者。仓库 https://github.com/gachiqachi-netizen/-.git（私有，HTTPS），所有工作从 origin/integration/2026-11 开始。
+这次直接领 U39（后台珠子批量上架和下架，卡在 docs/design/tasks/followups-1119.md，先读文件开头的共同规矩，再读 U39 这一节）。
+从最新的 origin/integration/2026-11 开新目录 ~/chuan-U39，读 docs/design/tasks/02-prompts.md 里的“Codex 总提示词”，照它做：领卡占位、只改卡上“只能改”的文件、跑三条测试、写交付报告、推送到 agent/U39-admin-batch-status，不要直接推 integration。
+交付后回复“U39 交了，分支 xxx，没做的：……”然后停下。收到审核意见时在原分支改完再推送。
 ```
 
 </details>

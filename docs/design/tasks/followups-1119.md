@@ -158,3 +158,19 @@
 - **测试**：按名称＋尺寸找到唯一一颗；找不到；同名同尺寸有两颗在售；只有下架的那颗；字符串 id 写法不受影响；模板文件里 8 个模板的 meaning 不含禁用词（测试里读真实的 json 文件做检查）。
 - **截图**：不用。
 - **不做**：封面图；改小程序首页；删除或改动旧模板。
+
+## U39 后台珠子批量上架和下架（2026-11-20 负责人：380 个新珠子全是草稿，一个个点太慢）
+
+- **依赖**：无　**大小**：M　**只能改**：新建 `server/routes/products_batch.py`、`server/commerce.py`（只加一个批量函数）、`admin-web/src/pages/products.tsx`、`server/tests/` 和 `admin-web` 对应测试；**不提交** `server/static/admin/` 打包文件
+- **现状**（审核核对过）：`admin-web/src/pages/products.tsx` 只有每行一个“上架/下架”按钮（`sale()`，逐个 `PUT /api/admin/beads/<id>`）；勾选框只用于“批量调价”（`POST /api/admin/beads/reprice`，实现在 `server/pricing_admin.py` + `server/routes/pricing_admin.py`，可以照着写）。勾选框只在展开品种以后才出现。
+- **要做的**：
+  1. 后端新增 `POST /api/admin/beads/status`，权限 `edit_products`，参数 `{ids: [...], status: "on_sale" | "off_sale", preview: true|false}`。每个 id 走 `commerce.update_product`（不要自己改字段，保证校验、`onSale`、审计记录都和单个上架一致）；`archived` 的商品拒绝（报告里列出），缺照片或价格为 0 的拒绝上架并列出原因。preview 只返回“将变更/会被拒绝”的清单，不写库；整批要么全写、要么一条不写。
+  2. 后台珠子页：
+     - 品种那一行加复选框，勾上 = 勾选这个品种的全部尺寸；
+     - 列表顶部加“全选当前筛选结果”和“清空勾选”；
+     - 勾选后顶部按钮区出现“批量上架”“批量下架”（和“批量调价”并列），点了先弹出预览（将变更几个、被拒绝几个及原因），确认后执行，完成后刷新列表；
+     - 支持按状态筛选“草稿”，方便一次选中所有草稿。
+  3. 一次最多 500 个，超过提示分批。
+- **测试**：后端：预览不写库；上架/下架成功；archived 被拒；缺照片被拒；混合时整批不写；无权限 403。前端：品种复选框勾全部尺寸；全选筛选结果；预览弹窗显示拒绝原因。
+- **截图**：勾选状态、预览弹窗、执行后列表（`docs/reports/U39-assets/` 里提交）。
+- **不做**：批量删除；改单个上架按钮；改小程序。

@@ -192,3 +192,4 @@
 | AI-2 | agent/AI-2-photo-match | followups-ai.md |  | Codex | AI-1a |  |
 | AI-1a | agent/AI-1a-chat-image-api | followups-ai.md | AI-2 | Codex |  |  |
 | AI-1b | agent/AI-1b-chat-image-ui | followups-ai.md |  | Codex |  |  |
+| H11 | agent/H11-docker-cache | followups-infra.md |  | 任何 |  |  |

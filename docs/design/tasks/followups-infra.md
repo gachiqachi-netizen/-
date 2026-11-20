@@ -74,3 +74,18 @@
   2. 不改 `server/` 下的正式代码（访问微信、AI 的请求仍按系统设置走）。
 - **测试**：把 `HTTP_PROXY`、`HTTPS_PROXY` 设成一个不存在的地址（如 `http://127.0.0.1:9`）跑全部后端测试，必须全部通过；报告贴这次的输出。
 - **不做**：改 CI；改正式代码的网络设置。
+
+## H11 Docker 构建：依赖层缓存 + 国内镜像（2026-11-20 负责人：每次更新服务器都要等 9 分钟装依赖）
+
+- **依赖**：无　**大小**：S　**只能改**：`Dockerfile`、`deploy/CHECKLIST.md`（只加一句说明）、`server/tests/` 里如有检查 Dockerfile 的测试则同步
+- **现状**（审核核对过）：`Dockerfile` 先 `COPY server ./server`、`COPY kb`、`COPY tools`，再 `RUN pip install --no-cache-dir -r server/requirements-postgres.txt`。代码一改，pip 这一层缓存就失效，每次更新都重新下载安装；服务器在国内，从官方 PyPI 下载约 20KB/s，这一步 546 秒。`server/requirements-postgres.txt` 是 `-r requirements.txt` + `psycopg[binary]`。
+- **要做的**：
+  1. 先只复制两个依赖清单（`server/requirements.txt`、`server/requirements-postgres.txt`）再 `pip install`，之后才 `COPY server`、`kb`、`tools`；其余行（ENV、建用户、CMD）不变。
+  2. pip 源用构建参数：`ARG PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/`，`RUN pip install --no-cache-dir -i "$PIP_INDEX_URL" -r server/requirements-postgres.txt`；需要换回官方源时 `--build-arg PIP_INDEX_URL=https://pypi.org/simple` 即可。
+  3. `deploy/CHECKLIST.md` 加一句：只改代码时依赖层走缓存；改了依赖清单才会重装。
+- **验证**（在本机用 docker 做，没有 docker 就在报告里写明未验证，不要编结果）：
+  1. 第一次 `docker build` 记下耗时；
+  2. 改一行 `server/` 里的注释再 build，报告里贴出 pip 那一步显示 `CACHED`；
+  3. 改动还原，不提交那行注释。
+- **测试**：AGENTS.md 三条测试照常通过（本卡不改代码，主要证明没碰坏）。
+- **不做**：换基础镜像；改 docker-compose；改依赖版本。

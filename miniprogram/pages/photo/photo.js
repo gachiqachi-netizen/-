@@ -46,8 +46,27 @@ function palette(data,n) {
  let sums=centers.map(()=>0);pixels.forEach(p=>{let best=0;centers.forEach((c,j)=>{if(distance(p,c)<distance(p,centers[best]))best=j});sums[best]++})
  return centers.map((c,i)=>({rgb:c,share:sums[i]/pixels.length})).filter(x=>x.share>=.04).sort((a,b)=>b.share-a.share)
 }
+const roleNames = {main:'主珠',accent:'配珠',metal:'金属',center:'佛头',pendant:'吊坠'}
+function photoPattern(result, chosen, catalog, size) {
+  const layout = result.layout || {}, main = chosen.main || result.main
+  if (!main) return []
+  const sequence = (layout.sequence || []).map(role => chosen[role]).filter(Boolean)
+  const every = Math.max(2, Math.min(6, Number(layout.every || result.every) || 4))
+  const regular = Array(every - 1).fill(main).concat(chosen.accent || main)
+  if (chosen.metal) regular.push(chosen.metal)
+  const pattern = sequence.length ? sequence : regular
+  if (layout.symmetric && chosen.center) {
+    const side = pattern.filter(id => id !== chosen.center && id !== chosen.pendant)
+    const full = templates.build({pattern: side.length ? side : [main]}, catalog, size) || []
+    const left = full.slice(0, Math.max(2, Math.floor((full.length - 1 - Number(Boolean(chosen.pendant))) / 2)))
+    return [chosen.center].concat(left, chosen.pendant ? [chosen.pendant] : [], left.slice().reverse())
+  }
+  const ids = templates.build({pattern}, catalog, size) || []
+  if (chosen.pendant && !ids.includes(chosen.pendant)) ids[Math.floor(ids.length / 2)] = chosen.pendant
+  return ids
+}
 Page({
-  data: { photo: '', busy: false, stage: '', result: null, catalog: [], options: [], mainIndex: 0, accentIndex: 0, metalIndex: 0, every: 4, error: '', retryable:false, preview: [], price: 0, length: 0, beadCount: 0, roles: [], selectedMain:'',selectedAccent:'',selectedMetal:'', wrist:15, intervals:[2,3,4,6], usageOpen:false, permissionDenied:false, picking:false, name:'照片同款' },
+  data: { photo: '', busy: false, stage: '', result: null, catalog: [], options: [], mainIndex: 0, accentIndex: 0, metalIndex: 0, every: 4, error: '', retryable:false, preview: [], price: 0, length: 0, beadCount: 0, roles: [], selectedMain:'',selectedAccent:'',selectedMetal:'', wrist:15, intervals:[2,3,4,6], usageOpen:false, permissionDenied:false, picking:false, name:'照片同款', matchedKinds:[], chosenKinds:{} },
   onLoad() {
     api.catalog().then(c => {
       const catalog = c.beads || []
@@ -73,7 +92,7 @@ Page({
   selectedPhoto(path) {
     if (!path) return
     if (wx.vibrateShort) wx.vibrateShort({type:'light'})
-    this.setData({photo:path,result:null,error:'',usageOpen:true,permissionDenied:false})
+    this.setData({photo:path,result:null,matchedKinds:[],chosenKinds:{},error:'',usageOpen:true,permissionDenied:false})
   },
   cameraError() { this.setData({permissionDenied:true}) },
   retake() { this.setData({photo:'', result:null, error:'', retryable:false, usageOpen:false, permissionDenied:false}) },
@@ -121,15 +140,18 @@ Page({
       if (this.recognitionRun !== run) return
       const local = await localPromise
       if (result.ok === false) { this.setData({ error: {dark:'照片有点暗，珠子看不清。换个亮一点的地方，把整条手串拍进去',blur:'照片有点糊，珠子看不清。请拍清晰一点',no_bracelet:'照片里没看到完整的手串，请把整条手串拍进去'}[result.reason] || '这张照片没认出手串，请换一张清晰照片。', result: null }); return }
-      const pool = this.data.catalog.filter(b => b.mat !== 'metal' && !b.spacer && b.mm >= 6 && b.mm <= 12 && !/佛头|三通/.test(b.name))
-      if (!result || !pool.some(b => b.id === result.main)) result = local
-      if (!result || !pool.some(b => b.id === result.main)) { this.setData({ error: '没有识别到可用的手串，请换一张清晰照片。', result: null }); return }
-      if (!pool.some(b => b.id === result.accent) || result.accent === result.main) result.accent = ''
+      const validMain = candidate => candidate && this.data.catalog.some(b => b.id === candidate.main && b.mat !== 'metal' && !b.spacer)
+      if (!validMain(result)) result = local
+      if (!validMain(result)) { this.setData({ error: '没有识别到可用的手串，请换一张清晰照片。', result: null }); return }
+      if (!this.data.catalog.some(b => b.id === result.accent && b.mat !== 'metal' && !b.spacer) || result.accent === result.main) result.accent = ''
       if (!this.data.catalog.some(b => b.mat === 'metal' && b.id === result.metal)) result.metal = ''
       result.colors = local && local.colors || {}
       result.every = Math.max(2, Math.min(6, Math.round(Number(result.every)) || 4))
       const find = id => Math.max(0, this.data.options.findIndex(o => o.id === id))
-      this.setData({ result, mainIndex: find(result.main), accentIndex: find(result.accent), metalIndex: find(result.metal), every: result.every || 4 }, () => this.renderResult())
+      const matchedKinds = (result.kinds || []).map((kind, index) => ({...kind, key: String(index), title:roleNames[kind.role] || kind.role,
+        options:(kind.candidates || []).map(candidate => { const bead=this.data.catalog.find(b=>b.id===candidate.id); return bead && {...bead, photoUrl:bead.photo ? (/^(https?:|data:)/.test(bead.photo) ? bead.photo : getApp().globalData.apiBase + bead.photo) : ''} }).filter(Boolean)}))
+      const chosenKinds = {}; matchedKinds.forEach(kind=>{if(kind.options[0]) chosenKinds[kind.role]=kind.options[0].id})
+      this.setData({ result, matchedKinds, chosenKinds, mainIndex: find(result.main), accentIndex: find(result.accent), metalIndex: find(result.metal), every: result.every || 4 }, () => this.renderResult())
     } catch (err) {
       this.setData({ error: err.message || '识别暂不可用，请稍后再试。', retryable:true, result: null })
     } finally {
@@ -156,8 +178,31 @@ Page({
   },
   change(e) { this.setData({ [e.currentTarget.dataset.key]: Number(e.detail.value) },()=>this.renderResult()) },
   chooseRole(e) { const role=e.currentTarget.dataset.role,key=role+'Index', id=e.currentTarget.dataset.id; const index=this.data.options.findIndex(o=>o.id===id); const changes={[key]:Math.max(0,index),picking:false}; if(this.data.result&&this.data.result.confidence) changes.result={...this.data.result,confidence:{...this.data.result.confidence,[role]:null}}; if(role==='main' && this.data.options[this.data.accentIndex] && this.data.options[this.data.accentIndex].id===id) changes.accentIndex=0; this.setData(changes,()=>this.renderResult()) },
+  chooseCandidate(e) {
+    const {role,id} = e.currentTarget.dataset
+    this.setData({chosenKinds:{...this.data.chosenKinds,[role]:id}},()=>this.renderResult())
+  },
+  pickMissing(e) {
+    const role=e.currentTarget.dataset.role
+    const kind=this.data.matchedKinds.find(item=>item.role===role)
+    const mat=kind && kind.material
+    const cat=role==='metal'?'metal':mat==='stone'||mat==='jade'?'jade-stone':['crystal','wood','bodhi','metal'].includes(mat)?mat:'all'
+    getApp().globalData.pendingWorkbenchCategory=cat
+    const d=store.create();d.wrist=wrist();d.name=this.data.name||'照片同款'
+    d.beads=photoPattern(this.data.result,this.data.chosenKinds,this.data.catalog,d.wrist)
+    store.selected(d)
+    require('../../utils/nav').openWorkbench()
+  },
   interval(e) {this.setData({every:Number(e.currentTarget.dataset.value)},()=>this.renderResult())},
   renderResult() {
+    if (this.data.matchedKinds.length) {
+      const {catalog,result,chosenKinds,wrist}=this.data
+      const ids=photoPattern(result,chosenKinds,catalog,wrist), map=Object.fromEntries(catalog.map(b=>[b.id,b]))
+      let price=15,length=0
+      ids.forEach(id=>{const b=map[id];if(b){price+=Number(b.price)||0;length+=Number(b.mm)||0}})
+      this.setData({previewIds:ids,price:price.toFixed(2),length,beadCount:ids.length})
+      return
+    }
     const {options,catalog,mainIndex,accentIndex,metalIndex,every,wrist}=this.data; const main=options[mainIndex],accent=options[accentIndex],metal=options[metalIndex]; if(!main||!main.id)return;
     const mainBead=catalog.find(b=>b.id===main.id); if(!mainBead)return;
     const pool=catalog.filter(b=>b.mat!=='metal'&&!b.spacer&&b.mm>=6&&b.mm<=12&&!/佛头|三通/.test(b.name)), metals=catalog.filter(b=>b.mat==='metal');
@@ -172,6 +217,14 @@ Page({
     this.setData({roles,preview,previewIds:ids,price:price.toFixed(2),length,beadCount:ids.length,selectedMain:main.id,selectedAccent:accent&&accent.id||'',selectedMetal:metal&&metal.id||''})
   },
   edit(orderOnly) {
+    if (this.data.matchedKinds.length) {
+      const d=store.create();d.wrist=wrist();d.name=this.data.name||'照片同款'
+      d.beads=photoPattern(this.data.result,this.data.chosenKinds,this.data.catalog,d.wrist)
+      if (d.beads.length<6) return toast.show({text:'材料无法生成合适的手串，请调整后重试'})
+      store.selected(d)
+      if (orderOnly!==true) require('../../utils/nav').openEditor()
+      return true
+    }
     const { options, catalog, mainIndex, accentIndex, metalIndex, every } = this.data
     const main = options[mainIndex], accent = options[accentIndex], metal = options[metalIndex]
     if (!main || !main.id) return toast.show({ text: '请选择主珠' })
@@ -187,3 +240,4 @@ Page({
   },
   privacyRejected() { this.setData({busy:false, permissionDenied:true}) }
 })
+module.exports = { photoPattern }

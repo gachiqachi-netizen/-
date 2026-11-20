@@ -4,6 +4,7 @@
 后端只认目录里“在售”的珠子 id。没有配置任何模型时返回 None，前台自动用本地规则兜底。
 """
 import json
+import math
 import os
 import re
 import time
@@ -13,6 +14,7 @@ import kb
 import money
 import plans
 import pricing
+from photo_match import match_kind
 
 _provider = None
 _provider_err = None
@@ -110,20 +112,26 @@ DESIGNS_SCHEMA = {
     "additionalProperties": False,
 }
 # 拍照做同款：AI 只认珠子，不做设计（对看图模型要求低，认错了用户在页面上点一下就能换）
-PHOTO_FAILURE_REASONS = ("dark", "blurry", "no_bracelet", "unknown_beads")
+PHOTO_FAILURE_REASONS = ("dark", "blurry", "blur", "no_bracelet", "unknown_beads")
 
 PHOTO_SCHEMA = {
     "type": "object",
     "properties": {
         "ok": {"type": "boolean"}, "seen": {"type": "string"},
-        "main": {"type": "string"}, "accent": {"type": "string"}, "metal": {"type": "string"},
-        "every": {"type": "integer"},
-        "mainConfidence": {"type": "number"},
-        "accentConfidence": {"type": "number"},
-        "metalConfidence": {"type": "number"},
+        "kinds": {"type": "array", "maxItems": 6, "items": {"type": "object", "properties": {
+            "role": {"type": "string", "enum": ["main", "accent", "metal", "center", "pendant"]},
+            "color": {"type": "string"}, "colorName": {"type": "string"},
+            "clarity": {"type": "string", "enum": ["clear", "translucent", "opaque"]},
+            "pattern": {"type": "string", "enum": ["plain", "cracked", "striped", "speckled", "banded", "metallic"]},
+            "material": {"type": "string", "enum": ["crystal", "stone", "wood", "bodhi", "metal", "other"]},
+            "mmGuess": {"type": ["number", "null"]}, "count": {"type": "integer"}, "confidence": {"type": "number"},
+        }, "required": ["role", "color", "colorName", "clarity", "pattern", "material", "mmGuess", "count", "confidence"], "additionalProperties": False}},
+        "layout": {"type": "object", "properties": {"symmetric": {"type": "boolean"},
+            "every": {"type": ["integer", "null"]}, "sequence": {"type": "array", "maxItems": 30, "items": {"type": "string"}}},
+        "required": ["symmetric", "every", "sequence"], "additionalProperties": False},
         "reason": {"type": "string", "enum": list(PHOTO_FAILURE_REASONS)},
     },
-    "required": ["ok", "seen", "main", "accent", "metal", "every"],
+    "required": ["ok", "seen", "kinds", "layout"],
     "additionalProperties": False,
 }
 REVIEW_SCHEMA = {
@@ -278,44 +286,64 @@ def _confidence(v):
     if isinstance(v, bool) or not isinstance(v, (int, float)):
         return None
     v = float(v)
-    if v < 0 or v > 1:
+    if not math.isfinite(v) or v < 0 or v > 1:
         return None
     return v
 
 
 def photo(beads, image):
-    """拍照做同款：认出照片里的主珠、配珠、金属点缀各最像料包里哪一颗。排法和颗数由前台按手围算。"""
+    """Describe visible kinds, then match them against the current on-sale catalog."""
     p = provider(feature="photo")
     if not p:
         return None
-    prompt = ("用户拍了一张喜欢的手串照片，想用我们料包里的珠子做同款。你只需要认珠子，不用设计。\n"
-              f"目录（id|名称尺寸|材质|类型|单价|寓意）：\n{catalog_text(beads)}\n\n"
-              "看照片里的手串，回答：ok=照片里有没有手串；main=数量最多的那种珠子在目录里最像的 id（颜色优先，其次材质）；"
-              "accent=第二种珠子最像的 id，没有填空字符串；metal=金属隔珠或隔片最像的 id（只能是金属配件），没有填空字符串；"
-              "every=配珠或隔珠大约每几颗出现一次（2-6）；seen=一句 15-30 字的话，说看到的颜色、材质和排法。"
-              "mainConfidence/accentConfidence/metalConfidence=你对每个识别结果有多大把握，0 到 1 之间的小数（颜色材质都对、看得清就给 0.8 以上，"
-              "只猜得像就低一些）；accent 或 metal 为空时不填对应的 confidence 字段，对哪个结果没把握也可以不填。"
-              "ok 为 false 时回答 reason：照片太暗填 dark、太模糊填 blurry、照片里没有手串填 no_bracelet、手串认不出是哪种珠子填 unknown_beads。")
+    prompt = ("请只描述照片中的手串，不选择商品 id。ok 表示能否看清完整手串；失败给 reason：dark、blur、no_bracelet 或 unknown_beads。"
+              "seen 用 15–30 字描述颜色、材质和排法。kinds 最多六种，按主珠、配珠、金属、佛头、吊坠分别描述："
+              "role 为 main/accent/metal/center/pendant，color 为 #rrggbb，colorName 为中文颜色，"
+              "clarity 为 clear/translucent/opaque，pattern 为 plain/cracked/striped/speckled/banded/metallic，"
+              "material 为 crystal/stone/wood/bodhi/metal/other，mmGuess 是 4–20mm 的估计或 null，"
+              "count 为大约颗数，confidence 为 0–1。layout.symmetric 表示左右对称，every 为 2–6 或 null，"
+              "sequence 最多 30 个 role，从 12 点钟方向顺时针列出。看不清的细节不要猜。")
     out = p.json(prompt, PHOTO_SCHEMA, image=image)
-    by_id = {b["id"]: b for b in beads}
-    body = {i for i, b in by_id.items() if not b.get("spacer") and b.get("mat") != "metal" and "佛头" not in b["name"]}
-    metal = {i for i, b in by_id.items() if b.get("mat") == "metal"}
-    main = out.get("main") if out.get("main") in body else ""
+    seen = clean(out.get("seen"), 30)
     if not out.get("ok"):
-        # ok=false 就是"照片里没有手串"，模型没给合法原因时按原意归为 no_bracelet，不猜暗不猜糊
         reason = out.get("reason") if out.get("reason") in PHOTO_FAILURE_REASONS else "no_bracelet"
-        return {"ok": False, "reason": reason, "seen": clean(out.get("seen"), 60), "by": p.name}
+        return {"ok": False, "reason": reason, "seen": seen, "by": p.name}
+    roles = {"main", "accent", "metal", "center", "pendant"}
+    materials = {"crystal", "stone", "wood", "bodhi", "metal", "other"}
+    clarity = {"clear", "translucent", "opaque"}
+    patterns = {"plain", "cracked", "striped", "speckled", "banded", "metallic"}
+    kinds = []
+    for raw in (out.get("kinds") if isinstance(out.get("kinds"), list) else [])[:6]:
+        if not isinstance(raw, dict) or not isinstance(raw.get("role"), str) or raw.get("role") not in roles:
+            continue
+        color = raw.get("color")
+        if not isinstance(color, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", color):
+            continue
+        mm = raw.get("mmGuess")
+        mm = float(mm) if isinstance(mm, (int, float)) and not isinstance(mm, bool) and 4 <= mm <= 20 else None
+        count = raw.get("count")
+        count = max(0, min(80, count)) if isinstance(count, int) and not isinstance(count, bool) else 0
+        kind = {"role": raw["role"], "color": color.lower(), "colorName": clean(raw.get("colorName"), 20),
+                "clarity": raw.get("clarity") if isinstance(raw.get("clarity"), str) and raw.get("clarity") in clarity else "opaque",
+                "pattern": raw.get("pattern") if isinstance(raw.get("pattern"), str) and raw.get("pattern") in patterns else "plain",
+                "material": raw.get("material") if isinstance(raw.get("material"), str) and raw.get("material") in materials else "other",
+                "mmGuess": mm, "count": count, "confidence": _confidence(raw.get("confidence"))}
+        kind["candidates"] = match_kind(kind, beads)
+        kinds.append(kind)
+    layout_raw = out.get("layout") if isinstance(out.get("layout"), dict) else {}
+    every = layout_raw.get("every")
+    every = every if isinstance(every, int) and not isinstance(every, bool) and 2 <= every <= 6 else None
+    sequence = layout_raw.get("sequence")
+    sequence = [role for role in sequence[:30] if isinstance(role, str) and role in roles] if isinstance(sequence, list) else []
+    layout = {"symmetric": layout_raw.get("symmetric") is True, "every": every, "sequence": sequence}
+    first = lambda role: next((k["candidates"][0]["id"] for k in kinds if k["role"] == role and k["candidates"]), "")
+    main, accent, metal = first("main"), first("accent"), first("metal")
     if not main:
-        # 说好了有手串但认不出料包里哪种：整体失败带原因，不再抛错走 502
-        return {"ok": False, "reason": "unknown_beads", "seen": clean(out.get("seen"), 60), "by": p.name}
-    accent = out.get("accent") if out.get("accent") in body and out.get("accent") != main else ""
-    metal_id = out.get("metal") if out.get("metal") in metal else ""
-    return {"ok": True, "seen": clean(out.get("seen"), 60), "main": main, "accent": accent,
-            "metal": metal_id,
-            "every": max(2, min(6, int(out.get("every") or 4))), "by": p.name,
-            "confidence": {"main": _confidence(out.get("mainConfidence")),
-                           "accent": _confidence(out.get("accentConfidence")) if accent else None,
-                           "metal": _confidence(out.get("metalConfidence")) if metal_id else None}}
+        return {"ok": False, "reason": "unknown_beads", "seen": seen, "by": p.name}
+    return {"ok": True, "seen": seen, "kinds": kinds, "layout": layout, "by": p.name,
+            "main": main, "accent": accent, "metal": metal, "every": every or 4,
+            "confidence": {role: next((k["confidence"] for k in kinds if k["role"] == role and k["candidates"]), None)
+                           for role in ("main", "accent", "metal")}}
 
 
 def review(beads, chosen, wrist, fit_ok):

@@ -9,7 +9,9 @@ const styles = fs.readFileSync(path.join(__dirname, '../pages/photo/photo.wxss')
 test('选择页两个动作铺满弹层，结果页用统一价格底栏', () => {
   assert.match(page, /class="c-btn c-btn--block" bindtap="useExact"/)
   assert.match(page, /class="c-btn c-btn--sec c-btn--block" bindtap="useFeeling"/)
-  assert.match(page, /<c-bar layout="price"><view slot="left">¥{{price}}<\/view><button class="c-btn c-btn--block" bindtap="order">就要这条<\/button><\/c-bar>/)
+  assert.match(page, /<c-bar layout="price"><view slot="left">¥{{price}}<\/view>/)
+  assert.match(page, /bindtap="edit">按 15cm 排一条<\/button>/)
+  assert.match(page, /bindtap="order">就要这条<\/button>/)
   assert.doesNotMatch(styles, /\.result-bottom button\s*\{/)
 })
 

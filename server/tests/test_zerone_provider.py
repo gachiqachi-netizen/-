@@ -56,7 +56,7 @@ class ZerOneProviderTest(unittest.TestCase):
     def test_mode_matches_existing_contracts(self):
         self.assertEqual("tags", _mode(ai.TAGS_SCHEMA))
         self.assertEqual("design", _mode(ai.DESIGNS_SCHEMA))
-        self.assertEqual("photo", _mode(ai.PHOTO_SCHEMA))
+        self.assertEqual("json", _mode(ai.PHOTO_SCHEMA))  # 描述式新 schema 不再带旧 id 字段
         self.assertEqual("review", _mode(ai.REVIEW_SCHEMA))
 
     def test_run_parses_final_assistant_json(self):

@@ -61,6 +61,19 @@ test('workbench returns to tab by switchTab and non-tab by navigateTo with param
   assert.equal(stack.at(-1).route, 'features/works/works?id=a%20b')
 })
 
+test('workbench keeps each existing entry page as its return source', () => {
+  for (const route of ['pages/home/home', 'pages/finish/finish', 'features/works/works',
+    'features/orders/orders', 'features/order-detail/order-detail',
+    'features/shared/shared', 'pages/share/share', 'features/article/article']) {
+    stack = [{ route: 'pages/home/home' }, { route, options: { id: 'test' } }]
+    app.globalData = {}
+    nav.openWorkbench({ id: 'from-' + route, beads: [] })
+    assert.deepEqual(app.globalData.workbenchReturn, { route, options: { id: 'test' } })
+    nav.backFromWorkbench(app.globalData.workbenchReturn)
+    assert.equal(stack.at(-1).route.split('?')[0], route)
+  }
+})
+
 test('openEditor uses tab navigation without exceeding page stack', () => {
   storage.cgz_wrist_confirmed = true
   for (let i = 0; i < 20; i++) {

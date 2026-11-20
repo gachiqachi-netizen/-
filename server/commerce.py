@@ -193,6 +193,105 @@ def update_product(db, rid, data, actor=ACTOR):
     return saved
 
 
+def batch_product_status(db, data, actor=ACTOR):
+    """Preview or atomically change up to 500 product statuses through update_product."""
+    if not isinstance(data, dict):
+        raise ValueError("批量状态内容必须是对象")
+    ids, target, preview = data.get("ids"), data.get("status"), data.get("preview")
+    if not isinstance(ids, list) or not ids or any(not isinstance(rid, str) or not rid.strip() for rid in ids):
+        raise ValueError("请选择商品")
+    if len(ids) > 500:
+        raise ValueError("一次最多 500 个商品，请分批操作")
+    if len(set(ids)) != len(ids):
+        raise ValueError("商品编号不能重复")
+    if target not in ("on_sale", "off_sale"):
+        raise ValueError("状态只能是上架或下架")
+    if preview is not True and preview is not False:
+        raise ValueError("请指定 preview")
+    ids = sorted(ids)  # Stable row-lock order for concurrent PostgreSQL batches.
+
+    def collect(reader):
+        changes, rejected, unchanged = [], [], []
+        for rid in ids:
+            bead = reader.get("beads", rid)
+            if bead is None:
+                rejected.append({"id": rid, "name": rid, "reason": "商品不存在"})
+                continue
+            item = {"id": rid, "name": bead.get("name") or rid}
+            if status.product_status(bead) == "archived":
+                rejected.append({**item, "reason": "已归档商品不能批量上架或下架"})
+                continue
+            if status.product_status(bead) == target:
+                unchanged.append(item)
+                continue
+            if target == "on_sale":
+                if not bead.get("photo") and not any(isinstance(x, str) and x.strip() for x in bead.get("images") or []):
+                    rejected.append({**item, "reason": "缺少照片"})
+                    continue
+                try:
+                    price = (money.parse_fen(bead["priceFen"]) if bead.get("priceFen") is not None
+                             else money.yuan_to_fen(bead.get("price")))
+                except (ValueError, TypeError):
+                    price = 0
+                if price <= 0:
+                    rejected.append({**item, "reason": "价格必须大于 0"})
+                    continue
+            _, error = normalize_product({**bead, "status": target}, bead)
+            if error:
+                rejected.append({**item, "reason": error})
+            else:
+                changes.append(item)
+        return {"changes": changes, "rejected": rejected, "unchanged": unchanged}
+
+    if preview:
+        return collect(db)
+
+    def apply(reader):
+        report = collect(reader)
+        if report["rejected"]:
+            reasons = "；".join(f"{item['name']}：{item['reason']}" for item in report["rejected"])
+            raise ValueError("整批未写入；" + reasons)
+        for item in report["changes"]:
+            bead = reader.get("beads", item["id"])
+            update_product(reader, item["id"], {**bead, "status": target}, actor=actor)
+        return report
+
+    if hasattr(db, "transaction"):
+        with db.transaction() as conn:
+            class PostgresView:
+                def get(self, table, rid):
+                    return db.get_for_update(conn, table, rid)
+
+                def put(self, table, rid, doc):
+                    return db.put_in_conn(conn, table, rid, doc)
+
+            return apply(PostgresView())
+
+    # SQLite's regular put() commits each row. Keep the whole batch, including
+    # update_product audit records, inside one explicit transaction instead.
+    with db.lock:
+        db.conn.execute("BEGIN IMMEDIATE")
+        try:
+            class SqliteView:
+                def get(self, table, rid):
+                    row = db.conn.execute(f"SELECT doc FROM {table} WHERE id = ?", (rid,)).fetchone()
+                    return {**json.loads(row[0]), "id": rid} if row else None
+
+                def put(self, table, rid, doc):
+                    value = dict(doc)
+                    value.pop("id", None)
+                    db.conn.execute(f"INSERT OR REPLACE INTO {table} (id, doc) VALUES (?, ?)",
+                                    (rid, json.dumps(value, ensure_ascii=False)))
+                    return {**value, "id": rid}
+
+            report = apply(SqliteView())
+            db.conn.commit()
+            return report
+        except Exception:
+            db.conn.rollback()
+            raise
+
+
 def copy_product(db, rid, actor=ACTOR):
     existing = db.get("beads", rid)
     if not existing:

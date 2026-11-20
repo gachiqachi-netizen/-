@@ -10,6 +10,8 @@ type Product = { id: string; name: string; type?: string; mm?: number; mat?: str
 type Group = { name: string; sizes: Product[] };
 type KbRow = { id: string; name: string; meaningConfidence?: string; meaningTags?: string[] };
 type Change = { id: string; name: string; oldFen: number; newFen: number };
+type StatusItem = { id: string; name: string; reason?: string };
+type StatusReport = { changes: StatusItem[]; rejected: StatusItem[]; unchanged: StatusItem[] };
 type Props = { beads: Product[]; kbMaterials: unknown[]; onRefresh: () => Promise<void>; notify: (message: string, type?: 'success' | 'error') => void };
 const types = Object.entries(CONTRACT.productTypes);
 const statuses = Object.entries(CONTRACT.productStatuses);
@@ -27,6 +29,9 @@ export default function ProductsPage({ notify }: Props) {
   const [editing, setEditing] = useState<Product | null>(null), [priceText, setPriceText] = useState(''), [kbText, setKbText] = useState(''), [formError, setFormError] = useState(''), [deleteBlocked, setDeleteBlocked] = useState(false), [saving, setSaving] = useState(false);
   const [pricingOpen, setPricingOpen] = useState(false);
   const [batch, setBatch] = useState(false), [addText, setAddText] = useState(''), [preview, setPreview] = useState<Change[] | null>(null), [batchError, setBatchError] = useState(''), [batchBusy, setBatchBusy] = useState(false);
+  const [statusBatch, setStatusBatch] = useState<'on_sale' | 'off_sale' | null>(null);
+  const [statusPreview, setStatusPreview] = useState<StatusReport | null>(null), [statusBusy, setStatusBusy] = useState(false), [statusError, setStatusError] = useState('');
+  const [statusRemoved, setStatusRemoved] = useState<StatusItem[]>([]);
   const load = useCallback(async () => {
     setLoading(true); setError('');
     try {
@@ -82,14 +87,53 @@ export default function ProductsPage({ notify }: Props) {
   const copy = async (p: Product) => { try { await apiRequest(`/api/admin/beads/${encodeURIComponent(p.id)}/copy`, { method: 'POST' }); notify('已复制为草稿'); await load(); } catch (err: any) { notify(err.message || '复制失败', 'error'); } };
   const sale = async (p: Product) => { const next = p.status === 'on_sale' ? 'off_sale' : 'on_sale'; try { await apiRequest(`/api/admin/beads/${encodeURIComponent(p.id)}`, { method: 'PUT', body: { ...p, status: next } }); notify(next === 'on_sale' ? '已上架' : '已下架'); await load(); } catch (err: any) { notify(err.message || '操作失败', 'error'); } };
   const toggle = (id: string) => { setSelected(old => old.includes(id) ? old.filter(x => x !== id) : [...old, id]); setPreview(null); };
+  const selectIds = (ids: string[]) => { setSelected(old => [...new Set([...old, ...ids])]); setPreview(null); };
+  const toggleGroup = (name: string) => {
+    const ids = (groups.find(group => group.name === name)?.sizes || []).map(product => product.id);
+    setSelected(old => ids.every(id => old.includes(id)) ? old.filter(id => !ids.includes(id)) : [...new Set([...old, ...ids])]);
+    setPreview(null);
+  };
+  const openStatusBatch = async (target: 'on_sale' | 'off_sale') => {
+    setStatusBatch(target); setStatusPreview(null); setStatusRemoved([]); setStatusError(''); setStatusBusy(true);
+    try {
+      const report = await apiRequest<StatusReport>('/api/admin/beads/status', { method: 'POST', body: { ids: selected, status: target, preview: true } });
+      setStatusPreview(report);
+    } catch (err: any) { setStatusError(err.message || '预览失败'); }
+    finally { setStatusBusy(false); }
+  };
+  const removeRejectedAndPreview = async () => {
+    if (!statusBatch || !statusPreview?.rejected.length || statusBusy) return;
+    const rejected = statusPreview.rejected;
+    const rejectedIds = new Set(rejected.map(item => item.id));
+    const remaining = selected.filter(id => !rejectedIds.has(id));
+    setSelected(remaining);
+    setStatusRemoved(old => [...old, ...rejected.filter(item => !old.some(previous => previous.id === item.id))]);
+    setStatusPreview(null); setStatusError(''); setStatusBusy(true);
+    try {
+      if (!remaining.length) throw new Error('没有可继续操作的商品');
+      const report = await apiRequest<StatusReport>('/api/admin/beads/status', { method: 'POST', body: { ids: remaining, status: statusBatch, preview: true } });
+      setStatusPreview(report);
+    } catch (err: any) { setStatusError(err.message || '重新预览失败'); }
+    finally { setStatusBusy(false); }
+  };
+  const applyStatusBatch = async () => {
+    if (!statusBatch || !statusPreview || statusPreview.rejected.length || !statusPreview.changes.length || statusBusy) return;
+    setStatusBusy(true); setStatusError('');
+    try {
+      const report = await apiRequest<StatusReport>('/api/admin/beads/status', { method: 'POST', body: { ids: selected, status: statusBatch, preview: false } });
+      notify(`已${statusBatch === 'on_sale' ? '上架' : '下架'} ${report.changes.length} 件商品`);
+      setStatusBatch(null); setStatusPreview(null); setSelected([]); await load();
+    } catch (err: any) { setStatusError(err.message || '批量操作失败，请重新预览'); setStatusPreview(null); }
+    finally { setStatusBusy(false); }
+  };
   const payload = () => { if (!selected.length) throw new Error('请先勾选商品'); if (!/^-?\d+(\.\d{1,2})?$/.test(addText)) throw new Error('调价金额请填写最多两位小数的元'); return { mode: 'add', ids: selected, addFen: yuanToFen(addText), preview: true }; };
   const batchPreview = async () => { setBatchError(''); setBatchBusy(true); try { setPreview(await apiRequest<Change[]>('/api/admin/beads/reprice', { method: 'POST', body: payload() })); } catch (err: any) { setBatchError(err.message || '预览失败'); } finally { setBatchBusy(false); } };
   const execute = async () => { if (!preview || batchBusy) return; setBatchBusy(true); setBatchError(''); try { await apiRequest('/api/admin/beads/reprice', { method: 'POST', body: { ...payload(), preview: false } }); setBatch(false); setPreview(null); setSelected([]); setAddText(''); notify('批量调价已完成'); await load(); } catch (err: any) { setBatchError(err.message || '调价失败'); } finally { setBatchBusy(false); } };
   return <div style={{ padding: 24 }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}><h2 style={{ margin: 0, fontSize: 20 }}>珠子与配件</h2><div style={{ display: 'flex', gap: 8 }}><Can perm="edit_prices"><button className="zy-btn zy-btn-secondary" onClick={() => setPricingOpen(true)}>手工费和运费</button></Can><Can perm="edit_prices"><button className="zy-btn zy-btn-secondary" onClick={() => { setBatch(true); setPreview(null); }}>批量调价</button></Can><Can perm="edit_products"><button className="zy-btn zy-btn-primary" onClick={() => open()}>新建商品</button></Can></div></div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}><h2 style={{ margin: 0, fontSize: 20 }}>珠子与配件</h2><div style={{ display: 'flex', gap: 8 }}><Can perm="edit_prices"><button className="zy-btn zy-btn-secondary" onClick={() => setPricingOpen(true)}>手工费和运费</button></Can><Can perm="edit_prices"><button className="zy-btn zy-btn-secondary" onClick={() => { setBatch(true); setPreview(null); }}>批量调价</button></Can>{selected.length > 0 && <Can perm="edit_products"><button className="zy-btn zy-btn-secondary" onClick={() => void openStatusBatch('on_sale')}>批量上架</button><button className="zy-btn zy-btn-secondary" onClick={() => void openStatusBatch('off_sale')}>批量下架</button></Can>}<Can perm="edit_products"><button className="zy-btn zy-btn-primary" onClick={() => open()}>新建商品</button></Can></div></div>
     <div className="zy-card" style={{ padding: 0 }}><div className="zy-tabs" role="tablist">{types.map(([key, title]) => <button key={key} role="tab" aria-selected={type === key} className={`zy-tab ${type === key ? 'zy-tab-on' : ''}`} onClick={() => setType(key)}>{title} <span className="zy-tab-count">{counts[key] || 0}</span></button>)}</div>
-      <div style={{ display: 'flex', gap: 12, padding: 16 }}><input className="zy-field-box" style={{ maxWidth: 220 }} placeholder="搜名称" value={query} onChange={e => setQuery(e.target.value)} /><select className="zy-field-box" style={{ maxWidth: 150 }} value={status} onChange={e => setStatus(e.target.value)}><option value="">状态：全部</option>{statuses.map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select><select className="zy-field-box" style={{ maxWidth: 150 }} value={material} onChange={e => setMaterial(e.target.value)}><option value="">材质：全部</option>{Object.entries(materials).map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></div>
-      {loading ? <div className="zy-empty">正在加载商品…</div> : error ? <div className="zy-empty">{error}<div><button className="zy-btn zy-btn-secondary" onClick={() => void load()}>再试一次</button></div></div> : !rows.length ? <div className="zy-empty">还没有符合条件的商品，试试其他筛选条件。</div> : <table className="zy-table" style={{ width: '100%' }}><thead><tr><th>品种 / 尺寸</th><th>单价</th><th>状态</th><th>库存</th><th>操作</th></tr></thead><tbody>{rows.map(g => <React.Fragment key={g.name}><tr className="zy-table-row" onClick={() => setExpanded(old => ({ ...old, [g.name]: !old[g.name] }))}><td><strong>{expanded[g.name] ? '⌄' : '›'} {g.name}</strong> <span className="zy-table-aux">{g.sizes.length} 种尺寸</span></td><td /><td /><td /><td /></tr>{expanded[g.name] && g.sizes.map(p => <tr key={p.id} className="zy-table-row"><td><label><input type="checkbox" checked={selected.includes(p.id)} onChange={() => toggle(p.id)} /> {p.mm ? <BeadGlyph bead={p} size={32} /> : null} {p.mm ? `${p.mm}mm` : p.name} {!p.photo && <span className="zy-table-aux">缺照片</span>}</label></td><td>¥{fenToYuan(priceFen(p))}</td><td>{CONTRACT.productStatuses[p.status as keyof typeof CONTRACT.productStatuses] || '草稿'}</td><td className={p.stock === 'low_stock' || p.stock === 'out_of_stock' ? 'zy-danger-text' : ''}>{stocks[p.stock || 'in_stock']}</td><td><Can perm="edit_products"><button className="zy-btn zy-btn-secondary" onClick={() => open(p)}>编辑</button> <button className="zy-btn zy-btn-secondary" onClick={() => void copy(p)}>复制</button> <button className="zy-btn zy-btn-secondary" onClick={() => void sale(p)}>{p.status === 'on_sale' ? '下架' : '上架'}</button></Can></td></tr>)}</React.Fragment>)}</tbody></table>}
+      <div style={{ display: 'flex', gap: 12, padding: 16, flexWrap: 'wrap', alignItems: 'center' }}><input className="zy-field-box" style={{ maxWidth: 220 }} placeholder="搜名称" value={query} onChange={e => setQuery(e.target.value)} /><select className="zy-field-box" style={{ maxWidth: 150 }} value={status} onChange={e => setStatus(e.target.value)}><option value="">状态：全部</option>{statuses.map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select><select className="zy-field-box" style={{ maxWidth: 150 }} value={material} onChange={e => setMaterial(e.target.value)}><option value="">材质：全部</option>{Object.entries(materials).map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select><Can perm="edit_products"><button className="zy-btn zy-btn-secondary" onClick={() => selectIds(rows.flatMap(group => group.sizes.map(product => product.id)))}>全选当前筛选结果</button><button className="zy-btn zy-btn-secondary" onClick={() => { setSelected([]); setPreview(null); }}>清空勾选</button></Can><span role="status">已勾选 {selected.length} 件</span></div>
+      {loading ? <div className="zy-empty">正在加载商品…</div> : error ? <div className="zy-empty">{error}<div><button className="zy-btn zy-btn-secondary" onClick={() => void load()}>再试一次</button></div></div> : !rows.length ? <div className="zy-empty">还没有符合条件的商品，试试其他筛选条件。</div> : <table className="zy-table" style={{ width: '100%' }}><thead><tr><th>品种 / 尺寸</th><th>单价</th><th>状态</th><th>库存</th><th>操作</th></tr></thead><tbody>{rows.map(g => <React.Fragment key={g.name}><tr className="zy-table-row" onClick={() => setExpanded(old => ({ ...old, [g.name]: !old[g.name] }))}><td><Can perm="edit_products"><input type="checkbox" aria-label={`勾选${g.name}全部尺寸`} checked={(groups.find(group => group.name === g.name)?.sizes || []).every(product => selected.includes(product.id))} onClick={event => event.stopPropagation()} onChange={() => toggleGroup(g.name)} style={{ marginRight: 8 }} /></Can><strong>{expanded[g.name] ? '⌄' : '›'} {g.name}</strong> <span className="zy-table-aux">{g.sizes.length} 种尺寸</span></td><td /><td /><td /><td /></tr>{expanded[g.name] && g.sizes.map(p => <tr key={p.id} className="zy-table-row"><td><label><input type="checkbox" checked={selected.includes(p.id)} onChange={() => toggle(p.id)} /> {p.mm ? <BeadGlyph bead={p} size={32} /> : null} {p.mm ? `${p.mm}mm` : p.name} {!p.photo && <span className="zy-table-aux">缺照片</span>}</label></td><td>¥{fenToYuan(priceFen(p))}</td><td>{CONTRACT.productStatuses[p.status as keyof typeof CONTRACT.productStatuses] || '草稿'}</td><td className={p.stock === 'low_stock' || p.stock === 'out_of_stock' ? 'zy-danger-text' : ''}>{stocks[p.stock || 'in_stock']}</td><td><Can perm="edit_products"><button className="zy-btn zy-btn-secondary" onClick={() => open(p)}>编辑</button> <button className="zy-btn zy-btn-secondary" onClick={() => void copy(p)}>复制</button> <button className="zy-btn zy-btn-secondary" onClick={() => void sale(p)}>{p.status === 'on_sale' ? '下架' : '上架'}</button></Can></td></tr>)}</React.Fragment>)}</tbody></table>}
     </div>
     {pricingOpen && <PricingSettingsDrawer onClose={() => setPricingOpen(false)} notify={notify} />}
     {editing && <div className="zy-drawer-mask" onMouseDown={() => setEditing(null)}><section className="zy-drawer" onMouseDown={e => e.stopPropagation()} aria-label="编辑商品"><div className="zy-drawer-head"><div className="zy-drawer-title">{editing.id ? '编辑商品' : '新建商品'}</div><button className="zy-drawer-close" onClick={() => setEditing(null)}>关闭</button></div><div className="zy-drawer-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -100,5 +144,22 @@ export default function ProductsPage({ notify }: Props) {
       <BeadPhoto key={editing.id} bead={editing} compare={groups.flatMap(g => g.sizes).find(p => !!p.photo && p.name !== editing.name)} onUploaded={photo => { patch({ photo }); void load(); }} /><div className="zy-field" style={{ gridColumn: '1 / -1' }}><span className="zy-field-label">寓意（来自知识库，只读）</span><div className="zy-field-box" style={{ minHeight: 48 }}>{currentKb?.meaningConfidence === 'low' ? '知识库里这条寓意的把握是‘低’，用户端暂不显示' : kbText || (currentKb?.meaningTags || []).join('、') || '关联知识库后显示寓意'}</div></div><label className="zy-field" style={{ gridColumn: '1 / -1' }}><span className="zy-field-label">合法来源证明（受保护材质需要）</span><input className="zy-field-box" value={editing.legal || ''} onChange={e => patch({ legal: e.target.value })} /></label>{formError && <div className="zy-field-error" style={{ gridColumn: '1 / -1' }}>{formError}{deleteBlocked && editing.status !== 'off_sale' && <Can perm="edit_products"><button className="zy-btn zy-btn-secondary" style={{ marginLeft: 12 }} disabled={saving} onClick={() => void takeOffSale()}>改成下架</button></Can>}</div>}
     </div><div className="zy-drawer-foot"><div className="zy-drawer-foot-left">{editing.id && <Can perm="edit_products"><button className="zy-btn zy-btn-danger" disabled={saving} onClick={() => void remove()}>删除</button></Can>}</div><Can perm="edit_products"><button className="zy-btn zy-btn-primary" disabled={saving} onClick={() => void save()}>{saving ? '正在保存…' : '保存'}</button></Can></div></section></div>}
     {batch && <div className="zy-drawer-mask" onMouseDown={() => setBatch(false)}><section className="zy-drawer" onMouseDown={e => e.stopPropagation()} aria-label="批量调价"><div className="zy-drawer-head"><div className="zy-drawer-title">批量调价</div><button className="zy-drawer-close" onClick={() => setBatch(false)}>关闭</button></div><div className="zy-drawer-body"><p>已选择 {selected.length} 件商品</p><label className="zy-field"><span className="zy-field-label">每件加减金额（元，降价填写负数）</span><input className="zy-field-box" value={addText} onChange={e => { setAddText(e.target.value); setPreview(null); }} inputMode="decimal" /></label>{batchError && <div className="zy-field-error">{batchError}</div>}{preview && <table className="zy-table" style={{ width: '100%', marginTop: 16 }}><thead><tr><th>商品</th><th>改前</th><th>改后</th></tr></thead><tbody>{preview.map(c => <tr key={c.id}><td>{c.name}</td><td>¥{fenToYuan(c.oldFen)}</td><td>¥{fenToYuan(c.newFen)}</td></tr>)}</tbody></table>}</div><div className="zy-drawer-foot"><Can perm="edit_prices"><button className="zy-btn zy-btn-secondary" disabled={batchBusy} onClick={() => void batchPreview()}>预览改前改后</button><button className="zy-btn zy-btn-primary" disabled={batchBusy || !preview} onClick={() => void execute()}>确认并执行</button></Can></div></section></div>}
+    {statusBatch && <div className="zy-drawer-mask" onMouseDown={() => { if (!statusBusy) setStatusBatch(null); }}>
+      <section className="zy-drawer" onMouseDown={event => event.stopPropagation()} role="dialog" aria-modal="true" aria-label={`${statusBatch === 'on_sale' ? '批量上架' : '批量下架'}预览`}>
+        <div className="zy-drawer-head"><div className="zy-drawer-title">批量{statusBatch === 'on_sale' ? '上架' : '下架'}预览</div><button className="zy-drawer-close" disabled={statusBusy} onClick={() => setStatusBatch(null)}>关闭</button></div>
+        <div className="zy-drawer-body">
+          <p>已勾选 {selected.length} 件商品；一次最多 500 件。</p>
+          {statusBusy && !statusPreview && <p role="status">正在预览…</p>}
+          {statusError && <div className="zy-field-error" role="alert">{statusError}</div>}
+          {statusRemoved.length > 0 && <div><strong>已从本批移除，待补资料</strong><ul>{statusRemoved.map(item => <li key={item.id}>{item.name}（{item.id}）：{item.reason}</li>)}</ul></div>}
+          {statusPreview && <>
+            <p role="status">将变更 {statusPreview.changes.length} 件；被拒绝 {statusPreview.rejected.length} 件；状态已相同 {statusPreview.unchanged.length} 件。</p>
+            {statusPreview.rejected.length > 0 && <div><strong>被拒绝的商品和原因</strong><ul>{statusPreview.rejected.map(item => <li key={item.id}>{item.name}（{item.id}）：{item.reason}</li>)}</ul><p>本批不会部分执行；可先去掉被拒绝的商品，继续处理其余商品。</p></div>}
+            {statusPreview.changes.length > 0 && <div><strong>将变更</strong><ul>{statusPreview.changes.map(item => <li key={item.id}>{item.name}（{item.id}）</li>)}</ul></div>}
+          </>}
+        </div>
+        <div className="zy-drawer-foot"><button className="zy-btn zy-btn-secondary" disabled={statusBusy} onClick={() => setStatusBatch(null)}>取消</button><Can perm="edit_products">{statusPreview && statusPreview.rejected.length > 0 && <button className="zy-btn zy-btn-secondary" disabled={statusBusy} onClick={() => void removeRejectedAndPreview()}>去掉这 {statusPreview.rejected.length} 个，继续</button>}<button className="zy-btn zy-btn-primary" disabled={statusBusy || !statusPreview || !!statusPreview.rejected.length || !statusPreview.changes.length} onClick={() => void applyStatusBatch()}>确认{statusBatch === 'on_sale' ? '上架' : '下架'}</button></Can></div>
+      </section>
+    </div>}
   </div>;
 }

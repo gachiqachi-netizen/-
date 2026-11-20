@@ -57,9 +57,12 @@ class AIDesignResponseTests(unittest.TestCase):
         pricing.attach(self.old_pricing_db)
         self.temp.cleanup()
 
-    def design(self, provider):
+    def design(self, provider, image=None):
+        payload = {'text': '想要一条手串', 'wrist': 15}
+        if image is not None:
+            payload['image'] = image
         request = Request(self.base + '/api/ai/design', method='POST',
-                          data=json.dumps({'text': '想要一条手串', 'wrist': 15}).encode(),
+                          data=json.dumps(payload).encode(),
                           headers={'Content-Type': 'application/json'})
         with patch.object(ai, 'provider', return_value=provider):
             try:
@@ -68,6 +71,50 @@ class AIDesignResponseTests(unittest.TestCase):
                 response = error
             with response:
                 return response.status, json.loads(response.read())
+
+    def test_image_uses_vision_and_returns_safe_seen_without_logging_image(self):
+        image = 'data:image/png;base64,iVBORw0KGgo='
+
+        class Provider(FakeProvider):
+            vision_model = 'fake-vision'
+            calls = []
+
+            def json(self, prompt, schema, image=None):
+                self.calls.append(image)
+                self.assert_schema = schema
+                result = super().json(prompt, schema, image)
+                result['seen'] = '不合规的图片描述'
+                return result
+
+        provider = Provider()
+        with patch('content_security.allowed', side_effect=lambda text: text != '不合规的图片描述') as allowed, patch.object(ai.ai_logs, 'record') as record:
+            status, body = self.design(provider, image)
+            self.assertEqual(status, 200)
+            self.assertEqual(body['seen'], '看到了图片里的颜色与氛围。')
+            self.assertEqual(provider.calls, [('image/png', 'iVBORw0KGgo=')])
+            self.assertIn('seen', provider.assert_schema['properties'])
+            allowed.assert_any_call('不合规的图片描述')
+            self.assertNotIn('iVBORw0KGgo=', str(record.call_args))
+            self.assertIn('带图: 是', str(record.call_args))
+
+    def test_without_image_uses_text_model(self):
+        class Provider(FakeProvider):
+            calls = []
+
+            def json(self, prompt, schema, image=None):
+                self.calls.append(image)
+                return super().json(prompt, schema, image)
+
+        provider = Provider()
+        status, body = self.design(provider)
+        self.assertEqual(status, 200)
+        self.assertNotIn('seen', body)
+        self.assertEqual(provider.calls, [None])
+
+    def test_image_without_vision_model_returns_contract_error(self):
+        status, body = self.design(FakeProvider(), 'data:image/png;base64,iVBORw0KGgo=')
+        self.assertEqual(status, 400)
+        self.assertEqual(body, {'error': '暂时只能看文字，请去掉图片再发', 'code': 'vision_unavailable'})
 
     def test_three_plans_use_server_sizing_price_and_kb_tags(self):
         status, body = self.design(FakeProvider())

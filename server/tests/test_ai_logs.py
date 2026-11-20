@@ -125,7 +125,7 @@ class AILogsTest(unittest.TestCase):
         self.assertEqual(out['message'], '好的')
         rec.assert_called_once()
         kw = rec.call_args
-        self.assertEqual(kw.args[1], '想要一条粉水晶')  # input 原文传入，由 record 去手机号
+        self.assertEqual(kw.args[1], '想要一条粉水晶 [带图: 否]')  # record 仍负责去手机号
         self.assertEqual(kw.args[2], '好的')
         self.assertEqual(kw.args[3], out['designs'])  # 命中的方案
         self.assertTrue(kw.kwargs['ok'])

@@ -188,3 +188,4 @@
 | U41 | agent/U41-bead-slide | followups-1119.md | U40 | Codex |  |  |
 | TRY-1 | agent/TRY-1-photo-tryon | followups-tryon.md |  | Codex |  |  |
 | TRY-2 | agent/TRY-2-my-hand | followups-tryon.md | TRY-1 | Codex |  |  |
+| U42 | agent/U42-workbench-menu | followups-1119.md | U41 | 任何 |  |  |

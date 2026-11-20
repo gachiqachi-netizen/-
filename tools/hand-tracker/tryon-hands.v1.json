@@ -3,7 +3,7 @@
  "hands": [
   {
    "id": "hand-018",
-   "label": "手背 · 握拳",
+   "label": "握拳",
    "photo": "hand-018.png",
    "cutout": "hand-018.png",
    "thumb": "hand-018-thumb.jpg",
@@ -19,7 +19,7 @@
   },
   {
    "id": "hand-fx2",
-   "label": "手背 · 握拳 2",
+   "label": "握拳 2",
    "photo": "hand-fx2.png",
    "cutout": "hand-fx2.png",
    "thumb": "hand-fx2-thumb.jpg",
@@ -35,7 +35,7 @@
   },
   {
    "id": "hand-fx",
-   "label": "手背 · 张开",
+   "label": "张开",
    "photo": "hand-fx.png",
    "cutout": "hand-fx.png",
    "thumb": "hand-fx-thumb.jpg",
@@ -51,7 +51,7 @@
   },
   {
    "id": "hand-062",
-   "label": "掌心 1",
+   "label": "掌心",
    "photo": "hand-062.png",
    "cutout": "hand-062.png",
    "thumb": "hand-062-thumb.jpg",

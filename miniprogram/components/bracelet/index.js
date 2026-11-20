@@ -79,8 +79,11 @@ if (typeof Component === 'function') Component({
       this.setData({ animatingIndex: -1 })
     }
     try {
-      if (typeof this.clearAnimation === 'function') this.clearAnimation('#slide-bead', { left: true, top: true, opacity: true }, reset)
-      else reset()
+      if (typeof this.clearAnimation === 'function') {
+        this.clearAnimation('#slide-bead', { left: true, top: true, opacity: true }, reset)
+        // Some base libraries never call the clearAnimation callback; never leave the bead hidden.
+        setTimeout(reset, 120)
+      } else reset()
     } catch (_) { reset() }
   }, rebuild() {
     const p = this.properties, record = Object.prototype.hasOwnProperty.call(style.tiers, p.tier)

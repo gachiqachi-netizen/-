@@ -184,3 +184,5 @@
 | H9 | agent/H9-archive-old-beads | followups-1119.md | H7 | 任何 |  |  |
 | H10 | agent/H10-templates-hc | followups-1119.md | H9 | Codex |  |  |
 | U39 | agent/U39-admin-batch-status | followups-1119.md |  | Codex |  |  |
+| U40 | agent/U40-workbench-v7 | followups-1119.md | U36 | Codex | U41 |  |
+| U41 | agent/U41-bead-slide | followups-1119.md | U40 | Codex |  |  |

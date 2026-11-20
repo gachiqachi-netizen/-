@@ -201,8 +201,9 @@ def _log_design(text, reply, designs, started, p, ok=True, error=None):
         pass
 
 
-def design(beads, text, history, wrist):
+def design(beads, text, history, wrist, image=None):
     """AI 配：根据心愿（含之前的对话）给 3 条候选。"""
+    import content_security
     p = provider()
     if not p:
         return None
@@ -214,10 +215,17 @@ def design(beads, text, history, wrist):
               "给 3 条不同的手串，和之前给过的不要重复。每条至少 2 种不同名称的珠子，主珠直径一致。"
               "pattern 是循环花型（3-8 颗），special 是只出现一次的开头珠（0-2 颗）。用户提了预算时，按大约 20 颗估算，别超预算。\n"
               "reply 是一句 20-40 字的口语回应，先讲寓意且不要写数字；meaning 20-40 字。")
+    schema = DESIGNS_SCHEMA
+    if image is not None:
+        prompt += ("\n先用一句话说你从图里看到的颜色和感觉（如‘看到的颜色：浅蓝、米白；感觉：清冷’），"
+                   "再按这个感觉配一条新的，不是还原图里的手串。seen 不超过 40 字。")
+        schema = {**DESIGNS_SCHEMA,
+                  "properties": {**DESIGNS_SCHEMA["properties"], "seen": {"type": "string"}},
+                  "required": [*DESIGNS_SCHEMA["required"], "seen"]}
     ids = {b["id"] for b in beads}
     names = {b["id"]: b["name"] for b in beads}
     try:
-        out = p.json(prompt, DESIGNS_SCHEMA)
+        out = p.json(prompt, schema, image=image)
         designs = _valid_designs(out.get("designs"), ids, 2, names)
         if not designs:
             # JSON-only mode guarantees syntax, not that a model copies opaque SKU ids
@@ -226,15 +234,18 @@ def design(beads, text, history, wrist):
             retry_prompt = (prompt + "\n\n上一次结果未通过商品目录校验，请重新输出。"
                             "special 和 pattern 的每个值必须是下列完整 id 之一，不能写珠子名称、颜色、对象或新 id：\n"
                             + allowed)
-            out = p.json(retry_prompt, DESIGNS_SCHEMA)
+            out = p.json(retry_prompt, schema, image=image)
             designs = _valid_designs(out.get("designs"), ids, 2, names)
             if not designs:
                 raise RuntimeError("AI 给的珠子不在料包里")
         result = {"message": str(out.get("message") or out.get("reply") or ""), "designs": designs, "by": p.name}
+        if image is not None:
+            seen = str(out.get("seen") or "")[:40]
+            result["seen"] = seen if content_security.allowed(seen) else "看到了图片里的颜色与氛围。"
     except Exception as exc:
-        _log_design(text, "", [], started, p, ok=False, error=exc)
+        _log_design(f"{text} [带图: {'是' if image is not None else '否'}]", "", [], started, p, ok=False, error=exc)
         raise
-    _log_design(text, result.get("message") or result.get("reply") or "", result["designs"], started, p)
+    _log_design(f"{text} [带图: {'是' if image is not None else '否'}]", result.get("message") or result.get("reply") or "", result["designs"], started, p)
     return result
 
 

@@ -948,10 +948,13 @@ class Handler(BaseHTTPRequestHandler):
             chosen = data.get("beads") or []
             if not isinstance(chosen, list) or len(chosen) > 500 or any(not isinstance(x, str) or len(x) > 100 for x in chosen):
                 raise ValueError("珠子数据格式不正确")
-            image = image_part(data.get("image")) if path == "/api/ai/photo" else None
+            image = image_part(data.get("image")) if path == "/api/ai/photo" or (path == "/api/ai/design" and data.get("image") is not None) else None
         except ValueError as e:
             return self.send(400, {"error": str(e)})
-        if not ai.provider():
+        model = ai.provider()
+        if path == "/api/ai/design" and image is not None and not getattr(model, "vision_model", None):
+            return self.send(400, {"error": "暂时只能看文字，请去掉图片再发", "code": "vision_unavailable"})
+        if not model:
             if env.ai_fallback_allowed():
                 return self.send(503, {"error": "未配置 AI 模型", "fallback": True})
             return self.send(502, {"error": "AI 暂时不可用，请稍后重试"})
@@ -959,10 +962,12 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(429, {"error": "请求较多，请稍后重试"})
         try:
             if path == "/api/ai/design":
-                raw = ai.design(beads, str(data.get("text") or "")[:200], history, wrist)
+                raw = ai.design(beads, str(data.get("text") or "")[:200], history, wrist, image=image)
                 if raw is not None:
                     raw["designs"] = content_security.filter_ai_entries(raw["designs"])
                     out = ai.design_response(raw, beads, wrist)
+                    if image is not None:
+                        out["seen"] = raw["seen"]
                 else:
                     out = None
             elif path == "/api/ai/photo":

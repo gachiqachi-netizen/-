@@ -177,7 +177,7 @@
 
 ## U40 工作台按设计图 v7.2 改版（2026-11-20 负责人定稿）
 
-- **设计图**：`docs/design/mockups-workbench-v7.html`（375×812 实际尺寸，1px = 2rpx；页面下方有尺寸标注、比例尺规则和自查表）。**以设计图为准，不要自己发挥**；设计图和本卡冲突时停下来问。
+- **设计图**：`docs/design/mockups-workbench-v7.html`；**打不开 HTML 时看同目录的整页截图 `docs/design/mockups-workbench-v7.png`**，内容完全一样（375×812 实际尺寸，1px = 2rpx；页面下方有尺寸标注、比例尺规则和自查表）。**以设计图为准，不要自己发挥**；设计图和本卡冲突时停下来问。
 - **依赖**：U36　**大小**：L　**只能改**：`miniprogram/pages/diy/diy.{js,wxml,wxss,json}`、`miniprogram/pages/diy/logic.js`（只加纯函数）、`miniprogram/components/bracelet/index.{js,wxml,wxss}`、`miniprogram/utils/bracelet-layout.js`（只加比例尺函数）、`miniprogram/utils/nav.js`（只改返回）、`tools/check-ui.py`（只加工作台例外）、`miniprogram/tests/` 对应测试
 - **现状**（审核核对过）：托盘是 `--c-tray` 渐变底；`.tray-name` 下面有 `.tray-tags` 一行；右侧 `.side-actions` 竖排 5 个（撤销、叠戴、保存、分享、更多）；`.status` + `.meter`（`.meter-zone`、`.meter-dot`）；`.picked-row` 横滑已选；`.picker-search` 搜索框；`.categories` 横排分类 + `.sizes` 尺寸；`.bead-grid` 四列、`.bead-visual` 卡面灰底；导航栏是微信自带（U33），tab 页没有返回键，返回在 `.tray-back`（U34）。
 - **要做的**（逐条对照设计图 v7.2）：

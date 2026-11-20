@@ -193,3 +193,4 @@
 | AI-1a | agent/AI-1a-chat-image-api | followups-ai.md | AI-2 | Codex |  |  |
 | AI-1b | agent/AI-1b-chat-image-ui | followups-ai.md |  | Codex |  |  |
 | H11 | agent/H11-docker-cache | followups-infra.md |  | 任何 |  |  |
+| TRY-3 | agent/TRY-3-ring-size | followups-tryon.md | TRY-2 | Codex |  |  |

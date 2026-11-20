@@ -45,3 +45,11 @@ test('状态行短、合适、超出三态且比例尺稳定',()=>{
   assert.equal(short.data.scaleRpx,okay.data.scaleRpx)
   assert.equal(okay.data.scaleRpx,over.data.scaleRpx)
 })
+test('目录和已选珠图固定尺寸，比例尺只用于托盘',()=>{
+  const markup=fs.readFileSync(path.join(__dirname,'../pages/diy/diy.wxml'),'utf8')
+  const styles=fs.readFileSync(path.join(__dirname,'../pages/diy/diy.wxss'),'utf8')
+  assert.match(styles,/\.picker-bead\{width:80rpx;height:80rpx\}/)
+  assert.match(styles,/\.picked-bead\{width:64rpx;height:64rpx\}/)
+  assert.doesNotMatch(markup,/item(?:\.bead)?\.mm\s*\*\s*scaleRpx/)
+  assert.match(markup,/pixelsPerMm="{{scaleRpx}}"/)
+})

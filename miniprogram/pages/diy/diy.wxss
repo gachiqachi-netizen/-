@@ -73,4 +73,6 @@
 .picked-step view{width:56rpx;height:56rpx;background:var(--c-surface);border-radius:var(--r-pill);display:flex;align-items:center;justify-content:center}
 .picked-step image{width:40rpx;height:40rpx}
 .picked-empty{padding:var(--sp-base);font-size:var(--fs-caption);color:var(--c-text-2)}
+.bead-visual .bead-photo,.picker-bead{width:80rpx;height:80rpx}
+.picked-photo,.picked-bead{width:64rpx;height:64rpx}
 .feedback-row{border:0}

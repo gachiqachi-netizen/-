@@ -13,6 +13,18 @@ function stats(ids, catalog, wrist) {
   else if (ids.length) { const diff=length-target; fit=diff < -4 ? `还差约 ${Math.round(-diff)}mm` : diff > 6 ? `超出约 ${Math.round(diff)}mm` : '长度基本合适' }
   return { length, target, fit, missing, price: found.reduce((sum,b)=>sum+Number(b.price||0),0), map }
 }
+// Use the same target calculation as stats for a prospective main bead size.
+function scaleTarget(wristCm, mainMm) {
+  const bead = { id: 'scale', mm: Number(mainMm) || 8, mat: 'crystal', price: 0 }
+  return stats(['scale'], [bead], wristCm).target
+}
+function scaleMainMm(ids, catalog) {
+  const map = Object.fromEntries(catalog.map(bead => [bead.id, bead]))
+  const counts = {}
+  ids.map(id => map[id]).filter(bead => bead && !bead.spacer && bead.mat !== 'metal' && Number(bead.mm) >= 6)
+    .forEach(bead => { const mm = Number(bead.mm); counts[mm] = (counts[mm] || 0) + 1 })
+  return Number(Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0]) || 8
+}
 function fill(ids, catalog, wrist, id) {
   const items=ids.slice(), initial=stats(items,catalog,wrist), bead=initial.map[id]
   if (initial.missing || !bead || !Number.isFinite(Number(bead.mm)) || Number(bead.mm)<=0) return items
@@ -42,4 +54,4 @@ function removeOne(ids, id) {
   return next
 }
 function removeGroup(ids, id) { return ids.filter(item=>item!==id) }
-module.exports={stats,fill,move,setCount,removeOne,removeGroup}
+module.exports={stats,fill,move,setCount,removeOne,removeGroup,scaleTarget,scaleMainMm}

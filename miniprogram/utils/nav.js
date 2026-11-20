@@ -36,6 +36,9 @@ function backFromWorkbench(source) {
   if (!source || !source.route) return
   const route = source.route.replace(/^\//, '')
   if (TABS.includes(route)) return wx.switchTab({ url: '/' + route })
+  const stack = pages()
+  const index = stack.map(page => page.route).lastIndexOf(route)
+  if (index >= 0 && index < stack.length - 1) return wx.navigateBack({ delta: stack.length - 1 - index })
   const query = Object.keys(source.options || {}).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(source.options[key])).join('&')
   wx.navigateTo({ url: '/' + route + (query ? '?' + query : '') })
 }

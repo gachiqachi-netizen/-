@@ -14,7 +14,7 @@ require('../pages/diy/diy')
 
 test('工作台更多菜单第一项是我的作品，保存提示仍在，点击后跳转',()=>{
   const markup=fs.readFileSync(path.join(root,'pages/diy/diy.wxml'),'utf8')
-  assert.match(markup, /title="更多"[^>]*><view class="more-option" bindtap="works">我的作品 <text class="save-dot" wx:if="\{\{saveDot\}\}">●<\/text>/)
+  assert.match(markup, /title="更多"[^>]*><view class="more-option" bindtap="save">保存<\/view><view class="more-option" bindtap="stack">叠戴/)
   const p={...page,data:{...page.data,moreOpen:true,saveDot:true},setData(patch){Object.assign(this.data,patch)}}
   p.works()
   assert.equal(navigated,'/features/works/works')
@@ -22,7 +22,7 @@ test('工作台更多菜单第一项是我的作品，保存提示仍在，点�
   assert.doesNotMatch(markup, /<c-nav-bar\b|class="topbar"/)
   const config=JSON.parse(fs.readFileSync(path.join(root,'pages/diy/diy.json')))
   assert.equal(config.navigationBarTitleText,'自己串')
-  assert.notEqual(config.navigationStyle,'custom')
+  assert.equal(config.navigationStyle,'custom')
 })
 
 test('指定页面标题统一且不超过六字',()=>{
@@ -58,4 +58,10 @@ test('check-ui 拒绝 custom 和缺少标题',()=>{
   assert.match(custom,/navigationStyle:不能使用 custom/)
   const missing=navCheck({pages:['pages/a/a'],window:{}},{'pages/a/a':{}})
   assert.match(missing,/navigationBarTitleText:没有页面标题/)
+})
+test('check-ui 只允许工作台 custom，其他页面仍拦截',()=>{
+  const workbench=navCheck({pages:['pages/diy/diy'],window:{navigationBarTitleText:'默认'}},{'pages/diy/diy':{navigationStyle:'custom',navigationBarTitleText:'自己串'}})
+  assert.equal(workbench,'')
+  const other=navCheck({pages:['pages/a/a'],window:{navigationBarTitleText:'默认'}},{'pages/a/a':{navigationStyle:'custom'}})
+  assert.match(other,/不能使用 custom/)
 })

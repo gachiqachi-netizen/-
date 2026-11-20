@@ -12,9 +12,10 @@ global.wx = {navigateTo({url}){navigated=url}}
 global.getApp = () => ({globalData:{apiBase:'http://localhost'}})
 require('../pages/diy/diy')
 
-test('工作台更多菜单第一项是我的作品，保存提示仍在，点击后跳转',()=>{
+test('工作台更多菜单只有清空手串和落珠声，作品入口函数仍可跳转',()=>{
   const markup=fs.readFileSync(path.join(root,'pages/diy/diy.wxml'),'utf8')
-  assert.match(markup, /title="更多"[^>]*><view class="more-option" bindtap="save">保存<\/view><view class="more-option" bindtap="stack">叠戴/)
+  const menu=markup.match(/<c-sheet show="\{\{moreOpen\}\}"[^]*?<\/c-sheet>/)[0]
+  assert.deepEqual([...menu.matchAll(/class="more-option" bindtap="([^"]+)"/g)].map(x=>x[1]),['openClear','toggleSound'])
   const p={...page,data:{...page.data,moreOpen:true,saveDot:true},setData(patch){Object.assign(this.data,patch)}}
   p.works()
   assert.equal(navigated,'/features/works/works')
